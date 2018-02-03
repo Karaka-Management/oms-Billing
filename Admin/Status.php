@@ -15,7 +15,7 @@ declare(strict_types = 1);
 namespace Modules\Billing\Admin;
 
 use phpOMS\DataStorage\Database\DatabasePool;
-use phpOMS\Module\DeactivateAbstract;
+use phpOMS\Module\StatusAbstract;
 use phpOMS\Module\InfoManager;
 
 /**
@@ -26,14 +26,7 @@ use phpOMS\Module\InfoManager;
  * @link       http://website.orange-management.de
  * @since      1.0.0
  */
-class Deactivate extends DeactivateAbstract
+class Status extends StatusAbstract
 {
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function deactivate(DatabasePool $dbPool, InfoManager $info)
-    {
-        parent::deactivate($dbPool, $info);
-    }
 }
