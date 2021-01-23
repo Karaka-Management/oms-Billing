@@ -14,18 +14,20 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Models;
 
+use Modules\Admin\Models\Account;
+use Modules\Admin\Models\NullAccount;
 use phpOMS\Localization\ISO4217CharEnum;
 use phpOMS\Localization\Money;
 
 /**
- * Invoice class.
+ * Bill class.
  *
  * @package Modules\Billing\Models
  * @license OMS License 1.0
  * @link    https://orange-management.org
  * @since   1.0.0
  */
-class Invoice implements \JsonSerializable
+class Bill implements \JsonSerializable
 {
     /**
      * ID.
@@ -44,40 +46,46 @@ class Invoice implements \JsonSerializable
     private string $number = '';
 
     /**
-     * Invoice type.
+     * Bill type.
+     *
+     * @var int|BillType
+     * @since 1.0.0
+     */
+    public int|BillType $type = 0;
+
+    /**
+     * Bill status.
      *
      * @var int
      * @since 1.0.0
      */
-    private int $type = InvoiceType::BILL;
+    private int $status = BillStatus::DRAFT;
 
     /**
-     * Invoice status.
-     *
-     * @var int
-     * @since 1.0.0
-     */
-    private int $status = InvoiceStatus::DRAFT;
-
-    /**
-     * Invoice created at.
+     * Bill created at.
      *
      * @var \DateTime
      * @since 1.0.0
      */
-    private \DateTime $createdAt;
+    public \DateTimeImmutable $createdAt;
 
     /**
-     * Invoice send at.
+     * Bill send at.
      *
      * @var null|\DateTime
      * @since 1.0.0
      */
     private ?\DateTime $send = null;
 
-    private $createdBy = 0;
+    /**
+     * Creator.
+     *
+     * @var Account
+     * @since 1.0.0
+     */
+    public Account $createdBy;
 
-    private $client = 0;
+    public $client = 0;
 
     /**
      * Receiver.
@@ -181,19 +189,17 @@ class Invoice implements \JsonSerializable
      * @var int
      * @since 1.0.0
      */
-    private int $referer = 0;
+    private $referral;
 
-    private $refererName = '';
+    private $referralName = '';
 
-    private $taxId = '';
+    public ?Money $net = null;
 
-    private $insurance = null;
+    public ?Money $gross = null;
 
-    private $freight = null;
+    public ?Money $costs = null;
 
-    private $net = null;
-
-    private $gross = null;
+    public ?Money $profit = null;
 
     private $currency = ISO4217CharEnum::_EUR;
 
@@ -218,7 +224,7 @@ class Invoice implements \JsonSerializable
     private $elements = [];
 
     /**
-     * Reference to other invoice (delivery note/credit note etc).
+     * Reference to other Bill (delivery note/credit note etc).
      *
      * @var int
      * @since 1.0.0
@@ -232,12 +238,40 @@ class Invoice implements \JsonSerializable
      */
     public function __construct()
     {
-        $this->insurance = new Money();
-        $this->freight   = new Money();
-        $this->net       = new Money();
-        $this->gross     = new Money();
+        $this->net       = new Money(0);
+        $this->gross     = new Money(0);
+        $this->costs     = new Money(0);
+        $this->profit     = new Money(0);
 
-        $this->createdAt = new \DateTime();
+        $this->createdAt = new \DateTimeImmutable();
+        $this->createdBy = new NullAccount();
+        $this->referer = new NullAccount();
+    }
+
+    /**
+     * Get created by
+     *
+     * @return Account
+     *
+     * @since 1.0.0
+     */
+    public function getCreatedBy() : Account
+    {
+        return $this->createdBy;
+    }
+
+    /**
+     * Set created by
+     *
+     * @param Account $account Created by
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
+    public function setCreatedBy(Account $account) : void
+    {
+        $this->createdBy = $account;
     }
 
     /**
@@ -253,7 +287,7 @@ class Invoice implements \JsonSerializable
     }
 
     /**
-     * Get invoice number.
+     * Get Bill number.
      *
      * @return string
      *
@@ -265,9 +299,9 @@ class Invoice implements \JsonSerializable
     }
 
     /**
-     * Set invoice number.
+     * Set Bill number.
      *
-     * @param string $number Invoice number
+     * @param string $number Bill number
      *
      * @return void
      *
@@ -366,32 +400,6 @@ class Invoice implements \JsonSerializable
     public function getSend() : ?\DateTime
     {
         return $this->send;
-    }
-
-    /**
-     * Get created by
-     *
-     * @return int|\phpOMS\Account\Account
-     *
-     * @since 1.0.0
-     */
-    public function getCreatedBy()
-    {
-        return $this->createdBy;
-    }
-
-    /**
-     * Set creator.
-     *
-     * @param int $creator Creator
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function setCreatedBy(int $creator) : void
-    {
-        $this->createdBy = $creator;
     }
 
     /**
@@ -1149,7 +1157,7 @@ class Invoice implements \JsonSerializable
     }
 
     /**
-     * Get invoice elements.
+     * Get Bill elements.
      *
      * @return array
      *
@@ -1161,9 +1169,9 @@ class Invoice implements \JsonSerializable
     }
 
     /**
-     * Add invoice element.
+     * Add Bill element.
      *
-     * @param mixed $element Invoice element
+     * @param mixed $element Bill element
      *
      * @return void
      *

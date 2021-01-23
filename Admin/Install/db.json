@@ -1,359 +1,401 @@
 {
-    "billing_invoice": {
-        "name": "billing_invoice",
+    "billing_type": {
+        "name": "billing_type",
         "fields": {
-            "billing_invoice_id": {
-                "name": "billing_invoice_id",
+            "billing_type_id": {
+                "name": "billing_type_id",
+                "type": "INT",
+                "null": false,
+                "primary": true,
+                "autoincrement": true
+            }
+        }
+    },
+    "billing_type_l11n": {
+        "name": "billing_type_l11n",
+        "fields": {
+            "billing_type_l11n_id": {
+                "name": "billing_type_l11n_id",
                 "type": "INT",
                 "null": false,
                 "primary": true,
                 "autoincrement": true
             },
-            "billing_invoice_number": {
-                "name": "billing_invoice_number",
+            "billing_type_l11n_name": {
+                "name": "billing_type_l11n_name",
                 "type": "VARCHAR(255)",
                 "null": false
             },
-            "billing_invoice_info": {
-                "name": "billing_invoice_info",
+            "billing_type_l11n_type": {
+                "name": "billing_type_l11n_type",
+                "type": "INT",
+                "null": false,
+                "foreignTable": "billing_type",
+                "foreignKey": "billing_type_id"
+            },
+            "billing_type_l11n_language": {
+                "name": "billing_type_l11n_language",
+                "type": "VARCHAR(2)",
+                "default": null,
+                "null": true,
+                "foreignTable": "language",
+                "foreignKey": "language_639_1"
+            }
+        }
+    },
+    "billing_out": {
+        "name": "billing_out",
+        "fields": {
+            "billing_out_id": {
+                "name": "billing_out_id",
+                "type": "INT",
+                "null": false,
+                "primary": true,
+                "autoincrement": true
+            },
+            "billing_out_number": {
+                "name": "billing_out_number",
+                "type": "VARCHAR(255)",
+                "null": false
+            },
+            "billing_out_info": {
+                "name": "billing_out_info",
                 "type": "TEXT",
                 "default": null,
                 "null": true
             },
-            "billing_invoice_status": {
-                "name": "billing_invoice_status",
+            "billing_out_status": {
+                "name": "billing_out_status",
                 "type": "TINYINT",
                 "null": false
             },
-            "billing_invoice_type": {
-                "name": "billing_invoice_type",
-                "type": "TINYINT",
-                "null": false
-            },
-            "billing_invoice_client": {
-                "name": "billing_invoice_client",
+            "billing_out_type": {
+                "name": "billing_out_type",
                 "type": "INT",
                 "null": false,
-                "foreignTable": "account",
-                "foreignKey": "account_id"
+                "foreignTable": "billing_type",
+                "foreignKey": "billing_type_id"
             },
-            "billing_invoice_shipTo": {
-                "name": "billing_invoice_shipTo",
+            "billing_out_client": {
+                "name": "billing_out_client",
+                "type": "INT",
+                "null": false,
+                "foreignTable": "clientmgmt_client",
+                "foreignKey": "clientmgmt_client_id"
+            },
+            "billing_out_shipTo": {
+                "name": "billing_out_shipTo",
                 "type": "VARCHAR(255)",
                 "null": false
             },
-            "billing_invoice_shipFAO": {
-                "name": "billing_invoice_shipFAO",
+            "billing_out_shipFAO": {
+                "name": "billing_out_shipFAO",
                 "type": "VARCHAR(255)",
                 "default": null,
                 "null": true
             },
-            "billing_invoice_shipAddr": {
-                "name": "billing_invoice_shipAddr",
+            "billing_out_shipAddr": {
+                "name": "billing_out_shipAddr",
                 "type": "VARCHAR(255)",
                 "default": null,
                 "null": true
             },
-            "billing_invoice_shipCity": {
-                "name": "billing_invoice_shipCity",
+            "billing_out_shipCity": {
+                "name": "billing_out_shipCity",
                 "type": "VARCHAR(255)",
                 "default": null,
                 "null": true
             },
-            "billing_invoice_shipZip": {
-                "name": "billing_invoice_shipZip",
+            "billing_out_shipZip": {
+                "name": "billing_out_shipZip",
                 "type": "VARCHAR(255)",
                 "default": null,
                 "null": true
             },
-            "billing_invoice_shipCountry": {
-                "name": "billing_invoice_shipCountry",
+            "billing_out_shipCountry": {
+                "name": "billing_out_shipCountry",
                 "type": "VARCHAR(3)",
                 "default": null,
                 "null": true
             },
-            "billing_invoice_billTo": {
-                "name": "billing_invoice_billTo",
+            "billing_out_billTo": {
+                "name": "billing_out_billTo",
                 "type": "VARCHAR(255)",
                 "null": false
             },
-            "billing_invoice_billFAO": {
-                "name": "billing_invoice_billFAO",
+            "billing_out_billFAO": {
+                "name": "billing_out_billFAO",
                 "type": "VARCHAR(255)",
                 "default": null,
                 "null": true
             },
-            "billing_invoice_billAddr": {
-                "name": "billing_invoice_billAddr",
+            "billing_out_billAddr": {
+                "name": "billing_out_billAddr",
                 "type": "VARCHAR(255)",
                 "default": null,
                 "null": true
             },
-            "billing_invoice_billCity": {
-                "name": "billing_invoice_billCity",
+            "billing_out_billCity": {
+                "name": "billing_out_billCity",
                 "type": "VARCHAR(255)",
                 "default": null,
                 "null": true
             },
-            "billing_invoice_billZip": {
-                "name": "billing_invoice_billZip",
+            "billing_out_billZip": {
+                "name": "billing_out_billZip",
                 "type": "VARCHAR(255)",
                 "default": null,
                 "null": true
             },
-            "billing_invoice_billCountry": {
-                "name": "billing_invoice_billCountry",
+            "billing_out_billCountry": {
+                "name": "billing_out_billCountry",
                 "type": "VARCHAR(3)",
                 "default": null,
                 "null": true
             },
-            "billing_invoice_created_at": {
-                "name": "billing_invoice_created_at",
+            "billing_out_created_at": {
+                "name": "billing_out_created_at",
                 "type": "DATETIME",
                 "null": false
             },
-            "billing_invoice_created_by": {
-                "name": "billing_invoice_created_by",
+            "billing_out_created_by": {
+                "name": "billing_out_created_by",
                 "type": "INT",
                 "null": false,
                 "foreignTable": "account",
                 "foreignKey": "account_id"
             },
-            "billing_invoice_finished_at": {
-                "name": "billing_invoice_finished_at",
-                "type": "DATETIME",
+            "billing_out_gross": {
+                "name": "billing_out_gross",
+                "type": "INT",
+                "null": false
+            },
+            "billing_out_net": {
+                "name": "billing_out_net",
+                "type": "INT",
+                "null": false
+            },
+            "billing_out_costs": {
+                "name": "billing_out_costs",
+                "type": "INT",
+                "null": false
+            },
+            "billing_out_profit": {
+                "name": "billing_out_profit",
+                "type": "INT",
+                "null": false
+            },
+            "billing_out_currency": {
+                "name": "billing_out_currency",
+                "type": "INT",
+                "null": false
+            },
+            "billing_out_referral": {
+                "name": "billing_out_referral",
+                "type": "INT",
+                "null": true,
                 "default": null,
-                "null": false
-            },
-            "billing_invoice_gross": {
-                "name": "billing_invoice_gross",
-                "type": "INT",
-                "null": false
-            },
-            "billing_invoice_net": {
-                "name": "billing_invoice_net",
-                "type": "INT",
-                "null": false
-            },
-            "billing_invoice_costs": {
-                "name": "billing_invoice_costs",
-                "type": "INT",
-                "null": false
-            },
-            "billing_invoice_profit": {
-                "name": "billing_invoice_profit",
-                "type": "INT",
-                "null": false
-            },
-            "billing_invoice_currency": {
-                "name": "billing_invoice_currency",
-                "type": "INT",
-                "null": false
-            },
-            "billing_invoice_freightage": {
-                "name": "billing_invoice_freightage",
-                "type": "INT",
-                "null": false
-            },
-            "billing_invoice_insurance": {
-                "name": "billing_invoice_insurance",
-                "type": "INT",
-                "null": false
-            },
-            "billing_invoice_customs": {
-                "name": "billing_invoice_customs",
-                "type": "INT",
-                "null": false
-            },
-            "billing_invoice_packaging": {
-                "name": "billing_invoice_packaging",
-                "type": "INT",
-                "null": false
-            },
-            "billing_invoice_referral": {
-                "name": "billing_invoice_referral",
-                "type": "INT",
-                "null": false,
                 "foreignTable": "account",
                 "foreignKey": "account_id"
             },
-            "billing_invoice_referral_name": {
-                "name": "billing_invoice_referral_name",
+            "billing_out_referral_name": {
+                "name": "billing_out_referral_name",
                 "type": "VARCHAR(255)",
                 "default": null,
                 "null": true
             },
-            "billing_invoice_reference": {
-                "name": "billing_invoice_reference",
+            "billing_out_reference": {
+                "name": "billing_out_reference",
                 "type": "INT",
                 "null": false
             },
-            "billing_invoice_payment": {
-                "name": "billing_invoice_payment",
+            "billing_out_payment": {
+                "name": "billing_out_payment",
                 "type": "INT",
                 "null": false
             },
-            "billing_invoice_payment_text": {
-                "name": "billing_invoice_payment_text",
+            "billing_out_payment_text": {
+                "name": "billing_out_payment_text",
                 "type": "VARCHAR(255)",
                 "default": null,
                 "null": true
             },
-            "billing_invoice_terms": {
-                "name": "billing_invoice_terms",
+            "billing_out_paymentterms": {
+                "name": "billing_out_paymentterms",
                 "type": "INT",
                 "null": false
             },
-            "billing_invoice_terms_text": {
-                "name": "billing_invoice_terms_text",
+            "billing_out_paymentterms_text": {
+                "name": "billing_out_paymentterms_text",
                 "type": "VARCHAR(255)",
                 "default": null,
                 "null": true
             },
-            "billing_invoice_ship_type": {
-                "name": "billing_invoice_ship_type",
+            "billing_out_ship_type": {
+                "name": "billing_out_ship_type",
                 "type": "INT",
                 "null": false
             },
-            "billing_invoice_ship_text": {
-                "name": "billing_invoice_ship_text",
+            "billing_out_ship_text": {
+                "name": "billing_bill_ship_text",
                 "type": "VARCHAR(255)",
                 "default": null,
                 "null": true
             }
         }
     },
-    "billing_element": {
-        "name": "billing_element",
+    "billing_out_element": {
+        "name": "billing_out_element",
         "fields": {
-            "billing_element_id": {
-                "name": "billing_element_id",
+            "billing_out_element_id": {
+                "name": "billing_out_element_id",
                 "type": "INT",
                 "null": false,
                 "primary": true,
                 "autoincrement": true
             },
-            "billing_element_order": {
-                "name": "billing_element_order",
-                "type": "SMALLINT",
-                "null": false
-            },
-            "billing_element_item": {
-                "name": "billing_element_item",
+            "billing_out_element_order": {
+                "name": "billing_out_element_order",
                 "type": "INT",
                 "null": false
             },
-            "billing_element_item_segment": {
-                "name": "billing_element_item_segment",
+            "billing_out_element_item": {
+                "name": "billing_out_element_item",
+                "type": "INT",
+                "null": true,
+                "default": null
+            },
+            "billing_out_element_item_segment": {
+                "name": "billing_out_element_item_segment",
                 "type": "INT",
                 "default": null,
                 "null": true
             },
-            "billing_element_item_name": {
-                "name": "billing_element_item_name",
+            "billing_out_element_item_number": {
+                "name": "billing_out_element_item_number",
                 "type": "VARCHAR(255)",
                 "null": false
             },
-            "billing_element_item_desc": {
-                "name": "billing_element_item_desc",
+            "billing_out_element_item_name": {
+                "name": "billing_out_element_item_name",
                 "type": "VARCHAR(255)",
                 "null": false
             },
-            "billing_element_quantity": {
-                "name": "billing_element_quantity",
+            "billing_out_element_item_desc": {
+                "name": "billing_out_element_item_desc",
+                "type": "VARCHAR(255)",
+                "null": false
+            },
+            "billing_out_element_quantity": {
+                "name": "billing_out_element_quantity",
                 "type": "INT",
                 "null": false
             },
-            "billing_element_purchase_price": {
-                "name": "billing_element_purchase_price",
+            "billing_out_element_purchase_price": {
+                "name": "billing_out_element_purchase_price",
                 "type": "INT",
-                "null": false
+                "null": true,
+                "default": null
             },
-            "billing_element_price_single": {
-                "name": "billing_element_price_single",
+            "billing_out_element_price_single": {
+                "name": "billing_out_element_price_single",
                 "type": "INT",
-                "null": false
+                "null": true,
+                "default": null
             },
-            "billing_element_price_total": {
-                "name": "billing_element_price_total",
+            "billing_out_element_price_total": {
+                "name": "billing_out_element_price_total",
                 "type": "INT",
-                "null": false
+                "null": true,
+                "default": null
             },
-            "billing_element_price_discount_single": {
-                "name": "billing_element_price_discount_single",
+            "billing_out_element_price_discount_single": {
+                "name": "billing_out_element_price_discount_single",
                 "type": "INT",
-                "null": false
+                "null": true,
+                "default": null
             },
-            "billing_element_price_discount_total": {
-                "name": "billing_element_price_discount_total",
+            "billing_out_element_price_discount_total": {
+                "name": "billing_out_element_price_discount_total",
                 "type": "INT",
-                "null": false
+                "null": true,
+                "default": null
             },
-            "billing_element_percentage_discount_single": {
-                "name": "billing_element_percentage_discount_single",
+            "billing_out_element_percentage_discount_single": {
+                "name": "billing_out_element_percentage_discount_single",
                 "type": "INT",
-                "null": false
+                "null": true,
+                "default": null
             },
-            "billing_element_percentage_discount_total": {
-                "name": "billing_element_percentage_discount_total",
+            "billing_out_element_percentage_discount_total": {
+                "name": "billing_out_element_percentage_discount_total",
                 "type": "INT",
-                "null": false
+                "null": true,
+                "default": null
             },
-            "billing_element_quantity_discount": {
-                "name": "billing_element_quantity_discount",
+            "billing_out_element_quantity_discount": {
+                "name": "billing_out_element_quantity_discount",
                 "type": "INT",
-                "null": false
+                "null": true,
+                "default": null
             },
-            "billing_element_price_single_net": {
-                "name": "billing_element_price_single_net",
+            "billing_out_element_price_single_net": {
+                "name": "billing_out_element_price_single_net",
                 "type": "INT",
-                "null": false
+                "null": true,
+                "default": null
             },
-            "billing_element_price_total_net": {
-                "name": "billing_element_price_total_net",
+            "billing_out_element_price_total_net": {
+                "name": "billing_out_element_price_total_net",
                 "type": "INT",
-                "null": false
+                "null": true,
+                "default": null
             },
-            "billing_element_tax_price": {
-                "name": "billing_element_tax_price",
+            "billing_out_element_tax_price": {
+                "name": "billing_out_element_tax_price",
                 "type": "INT",
-                "null": false
+                "null": true,
+                "default": null
             },
-            "billing_element_tax_type": {
-                "name": "billing_element_tax_type",
+            "billing_out_element_tax_type": {
+                "name": "billing_out_element_tax_type",
                 "type": "INT",
-                "null": false
+                "null": true,
+                "default": null
             },
-            "billing_element_tax_percentage": {
-                "name": "billing_element_tax_percentage",
+            "billing_out_element_tax_percentage": {
+                "name": "billing_out_element_tax_percentage",
                 "type": "INT",
-                "null": false
+                "null": true,
+                "default": null
             },
-            "billing_element_price_single_gross": {
-                "name": "billing_element_price_single_gross",
+            "billing_out_element_price_single_gross": {
+                "name": "billing_out_element_price_single_gross",
                 "type": "INT",
-                "null": false
+                "null": true,
+                "default": null
             },
-            "billing_element_price_total_gross": {
-                "name": "billing_element_price_total_gross",
+            "billing_out_element_price_total_gross": {
+                "name": "billing_out_element_price_total_gross",
                 "type": "INT",
-                "null": false
+                "null": true,
+                "default": null
             },
-            "billing_element_invoice": {
-                "name": "billing_element_invoice",
+            "billing_out_element_bill": {
+                "name": "billing_out_element_bill",
                 "type": "INT",
                 "null": false,
-                "foreignTable": "billing_invoice",
-                "foreignKey": "billing_invoice_id"
+                "foreignTable": "billing_out",
+                "foreignKey": "billing_out_id"
             },
-            "billing_element_promotion": {
-                "name": "billing_element_promotion",
+            "billing_out_element_promotion": {
+                "name": "billing_out_element_promotion",
                 "type": "INT",
                 "default": null,
                 "null": true
             },
-            "billing_element_event": {
-                "name": "billing_element_event",
+            "billing_out_element_event": {
+                "name": "billing_out_element_event",
                 "type": "INT",
                 "default": null,
                 "null": true

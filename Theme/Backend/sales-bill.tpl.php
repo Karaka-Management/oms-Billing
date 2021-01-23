@@ -16,6 +16,9 @@ declare(strict_types=1);
  * @var \phpOMS\Views\View $this
  */
 
+$bill = $this->getData('bill');
+$elements = $bill->getElements();
+
 echo $this->getData('nav')->render(); ?>
 
 <div class="tabview tab-2">
@@ -34,10 +37,10 @@ echo $this->getData('nav')->render(); ?>
         <div class="tab">
             <div class="row">
                 <div class="col-xs-12 col-md-6 col-lg-4">
-                    <section class="box wf-100">
-                        <header><h1><?= $this->getHtml('Invoice'); ?></h1></header>
-                        <div class="inner">
-                            <form>
+                    <section class="portlet">
+                        <form>
+                            <div class="portlet-head"><?= $this->getHtml('Invoice'); ?></div>
+                            <div class="portlet-body">
                                 <table class="layout wf-100">
                                     <tr><td><label for="iSource"><?= $this->getHtml('Source'); ?></label>
                                     <tr><td><span class="input"><button type="button" formaction=""><i class="fa fa-book"></i></button><input type="text" id="iSource" name="source"></span>
@@ -65,10 +68,10 @@ echo $this->getData('nav')->render(); ?>
                                     <tr><td><select id="iTermsOfDelivery" name="termsofdelivery">
                                                 <option>
                                             </select>
-                                    <tr><td><input type="submit" value="<?= $this->getHtml('Create', '0', '0'); ?>">
                                 </table>
-                            </form>
-                        </div>
+                            </div>
+                            <div class="portlet-foot"><input type="submit" value="<?= $this->getHtml('Create', '0', '0'); ?>"></div>
+                        </form>
                     </section>
                 </div>
 
@@ -129,9 +132,9 @@ echo $this->getData('nav')->render(); ?>
         <div class="tab">
             <div class="row">
                 <div class="col-xs-12">
-                    <div class="box wf-100">
+                    <div class="portlet">
+                        <div class="portlet-head"><?= $this->getHtml('Invoice'); ?><i class="fa fa-download floatRight download btn"></i></div>
                         <table class="default">
-                            <caption><?= $this->getHtml('Invoice'); ?><i class="fa fa-download floatRight download btn"></i></caption>
                             <thead>
                             <tr>
                                 <td>
@@ -144,14 +147,20 @@ echo $this->getData('nav')->render(); ?>
                                 <td><?= $this->getHtml('Bonus'); ?>
                                 <td><?= $this->getHtml('Tax'); ?>
                                 <td><?= $this->getHtml('Net'); ?>
-                            <tfoot>
-                            <tr>
-                                <td colspan="8">
-                                    <?= $this->getHtml('Freightage'); ?>: 0.00 -
-                                    <?= $this->getHtml('Net'); ?>: 0.00 -
-                                    <?= $this->getHtml('Tax'); ?>: 0.00 -
-                                    <?= $this->getHtml('Total'); ?>: 0.00
                             <tbody>
+                            <?php foreach ($elements as $element) : ?>
+                            <tr>
+                                <td><i class="fa fa-plus"></i> <i class="fa fa-chevron-up"></i> <i class="fa fa-chevron-down"></i>
+                                <td><span class="input"><button type="button" formaction=""><i class="fa fa-book"></i></button><input type="text" value="<?= $element->itemNumber; ?>" required></span>
+                                <td><span class="input"><button type="button" formaction=""><i class="fa fa-book"></i></button><input type="text" required></span>
+                                <td><textarea required><?= $element->itemName; ?></textarea>
+                                <td><input type="number" min="0" value="0" required>
+                                <td><input type="number" min="0">
+                                <td><input type="number" min="0" max="100" step="any">
+                                <td><input type="number" min="0" step="any">
+                                <td><input type="number" min="0" step="any">
+                                <td>
+                            <?php endforeach; ?>
                             <tr>
                                 <td><i class="fa fa-plus"></i> <i class="fa fa-chevron-up"></i> <i class="fa fa-chevron-down"></i>
                                 <td><span class="input"><button type="button" formaction=""><i class="fa fa-book"></i></button><input type="text" required></span>
@@ -164,6 +173,12 @@ echo $this->getData('nav')->render(); ?>
                                 <td><input type="number" min="0" step="any">
                                 <td>
                         </table>
+                        <div class="portlet-foot">
+                            <?= $this->getHtml('Freightage'); ?>: 0.00 -
+                            <?= $this->getHtml('Net'); ?>: 0.00 -
+                            <?= $this->getHtml('Tax'); ?>: 0.00 -
+                            <?= $this->getHtml('Total'); ?>: 0.00
+                        </div>
                     </div>
                 </div>
             </div>
@@ -258,8 +273,8 @@ echo $this->getData('nav')->render(); ?>
                             <tbody>
                             <tr>
                                 <td><?= $this->printHtml($this->request->getOrigin()); ?>
-                                <td><?= $this->printHtml($this->request->getHeader()->getAccount()); ?>
-                                <td><?= $this->printHtml($this->request->getHeader()->getAccount()); ?>
+                                <td><?= $this->printHtml((string) $this->request->header->account); ?>
+                                <td><?= $this->printHtml((string) $this->request->header->account); ?>
                                 <td>Create Invoice
                                 <td><?= $this->printHtml((new \DateTime('now'))->format('Y-m-d H:i:s')); ?>
                         </table>

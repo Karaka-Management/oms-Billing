@@ -28,6 +28,17 @@ return [
             ],
         ],
     ],
+    '^.*/sales/invoice\?.*$' => [
+        [
+            'dest' => '\Modules\Billing\Controller\BackendController:viewBillingInvoice',
+            'verb' => RouteVerb::GET,
+            'permission' => [
+                'module' => BackendController::MODULE_NAME,
+                'type'  => PermissionType::READ,
+                'state' => PermissionState::SALES_INVOICE,
+            ],
+        ],
+    ],
     '^.*/purchase/invoice/create.*$' => [
         [
             'dest' => '\Modules\Billing\Controller\BackendController:viewBillingPurchaseInvoiceCreate',

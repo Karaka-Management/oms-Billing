@@ -24,7 +24,7 @@ use phpOMS\Stdlib\Base\Enum;
  * @link    https://orange-management.org
  * @since   1.0.0
  */
-abstract class InvoiceStatus extends Enum
+abstract class BillStatus extends Enum
 {
     public const ACTIVE   = 1;
     public const ARCHIVED = 2;

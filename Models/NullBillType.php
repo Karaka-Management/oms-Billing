@@ -2,7 +2,7 @@
 /**
  * Orange Management
  *
- * PHP Version 7.4
+ * PHP Version 8.0
  *
  * @package   Modules\Billing\Models
  * @copyright Dennis Eichhorn
@@ -14,22 +14,26 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Models;
 
-use phpOMS\Stdlib\Base\Enum;
-
 /**
- * Task type enum.
+ * Null account class.
  *
  * @package Modules\Billing\Models
  * @license OMS License 1.0
  * @link    https://orange-management.org
  * @since   1.0.0
  */
-abstract class InvoiceType extends Enum
+final class NullBillType extends BillType
 {
-    public const BILL               = 1;
-    public const DELIVERY_NOTE      = 2;
-    public const CREDIT_NOTE        = 3;
-    public const DEBIT_NOTE         = 4;
-    public const OFFER              = 5;
-    public const ORDER_CONFIRMATION = 6;
+	/**
+     * Constructor
+     *
+     * @param int $id Model id
+     *
+     * @since 1.0.0
+     */
+    public function __construct(int $id = 0)
+    {
+        $this->id = $id;
+        parent::__construct();
+    }
 }

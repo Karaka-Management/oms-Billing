@@ -17,14 +17,14 @@ namespace Modules\Billing\Models;
 use phpOMS\Localization\Money;
 
 /**
- * Invoice class.
+ * Bill class.
  *
  * @package Modules\Billing\Models
  * @license OMS License 1.0
  * @link    https://orange-management.org
  * @since   1.0.0
  */
-class InvoiceElement implements \JsonSerializable
+class BillElement implements \JsonSerializable
 {
     /**
      * ID.
@@ -34,15 +34,17 @@ class InvoiceElement implements \JsonSerializable
      */
     protected int $id = 0;
 
-    private $order = 0;
+    private int $order = 0;
 
-    private $item = 0;
+    public $item = null;
 
-    private $itemName = '';
+    public string $itemNumber = '';
 
-    private $itemDescription = '';
+    public string $itemName = '';
 
-    private $quantity = 0;
+    public string $itemDescription = '';
+
+    public int|float $quantity = 0;
 
     private $singlePrice = null;
 
@@ -72,7 +74,7 @@ class InvoiceElement implements \JsonSerializable
 
     private $promotion = 0;
 
-    private $invoice = 0;
+    public $bill = 0;
 
     /**
      * Get id.

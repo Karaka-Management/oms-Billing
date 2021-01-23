@@ -28,13 +28,13 @@ echo $this->getData('nav')->render(); ?>
                 <thead>
                 <tr>
                     <td><?= $this->getHtml('ID', '0', '0'); ?>
-                    <td><?= $this->getHtml('Type') ?>
-                    <td><?= $this->getHtml('SupplierID') ?>
-                    <td class="wf-100"><?= $this->getHtml('Supplier') ?>
-                    <td><?= $this->getHtml('Net') ?>
-                    <td><?= $this->getHtml('Gross') ?>
-                    <td><?= $this->getHtml('Created') ?>
-                    <td><?= $this->getHtml('Due') ?>
+                    <td><?= $this->getHtml('Type'); ?>
+                    <td><?= $this->getHtml('SupplierID'); ?>
+                    <td class="wf-100"><?= $this->getHtml('Supplier'); ?>
+                    <td><?= $this->getHtml('Net'); ?>
+                    <td><?= $this->getHtml('Gross'); ?>
+                    <td><?= $this->getHtml('Created'); ?>
+                    <td><?= $this->getHtml('Due'); ?>
                 <tfoot>
                 <tr>
                     <td colspan="8">
