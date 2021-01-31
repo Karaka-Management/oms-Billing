@@ -291,21 +291,27 @@
                 "type": "INT",
                 "null": false
             },
-            "billing_out_element_purchase_price": {
-                "name": "billing_out_element_purchase_price",
-                "type": "INT",
+            "billing_out_element_single_salesprice_net": {
+                "name": "billing_out_element_single_salesprice_net",
+                "type": "BIGINT",
                 "null": true,
                 "default": null
             },
-            "billing_out_element_price_single": {
-                "name": "billing_out_element_price_single",
-                "type": "INT",
+            "billing_out_element_single_purchaseprice_net": {
+                "name": "billing_out_element_single_purchaseprice_net",
+                "type": "BIGINT",
                 "null": true,
                 "default": null
             },
-            "billing_out_element_price_total": {
-                "name": "billing_out_element_price_total",
-                "type": "INT",
+            "billing_out_element_total_salesprice_net": {
+                "name": "billing_out_element_total_salesprice_net",
+                "type": "BIGINT",
+                "null": true,
+                "default": null
+            },
+            "billing_out_element_total_purchaseprice_net": {
+                "name": "billing_out_element_total_purchaseprice_net",
+                "type": "BIGINT",
                 "null": true,
                 "default": null
             },

@@ -30,6 +30,7 @@ use phpOMS\Message\ResponseAbstract;
 use phpOMS\Model\Message\FormValidation;
 use phpOMS\Utils\Parser\Markdown\Markdown;
 use Modules\ItemManagement\Models\ItemMapper;
+use phpOMS\Localization\Money;
 
 /**
  * Billing class.
@@ -138,6 +139,10 @@ final class ApiController extends Controller
 
         $element = $this->createBillElementFromRequest($request, $response, $data);
         $this->createModel($request->header->account, $element, BillElementMapper::class, 'bill_element', $request->getOrigin());
+
+        $bill = $this->updateBillWithBillElement($element, 1);
+        $this->updateModel($request->header->account, $element, BillMapper::class, 'bill_element', $request->getOrigin());
+
         $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Bill element', 'Bill element successfully created.', $element);
     }
 
@@ -163,10 +168,39 @@ final class ApiController extends Controller
             // @todo: which item name should be stored in the database? server language (problem for international company with subsidiaries)? customer default language/customer invoice language?
             $element->itemNumber = $item->number;
             $element->itemName = $item->getL11n('name1')->description;
-            $element->quantity = $request->getData('quantity', 'int');;
+            $element->quantity = $request->getData('quantity', 'int');
+
+            $element->singleSalesPriceNet = new Money($request->getData('singlesalespricenet', 'int') ?? $item->salesPrice->getInt());
+            $element->totalSalesPriceNet = clone $element->singleSalesPriceNet;
+            $element->totalSalesPriceNet->mult($element->quantity);
+
+            $element->singlePurchasePriceNet = new Money($item->purchasePrice->getInt());
+            $element->totalPurchasePriceNet = clone $element->singlePurchasePriceNet;
+            $element->totalPurchasePriceNet->mult($element->quantity);
         }
 
         return $element;
+    }
+
+    /**
+     * Method to create a wiki entry from request.
+     *
+     * @param BillElement $element Bill element
+     * @param int         $type    Change type (0 = update, -1 = remove, +1 = add)
+     *
+     * @return BillElement
+     *
+     * @since 1.0.0
+     */
+    public function updateBillWithBillElement(BillElement $element, int $type = 1) : Bill
+    {
+        $bill = BillMapper::get($element->bill);
+
+        if ($type === 1) {
+            $bill->net->add($element->singleSalesPriceNet);
+        }
+
+        return $bill;
     }
 
     /**

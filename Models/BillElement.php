@@ -44,11 +44,11 @@ class BillElement implements \JsonSerializable
 
     public string $itemDescription = '';
 
-    public int|float $quantity = 0;
+    public int $quantity = 0;
 
-    private $singlePrice = null;
+    public Money $singleSalesPriceNet;
 
-    private $totalPrice = null;
+    public Money $totalSalesPriceNet;
 
     private $singleDiscountP = null;
 
@@ -62,19 +62,32 @@ class BillElement implements \JsonSerializable
 
     private $totalPriceNet = null;
 
+    public Money $singlePurchasePriceNet;
+
+    public Money $totalPurchasePriceNet;
+
     private $taxP = null;
 
     private $taxR = 0.0;
 
-    private $singlePriceGross = null;
+    private $singleSalesPriceGross = null;
 
-    private $totalPriceGross = null;
+    private $totalSalesPriceGross = null;
 
     private $event = 0;
 
     private $promotion = 0;
 
     public $bill = 0;
+
+    public function __construct()
+    {
+        $this->singleSalesPriceNet = new Money();
+        $this->totalSalesPriceNet = new Money();
+
+        $this->singlePurchasePriceNet = new Money();
+        $this->totalPurchasePriceNet = new Money();
+    }
 
     /**
      * Get id.
@@ -230,32 +243,6 @@ class BillElement implements \JsonSerializable
     public function getItemDescripion() : string
     {
         return $this->itemDescription;
-    }
-
-    /**
-     * Set quantity.
-     *
-     * @param int|float $quantity Quantity
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function setQuantity($quantity) : void
-    {
-        $this->quantity = $quantity;
-    }
-
-    /**
-     * Get quantity.
-     *
-     * @return int|float
-     *
-     * @since 1.0.0
-     */
-    public function getQuantity()
-    {
-        return $this->quantity;
     }
 
     /**

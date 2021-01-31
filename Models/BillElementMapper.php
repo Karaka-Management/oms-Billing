@@ -41,6 +41,10 @@ final class BillElementMapper extends DataMapperAbstract
         'billing_out_element_item_name'            => ['name' => 'billing_out_element_item_name',      'type' => 'string',    'internal' => 'itemName'],
         'billing_out_element_item_desc'            => ['name' => 'billing_out_element_item_desc',      'type' => 'string',    'internal' => 'itemDescription'],
         'billing_out_element_quantity'            => ['name' => 'billing_out_element_quantity',      'type' => 'int',    'internal' => 'quantity'],
+        'billing_out_element_single_salesprice_net'            => ['name' => 'billing_out_element_single_salesprice_net',      'type' => 'Serializable',    'internal' => 'singleSalesPriceNet'],
+        'billing_out_element_single_purchaseprice_net'            => ['name' => 'billing_out_element_single_purchaseprice_net',      'type' => 'Serializable',    'internal' => 'singlePurchasePriceNet'],
+        'billing_out_element_total_salesprice_net'            => ['name' => 'billing_out_element_total_salesprice_net',      'type' => 'Serializable',    'internal' => 'totalSalesPriceNet'],
+        'billing_out_element_total_purchaseprice_net'            => ['name' => 'billing_out_element_total_purchaseprice_net',      'type' => 'Serializable',    'internal' => 'totalPurchasePriceNet'],
         'billing_out_element_bill'            => ['name' => 'billing_out_element_bill',      'type' => 'int',    'internal' => 'bill'],
     ];
 

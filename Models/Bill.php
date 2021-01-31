@@ -193,13 +193,13 @@ class Bill implements \JsonSerializable
 
     private $referralName = '';
 
-    public ?Money $net = null;
+    public Money $net;
 
-    public ?Money $gross = null;
+    public Money $gross;
 
-    public ?Money $costs = null;
+    public Money $costs;
 
-    public ?Money $profit = null;
+    public Money $profit;
 
     private $currency = ISO4217CharEnum::_EUR;
 

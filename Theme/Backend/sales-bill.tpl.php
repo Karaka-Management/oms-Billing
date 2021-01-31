@@ -134,14 +134,14 @@ echo $this->getData('nav')->render(); ?>
                 <div class="col-xs-12">
                     <div class="portlet">
                         <div class="portlet-head"><?= $this->getHtml('Invoice'); ?><i class="fa fa-download floatRight download btn"></i></div>
-                        <table class="default">
+                        <table class="default" id="invoice-item-list">
                             <thead>
                             <tr>
                                 <td>
                                 <td><?= $this->getHtml('Item'); ?>
-                                <td><?= $this->getHtml('Variation'); ?>
                                 <td class="wf-100"><?= $this->getHtml('Name'); ?>
                                 <td><?= $this->getHtml('Quantity'); ?>
+                                <td><?= $this->getHtml('Price'); ?>
                                 <td><?= $this->getHtml('Discount'); ?>
                                 <td><?= $this->getHtml('DiscountP'); ?>
                                 <td><?= $this->getHtml('Bonus'); ?>
@@ -150,23 +150,23 @@ echo $this->getData('nav')->render(); ?>
                             <tbody>
                             <?php foreach ($elements as $element) : ?>
                             <tr>
-                                <td><i class="fa fa-plus"></i> <i class="fa fa-chevron-up"></i> <i class="fa fa-chevron-down"></i>
+                                <td><i class="fa fa-plus add"></i> <i class="fa fa-chevron-up order-up"></i> <i class="fa fa-chevron-down order-down"></i>
                                 <td><span class="input"><button type="button" formaction=""><i class="fa fa-book"></i></button><input type="text" value="<?= $element->itemNumber; ?>" required></span>
-                                <td><span class="input"><button type="button" formaction=""><i class="fa fa-book"></i></button><input type="text" required></span>
                                 <td><textarea required><?= $element->itemName; ?></textarea>
-                                <td><input type="number" min="0" value="0" required>
+                                <td><input type="number" min="0" value="<?= $element->quantity ?>" required>
+                                <td><input type="text" value="<?= $element->singleSalesPriceNet->getCurrency(); ?>">
                                 <td><input type="number" min="0">
                                 <td><input type="number" min="0" max="100" step="any">
                                 <td><input type="number" min="0" step="any">
                                 <td><input type="number" min="0" step="any">
-                                <td>
+                                <td><?= $element->totalSalesPriceNet->getCurrency(); ?>
                             <?php endforeach; ?>
                             <tr>
-                                <td><i class="fa fa-plus"></i> <i class="fa fa-chevron-up"></i> <i class="fa fa-chevron-down"></i>
-                                <td><span class="input"><button type="button" formaction=""><i class="fa fa-book"></i></button><input type="text" required></span>
+                                <td><i class="fa fa-plus"></i> <i class="fa fa-chevron-up order-up"></i> <i class="fa fa-chevron-down order-down"></i>
                                 <td><span class="input"><button type="button" formaction=""><i class="fa fa-book"></i></button><input type="text" required></span>
                                 <td><textarea required></textarea>
                                 <td><input type="number" min="0" value="0" required>
+                                <td><input type="text">
                                 <td><input type="number" min="0">
                                 <td><input type="number" min="0" max="100" step="any">
                                 <td><input type="number" min="0" step="any">
