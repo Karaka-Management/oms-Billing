@@ -67,7 +67,7 @@ final class BillElementMapper extends DataMapperAbstract
      * @var string
      * @since 1.0.0
      */
-    protected static string $primaryField = 'billing_out_element_id';
+    public static string $primaryField = 'billing_out_element_id';
 
     /**
      * Primary table.
@@ -75,5 +75,5 @@ final class BillElementMapper extends DataMapperAbstract
      * @var string
      * @since 1.0.0
      */
-    protected static string $table = 'billing_out_element';
+    public static string $table = 'billing_out_element';
 }

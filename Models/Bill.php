@@ -43,7 +43,7 @@ class Bill implements \JsonSerializable
      * @var string
      * @since 1.0.0
      */
-    private string $number = '';
+    public string $number = '';
 
     /**
      * Bill type.
@@ -70,6 +70,14 @@ class Bill implements \JsonSerializable
     public \DateTimeImmutable $createdAt;
 
     /**
+     * Bill created at.
+     *
+     * @var \DateTime
+     * @since 1.0.0
+     */
+    public \DateTime $performanceDate;
+
+    /**
      * Bill send at.
      *
      * @var null|\DateTime
@@ -93,7 +101,7 @@ class Bill implements \JsonSerializable
      * @var string
      * @since 1.0.0
      */
-    private $shipTo = '';
+    public string $shipTo = '';
 
     /**
      * For the attention of.
@@ -141,7 +149,7 @@ class Bill implements \JsonSerializable
      * @var string
      * @since 1.0.0
      */
-    private $billTo = '';
+    public string $billTo = '';
 
     /**
      * Billing for the attention of.
@@ -181,7 +189,7 @@ class Bill implements \JsonSerializable
      * @var string
      * @since 1.0.0
      */
-    private $billCountry = '';
+    public string $billCountry = '';
 
     /**
      * Person refering for this order.
@@ -244,6 +252,7 @@ class Bill implements \JsonSerializable
         $this->profit     = new Money(0);
 
         $this->createdAt = new \DateTimeImmutable();
+        $this->performanceDate = new \DateTime();
         $this->createdBy = new NullAccount();
         $this->referer = new NullAccount();
     }
@@ -295,7 +304,25 @@ class Bill implements \JsonSerializable
      */
     public function getNumber() : string
     {
-        return $this->number;
+        $number = $this->number;
+
+        return \str_replace(
+            [
+                '{y}',
+                '{m}',
+                '{d}',
+                '{id}',
+                '{type}',
+            ],
+            [
+                $this->createdAt->format('Y'),
+                $this->createdAt->format('m'),
+                $this->createdAt->format('d'),
+                $this->id,
+                $this->type->getId(),
+            ],
+            $number
+        );
     }
 
     /**

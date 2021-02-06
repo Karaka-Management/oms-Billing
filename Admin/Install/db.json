@@ -158,6 +158,11 @@
                 "type": "DATETIME",
                 "null": false
             },
+            "billing_out_performance_date": {
+                "name": "billing_out_performance_date",
+                "type": "DATETIME",
+                "null": false
+            },
             "billing_out_created_by": {
                 "name": "billing_out_created_by",
                 "type": "INT",

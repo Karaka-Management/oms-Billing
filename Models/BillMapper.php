@@ -17,6 +17,10 @@ namespace Modules\Billing\Models;
 use Modules\Admin\Models\AccountMapper;
 use Modules\ClientManagement\Models\ClientMapper;
 use phpOMS\DataStorage\Database\DataMapperAbstract;
+use phpOMS\DataStorage\Database\Query\Builder;
+use phpOMS\Localization\Money;
+use phpOMS\DataStorage\Database\RelationType;
+use phpOMS\Localization\Defaults\CountryMapper;
 
 /**
  * Mapper class.
@@ -68,6 +72,7 @@ final class BillMapper extends DataMapperAbstract
         'billing_out_ship_text'     => ['name' => 'billing_out_ship_text',      'type' => 'string',    'internal' => 'shippingText'],
         'billing_out_client'    => ['name' => 'billing_out_client', 'type' => 'int',      'internal' => 'client'],
         'billing_out_created_by'    => ['name' => 'billing_out_created_by', 'type' => 'int',      'internal' => 'createdBy', 'readonly' => true],
+        'billing_out_performance_date'    => ['name' => 'billing_out_performance_date', 'type' => 'DateTime', 'internal' => 'performanceDate', 'readonly' => true],
         'billing_out_created_at'    => ['name' => 'billing_out_created_at', 'type' => 'DateTimeImmutable', 'internal' => 'createdAt', 'readonly' => true],
     ];
 
@@ -135,4 +140,170 @@ final class BillMapper extends DataMapperAbstract
      * @since 1.0.0
      */
     protected static string $table = 'billing_out';
+
+    public static function getSalesByItemId(int $id, \DateTime $start, \DateTime $end) : Money
+    {
+        $query  = new Builder(self::$db);
+        $result = $query->select('SUM(billing_out_element_total_salesprice_net)')
+            ->from(self::$table)
+            ->leftJoin(BillElementMapper::getTable())
+            ->on(self::$table . '.billing_out_id', '=', BillElementMapper::getTable() . '.billing_out_element_bill')
+            ->where(BillElementMapper::getTable() . '.billing_out_element_item', '=', $id)
+            ->andWhere(self::$table . '.billing_out_performance_date', '>=', $start)
+            ->andWhere(self::$table . '.billing_out_performance_date', '<=', $end)
+            ->execute()
+            ->fetch();
+
+        return new Money((int) $result[0]);
+    }
+
+    public static function getAvgSalesPriceByItemId(int $id, \DateTime $start, \DateTime $end) : Money
+    {
+        $query  = new Builder(self::$db);
+        $result = $query->select('SUM(billing_out_element_single_salesprice_net)', 'COUNT(billing_out_element_total_salesprice_net)')
+            ->from(self::$table)
+            ->leftJoin(BillElementMapper::getTable())
+            ->on(self::$table . '.billing_out_id', '=', BillElementMapper::getTable() . '.billing_out_element_bill')
+            ->where(BillElementMapper::getTable() . '.billing_out_element_item', '=', $id)
+            ->andWhere(self::$table . '.billing_out_performance_date', '>=', $start)
+            ->andWhere(self::$table . '.billing_out_performance_date', '<=', $end)
+            ->execute()
+            ->fetch();
+
+        return new Money((int) (((int) $result[0]) / ((int) $result[1])));
+    }
+
+    public static function getLastOrderDateByItemId(int $id) : \DateTimeImmutable
+    {
+        // @todo: only delivers/invoice/production (no offers ...)
+        $query  = new Builder(self::$db);
+        $result = $query->select('billing_out_performance_date')
+            ->from(self::$table)
+            ->leftJoin(BillElementMapper::getTable())
+            ->on(self::$table . '.billing_out_id', '=', BillElementMapper::getTable() . '.billing_out_element_bill')
+            ->where(BillElementMapper::getTable() . '.billing_out_element_item', '=', $id)
+            ->orderBy('billing_out_id', 'DESC')
+            ->limit(1)
+            ->execute()
+            ->fetch();
+
+        return new \DateTimeImmutable($result[0]);
+    }
+
+    public static function getItemRetentionRate(int $id, \DateTime $start, \DateTime $end) : float
+    {
+
+    }
+
+    public static function getItemLivetimeValue(int $id, \DateTime $start, \DateTime $end) : Money
+    {
+
+    }
+
+    public static function getNewestItemInvoices(int $id, int $limit = 10) : array
+    {
+        $depth = 3;
+
+        // @todo: limit is not working correctly... only returns / 2 or something like that?. Maybe because bills arent unique?
+
+        $query ??= self::getQuery(null, [], RelationType::ALL, $depth);
+        $query->leftJoin(BillElementMapper::getTable(), BillElementMapper::getTable() . '_' . $depth)
+            ->on(self::$table . '_' . $depth . '.billing_out_id', '=', BillElementMapper::getTable() . '_' . $depth . '.billing_out_element_bill')
+            ->where(BillElementMapper::getTable() . '_' . $depth . '.billing_out_element_item', '=', $id)
+            ->limit($limit);
+
+        if (!empty(self::$createdAt)) {
+            $query->orderBy(self::$table  . '_' . $depth . '.' . self::$columns[self::$createdAt]['name'], 'DESC');
+        } else {
+            $query->orderBy(self::$table  . '_' . $depth . '.' . self::$columns[self::$primaryField]['name'], 'DESC');
+        }
+
+        return self::getAllByQuery($query, RelationType::ALL, $depth);
+    }
+
+    public static function getItemTopCustomers(int $id, \DateTime $start, \DateTime $end, int $limit = 10) : array
+    {
+        $depth = 3;
+
+        $query ??= ClientMapper::getQuery(null, [], RelationType::ALL, $depth);
+        $query->selectAs('SUM(billing_out_element_total_salesprice_net)', 'net_sales')
+            ->leftJoin(self::$table, self::$table . '_' . $depth)
+                ->on(ClientMapper::getTable() . '_' . $depth . '.clientmgmt_client_id', '=', self::$table . '_' . $depth . '.billing_out_client')
+            ->leftJoin(BillElementMapper::getTable(), BillElementMapper::getTable() . '_' . $depth)
+                ->on(self::$table . '_' . $depth . '.billing_out_id', '=', BillElementMapper::getTable() . '_' . $depth . '.billing_out_element_bill')
+            ->where(BillElementMapper::getTable() . '_' . $depth . '.billing_out_element_item', '=', $id)
+            ->andWhere(self::$table . '_' . $depth . '.billing_out_performance_date', '>=', $start)
+            ->andWhere(self::$table . '_' . $depth . '.billing_out_performance_date', '<=', $end)
+            ->orderBy('net_sales', 'DESC')
+            ->limit($limit)
+            ->groupBy(ClientMapper::getTable() . '_' . $depth . '.clientmgmt_client_id');
+
+        $clients = ClientMapper::getAllByQuery($query, RelationType::ALL, $depth);
+        $data = ClientMapper::getDataLastQuery();
+
+        return [$clients, $data];
+    }
+
+    public static function getItemRegionSales(int $id, \DateTime $start, \DateTime $end) : array
+    {
+        $query  = new Builder(self::$db);
+        $result = $query->select(CountryMapper::getTable() . '.country_region')
+            ->selectAs('SUM(billing_out_element_total_salesprice_net)', 'net_sales')
+            ->from(self::$table)
+            ->leftJoin(BillElementMapper::getTable())
+                ->on(self::$table . '.billing_out_id', '=', BillElementMapper::getTable() . '.billing_out_element_bill')
+            ->leftJoin(CountryMapper::getTable())
+                ->on(self::$table . '.billing_out_billCountry', '=', CountryMapper::getTable() . '.country_code2')
+            ->where(BillElementMapper::getTable() . '.billing_out_element_item', '=', $id)
+            ->andWhere(self::$table . '.billing_out_performance_date', '>=', $start)
+            ->andWhere(self::$table . '.billing_out_performance_date', '<=', $end)
+            ->groupBy(CountryMapper::getTable() . '.country_region')
+            ->execute()
+            ->fetchAll(\PDO::FETCH_KEY_PAIR);
+
+        return $result;
+    }
+
+    public static function getItemCountrySales(int $id, \DateTime $start, \DateTime $end, int $limit = 10) : array
+    {
+        $query  = new Builder(self::$db);
+        $result = $query->select(CountryMapper::getTable() . '.country_code2')
+            ->selectAs('SUM(billing_out_element_total_salesprice_net)', 'net_sales')
+            ->from(self::$table)
+            ->leftJoin(BillElementMapper::getTable())
+                ->on(self::$table . '.billing_out_id', '=', BillElementMapper::getTable() . '.billing_out_element_bill')
+            ->leftJoin(CountryMapper::getTable())
+                ->on(self::$table . '.billing_out_billCountry', '=', CountryMapper::getTable() . '.country_code2')
+            ->where(BillElementMapper::getTable() . '.billing_out_element_item', '=', $id)
+            ->andWhere(self::$table . '.billing_out_performance_date', '>=', $start)
+            ->andWhere(self::$table . '.billing_out_performance_date', '<=', $end)
+            ->groupBy(CountryMapper::getTable() . '.country_code2')
+            ->orderBy('net_sales', 'DESC')
+            ->limit($limit)
+            ->execute()
+            ->fetchAll(\PDO::FETCH_KEY_PAIR);
+
+        return $result;
+    }
+
+    public static function getItemMonthlySalesCosts(int $id, \DateTime $start, \DateTime $end) : array
+    {
+        $query  = new Builder(self::$db);
+        $result = $query->selectAs('SUM(billing_out_element_total_salesprice_net)', 'net_sales')
+            ->selectAs('SUM(billing_out_element_total_purchaseprice_net)', 'net_costs')
+            ->selectAs('YEAR(billing_out_performance_date)', 'year')
+            ->selectAs('MONTH(billing_out_performance_date)', 'month')
+            ->from(self::$table)
+            ->leftJoin(BillElementMapper::getTable())
+                ->on(self::$table . '.billing_out_id', '=', BillElementMapper::getTable() . '.billing_out_element_bill')
+            ->where(BillElementMapper::getTable() . '.billing_out_element_item', '=', $id)
+            ->andWhere(self::$table . '.billing_out_performance_date', '>=', $start)
+            ->andWhere(self::$table . '.billing_out_performance_date', '<=', $end)
+            ->groupBy('year', 'month')
+            ->orderBy(['year', 'month'], ['ASC', 'ASC'])
+            ->execute()
+            ->fetchAll();
+
+        return $result;
+    }
 }

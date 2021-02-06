@@ -43,7 +43,7 @@ echo $this->getData('nav')->render(); ?>
                     $url = UriFactory::build('{/prefix}sales/invoice?{?}&id=' . $value->getId());
                 ?>
                     <tr data-href="<?= $url; ?>">
-                        <td><a href="<?= $url; ?>"><?= $value->getId(); ?></a>
+                        <td><a href="<?= $url; ?>"><?= $value->getNumber(); ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->type->getL11n(); ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->client->number; ?></a>
                         <td><a href="<?= $url; ?>"><?= $this->printHtml($value->client->profile->account->name3 . ' ' . $value->client->profile->account->name2 . ' ' . $value->client->profile->account->name1); ?></a>

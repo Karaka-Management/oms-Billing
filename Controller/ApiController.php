@@ -31,6 +31,7 @@ use phpOMS\Model\Message\FormValidation;
 use phpOMS\Utils\Parser\Markdown\Markdown;
 use Modules\ItemManagement\Models\ItemMapper;
 use phpOMS\Localization\Money;
+use Modules\ClientManagement\Models\ClientMapper;
 
 /**
  * Billing class.
@@ -82,10 +83,16 @@ final class ApiController extends Controller
      */
     public function createBillFromRequest(RequestAbstract $request, ResponseAbstract $response, $data = null) : Bill
     {
+        $client = ClientMapper::get((int) $request->getData('client'));
+
         $bill = new Bill();
         $bill->setCreatedBy(new NullAccount($request->header->account));
+        $bill->number = '{y}-{id}'; // @todo: use admin defined format
+        $bill->billTo = $request->getData('billto') ?? $client->profile->account->name1; // @todo: use defaultInvoiceAddress or mainAddress
+        $bill->billCountry = $request->getData('billtocountry') ?? $client->mainAddress->getCountry();
         $bill->type = new NullBillType((int) $request->getData('type'));
         $bill->client = new NullClient((int) $request->getData('client'));
+        $bill->performanceDate = new \DateTime($request->getData('performancedate') ?? 'now');
 
         return $bill;
     }
@@ -140,8 +147,9 @@ final class ApiController extends Controller
         $element = $this->createBillElementFromRequest($request, $response, $data);
         $this->createModel($request->header->account, $element, BillElementMapper::class, 'bill_element', $request->getOrigin());
 
-        $bill = $this->updateBillWithBillElement($element, 1);
-        $this->updateModel($request->header->account, $element, BillMapper::class, 'bill_element', $request->getOrigin());
+        $old = BillMapper::get($element->bill);
+        $new = $this->updateBillWithBillElement(clone $old, $element, 1);
+        $this->updateModel($request->header->account, $old, $new, BillMapper::class, 'bill_element', $request->getOrigin());
 
         $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Bill element', 'Bill element successfully created.', $element);
     }
@@ -185,6 +193,7 @@ final class ApiController extends Controller
     /**
      * Method to create a wiki entry from request.
      *
+     * @param Bill        $bill    Bill
      * @param BillElement $element Bill element
      * @param int         $type    Change type (0 = update, -1 = remove, +1 = add)
      *
@@ -192,10 +201,8 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function updateBillWithBillElement(BillElement $element, int $type = 1) : Bill
+    public function updateBillWithBillElement(Bill $bill, BillElement $element, int $type = 1) : Bill
     {
-        $bill = BillMapper::get($element->bill);
-
         if ($type === 1) {
             $bill->net->add($element->singleSalesPriceNet);
         }
