@@ -88,7 +88,8 @@ final class ApiController extends Controller
         $bill = new Bill();
         $bill->setCreatedBy(new NullAccount($request->header->account));
         $bill->number = '{y}-{id}'; // @todo: use admin defined format
-        $bill->billTo = $request->getData('billto') ?? $client->profile->account->name1; // @todo: use defaultInvoiceAddress or mainAddress
+        $bill->billTo = $request->getData('billto')
+            ?? ($client->profile->account->name1 . (!empty($client->profile->account->name2) ? ', ' . $client->profile->account->name2 : '')); // @todo: use defaultInvoiceAddress or mainAddress. also consider to use billto1, billto2, billto3 (for multiple lines e.g. name2, fao etc.)
         $bill->billCountry = $request->getData('billtocountry') ?? $client->mainAddress->getCountry();
         $bill->type = new NullBillType((int) $request->getData('type'));
         $bill->client = new NullClient((int) $request->getData('client'));
@@ -171,21 +172,29 @@ final class ApiController extends Controller
         $element->bill = (int) $request->getData('bill');
         $element->item = $request->getData('item', 'int');
 
-        if ($element->item !== null) {
-            $item = ItemMapper::withConditional('language', $response->getLanguage())::get($element->item);
-            // @todo: which item name should be stored in the database? server language (problem for international company with subsidiaries)? customer default language/customer invoice language?
-            $element->itemNumber = $item->number;
-            $element->itemName = $item->getL11n('name1')->description;
-            $element->quantity = $request->getData('quantity', 'int');
-
-            $element->singleSalesPriceNet = new Money($request->getData('singlesalespricenet', 'int') ?? $item->salesPrice->getInt());
-            $element->totalSalesPriceNet = clone $element->singleSalesPriceNet;
-            $element->totalSalesPriceNet->mult($element->quantity);
-
-            $element->singlePurchasePriceNet = new Money($item->purchasePrice->getInt());
-            $element->totalPurchasePriceNet = clone $element->singlePurchasePriceNet;
-            $element->totalPurchasePriceNet->mult($element->quantity);
+        if ($element->item === null) {
+            return $element;
         }
+
+        $item = ItemMapper::withConditional('language', $response->getLanguage())::get($element->item);
+        // @todo: which item name should be stored in the database? server language (problem for international company with subsidiaries)? customer default language/customer invoice language?
+        $element->itemNumber = $item->number;
+        $element->itemName = $item->getL11n('name1')->description;
+        $element->quantity = $request->getData('quantity', 'int');
+
+        $element->singleSalesPriceNet = new Money($request->getData('singlesalespricenet', 'int') ?? $item->salesPrice->getInt());
+        $element->totalSalesPriceNet = clone $element->singleSalesPriceNet;
+        $element->totalSalesPriceNet->mult($element->quantity);
+
+        // discounts
+        if ($request->getData('discount_percentage') !== null) {
+            $element->singleSalesPriceNet->sub((int) ($element->singleSalesPriceNet->getInt() / 100 * $request->getData('discount_percentage', 'int')));
+            $element->totalSalesPriceNet->sub((int) ($element->totalSalesPriceNet->getInt() / 100 * $request->getData('discount_percentage', 'int')));
+        }
+
+        $element->singlePurchasePriceNet = new Money($item->purchasePrice->getInt());
+        $element->totalPurchasePriceNet = clone $element->singlePurchasePriceNet;
+        $element->totalPurchasePriceNet->mult($element->quantity);
 
         return $element;
     }
@@ -205,6 +214,7 @@ final class ApiController extends Controller
     {
         if ($type === 1) {
             $bill->net->add($element->singleSalesPriceNet);
+            $bill->costs->add($element->singlePurchasePriceNet);
         }
 
         return $bill;

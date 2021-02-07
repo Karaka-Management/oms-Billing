@@ -147,8 +147,22 @@ final class BillMapper extends DataMapperAbstract
         $result = $query->select('SUM(billing_out_element_total_salesprice_net)')
             ->from(self::$table)
             ->leftJoin(BillElementMapper::getTable())
-            ->on(self::$table . '.billing_out_id', '=', BillElementMapper::getTable() . '.billing_out_element_bill')
+                ->on(self::$table . '.billing_out_id', '=', BillElementMapper::getTable() . '.billing_out_element_bill')
             ->where(BillElementMapper::getTable() . '.billing_out_element_item', '=', $id)
+            ->andWhere(self::$table . '.billing_out_performance_date', '>=', $start)
+            ->andWhere(self::$table . '.billing_out_performance_date', '<=', $end)
+            ->execute()
+            ->fetch();
+
+        return new Money((int) $result[0]);
+    }
+
+    public static function getSalesByClientId(int $id, \DateTime $start, \DateTime $end) : Money
+    {
+        $query  = new Builder(self::$db);
+        $result = $query->select('SUM(billing_out_net)')
+            ->from(self::$table)
+            ->where(self::$table . '.billing_out_client', '=', $id)
             ->andWhere(self::$table . '.billing_out_performance_date', '>=', $start)
             ->andWhere(self::$table . '.billing_out_performance_date', '<=', $end)
             ->execute()
@@ -163,7 +177,7 @@ final class BillMapper extends DataMapperAbstract
         $result = $query->select('SUM(billing_out_element_single_salesprice_net)', 'COUNT(billing_out_element_total_salesprice_net)')
             ->from(self::$table)
             ->leftJoin(BillElementMapper::getTable())
-            ->on(self::$table . '.billing_out_id', '=', BillElementMapper::getTable() . '.billing_out_element_bill')
+                ->on(self::$table . '.billing_out_id', '=', BillElementMapper::getTable() . '.billing_out_element_bill')
             ->where(BillElementMapper::getTable() . '.billing_out_element_item', '=', $id)
             ->andWhere(self::$table . '.billing_out_performance_date', '>=', $start)
             ->andWhere(self::$table . '.billing_out_performance_date', '<=', $end)
@@ -180,8 +194,23 @@ final class BillMapper extends DataMapperAbstract
         $result = $query->select('billing_out_performance_date')
             ->from(self::$table)
             ->leftJoin(BillElementMapper::getTable())
-            ->on(self::$table . '.billing_out_id', '=', BillElementMapper::getTable() . '.billing_out_element_bill')
+                ->on(self::$table . '.billing_out_id', '=', BillElementMapper::getTable() . '.billing_out_element_bill')
             ->where(BillElementMapper::getTable() . '.billing_out_element_item', '=', $id)
+            ->orderBy('billing_out_id', 'DESC')
+            ->limit(1)
+            ->execute()
+            ->fetch();
+
+        return new \DateTimeImmutable($result[0]);
+    }
+
+    public static function getLastOrderDateByClientId(int $id) : \DateTimeImmutable
+    {
+        // @todo: only delivers/invoice/production (no offers ...)
+        $query  = new Builder(self::$db);
+        $result = $query->select('billing_out_performance_date')
+            ->from(self::$table)
+            ->where(self::$table . '.billing_out_client', '=', $id)
             ->orderBy('billing_out_id', 'DESC')
             ->limit(1)
             ->execute()
@@ -208,8 +237,27 @@ final class BillMapper extends DataMapperAbstract
 
         $query ??= self::getQuery(null, [], RelationType::ALL, $depth);
         $query->leftJoin(BillElementMapper::getTable(), BillElementMapper::getTable() . '_' . $depth)
-            ->on(self::$table . '_' . $depth . '.billing_out_id', '=', BillElementMapper::getTable() . '_' . $depth . '.billing_out_element_bill')
+                ->on(self::$table . '_' . $depth . '.billing_out_id', '=', BillElementMapper::getTable() . '_' . $depth . '.billing_out_element_bill')
             ->where(BillElementMapper::getTable() . '_' . $depth . '.billing_out_element_item', '=', $id)
+            ->limit($limit);
+
+        if (!empty(self::$createdAt)) {
+            $query->orderBy(self::$table  . '_' . $depth . '.' . self::$columns[self::$createdAt]['name'], 'DESC');
+        } else {
+            $query->orderBy(self::$table  . '_' . $depth . '.' . self::$columns[self::$primaryField]['name'], 'DESC');
+        }
+
+        return self::getAllByQuery($query, RelationType::ALL, $depth);
+    }
+
+    public static function getNewestClientInvoices(int $id, int $limit = 10) : array
+    {
+        $depth = 3;
+
+        // @todo: limit is not working correctly... only returns / 2 or something like that?. Maybe because bills arent unique?
+
+        $query ??= self::getQuery(null, [], RelationType::ALL, $depth);
+        $query->where(self::$table . '_' . $depth . '.billing_out_client', '=', $id)
             ->limit($limit);
 
         if (!empty(self::$createdAt)) {
@@ -297,6 +345,25 @@ final class BillMapper extends DataMapperAbstract
             ->leftJoin(BillElementMapper::getTable())
                 ->on(self::$table . '.billing_out_id', '=', BillElementMapper::getTable() . '.billing_out_element_bill')
             ->where(BillElementMapper::getTable() . '.billing_out_element_item', '=', $id)
+            ->andWhere(self::$table . '.billing_out_performance_date', '>=', $start)
+            ->andWhere(self::$table . '.billing_out_performance_date', '<=', $end)
+            ->groupBy('year', 'month')
+            ->orderBy(['year', 'month'], ['ASC', 'ASC'])
+            ->execute()
+            ->fetchAll();
+
+        return $result;
+    }
+
+    public static function getClientMonthlySalesCosts(int $id, \DateTime $start, \DateTime $end) : array
+    {
+        $query  = new Builder(self::$db);
+        $result = $query->selectAs('SUM(billing_out_net)', 'net_sales')
+            ->selectAs('SUM(billing_out_costs)', 'net_costs')
+            ->selectAs('YEAR(billing_out_performance_date)', 'year')
+            ->selectAs('MONTH(billing_out_performance_date)', 'month')
+            ->from(self::$table)
+            ->where(self::$table . '.billing_out_client', '=', $id)
             ->andWhere(self::$table . '.billing_out_performance_date', '>=', $start)
             ->andWhere(self::$table . '.billing_out_performance_date', '<=', $end)
             ->groupBy('year', 'month')
