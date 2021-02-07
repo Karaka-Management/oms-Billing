@@ -2,7 +2,7 @@
 /**
  * Orange Management
  *
- * PHP Version 7.4
+ * PHP Version 8.0
  *
  * @package   Modules\Billing
  * @copyright Dennis Eichhorn
@@ -26,7 +26,7 @@ echo $this->getData('nav')->render(); ?>
         <ul class="tab-links">
             <li><label for="c-tab-1"><?= $this->getHtml('Invoice'); ?></label></li>
             <li><label for="c-tab-2"><?= $this->getHtml('Items'); ?></label></li>
-            <li><label for="c-tab-3">Preview</label></li>
+            <li><label for="c-tab-3"><?= $this->getHtml('Preview'); ?></label></li>
             <li><label for="c-tab-4"><?= $this->getHtml('Payment'); ?></label></li>
             <li><label for="c-tab-5"><?= $this->getHtml('Media'); ?></label></li>
             <li><label for="c-tab-6"><?= $this->getHtml('Logs'); ?></label></li>

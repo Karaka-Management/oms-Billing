@@ -2,7 +2,7 @@
 /**
  * Orange Management
  *
- * PHP Version 7.4
+ * PHP Version 8.0
  *
  * @package   Modules\Billing
  * @copyright Dennis Eichhorn
@@ -25,7 +25,7 @@ echo $this->getData('nav')->render(); ?>
             <table id="billList" class="default">
                 <thead>
                 <tr>
-                    <td><?= $this->getHtml('Id', '', ''); ?>
+                    <td><?= $this->getHtml('ID', '0', '0'); ?>
                     <td><?= $this->getHtml('Type'); ?>
                     <td><?= $this->getHtml('ClientID'); ?>
                     <td class="wf-100"><?= $this->getHtml('Client'); ?>
