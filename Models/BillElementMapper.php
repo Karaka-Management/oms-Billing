@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Models;
 
-use Modules\ClientManagement\Models\ClientMapper;
 use phpOMS\DataStorage\Database\DataMapperAbstract;
 
 /**
@@ -34,18 +33,18 @@ final class BillElementMapper extends DataMapperAbstract
      * @since 1.0.0
      */
     protected static array $columns = [
-        'billing_out_element_id'            => ['name' => 'billing_out_element_id',      'type' => 'int',    'internal' => 'id'],
-        'billing_out_element_order'            => ['name' => 'billing_out_element_order',      'type' => 'int',    'internal' => 'order'],
-        'billing_out_element_item'            => ['name' => 'billing_out_element_item',      'type' => 'int',    'internal' => 'item'],
-        'billing_out_element_item_number'            => ['name' => 'billing_out_element_item_number',      'type' => 'string',    'internal' => 'itemNumber'],
-        'billing_out_element_item_name'            => ['name' => 'billing_out_element_item_name',      'type' => 'string',    'internal' => 'itemName'],
-        'billing_out_element_item_desc'            => ['name' => 'billing_out_element_item_desc',      'type' => 'string',    'internal' => 'itemDescription'],
-        'billing_out_element_quantity'            => ['name' => 'billing_out_element_quantity',      'type' => 'int',    'internal' => 'quantity'],
-        'billing_out_element_single_salesprice_net'            => ['name' => 'billing_out_element_single_salesprice_net',      'type' => 'Serializable',    'internal' => 'singleSalesPriceNet'],
+        'billing_out_element_id'                                  => ['name' => 'billing_out_element_id',      'type' => 'int',    'internal' => 'id'],
+        'billing_out_element_order'                               => ['name' => 'billing_out_element_order',      'type' => 'int',    'internal' => 'order'],
+        'billing_out_element_item'                                => ['name' => 'billing_out_element_item',      'type' => 'int',    'internal' => 'item'],
+        'billing_out_element_item_number'                         => ['name' => 'billing_out_element_item_number',      'type' => 'string',    'internal' => 'itemNumber'],
+        'billing_out_element_item_name'                           => ['name' => 'billing_out_element_item_name',      'type' => 'string',    'internal' => 'itemName'],
+        'billing_out_element_item_desc'                           => ['name' => 'billing_out_element_item_desc',      'type' => 'string',    'internal' => 'itemDescription'],
+        'billing_out_element_quantity'                            => ['name' => 'billing_out_element_quantity',      'type' => 'int',    'internal' => 'quantity'],
+        'billing_out_element_single_salesprice_net'               => ['name' => 'billing_out_element_single_salesprice_net',      'type' => 'Serializable',    'internal' => 'singleSalesPriceNet'],
         'billing_out_element_single_purchaseprice_net'            => ['name' => 'billing_out_element_single_purchaseprice_net',      'type' => 'Serializable',    'internal' => 'singlePurchasePriceNet'],
-        'billing_out_element_total_salesprice_net'            => ['name' => 'billing_out_element_total_salesprice_net',      'type' => 'Serializable',    'internal' => 'totalSalesPriceNet'],
-        'billing_out_element_total_purchaseprice_net'            => ['name' => 'billing_out_element_total_purchaseprice_net',      'type' => 'Serializable',    'internal' => 'totalPurchasePriceNet'],
-        'billing_out_element_bill'            => ['name' => 'billing_out_element_bill',      'type' => 'int',    'internal' => 'bill'],
+        'billing_out_element_total_salesprice_net'                => ['name' => 'billing_out_element_total_salesprice_net',      'type' => 'Serializable',    'internal' => 'totalSalesPriceNet'],
+        'billing_out_element_total_purchaseprice_net'             => ['name' => 'billing_out_element_total_purchaseprice_net',      'type' => 'Serializable',    'internal' => 'totalPurchasePriceNet'],
+        'billing_out_element_bill'                                => ['name' => 'billing_out_element_bill',      'type' => 'int',    'internal' => 'bill'],
     ];
 
     /**

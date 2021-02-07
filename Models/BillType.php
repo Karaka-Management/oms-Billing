@@ -26,7 +26,7 @@ use phpOMS\Localization\ISO639x1Enum;
  */
 class BillType
 {
-	/**
+    /**
      * Id
      *
      * @var int
@@ -34,7 +34,7 @@ class BillType
      */
     protected int $id = 0;
 
-	/**
+    /**
      * Localization
      *
      * @var int|int[]|BillTypeL11n|BillTypeL11n[]
@@ -69,7 +69,7 @@ class BillType
      * Set l11n
      *
      * @param string|BillTypeL11n $l11n Tag article l11n
-     * @param string                       $lang Language
+     * @param string              $lang Language
      *
      * @return void
      *
@@ -83,7 +83,7 @@ class BillType
             $this->l11n->name = $l11n;
         } elseif (\is_string($l11n)) {
             $this->l11n        = new BillTypeL11n();
-            $this->l11n->name = $l11n;
+            $this->l11n->name  = $l11n;
             $this->l11n->setLanguage($lang);
         }
     }

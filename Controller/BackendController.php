@@ -15,13 +15,11 @@ declare(strict_types=1);
 namespace Modules\Billing\Controller;
 
 use Modules\Billing\Models\BillMapper;
+use Modules\Billing\Models\BillTypeL11n;
 use phpOMS\Contract\RenderableInterface;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
 use phpOMS\Views\View;
-use Modules\Billing\Models\BillType;
-use Modules\Billing\Models\BillTypeL11n;
-use phpOMS\DataStorage\Database\RelationType;
 
 /**
  * Billing class.

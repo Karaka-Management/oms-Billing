@@ -83,10 +83,10 @@ class BillElement implements \JsonSerializable
     public function __construct()
     {
         $this->singleSalesPriceNet = new Money();
-        $this->totalSalesPriceNet = new Money();
+        $this->totalSalesPriceNet  = new Money();
 
         $this->singlePurchasePriceNet = new Money();
-        $this->totalPurchasePriceNet = new Money();
+        $this->totalPurchasePriceNet  = new Money();
     }
 
     /**

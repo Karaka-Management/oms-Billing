@@ -15,9 +15,9 @@ declare(strict_types=1);
 namespace Modules\Billing\Admin;
 
 use Modules\Billing\Models\BillType;
-use Modules\Billing\Models\BillTypeMapper;
 use Modules\Billing\Models\BillTypeL11n;
 use Modules\Billing\Models\BillTypeL11nMapper;
+use Modules\Billing\Models\BillTypeMapper;
 use phpOMS\Config\SettingsInterface;
 use phpOMS\DataStorage\Database\DatabasePool;
 use phpOMS\Localization\ISO639x1Enum;
@@ -34,7 +34,7 @@ use phpOMS\Module\ModuleInfo;
  */
 final class Installer extends InstallerAbstract
 {
-	/**
+    /**
      * {@inheritdoc}
      */
     public static function install(DatabasePool $dbPool, ModuleInfo $info, SettingsInterface $cfgHandler) : void

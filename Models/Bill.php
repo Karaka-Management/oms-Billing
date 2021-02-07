@@ -51,7 +51,9 @@ class Bill implements \JsonSerializable
      * @var int|BillType
      * @since 1.0.0
      */
-    public int|BillType $type = 0;
+    public int |
+
+BillType $type = 0;
 
     /**
      * Bill status.
@@ -246,15 +248,15 @@ class Bill implements \JsonSerializable
      */
     public function __construct()
     {
-        $this->net       = new Money(0);
-        $this->gross     = new Money(0);
-        $this->costs     = new Money(0);
+        $this->net        = new Money(0);
+        $this->gross      = new Money(0);
+        $this->costs      = new Money(0);
         $this->profit     = new Money(0);
 
-        $this->createdAt = new \DateTimeImmutable();
+        $this->createdAt       = new \DateTimeImmutable();
         $this->performanceDate = new \DateTime();
-        $this->createdBy = new NullAccount();
-        $this->referer = new NullAccount();
+        $this->createdBy       = new NullAccount();
+        $this->referer         = new NullAccount();
     }
 
     /**

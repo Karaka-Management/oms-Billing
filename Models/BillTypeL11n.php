@@ -41,7 +41,9 @@ class BillTypeL11n implements \JsonSerializable, ArrayableInterface
      * @var int
      * @since 1.0.0
      */
-    protected int|BillType $type = 0;
+    protected int |
+
+BillType $type = 0;
 
     /**
      * Language.
@@ -63,12 +65,12 @@ class BillTypeL11n implements \JsonSerializable, ArrayableInterface
      * Constructor.
      *
      * @param int|BillType $type     Attribute type
-     * @param string       $name    Localized name
+     * @param string       $name     Localized name
      * @param string       $language Language
      *
      * @since 1.0.0
      */
-    public function __construct(int|BillType $type = 0, string $name = '', string $language = ISO639x1Enum::_EN)
+    public function __construct(int | BillType $type = 0, string $name = '', string $language = ISO639x1Enum::_EN)
     {
         $this->type     = $type;
         $this->name     = $name;
@@ -146,7 +148,7 @@ class BillTypeL11n implements \JsonSerializable, ArrayableInterface
     {
         return [
             'id'       => $this->id,
-            'name'    => $this->name,
+            'name'     => $this->name,
             'type'     => $this->type,
             'language' => $this->language,
         ];

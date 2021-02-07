@@ -33,10 +33,10 @@ final class BillTypeL11nMapper extends DataMapperAbstract
      * @since 1.0.0
      */
     protected static array $columns = [
-        'billing_type_l11n_id'       => ['name' => 'billing_type_l11n_id',       'type' => 'int',    'internal' => 'id'],
-        'billing_type_l11n_name'    => ['name' => 'billing_type_l11n_name',    'type' => 'string', 'internal' => 'name', 'autocomplete' => true],
+        'billing_type_l11n_id'        => ['name' => 'billing_type_l11n_id',       'type' => 'int',    'internal' => 'id'],
+        'billing_type_l11n_name'      => ['name' => 'billing_type_l11n_name',    'type' => 'string', 'internal' => 'name', 'autocomplete' => true],
         'billing_type_l11n_type'      => ['name' => 'billing_type_l11n_type',      'type' => 'int',    'internal' => 'type'],
-        'billing_type_l11n_language' => ['name' => 'billing_type_l11n_language', 'type' => 'string', 'internal' => 'language'],
+        'billing_type_l11n_language'  => ['name' => 'billing_type_l11n_language', 'type' => 'string', 'internal' => 'language'],
     ];
 
     /**

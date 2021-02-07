@@ -16,22 +16,19 @@ namespace Modules\Billing\Controller;
 
 use Modules\Admin\Models\NullAccount;
 use Modules\Billing\Models\Bill;
-use Modules\Billing\Models\BillMapper;
 use Modules\Billing\Models\BillElement;
 use Modules\Billing\Models\BillElementMapper;
+use Modules\Billing\Models\BillMapper;
 use Modules\Billing\Models\NullBillType;
+use Modules\ClientManagement\Models\ClientMapper;
 use Modules\ClientManagement\Models\NullClient;
-use phpOMS\Message\Http\HttpRequest;
-use phpOMS\Message\Http\HttpResponse;
+use Modules\ItemManagement\Models\ItemMapper;
+use phpOMS\Localization\Money;
 use phpOMS\Message\Http\RequestStatusCode;
 use phpOMS\Message\NotificationLevel;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
 use phpOMS\Model\Message\FormValidation;
-use phpOMS\Utils\Parser\Markdown\Markdown;
-use Modules\ItemManagement\Models\ItemMapper;
-use phpOMS\Localization\Money;
-use Modules\ClientManagement\Models\ClientMapper;
 
 /**
  * Billing class.
@@ -90,9 +87,9 @@ final class ApiController extends Controller
         $bill->number = '{y}-{id}'; // @todo: use admin defined format
         $bill->billTo = $request->getData('billto')
             ?? ($client->profile->account->name1 . (!empty($client->profile->account->name2) ? ', ' . $client->profile->account->name2 : '')); // @todo: use defaultInvoiceAddress or mainAddress. also consider to use billto1, billto2, billto3 (for multiple lines e.g. name2, fao etc.)
-        $bill->billCountry = $request->getData('billtocountry') ?? $client->mainAddress->getCountry();
-        $bill->type = new NullBillType((int) $request->getData('type'));
-        $bill->client = new NullClient((int) $request->getData('client'));
+        $bill->billCountry     = $request->getData('billtocountry') ?? $client->mainAddress->getCountry();
+        $bill->type            = new NullBillType((int) $request->getData('type'));
+        $bill->client          = new NullClient((int) $request->getData('client'));
         $bill->performanceDate = new \DateTime($request->getData('performancedate') ?? 'now');
 
         return $bill;
@@ -168,7 +165,7 @@ final class ApiController extends Controller
      */
     public function createBillElementFromRequest(RequestAbstract $request, ResponseAbstract $response, $data = null) : BillElement
     {
-        $element = new BillElement();
+        $element       = new BillElement();
         $element->bill = (int) $request->getData('bill');
         $element->item = $request->getData('item', 'int');
 
@@ -179,11 +176,11 @@ final class ApiController extends Controller
         $item = ItemMapper::withConditional('language', $response->getLanguage())::get($element->item);
         // @todo: which item name should be stored in the database? server language (problem for international company with subsidiaries)? customer default language/customer invoice language?
         $element->itemNumber = $item->number;
-        $element->itemName = $item->getL11n('name1')->description;
-        $element->quantity = $request->getData('quantity', 'int');
+        $element->itemName   = $item->getL11n('name1')->description;
+        $element->quantity   = $request->getData('quantity', 'int');
 
         $element->singleSalesPriceNet = new Money($request->getData('singlesalespricenet', 'int') ?? $item->salesPrice->getInt());
-        $element->totalSalesPriceNet = clone $element->singleSalesPriceNet;
+        $element->totalSalesPriceNet  = clone $element->singleSalesPriceNet;
         $element->totalSalesPriceNet->mult($element->quantity);
 
         // discounts
@@ -193,7 +190,7 @@ final class ApiController extends Controller
         }
 
         $element->singlePurchasePriceNet = new Money($item->purchasePrice->getInt());
-        $element->totalPurchasePriceNet = clone $element->singlePurchasePriceNet;
+        $element->totalPurchasePriceNet  = clone $element->singlePurchasePriceNet;
         $element->totalPurchasePriceNet->mult($element->quantity);
 
         return $element;

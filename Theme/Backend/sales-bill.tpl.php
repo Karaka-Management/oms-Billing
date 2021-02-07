@@ -16,7 +16,7 @@ declare(strict_types=1);
  * @var \phpOMS\Views\View $this
  */
 
-$bill = $this->getData('bill');
+$bill     = $this->getData('bill');
 $elements = $bill->getElements();
 
 echo $this->getData('nav')->render(); ?>
@@ -153,7 +153,7 @@ echo $this->getData('nav')->render(); ?>
                                 <td><i class="fa fa-plus add"></i> <i class="fa fa-chevron-up order-up"></i> <i class="fa fa-chevron-down order-down"></i>
                                 <td><span class="input"><button type="button" formaction=""><i class="fa fa-book"></i></button><input type="text" value="<?= $element->itemNumber; ?>" required></span>
                                 <td><textarea required><?= $element->itemName; ?></textarea>
-                                <td><input type="number" min="0" value="<?= $element->quantity ?>" required>
+                                <td><input type="number" min="0" value="<?= $element->quantity; ?>" required>
                                 <td><input type="text" value="<?= $element->singleSalesPriceNet->getCurrency(); ?>">
                                 <td><input type="number" min="0">
                                 <td><input type="number" min="0" max="100" step="any">
