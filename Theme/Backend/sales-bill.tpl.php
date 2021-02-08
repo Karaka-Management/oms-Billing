@@ -76,9 +76,9 @@ echo $this->getData('nav')->render(); ?>
                 </div>
 
                 <div class="col-xs-12 col-md-6 col-lg-4">
-                    <section class="box wf-100">
-                        <header><h1><?= $this->getHtml('Invoice'); ?></h1></header>
-                        <div class="inner">
+                    <section class="portlet">
+                        <div class="portlet-head"><?= $this->getHtml('Invoice'); ?></div>
+                        <div class="portlet-body">
                             <form>
                                 <table class="layout wf-100">
                                     <tr><td><label for="iAddressS"><?= $this->getHtml('Addresses'); ?></label>
@@ -102,9 +102,9 @@ echo $this->getData('nav')->render(); ?>
                 </div>
 
                 <div class="col-xs-12 col-md-6 col-lg-4">
-                    <section class="box wf-100">
-                        <header><h1><?= $this->getHtml('Delivery'); ?></h1></header>
-                        <div class="inner">
+                    <section class="portlet">
+                        <div class="portlet-head"><?= $this->getHtml('Delivery'); ?></div>
+                        <div class="portlet-body">
                             <form>
                                 <table class="layout wf-100">
                                     <tr><td><label for="iAddressS"><?= $this->getHtml('Addresses'); ?></label>
@@ -175,9 +175,9 @@ echo $this->getData('nav')->render(); ?>
                         </table>
                         <div class="portlet-foot">
                             <?= $this->getHtml('Freightage'); ?>: 0.00 -
-                            <?= $this->getHtml('Net'); ?>: 0.00 -
+                            <?= $this->getHtml('Net'); ?>: <?= $bill->net->getCurrency(); ?> -
                             <?= $this->getHtml('Tax'); ?>: 0.00 -
-                            <?= $this->getHtml('Total'); ?>: 0.00
+                            <?= $this->getHtml('Total'); ?>: <?= $bill->gross->getCurrency(); ?>
                         </div>
                     </div>
                 </div>
@@ -249,12 +249,6 @@ echo $this->getData('nav')->render(); ?>
         </div>
         <input type="radio" id="c-tab-6" name="tabular-2">
         <div class="tab">
-            <?php
-            $footerView = new \phpOMS\Views\PaginationView($this->l11nManager, $this->request, $this->response);
-            $footerView->setTemplate('/Web/Templates/Lists/Footer/PaginationBig');
-            $footerView->setPages(20);
-            $footerView->setPage(1);
-            ?>
             <div class="row">
                 <div class="col-xs-12">
                     <div class="box wf-100">
