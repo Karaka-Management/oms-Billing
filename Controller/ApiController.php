@@ -41,7 +41,7 @@ use phpOMS\Model\Message\FormValidation;
 final class ApiController extends Controller
 {
     /**
-     * Api method to create a wiki entry
+     * Api method to create a bill
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
@@ -68,7 +68,7 @@ final class ApiController extends Controller
     }
 
     /**
-     * Method to create a wiki entry from request.
+     * Method to create a bill from request.
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
@@ -96,7 +96,7 @@ final class ApiController extends Controller
     }
 
     /**
-     * Method to validate wiki entry creation from request
+     * Method to validate bill creation from request
      *
      * @param RequestAbstract $request Request
      *
@@ -121,7 +121,7 @@ final class ApiController extends Controller
     }
 
     /**
-     * Api method to create a wiki entry
+     * Api method to create a bill element
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
@@ -153,7 +153,7 @@ final class ApiController extends Controller
     }
 
     /**
-     * Method to create a wiki entry from request.
+     * Method to create a bill element from request.
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
@@ -197,7 +197,7 @@ final class ApiController extends Controller
     }
 
     /**
-     * Method to create a wiki entry from request.
+     * Method to update a bill because of a changed bill element (add, remove, change) from request.
      *
      * @param Bill        $bill    Bill
      * @param BillElement $element Bill element
@@ -218,7 +218,7 @@ final class ApiController extends Controller
     }
 
     /**
-     * Method to validate wiki entry creation from request
+     * Method to validate bill element creation from request
      *
      * @param RequestAbstract $request Request
      *
@@ -235,5 +235,45 @@ final class ApiController extends Controller
         }
 
         return [];
+    }
+
+    /**
+     * Api method to create and archive a bill
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
+     *
+     * @return void
+     *
+     * @api
+     *
+     * @since 1.0.0
+     */
+    public function apiBillPdfArchiveCreate(RequestAbstract $request, ResponseAbstract $response, $data = null) : void
+    {
+        $this->apiBillPdfCreate($request, $response, $data);
+        // upload pdf to media module
+    }
+
+    /**
+     * Api method to create a bill
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
+     *
+     * @return void
+     *
+     * @api
+     *
+     * @since 1.0.0
+     */
+    public function apiBillPdfCreate(RequestAbstract $request, ResponseAbstract $response, $data = null) : void
+    {
+        $bill = BillMapper::get($request->getData('id'));
+
+        // get default template from database OR get template based on provided request template id
+        // create pdf based on template
     }
 }
