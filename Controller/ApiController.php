@@ -273,6 +273,9 @@ final class ApiController extends Controller
     {
         $bill = BillMapper::get($request->getData('id'));
 
+        $defaultTemplate = CoreSettings::get(null, 'default_template', self::MODULE_NAME);
+        $template = CollectionMapper::get((int) $defaultTemplate);
+
         // get default template from database OR get template based on provided request template id
         // create pdf based on template
     }

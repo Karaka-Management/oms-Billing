@@ -14,6 +14,8 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Admin\Install;
 
+use Model\CoreSettings;
+use Model\Setting;
 use phpOMS\DataStorage\Database\DatabasePool;
 
 /**
@@ -38,6 +40,11 @@ class Media
      */
     public static function install(string $path, DatabasePool $dbPool) : void
     {
-        \Modules\Media\Admin\Installer::installExternal($dbPool, ['path' => __DIR__ . '/Media.install.json']);
+        $media = \Modules\Media\Admin\Installer::installExternal($dbPool, ['path' => __DIR__ . '/Media.install.json']);
+
+        $defaultTemplate = \reset($result['upload']);
+
+        $setting = new Setting();
+        SettingMapper::create($setting->with(0, 'default_template', (string) $defaulTemplate->getId(), 'Billing'));
     }
 }
