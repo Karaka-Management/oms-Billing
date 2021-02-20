@@ -14,7 +14,8 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Controller;
 
-use Modules\Billing\Models\BillMapper;
+use Modules\Billing\Models\SalesBillMapper;
+use Modules\Billing\Models\PurchaseBillMapper;
 use Modules\Billing\Models\BillTypeL11n;
 use phpOMS\Contract\RenderableInterface;
 use phpOMS\Message\RequestAbstract;
@@ -43,7 +44,7 @@ final class BackendController extends Controller
      * @since 1.0.0
      * @codeCoverageIgnore
      */
-    public function viewBillingInvoiceList(RequestAbstract $request, ResponseAbstract $response, $data = null) : RenderableInterface
+    public function viewBillingSalesList(RequestAbstract $request, ResponseAbstract $response, $data = null) : RenderableInterface
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/sales-bill-list');
@@ -51,18 +52,18 @@ final class BackendController extends Controller
 
         if ($request->getData('ptype') === 'p') {
             $view->setData('bills',
-                BillMapper::withConditional('language', $response->getLanguage(), [BillTypeL11n::class])
-                    ::getBeforePivot((int) ($request->getData('id') ?? 0), limit: 25, depth: 3)
+                SalesBillMapper::withConditional('language', $response->getLanguage(), [BillTypeL11n::class])
+                    ::getSalesBeforePivot((int) ($request->getData('id') ?? 0), limit: 25, depth: 3)
             );
         } elseif ($request->getData('ptype') === 'n') {
             $view->setData('bills',
-                BillMapper::withConditional('language', $response->getLanguage(), [BillTypeL11n::class])
-                    ::getAfterPivot((int) ($request->getData('id') ?? 0), limit: 25, depth: 3)
+                SalesBillMapper::withConditional('language', $response->getLanguage(), [BillTypeL11n::class])
+                    ::getSalesAfterPivot((int) ($request->getData('id') ?? 0), limit: 25, depth: 3)
             );
         } else {
             $view->setData('bills',
-                BillMapper::withConditional('language', $response->getLanguage(), [BillTypeL11n::class])
-                    ::getAfterPivot(0, limit: 25, depth: 3)
+                SalesBillMapper::withConditional('language', $response->getLanguage(), [BillTypeL11n::class])
+                    ::getSalesAfterPivot(0, limit: 25, depth: 3)
             );
         }
 
@@ -81,13 +82,13 @@ final class BackendController extends Controller
      * @since 1.0.0
      * @codeCoverageIgnore
      */
-    public function viewBillingInvoice(RequestAbstract $request, ResponseAbstract $response, $data = null) : RenderableInterface
+    public function viewBillingSalesInvoice(RequestAbstract $request, ResponseAbstract $response, $data = null) : RenderableInterface
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/sales-bill');
         $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response));
 
-        $bill = BillMapper::get((int) $request->getData('id'));
+        $bill = SalesBillMapper::get((int) $request->getData('id'));
 
         $view->setData('bill', $bill);
 
@@ -106,7 +107,7 @@ final class BackendController extends Controller
      * @since 1.0.0
      * @codeCoverageIgnore
      */
-    public function viewBillingInvoiceCreate(RequestAbstract $request, ResponseAbstract $response, $data = null) : RenderableInterface
+    public function viewBillingSalesInvoiceCreate(RequestAbstract $request, ResponseAbstract $response, $data = null) : RenderableInterface
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/invoice-create');
@@ -127,11 +128,53 @@ final class BackendController extends Controller
      * @since 1.0.0
      * @codeCoverageIgnore
      */
-    public function viewBillingPurchaInvoiceList(RequestAbstract $request, ResponseAbstract $response, $data = null) : RenderableInterface
+    public function viewBillingPurchaseList(RequestAbstract $request, ResponseAbstract $response, $data = null) : RenderableInterface
     {
         $view = new View($this->app->l11nManager, $request, $response);
-        $view->setTemplate('/Modules/Billing/Theme/Backend/purchase-invoice-list');
-        $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005105001, $request, $response));
+        $view->setTemplate('/Modules/Billing/Theme/Backend/purchase-bill-list');
+        $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response));
+
+        if ($request->getData('ptype') === 'p') {
+            $view->setData('bills',
+                PurchaseBillMapper::withConditional('language', $response->getLanguage(), [BillTypeL11n::class])
+                    ::getPurchaseBeforePivot((int) ($request->getData('id') ?? 0), limit: 25, depth: 3)
+            );
+        } elseif ($request->getData('ptype') === 'n') {
+            $view->setData('bills',
+                PurchaseBillMapper::withConditional('language', $response->getLanguage(), [BillTypeL11n::class])
+                    ::getPurchaseAfterPivot((int) ($request->getData('id') ?? 0), limit: 25, depth: 3)
+            );
+        } else {
+            $view->setData('bills',
+                PurchaseBillMapper::withConditional('language', $response->getLanguage(), [BillTypeL11n::class])
+                    ::getPurchaseAfterPivot(0, limit: 25, depth: 3)
+            );
+        }
+
+        return $view;
+    }
+
+    /**
+     * Routing end-point for application behaviour.
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
+     *
+     * @return RenderableInterface
+     *
+     * @since 1.0.0
+     * @codeCoverageIgnore
+     */
+    public function viewBillingPurchaseInvoice(RequestAbstract $request, ResponseAbstract $response, $data = null) : RenderableInterface
+    {
+        $view = new View($this->app->l11nManager, $request, $response);
+        $view->setTemplate('/Modules/Billing/Theme/Backend/purchase-bill');
+        $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response));
+
+        $bill = PurchaseBillMapper::get((int) $request->getData('id'));
+
+        $view->setData('bill', $bill);
 
         return $view;
     }

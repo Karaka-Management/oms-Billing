@@ -6,9 +6,9 @@ use phpOMS\Account\PermissionType;
 use phpOMS\Router\RouteVerb;
 
 return [
-    '^.*/sales/invoice/create.*$' => [
+    '^.*/sales/bill/create.*$' => [
         [
-            'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingInvoiceCreate',
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingSalesInvoiceCreate',
             'verb'       => RouteVerb::GET,
             'permission' => [
                 'module' => BackendController::MODULE_NAME,
@@ -17,9 +17,9 @@ return [
             ],
         ],
     ],
-    '^.*/sales/invoice/list.*$' => [
+    '^.*/sales/bill/list.*$' => [
         [
-            'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingInvoiceList',
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingSalesList',
             'verb'       => RouteVerb::GET,
             'permission' => [
                 'module' => BackendController::MODULE_NAME,
@@ -28,9 +28,9 @@ return [
             ],
         ],
     ],
-    '^.*/sales/invoice\?.*$' => [
+    '^.*/sales/bill\?.*$' => [
         [
-            'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingInvoice',
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingSalesInvoice',
             'verb'       => RouteVerb::GET,
             'permission' => [
                 'module' => BackendController::MODULE_NAME,
@@ -39,7 +39,7 @@ return [
             ],
         ],
     ],
-    '^.*/purchase/invoice/create.*$' => [
+    '^.*/purchase/bill/create.*$' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingPurchaseInvoiceCreate',
             'verb'       => RouteVerb::GET,
@@ -50,14 +50,25 @@ return [
             ],
         ],
     ],
-    '^.*/purchase/invoice/list.*$' => [
+    '^.*/purchase/bill/list.*$' => [
         [
-            'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingPurchaInvoiceList',
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingPurchaseList',
             'verb'       => RouteVerb::GET,
             'permission' => [
                 'module' => BackendController::MODULE_NAME,
                 'type'   => PermissionType::READ,
                 'state'  => PermissionState::PURCHASE_INVOICE,
+            ],
+        ],
+    ],
+    '^.*/purchase/bill\?.*$' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingPurchaseInvoice',
+            'verb'       => RouteVerb::GET,
+            'permission' => [
+                'module' => BackendController::MODULE_NAME,
+                'type'   => PermissionType::READ,
+                'state'  => PermissionState::SALES_INVOICE,
             ],
         ],
     ],

@@ -40,7 +40,7 @@ echo $this->getData('nav')->render(); ?>
                 <tbody>
                 <?php $count = 0; foreach ($bills as $key => $value) :
                     ++$count;
-                    $url = UriFactory::build('{/prefix}sales/bill?{?}&id=' . $value->getId());
+                    $url = UriFactory::build('{/prefix}purchase/bill?{?}&id=' . $value->getId());
                 ?>
                     <tr data-href="<?= $url; ?>">
                         <td><a href="<?= $url; ?>"><?= $value->getNumber(); ?></a>
