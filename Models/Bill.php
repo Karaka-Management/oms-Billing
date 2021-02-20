@@ -52,7 +52,9 @@ class Bill implements \JsonSerializable
      * @var int|BillType
      * @since 1.0.0
      */
-    public int | BillType $type = 0;
+    public int |
+
+ BillType $type = 0;
 
     /**
      * Bill status.
@@ -95,6 +97,7 @@ class Bill implements \JsonSerializable
     public Account $createdBy;
 
     public $client = 0;
+
     public $supplier = 0;
 
     /**
@@ -1218,7 +1221,6 @@ class Bill implements \JsonSerializable
     {
         $this->elements[] = $element;
     }
-
 
     /**
      * Get all media

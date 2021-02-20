@@ -21,21 +21,18 @@ use Modules\Billing\Models\BillElementMapper;
 use Modules\Billing\Models\BillMapper;
 use Modules\Billing\Models\NullBillType;
 use Modules\ClientManagement\Models\ClientMapper;
-use Modules\ClientManagement\Models\NullClient;
-use Modules\SupplierManagement\Models\SupplierMapper;
 use Modules\ItemManagement\Models\ItemMapper;
+use Modules\Media\Models\CollectionMapper;
+use Modules\Media\Models\UploadStatus;
+use Modules\SupplierManagement\Models\SupplierMapper;
+use phpOMS\Autoloader;
 use phpOMS\Localization\Money;
 use phpOMS\Message\Http\RequestStatusCode;
 use phpOMS\Message\NotificationLevel;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
 use phpOMS\Model\Message\FormValidation;
-use Model\CoreSettings;
-use Modules\Media\Models\CollectionMapper;
-use Modules\Media\Models\UploadStatus;
 use phpOMS\Views\View;
-use phpOMS\System\MimeType;
-use phpOMS\Autoloader;
 
 /**
  * Billing class.
@@ -98,11 +95,11 @@ final class ApiController extends Controller
         $bill->number = '{y}-{id}'; // @todo: use admin defined format
         $bill->billTo = $request->getData('billto')
             ?? ($account->profile->account->name1 . (!empty($account->profile->account->name2) ? ', ' . $account->profile->account->name2 : '')); // @todo: use defaultInvoiceAddress or mainAddress. also consider to use billto1, billto2, billto3 (for multiple lines e.g. name2, fao etc.)
-        $bill->billZip     = $request->getData('billtopostal') ?? $account->mainAddress->postal;
-        $bill->billCity     = $request->getData('billtocity') ?? $account->mainAddress->city;
+        $bill->billZip         = $request->getData('billtopostal') ?? $account->mainAddress->postal;
+        $bill->billCity        = $request->getData('billtocity') ?? $account->mainAddress->city;
         $bill->billCountry     = $request->getData('billtocountry') ?? $account->mainAddress->getCountry();
         $bill->type            = new NullBillType((int) $request->getData('type'));
-        $bill->client        = $request->getData('client') === null ? null : $account;
+        $bill->client          = $request->getData('client') === null ? null : $account;
         $bill->supplier        = $request->getData('supplier') === null ? null : $account;
         $bill->performanceDate = new \DateTime($request->getData('performancedate') ?? 'now');
 
@@ -271,7 +268,7 @@ final class ApiController extends Controller
         $bill = BillMapper::get($request->getData('bill'));
 
         $defaultTemplate = $this->app->appSettings->get(null, 'default_template', self::MODULE_NAME);
-        $template = CollectionMapper::get((int) $defaultTemplate['content']);
+        $template        = CollectionMapper::get((int) $defaultTemplate['content']);
 
         $pdfDir = __DIR__ . '/../../../Modules/Media/Files/Modules/Billing/Bills/'
             . $bill->createdAt->format('Y') . '/'
@@ -291,11 +288,11 @@ final class ApiController extends Controller
 
         $media = $this->app->moduleManager->get('Media')->createDbEntry(
             [
-                'status' => UploadStatus::OK,
-                'name' => $request->getData('bill') . '.pdf',
-                'path' => $pdfDir,
-                'filename' => $request->getData('bill') . '.pdf',
-                'size' => \filesize($pdfDir . $request->getData('bill') . '.pdf'),
+                'status'    => UploadStatus::OK,
+                'name'      => $request->getData('bill') . '.pdf',
+                'path'      => $pdfDir,
+                'filename'  => $request->getData('bill') . '.pdf',
+                'size'      => \filesize($pdfDir . $request->getData('bill') . '.pdf'),
                 'extension' => 'pdf',
             ],
             $request->header->account,
