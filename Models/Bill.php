@@ -16,6 +16,7 @@ namespace Modules\Billing\Models;
 
 use Modules\Admin\Models\Account;
 use Modules\Admin\Models\NullAccount;
+use Modules\Media\Models\Media;
 use phpOMS\Localization\ISO4217CharEnum;
 use phpOMS\Localization\Money;
 
@@ -51,9 +52,7 @@ class Bill implements \JsonSerializable
      * @var int|BillType
      * @since 1.0.0
      */
-    public int |
-
-BillType $type = 0;
+    public int | BillType $type = 0;
 
     /**
      * Bill status.
@@ -96,6 +95,7 @@ BillType $type = 0;
     public Account $createdBy;
 
     public $client = 0;
+    public $supplier = 0;
 
     /**
      * Receiver.
@@ -159,7 +159,7 @@ BillType $type = 0;
      * @var string
      * @since 1.0.0
      */
-    private $billFAO = '';
+    public string $billFAO = '';
 
     /**
      * Billing address.
@@ -167,7 +167,7 @@ BillType $type = 0;
      * @var string
      * @since 1.0.0
      */
-    private $billAddress = '';
+    public string $billAddress = '';
 
     /**
      * Billing city.
@@ -175,7 +175,7 @@ BillType $type = 0;
      * @var string
      * @since 1.0.0
      */
-    private $billCity = '';
+    public string $billCity = '';
 
     /**
      * Billing zip.
@@ -183,7 +183,7 @@ BillType $type = 0;
      * @var string
      * @since 1.0.0
      */
-    private $billZip = '';
+    public string $billZip = '';
 
     /**
      * Billing country.
@@ -240,6 +240,14 @@ BillType $type = 0;
      * @since 1.0.0
      */
     private int $reference = 0;
+
+    /**
+     * Media files
+     *
+     * @var array
+     * @since 1.0.0
+     */
+    protected array $media = [];
 
     /**
      * Constructor.
@@ -1209,6 +1217,53 @@ BillType $type = 0;
     public function addElement($element) : void
     {
         $this->elements[] = $element;
+    }
+
+
+    /**
+     * Get all media
+     *
+     * @return Media[]
+     *
+     * @since 1.0.0
+     */
+    public function getMedia() : array
+    {
+        return $this->media;
+    }
+
+    /**
+     * Add media
+     *
+     * @param Media $media Media to add
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
+    public function addMedia(Media $media) : void
+    {
+        $this->media[] = $media;
+    }
+
+    /**
+     * Get media file by type
+     *
+     * @param string $type Media type
+     *
+     * @return Media
+     *
+     * @since 1.0.0
+     */
+    public function getMediaByType(string $type) : Media
+    {
+        foreach ($this->media as $media) {
+            if ($media->type === $type) {
+                return $media;
+            }
+        }
+
+        return new NullMedia();
     }
 
     /**

@@ -22,6 +22,7 @@ use Modules\Billing\Models\BillMapper;
 use Modules\Billing\Models\NullBillType;
 use Modules\ClientManagement\Models\ClientMapper;
 use Modules\ClientManagement\Models\NullClient;
+use Modules\SupplierManagement\Models\SupplierMapper;
 use Modules\ItemManagement\Models\ItemMapper;
 use phpOMS\Localization\Money;
 use phpOMS\Message\Http\RequestStatusCode;
@@ -29,6 +30,12 @@ use phpOMS\Message\NotificationLevel;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
 use phpOMS\Model\Message\FormValidation;
+use Model\CoreSettings;
+use Modules\Media\Models\CollectionMapper;
+use Modules\Media\Models\UploadStatus;
+use phpOMS\Views\View;
+use phpOMS\System\MimeType;
+use phpOMS\Autoloader;
 
 /**
  * Billing class.
@@ -80,16 +87,23 @@ final class ApiController extends Controller
      */
     public function createBillFromRequest(RequestAbstract $request, ResponseAbstract $response, $data = null) : Bill
     {
-        $client = ClientMapper::get((int) $request->getData('client'));
+        if ($request->getData('client') !== null) {
+            $account = ClientMapper::get((int) $request->getData('client'));
+        } elseif ($request->getData('supplier') !== null) {
+            $account = SupplierMapper::get((int) $request->getData('supplier'));
+        }
 
         $bill = new Bill();
         $bill->setCreatedBy(new NullAccount($request->header->account));
         $bill->number = '{y}-{id}'; // @todo: use admin defined format
         $bill->billTo = $request->getData('billto')
-            ?? ($client->profile->account->name1 . (!empty($client->profile->account->name2) ? ', ' . $client->profile->account->name2 : '')); // @todo: use defaultInvoiceAddress or mainAddress. also consider to use billto1, billto2, billto3 (for multiple lines e.g. name2, fao etc.)
-        $bill->billCountry     = $request->getData('billtocountry') ?? $client->mainAddress->getCountry();
+            ?? ($account->profile->account->name1 . (!empty($account->profile->account->name2) ? ', ' . $account->profile->account->name2 : '')); // @todo: use defaultInvoiceAddress or mainAddress. also consider to use billto1, billto2, billto3 (for multiple lines e.g. name2, fao etc.)
+        $bill->billZip     = $request->getData('billtopostal') ?? $account->mainAddress->postal;
+        $bill->billCity     = $request->getData('billtocity') ?? $account->mainAddress->city;
+        $bill->billCountry     = $request->getData('billtocountry') ?? $account->mainAddress->getCountry();
         $bill->type            = new NullBillType((int) $request->getData('type'));
-        $bill->client          = new NullClient((int) $request->getData('client'));
+        $bill->client        = $request->getData('client') === null ? null : $account;
+        $bill->supplier        = $request->getData('supplier') === null ? null : $account;
         $bill->performanceDate = new \DateTime($request->getData('performancedate') ?? 'now');
 
         return $bill;
@@ -252,8 +266,52 @@ final class ApiController extends Controller
      */
     public function apiBillPdfArchiveCreate(RequestAbstract $request, ResponseAbstract $response, $data = null) : void
     {
-        $this->apiBillPdfCreate($request, $response, $data);
-        // upload pdf to media module
+        Autoloader::addPath(__DIR__ . '/../../../Resources/');
+
+        $bill = BillMapper::get($request->getData('bill'));
+
+        $defaultTemplate = $this->app->appSettings->get(null, 'default_template', self::MODULE_NAME);
+        $template = CollectionMapper::get((int) $defaultTemplate['content']);
+
+        $pdfDir = __DIR__ . '/../../../Modules/Media/Files/Modules/Billing/Bills/'
+            . $bill->createdAt->format('Y') . '/'
+            . $bill->createdAt->format('m') . '/'
+            . $bill->createdAt->format('d') . '/';
+
+        if (!\is_dir($pdfDir)) {
+            \mkdir($pdfDir, 0755, true);
+        }
+
+        $view = new View($this->app->l11nManager, $request, $response);
+        $view->setTemplate('/' . \substr($template->getSourceByName('bill.pdf.php')->getPath(), 0, -8), 'pdf.php');
+        $view->setData('bill', $bill);
+        $view->setData('path', $pdfDir . $request->getData('bill') . '.pdf');
+
+        $pdf = $view->build();
+
+        $media = $this->app->moduleManager->get('Media')->createDbEntry(
+            [
+                'status' => UploadStatus::OK,
+                'name' => $request->getData('bill') . '.pdf',
+                'path' => $pdfDir,
+                'filename' => $request->getData('bill') . '.pdf',
+                'size' => \filesize($pdfDir . $request->getData('bill') . '.pdf'),
+                'extension' => 'pdf',
+            ],
+            $request->header->account,
+            '/Modules/Billing/Bills/'
+                . $bill->createdAt->format('Y') . '/'
+                . $bill->createdAt->format('m') . '/'
+                . $bill->createdAt->format('d'),
+            'bill'
+        );
+
+        $this->createModelRelation(
+            $request->header->account,
+            $bill->getId(),
+            $media->getId(),
+            BillMapper::class, 'media', '', $request->getOrigin()
+        );
     }
 
     /**
@@ -271,12 +329,5 @@ final class ApiController extends Controller
      */
     public function apiBillPdfCreate(RequestAbstract $request, ResponseAbstract $response, $data = null) : void
     {
-        $bill = BillMapper::get($request->getData('id'));
-
-        $defaultTemplate = CoreSettings::get(null, 'default_template', self::MODULE_NAME);
-        $template = CollectionMapper::get((int) $defaultTemplate);
-
-        // get default template from database OR get template based on provided request template id
-        // create pdf based on template
     }
 }

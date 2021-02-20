@@ -34,6 +34,8 @@ final class BillTypeMapper extends DataMapperAbstract
      */
     protected static array $columns = [
         'billing_type_id'    => ['name' => 'billing_type_id',    'type' => 'int',    'internal' => 'id'],
+        'billing_type_transfer_type'    => ['name' => 'billing_type_transfer_type',    'type' => 'int',    'internal' => 'transferType'],
+        'billing_type_transfer_stock'    => ['name' => 'billing_type_transfer_stock',    'type' => 'bool',    'internal' => 'transferStock'],
     ];
 
     /**

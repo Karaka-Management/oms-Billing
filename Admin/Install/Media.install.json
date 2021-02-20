@@ -1,18 +1,21 @@
 [
     {
         "type": "collection",
+        "create_directory": true,
         "name": "Billing",
         "virtualPath": "/Modules",
         "user": 1
     },
     {
         "type": "collection",
+        "create_directory": true,
         "name": "Templates",
         "virtualPath": "/Modules/Billing",
         "user": 1
     },
     {
         "type": "collection",
+        "create_directory": true,
         "name": "Bills",
         "virtualPath": "/Modules/Billing",
         "user": 1

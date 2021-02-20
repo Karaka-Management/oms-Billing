@@ -284,4 +284,4 @@ mpdf-->
 </html>
 ');
 
-$mpdf->Output();
+$mpdf->Output($this->getData('path'), \Mpdf\Output\Destination::FILE);

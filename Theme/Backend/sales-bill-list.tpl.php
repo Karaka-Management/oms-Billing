@@ -46,11 +46,11 @@ echo $this->getData('nav')->render(); ?>
                         <td><a href="<?= $url; ?>"><?= $value->getNumber(); ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->type->getL11n(); ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->client->number; ?></a>
-                        <td><a href="<?= $url; ?>"><?= $this->printHtml($value->client->profile->account->name3 . ' ' . $value->client->profile->account->name2 . ' ' . $value->client->profile->account->name1); ?></a>
-                        <td><a href="<?= $url; ?>"><?= $value->client->mainAddress->address; ?></a>
-                        <td><a href="<?= $url; ?>"><?= $value->client->mainAddress->postal; ?></a>
-                        <td><a href="<?= $url; ?>"><?= $value->client->mainAddress->city; ?></a>
-                        <td><a href="<?= $url; ?>"><?= $value->client->mainAddress->getCountry(); ?></a>
+                        <td><a href="<?= $url; ?>"><?= $this->printHtml($value->billTo); ?></a>
+                        <td><a href="<?= $url; ?>"><?= $value->billAddress; ?></a>
+                        <td><a href="<?= $url; ?>"><?= $value->billZip; ?></a>
+                        <td><a href="<?= $url; ?>"><?= $value->billCity; ?></a>
+                        <td><a href="<?= $url; ?>"><?= $value->billCountry; ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->net->getCurrency(); ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->gross->getCurrency(); ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->profit->getCurrency(); ?></a>

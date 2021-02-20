@@ -34,6 +34,10 @@ class BillType
      */
     protected int $id = 0;
 
+    public int $transferType = BillTransferType::SALES;
+
+    public bool $transferStock = true;
+
     /**
      * Localization
      *

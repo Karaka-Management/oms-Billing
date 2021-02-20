@@ -33,18 +33,18 @@ final class BillElementMapper extends DataMapperAbstract
      * @since 1.0.0
      */
     protected static array $columns = [
-        'billing_out_element_id'                                  => ['name' => 'billing_out_element_id',      'type' => 'int',    'internal' => 'id'],
-        'billing_out_element_order'                               => ['name' => 'billing_out_element_order',      'type' => 'int',    'internal' => 'order'],
-        'billing_out_element_item'                                => ['name' => 'billing_out_element_item',      'type' => 'int',    'internal' => 'item'],
-        'billing_out_element_item_number'                         => ['name' => 'billing_out_element_item_number',      'type' => 'string',    'internal' => 'itemNumber'],
-        'billing_out_element_item_name'                           => ['name' => 'billing_out_element_item_name',      'type' => 'string',    'internal' => 'itemName'],
-        'billing_out_element_item_desc'                           => ['name' => 'billing_out_element_item_desc',      'type' => 'string',    'internal' => 'itemDescription'],
-        'billing_out_element_quantity'                            => ['name' => 'billing_out_element_quantity',      'type' => 'int',    'internal' => 'quantity'],
-        'billing_out_element_single_salesprice_net'               => ['name' => 'billing_out_element_single_salesprice_net',      'type' => 'Serializable',    'internal' => 'singleSalesPriceNet'],
-        'billing_out_element_single_purchaseprice_net'            => ['name' => 'billing_out_element_single_purchaseprice_net',      'type' => 'Serializable',    'internal' => 'singlePurchasePriceNet'],
-        'billing_out_element_total_salesprice_net'                => ['name' => 'billing_out_element_total_salesprice_net',      'type' => 'Serializable',    'internal' => 'totalSalesPriceNet'],
-        'billing_out_element_total_purchaseprice_net'             => ['name' => 'billing_out_element_total_purchaseprice_net',      'type' => 'Serializable',    'internal' => 'totalPurchasePriceNet'],
-        'billing_out_element_bill'                                => ['name' => 'billing_out_element_bill',      'type' => 'int',    'internal' => 'bill'],
+        'billing_bill_element_id'                                  => ['name' => 'billing_bill_element_id',      'type' => 'int',    'internal' => 'id'],
+        'billing_bill_element_order'                               => ['name' => 'billing_bill_element_order',      'type' => 'int',    'internal' => 'order'],
+        'billing_bill_element_item'                                => ['name' => 'billing_bill_element_item',      'type' => 'int',    'internal' => 'item'],
+        'billing_bill_element_item_number'                         => ['name' => 'billing_bill_element_item_number',      'type' => 'string',    'internal' => 'itemNumber'],
+        'billing_bill_element_item_name'                           => ['name' => 'billing_bill_element_item_name',      'type' => 'string',    'internal' => 'itemName'],
+        'billing_bill_element_item_desc'                           => ['name' => 'billing_bill_element_item_desc',      'type' => 'string',    'internal' => 'itemDescription'],
+        'billing_bill_element_quantity'                            => ['name' => 'billing_bill_element_quantity',      'type' => 'int',    'internal' => 'quantity'],
+        'billing_bill_element_single_salesprice_net'               => ['name' => 'billing_bill_element_single_salesprice_net',      'type' => 'Serializable',    'internal' => 'singleSalesPriceNet'],
+        'billing_bill_element_single_purchaseprice_net'            => ['name' => 'billing_bill_element_single_purchaseprice_net',      'type' => 'Serializable',    'internal' => 'singlePurchasePriceNet'],
+        'billing_bill_element_total_salesprice_net'                => ['name' => 'billing_bill_element_total_salesprice_net',      'type' => 'Serializable',    'internal' => 'totalSalesPriceNet'],
+        'billing_bill_element_total_purchaseprice_net'             => ['name' => 'billing_bill_element_total_purchaseprice_net',      'type' => 'Serializable',    'internal' => 'totalPurchasePriceNet'],
+        'billing_bill_element_bill'                                => ['name' => 'billing_bill_element_bill',      'type' => 'int',    'internal' => 'bill'],
     ];
 
     /**
@@ -56,7 +56,7 @@ final class BillElementMapper extends DataMapperAbstract
     protected static array $belongsTo = [
         'bill' => [
             'mapper'     => BillMapper::class,
-            'external'   => 'billing_out_element_bill',
+            'external'   => 'billing_bill_element_bill',
         ],
     ];
 
@@ -66,7 +66,7 @@ final class BillElementMapper extends DataMapperAbstract
      * @var string
      * @since 1.0.0
      */
-    public static string $primaryField = 'billing_out_element_id';
+    public static string $primaryField = 'billing_bill_element_id';
 
     /**
      * Primary table.
@@ -74,5 +74,5 @@ final class BillElementMapper extends DataMapperAbstract
      * @var string
      * @since 1.0.0
      */
-    public static string $table = 'billing_out_element';
+    public static string $table = 'billing_bill_element';
 }

@@ -12,12 +12,16 @@
  */
 declare(strict_types=1);
 
+use phpOMS\Uri\UriFactory;
+
 /**
  * @var \phpOMS\Views\View $this
  */
 
 $bill     = $this->getData('bill');
 $elements = $bill->getElements();
+
+$billPdf = $bill->getMediaByType('bill');
 
 echo $this->getData('nav')->render(); ?>
 
@@ -185,6 +189,15 @@ echo $this->getData('nav')->render(); ?>
         </div>
         <input type="radio" id="c-tab-3" name="tabular-2">
         <div class="tab">
+            <div class="row">
+                <div class="col-xs-12">
+                    <section id="mediaFile" class="portlet">
+                        <div class="portlet-body">
+                            <iframe style="min-height: 600px;" data-form="iUiSettings" data-name="iframeHelper" id="iHelperFrame" src="<?= UriFactory::build('{/backend}Resources/mozilla/Pdf/web/viewer.html?{?}&file=' . ($billPdf->isAbsolute ? '' : '/../../../../') . $billPdf->getPath()); ?>" allowfullscreen></iframe>
+                        </div>
+                    </section>
+                </div>
+            </div>
         </div>
         <input type="radio" id="c-tab-4" name="tabular-2">
         <div class="tab">

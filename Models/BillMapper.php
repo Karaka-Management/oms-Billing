@@ -16,6 +16,8 @@ namespace Modules\Billing\Models;
 
 use Modules\Admin\Models\AccountMapper;
 use Modules\ClientManagement\Models\ClientMapper;
+use Modules\SupplierManagement\Models\SupplierMapper;
+use Modules\Media\Models\MediaMapper;
 use phpOMS\DataStorage\Database\DataMapperAbstract;
 use phpOMS\DataStorage\Database\Query\Builder;
 use phpOMS\DataStorage\Database\RelationType;
@@ -39,41 +41,42 @@ final class BillMapper extends DataMapperAbstract
      * @since 1.0.0
      */
     protected static array $columns = [
-        'billing_out_id'                    => ['name' => 'billing_out_id',      'type' => 'int',    'internal' => 'id'],
-        'billing_out_number'                => ['name' => 'billing_out_number',      'type' => 'string',    'internal' => 'number'],
-        'billing_out_type'                  => ['name' => 'billing_out_type',      'type' => 'int',    'internal' => 'type'],
-        'billing_out_info'                  => ['name' => 'billing_out_info',      'type' => 'string',    'internal' => 'info'],
-        'billing_out_status'                => ['name' => 'billing_out_status',      'type' => 'int',    'internal' => 'status'],
-        'billing_out_shipTo'                => ['name' => 'billing_out_shipTo',      'type' => 'string',    'internal' => 'shipTo'],
-        'billing_out_shipFAO'               => ['name' => 'billing_out_shipFAO',      'type' => 'string',    'internal' => 'shipFAO'],
-        'billing_out_shipAddr'              => ['name' => 'billing_out_shipAddr',      'type' => 'string',    'internal' => 'shipAddress'],
-        'billing_out_shipCity'              => ['name' => 'billing_out_shipCity',      'type' => 'string',    'internal' => 'shipCity'],
-        'billing_out_shipZip'               => ['name' => 'billing_out_shipZip',      'type' => 'string',    'internal' => 'shipZip'],
-        'billing_out_shipCountry'           => ['name' => 'billing_out_shipCountry',      'type' => 'string',    'internal' => 'shipCountry'],
-        'billing_out_billTo'                => ['name' => 'billing_out_billTo',      'type' => 'string',    'internal' => 'billTo'],
-        'billing_out_billFAO'               => ['name' => 'billing_out_billFAO',      'type' => 'string',    'internal' => 'billFAO'],
-        'billing_out_billAddr'              => ['name' => 'billing_out_billAddr',      'type' => 'string',    'internal' => 'billAddress'],
-        'billing_out_billCity'              => ['name' => 'billing_out_billCity',      'type' => 'string',    'internal' => 'billCity'],
-        'billing_out_billZip'               => ['name' => 'billing_out_billZip',      'type' => 'string',    'internal' => 'billZip'],
-        'billing_out_billCountry'           => ['name' => 'billing_out_billCountry',      'type' => 'string',    'internal' => 'billCountry'],
-        'billing_out_gross'                 => ['name' => 'billing_out_gross',      'type' => 'Serializable',    'internal' => 'gross'],
-        'billing_out_net'                   => ['name' => 'billing_out_net',      'type' => 'Serializable',    'internal' => 'net'],
-        'billing_out_costs'                 => ['name' => 'billing_out_costs',      'type' => 'Serializable',    'internal' => 'costs'],
-        'billing_out_profit'                => ['name' => 'billing_out_profit',      'type' => 'Serializable',    'internal' => 'profit'],
-        'billing_out_currency'              => ['name' => 'billing_out_currency',      'type' => 'int',    'internal' => 'currency'],
-        'billing_out_referral'              => ['name' => 'billing_out_referral',      'type' => 'int',    'internal' => 'referral'],
-        'billing_out_referral_name'         => ['name' => 'billing_out_referral_name',      'type' => 'string',    'internal' => 'referralName'],
-        'billing_out_reference'             => ['name' => 'billing_out_reference',      'type' => 'int',    'internal' => 'reference'],
-        'billing_out_payment'               => ['name' => 'billing_out_payment',      'type' => 'int',    'internal' => 'payment'],
-        'billing_out_payment_text'          => ['name' => 'billing_out_payment_text',      'type' => 'string',    'internal' => 'paymentText'],
-        'billing_out_paymentterms'          => ['name' => 'billing_out_paymentterms',      'type' => 'int',    'internal' => 'terms'],
-        'billing_out_paymentterms_text'     => ['name' => 'billing_out_paymentterms_text',      'type' => 'string',    'internal' => 'termsText'],
-        'billing_out_ship_type'             => ['name' => 'billing_out_ship_type',      'type' => 'int',    'internal' => 'shipping'],
-        'billing_out_ship_text'             => ['name' => 'billing_out_ship_text',      'type' => 'string',    'internal' => 'shippingText'],
-        'billing_out_client'                => ['name' => 'billing_out_client', 'type' => 'int',      'internal' => 'client'],
-        'billing_out_created_by'            => ['name' => 'billing_out_created_by', 'type' => 'int',      'internal' => 'createdBy', 'readonly' => true],
-        'billing_out_performance_date'      => ['name' => 'billing_out_performance_date', 'type' => 'DateTime', 'internal' => 'performanceDate', 'readonly' => true],
-        'billing_out_created_at'            => ['name' => 'billing_out_created_at', 'type' => 'DateTimeImmutable', 'internal' => 'createdAt', 'readonly' => true],
+        'billing_bill_id'                    => ['name' => 'billing_bill_id',      'type' => 'int',    'internal' => 'id'],
+        'billing_bill_number'                => ['name' => 'billing_bill_number',      'type' => 'string',    'internal' => 'number'],
+        'billing_bill_type'                  => ['name' => 'billing_bill_type',      'type' => 'int',    'internal' => 'type'],
+        'billing_bill_info'                  => ['name' => 'billing_bill_info',      'type' => 'string',    'internal' => 'info'],
+        'billing_bill_status'                => ['name' => 'billing_bill_status',      'type' => 'int',    'internal' => 'status'],
+        'billing_bill_shipTo'                => ['name' => 'billing_bill_shipTo',      'type' => 'string',    'internal' => 'shipTo'],
+        'billing_bill_shipFAO'               => ['name' => 'billing_bill_shipFAO',      'type' => 'string',    'internal' => 'shipFAO'],
+        'billing_bill_shipAddr'              => ['name' => 'billing_bill_shipAddr',      'type' => 'string',    'internal' => 'shipAddress'],
+        'billing_bill_shipCity'              => ['name' => 'billing_bill_shipCity',      'type' => 'string',    'internal' => 'shipCity'],
+        'billing_bill_shipZip'               => ['name' => 'billing_bill_shipZip',      'type' => 'string',    'internal' => 'shipZip'],
+        'billing_bill_shipCountry'           => ['name' => 'billing_bill_shipCountry',      'type' => 'string',    'internal' => 'shipCountry'],
+        'billing_bill_billTo'                => ['name' => 'billing_bill_billTo',      'type' => 'string',    'internal' => 'billTo'],
+        'billing_bill_billFAO'               => ['name' => 'billing_bill_billFAO',      'type' => 'string',    'internal' => 'billFAO'],
+        'billing_bill_billAddr'              => ['name' => 'billing_bill_billAddr',      'type' => 'string',    'internal' => 'billAddress'],
+        'billing_bill_billCity'              => ['name' => 'billing_bill_billCity',      'type' => 'string',    'internal' => 'billCity'],
+        'billing_bill_billZip'               => ['name' => 'billing_bill_billZip',      'type' => 'string',    'internal' => 'billZip'],
+        'billing_bill_billCountry'           => ['name' => 'billing_bill_billCountry',      'type' => 'string',    'internal' => 'billCountry'],
+        'billing_bill_gross'                 => ['name' => 'billing_bill_gross',      'type' => 'Serializable',    'internal' => 'gross'],
+        'billing_bill_net'                   => ['name' => 'billing_bill_net',      'type' => 'Serializable',    'internal' => 'net'],
+        'billing_bill_costs'                 => ['name' => 'billing_bill_costs',      'type' => 'Serializable',    'internal' => 'costs'],
+        'billing_bill_profit'                => ['name' => 'billing_bill_profit',      'type' => 'Serializable',    'internal' => 'profit'],
+        'billing_bill_currency'              => ['name' => 'billing_bill_currency',      'type' => 'int',    'internal' => 'currency'],
+        'billing_bill_referral'              => ['name' => 'billing_bill_referral',      'type' => 'int',    'internal' => 'referral'],
+        'billing_bill_referral_name'         => ['name' => 'billing_bill_referral_name',      'type' => 'string',    'internal' => 'referralName'],
+        'billing_bill_reference'             => ['name' => 'billing_bill_reference',      'type' => 'int',    'internal' => 'reference'],
+        'billing_bill_payment'               => ['name' => 'billing_bill_payment',      'type' => 'int',    'internal' => 'payment'],
+        'billing_bill_payment_text'          => ['name' => 'billing_bill_payment_text',      'type' => 'string',    'internal' => 'paymentText'],
+        'billing_bill_paymentterms'          => ['name' => 'billing_bill_paymentterms',      'type' => 'int',    'internal' => 'terms'],
+        'billing_bill_paymentterms_text'     => ['name' => 'billing_bill_paymentterms_text',      'type' => 'string',    'internal' => 'termsText'],
+        'billing_bill_ship_type'             => ['name' => 'billing_bill_ship_type',      'type' => 'int',    'internal' => 'shipping'],
+        'billing_bill_ship_text'             => ['name' => 'billing_bill_ship_text',      'type' => 'string',    'internal' => 'shippingText'],
+        'billing_bill_client'                => ['name' => 'billing_bill_client', 'type' => 'int',      'internal' => 'client'],
+        'billing_bill_supplier'                => ['name' => 'billing_bill_supplier', 'type' => 'int',      'internal' => 'supplier'],
+        'billing_bill_created_by'            => ['name' => 'billing_bill_created_by', 'type' => 'int',      'internal' => 'createdBy', 'readonly' => true],
+        'billing_bill_performance_date'      => ['name' => 'billing_bill_performance_date', 'type' => 'DateTime', 'internal' => 'performanceDate', 'readonly' => true],
+        'billing_bill_created_at'            => ['name' => 'billing_bill_created_at', 'type' => 'DateTimeImmutable', 'internal' => 'createdAt', 'readonly' => true],
     ];
 
     /**
@@ -85,9 +88,15 @@ final class BillMapper extends DataMapperAbstract
     protected static array $hasMany = [
         'elements' => [
             'mapper'       => BillElementMapper::class,
-            'table'        => 'billing_out_element',
-            'self'         => 'billing_out_element_bill',
+            'table'        => 'billing_bill_element',
+            'self'         => 'billing_bill_element_bill',
             'external'     => null,
+        ],
+        'media'        => [
+            'mapper'   => MediaMapper::class,
+            'table'    => 'billing_bill_media',
+            'external' => 'billing_bill_media_dst',
+            'self'     => 'billing_bill_media_src',
         ],
     ];
 
@@ -100,11 +109,11 @@ final class BillMapper extends DataMapperAbstract
     protected static array $ownsOne = [
         'type'  => [
             'mapper'     => BillTypeMapper::class,
-            'external'   => 'billing_out_type',
+            'external'   => 'billing_bill_type',
         ],
         'referral'  => [
             'mapper'     => AccountMapper::class,
-            'external'   => 'billing_out_referral',
+            'external'   => 'billing_bill_referral',
         ],
     ];
 
@@ -117,11 +126,15 @@ final class BillMapper extends DataMapperAbstract
     protected static array $belongsTo = [
         'createdBy' => [
             'mapper'     => AccountMapper::class,
-            'external'   => 'billing_out_created_by',
+            'external'   => 'billing_bill_created_by',
         ],
         'client' => [
             'mapper'     => ClientMapper::class,
-            'external'   => 'billing_out_client',
+            'external'   => 'billing_bill_client',
+        ],
+        'supplier' => [
+            'mapper'     => SupplierMapper::class,
+            'external'   => 'billing_bill_supplier',
         ],
     ];
 
@@ -131,7 +144,7 @@ final class BillMapper extends DataMapperAbstract
      * @var string
      * @since 1.0.0
      */
-    protected static string $primaryField = 'billing_out_id';
+    protected static string $primaryField = 'billing_bill_id';
 
     /**
      * Primary table.
@@ -139,18 +152,18 @@ final class BillMapper extends DataMapperAbstract
      * @var string
      * @since 1.0.0
      */
-    protected static string $table = 'billing_out';
+    protected static string $table = 'billing_bill';
 
     public static function getSalesByItemId(int $id, \DateTime $start, \DateTime $end) : Money
     {
         $query  = new Builder(self::$db);
-        $result = $query->select('SUM(billing_out_element_total_salesprice_net)')
+        $result = $query->select('SUM(billing_bill_element_total_salesprice_net)')
             ->from(self::$table)
             ->leftJoin(BillElementMapper::getTable())
-                ->on(self::$table . '.billing_out_id', '=', BillElementMapper::getTable() . '.billing_out_element_bill')
-            ->where(BillElementMapper::getTable() . '.billing_out_element_item', '=', $id)
-            ->andWhere(self::$table . '.billing_out_performance_date', '>=', $start)
-            ->andWhere(self::$table . '.billing_out_performance_date', '<=', $end)
+                ->on(self::$table . '.billing_bill_id', '=', BillElementMapper::getTable() . '.billing_bill_element_bill')
+            ->where(BillElementMapper::getTable() . '.billing_bill_element_item', '=', $id)
+            ->andWhere(self::$table . '.billing_bill_performance_date', '>=', $start)
+            ->andWhere(self::$table . '.billing_bill_performance_date', '<=', $end)
             ->execute()
             ->fetch();
 
@@ -160,11 +173,11 @@ final class BillMapper extends DataMapperAbstract
     public static function getSalesByClientId(int $id, \DateTime $start, \DateTime $end) : Money
     {
         $query  = new Builder(self::$db);
-        $result = $query->select('SUM(billing_out_net)')
+        $result = $query->select('SUM(billing_bill_net)')
             ->from(self::$table)
-            ->where(self::$table . '.billing_out_client', '=', $id)
-            ->andWhere(self::$table . '.billing_out_performance_date', '>=', $start)
-            ->andWhere(self::$table . '.billing_out_performance_date', '<=', $end)
+            ->where(self::$table . '.billing_bill_client', '=', $id)
+            ->andWhere(self::$table . '.billing_bill_performance_date', '>=', $start)
+            ->andWhere(self::$table . '.billing_bill_performance_date', '<=', $end)
             ->execute()
             ->fetch();
 
@@ -174,13 +187,13 @@ final class BillMapper extends DataMapperAbstract
     public static function getAvgSalesPriceByItemId(int $id, \DateTime $start, \DateTime $end) : Money
     {
         $query  = new Builder(self::$db);
-        $result = $query->select('SUM(billing_out_element_single_salesprice_net)', 'COUNT(billing_out_element_total_salesprice_net)')
+        $result = $query->select('SUM(billing_bill_element_single_salesprice_net)', 'COUNT(billing_bill_element_total_salesprice_net)')
             ->from(self::$table)
             ->leftJoin(BillElementMapper::getTable())
-                ->on(self::$table . '.billing_out_id', '=', BillElementMapper::getTable() . '.billing_out_element_bill')
-            ->where(BillElementMapper::getTable() . '.billing_out_element_item', '=', $id)
-            ->andWhere(self::$table . '.billing_out_performance_date', '>=', $start)
-            ->andWhere(self::$table . '.billing_out_performance_date', '<=', $end)
+                ->on(self::$table . '.billing_bill_id', '=', BillElementMapper::getTable() . '.billing_bill_element_bill')
+            ->where(BillElementMapper::getTable() . '.billing_bill_element_item', '=', $id)
+            ->andWhere(self::$table . '.billing_bill_performance_date', '>=', $start)
+            ->andWhere(self::$table . '.billing_bill_performance_date', '<=', $end)
             ->execute()
             ->fetch();
 
@@ -191,12 +204,12 @@ final class BillMapper extends DataMapperAbstract
     {
         // @todo: only delivers/invoice/production (no offers ...)
         $query  = new Builder(self::$db);
-        $result = $query->select('billing_out_performance_date')
+        $result = $query->select('billing_bill_performance_date')
             ->from(self::$table)
             ->leftJoin(BillElementMapper::getTable())
-                ->on(self::$table . '.billing_out_id', '=', BillElementMapper::getTable() . '.billing_out_element_bill')
-            ->where(BillElementMapper::getTable() . '.billing_out_element_item', '=', $id)
-            ->orderBy('billing_out_id', 'DESC')
+                ->on(self::$table . '.billing_bill_id', '=', BillElementMapper::getTable() . '.billing_bill_element_bill')
+            ->where(BillElementMapper::getTable() . '.billing_bill_element_item', '=', $id)
+            ->orderBy('billing_bill_id', 'DESC')
             ->limit(1)
             ->execute()
             ->fetch();
@@ -208,10 +221,10 @@ final class BillMapper extends DataMapperAbstract
     {
         // @todo: only delivers/invoice/production (no offers ...)
         $query  = new Builder(self::$db);
-        $result = $query->select('billing_out_performance_date')
+        $result = $query->select('billing_bill_performance_date')
             ->from(self::$table)
-            ->where(self::$table . '.billing_out_client', '=', $id)
-            ->orderBy('billing_out_id', 'DESC')
+            ->where(self::$table . '.billing_bill_client', '=', $id)
+            ->orderBy('billing_bill_id', 'DESC')
             ->limit(1)
             ->execute()
             ->fetch();
@@ -235,8 +248,8 @@ final class BillMapper extends DataMapperAbstract
 
         $query ??= self::getQuery(null, [], RelationType::ALL, $depth);
         $query->leftJoin(BillElementMapper::getTable(), BillElementMapper::getTable() . '_' . $depth)
-                ->on(self::$table . '_' . $depth . '.billing_out_id', '=', BillElementMapper::getTable() . '_' . $depth . '.billing_out_element_bill')
-            ->where(BillElementMapper::getTable() . '_' . $depth . '.billing_out_element_item', '=', $id)
+                ->on(self::$table . '_' . $depth . '.billing_bill_id', '=', BillElementMapper::getTable() . '_' . $depth . '.billing_bill_element_bill')
+            ->where(BillElementMapper::getTable() . '_' . $depth . '.billing_bill_element_item', '=', $id)
             ->limit($limit);
 
         if (!empty(self::$createdAt)) {
@@ -255,7 +268,7 @@ final class BillMapper extends DataMapperAbstract
         // @todo: limit is not working correctly... only returns / 2 or something like that?. Maybe because bills arent unique?
 
         $query ??= self::getQuery(null, [], RelationType::ALL, $depth);
-        $query->where(self::$table . '_' . $depth . '.billing_out_client', '=', $id)
+        $query->where(self::$table . '_' . $depth . '.billing_bill_client', '=', $id)
             ->limit($limit);
 
         if (!empty(self::$createdAt)) {
@@ -272,14 +285,14 @@ final class BillMapper extends DataMapperAbstract
         $depth = 3;
 
         $query ??= ClientMapper::getQuery(null, [], RelationType::ALL, $depth);
-        $query->selectAs('SUM(billing_out_element_total_salesprice_net)', 'net_sales')
+        $query->selectAs('SUM(billing_bill_element_total_salesprice_net)', 'net_sales')
             ->leftJoin(self::$table, self::$table . '_' . $depth)
-                ->on(ClientMapper::getTable() . '_' . $depth . '.clientmgmt_client_id', '=', self::$table . '_' . $depth . '.billing_out_client')
+                ->on(ClientMapper::getTable() . '_' . $depth . '.clientmgmt_client_id', '=', self::$table . '_' . $depth . '.billing_bill_client')
             ->leftJoin(BillElementMapper::getTable(), BillElementMapper::getTable() . '_' . $depth)
-                ->on(self::$table . '_' . $depth . '.billing_out_id', '=', BillElementMapper::getTable() . '_' . $depth . '.billing_out_element_bill')
-            ->where(BillElementMapper::getTable() . '_' . $depth . '.billing_out_element_item', '=', $id)
-            ->andWhere(self::$table . '_' . $depth . '.billing_out_performance_date', '>=', $start)
-            ->andWhere(self::$table . '_' . $depth . '.billing_out_performance_date', '<=', $end)
+                ->on(self::$table . '_' . $depth . '.billing_bill_id', '=', BillElementMapper::getTable() . '_' . $depth . '.billing_bill_element_bill')
+            ->where(BillElementMapper::getTable() . '_' . $depth . '.billing_bill_element_item', '=', $id)
+            ->andWhere(self::$table . '_' . $depth . '.billing_bill_performance_date', '>=', $start)
+            ->andWhere(self::$table . '_' . $depth . '.billing_bill_performance_date', '<=', $end)
             ->orderBy('net_sales', 'DESC')
             ->limit($limit)
             ->groupBy(ClientMapper::getTable() . '_' . $depth . '.clientmgmt_client_id');
@@ -294,15 +307,15 @@ final class BillMapper extends DataMapperAbstract
     {
         $query  = new Builder(self::$db);
         $result = $query->select(CountryMapper::getTable() . '.country_region')
-            ->selectAs('SUM(billing_out_element_total_salesprice_net)', 'net_sales')
+            ->selectAs('SUM(billing_bill_element_total_salesprice_net)', 'net_sales')
             ->from(self::$table)
             ->leftJoin(BillElementMapper::getTable())
-                ->on(self::$table . '.billing_out_id', '=', BillElementMapper::getTable() . '.billing_out_element_bill')
+                ->on(self::$table . '.billing_bill_id', '=', BillElementMapper::getTable() . '.billing_bill_element_bill')
             ->leftJoin(CountryMapper::getTable())
-                ->on(self::$table . '.billing_out_billCountry', '=', CountryMapper::getTable() . '.country_code2')
-            ->where(BillElementMapper::getTable() . '.billing_out_element_item', '=', $id)
-            ->andWhere(self::$table . '.billing_out_performance_date', '>=', $start)
-            ->andWhere(self::$table . '.billing_out_performance_date', '<=', $end)
+                ->on(self::$table . '.billing_bill_billCountry', '=', CountryMapper::getTable() . '.country_code2')
+            ->where(BillElementMapper::getTable() . '.billing_bill_element_item', '=', $id)
+            ->andWhere(self::$table . '.billing_bill_performance_date', '>=', $start)
+            ->andWhere(self::$table . '.billing_bill_performance_date', '<=', $end)
             ->groupBy(CountryMapper::getTable() . '.country_region')
             ->execute()
             ->fetchAll(\PDO::FETCH_KEY_PAIR);
@@ -314,15 +327,15 @@ final class BillMapper extends DataMapperAbstract
     {
         $query  = new Builder(self::$db);
         $result = $query->select(CountryMapper::getTable() . '.country_code2')
-            ->selectAs('SUM(billing_out_element_total_salesprice_net)', 'net_sales')
+            ->selectAs('SUM(billing_bill_element_total_salesprice_net)', 'net_sales')
             ->from(self::$table)
             ->leftJoin(BillElementMapper::getTable())
-                ->on(self::$table . '.billing_out_id', '=', BillElementMapper::getTable() . '.billing_out_element_bill')
+                ->on(self::$table . '.billing_bill_id', '=', BillElementMapper::getTable() . '.billing_bill_element_bill')
             ->leftJoin(CountryMapper::getTable())
-                ->on(self::$table . '.billing_out_billCountry', '=', CountryMapper::getTable() . '.country_code2')
-            ->where(BillElementMapper::getTable() . '.billing_out_element_item', '=', $id)
-            ->andWhere(self::$table . '.billing_out_performance_date', '>=', $start)
-            ->andWhere(self::$table . '.billing_out_performance_date', '<=', $end)
+                ->on(self::$table . '.billing_bill_billCountry', '=', CountryMapper::getTable() . '.country_code2')
+            ->where(BillElementMapper::getTable() . '.billing_bill_element_item', '=', $id)
+            ->andWhere(self::$table . '.billing_bill_performance_date', '>=', $start)
+            ->andWhere(self::$table . '.billing_bill_performance_date', '<=', $end)
             ->groupBy(CountryMapper::getTable() . '.country_code2')
             ->orderBy('net_sales', 'DESC')
             ->limit($limit)
@@ -335,16 +348,16 @@ final class BillMapper extends DataMapperAbstract
     public static function getItemMonthlySalesCosts(int $id, \DateTime $start, \DateTime $end) : array
     {
         $query  = new Builder(self::$db);
-        $result = $query->selectAs('SUM(billing_out_element_total_salesprice_net)', 'net_sales')
-            ->selectAs('SUM(billing_out_element_total_purchaseprice_net)', 'net_costs')
-            ->selectAs('YEAR(billing_out_performance_date)', 'year')
-            ->selectAs('MONTH(billing_out_performance_date)', 'month')
+        $result = $query->selectAs('SUM(billing_bill_element_total_salesprice_net)', 'net_sales')
+            ->selectAs('SUM(billing_bill_element_total_purchaseprice_net)', 'net_costs')
+            ->selectAs('YEAR(billing_bill_performance_date)', 'year')
+            ->selectAs('MONTH(billing_bill_performance_date)', 'month')
             ->from(self::$table)
             ->leftJoin(BillElementMapper::getTable())
-                ->on(self::$table . '.billing_out_id', '=', BillElementMapper::getTable() . '.billing_out_element_bill')
-            ->where(BillElementMapper::getTable() . '.billing_out_element_item', '=', $id)
-            ->andWhere(self::$table . '.billing_out_performance_date', '>=', $start)
-            ->andWhere(self::$table . '.billing_out_performance_date', '<=', $end)
+                ->on(self::$table . '.billing_bill_id', '=', BillElementMapper::getTable() . '.billing_bill_element_bill')
+            ->where(BillElementMapper::getTable() . '.billing_bill_element_item', '=', $id)
+            ->andWhere(self::$table . '.billing_bill_performance_date', '>=', $start)
+            ->andWhere(self::$table . '.billing_bill_performance_date', '<=', $end)
             ->groupBy('year', 'month')
             ->orderBy(['year', 'month'], ['ASC', 'ASC'])
             ->execute()
@@ -356,14 +369,14 @@ final class BillMapper extends DataMapperAbstract
     public static function getClientMonthlySalesCosts(int $id, \DateTime $start, \DateTime $end) : array
     {
         $query  = new Builder(self::$db);
-        $result = $query->selectAs('SUM(billing_out_net)', 'net_sales')
-            ->selectAs('SUM(billing_out_costs)', 'net_costs')
-            ->selectAs('YEAR(billing_out_performance_date)', 'year')
-            ->selectAs('MONTH(billing_out_performance_date)', 'month')
+        $result = $query->selectAs('SUM(billing_bill_net)', 'net_sales')
+            ->selectAs('SUM(billing_bill_costs)', 'net_costs')
+            ->selectAs('YEAR(billing_bill_performance_date)', 'year')
+            ->selectAs('MONTH(billing_bill_performance_date)', 'month')
             ->from(self::$table)
-            ->where(self::$table . '.billing_out_client', '=', $id)
-            ->andWhere(self::$table . '.billing_out_performance_date', '>=', $start)
-            ->andWhere(self::$table . '.billing_out_performance_date', '<=', $end)
+            ->where(self::$table . '.billing_bill_client', '=', $id)
+            ->andWhere(self::$table . '.billing_bill_performance_date', '>=', $start)
+            ->andWhere(self::$table . '.billing_bill_performance_date', '<=', $end)
             ->groupBy('year', 'month')
             ->orderBy(['year', 'month'], ['ASC', 'ASC'])
             ->execute()

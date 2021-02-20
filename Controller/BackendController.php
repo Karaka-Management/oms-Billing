@@ -52,17 +52,17 @@ final class BackendController extends Controller
         if ($request->getData('ptype') === 'p') {
             $view->setData('bills',
                 BillMapper::withConditional('language', $response->getLanguage(), [BillTypeL11n::class])
-                    ::getBeforePivot((int) ($request->getData('id') ?? 0), limit: 25, depth: 4)
+                    ::getBeforePivot((int) ($request->getData('id') ?? 0), limit: 25, depth: 3)
             );
         } elseif ($request->getData('ptype') === 'n') {
             $view->setData('bills',
                 BillMapper::withConditional('language', $response->getLanguage(), [BillTypeL11n::class])
-                    ::getAfterPivot((int) ($request->getData('id') ?? 0), limit: 25, depth: 4)
+                    ::getAfterPivot((int) ($request->getData('id') ?? 0), limit: 25, depth: 3)
             );
         } else {
             $view->setData('bills',
                 BillMapper::withConditional('language', $response->getLanguage(), [BillTypeL11n::class])
-                    ::getAfterPivot(0, limit: 25, depth: 4)
+                    ::getAfterPivot(0, limit: 25, depth: 3)
             );
         }
 

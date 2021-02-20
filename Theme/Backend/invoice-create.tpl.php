@@ -258,8 +258,8 @@ echo $this->getData('nav')->render(); ?>
                             <tbody>
                             <tr>
                                 <td><?= $this->printHtml($this->request->getOrigin()); ?>
-                                <td><?= $this->printHtml($this->request->getHeader()->getAccount()); ?>
-                                <td><?= $this->printHtml($this->request->getHeader()->getAccount()); ?>
+                                <td><?= $this->printHtml((string) $this->request->header->account); ?>
+                                <td><?= $this->printHtml((string) $this->request->header->account); ?>
                                 <td>Create Invoice
                                 <td><?= $this->printHtml((new \DateTime('now'))->format('Y-m-d H:i:s')); ?>
                         </table>

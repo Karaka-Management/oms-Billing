@@ -4,7 +4,7 @@
  *
  * PHP Version 7.4
  *
- * @package   Modules\Billing\Admin
+ * @package   Modules\Billing\Models
  * @copyright Dennis Eichhorn
  * @license   OMS License 1.0
  * @version   1.0.0
@@ -12,18 +12,23 @@
  */
 declare(strict_types=1);
 
-namespace Modules\Billing\Admin;
+namespace Modules\Billing\Models;
 
-use phpOMS\Module\UpdaterAbstract;
+use phpOMS\Stdlib\Base\Enum;
 
 /**
- * Updater class.
+ * Task type enum.
  *
- * @package Modules\Billing\Admin
+ * @package Modules\Billing\Models
  * @license OMS License 1.0
  * @link    https://orange-management.org
  * @since   1.0.0
  */
-final class Updater extends UpdaterAbstract
+abstract class BillTransferType extends Enum
 {
+    public const SALES   = 1;
+
+    public const PURCHASE = 2;
+
+    public const STOCK  = 4;
 }
