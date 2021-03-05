@@ -2,7 +2,7 @@
 /**
  * Orange Management
  *
- * PHP Version 7.4
+ * PHP Version 8.0
  *
  * @package   Modules\Billing\Models
  * @copyright Dennis Eichhorn
@@ -54,22 +54,6 @@ final class PurchaseBillMapper extends BillMapper
         return self::getBeforePivot($pivot, $column, $limit, $order, $relations, $depth, $query);
     }
 
-    public static function getStockBeforePivot(
-        mixed $pivot,
-        string $column = null,
-        int $limit = 50,
-        string $order = 'ASC',
-        int $relations = RelationType::ALL,
-        int $depth = 3,
-        Builder $query = null
-    ) : array
-    {
-        $query = self::getQuery(null, [], $relations, $depth);
-        $query->where(BillTypeMapper::getTable() . '_' . ($depth - 1) . '.billing_type_transfer_type', '=', BillTransferType::STOCK);
-
-        return self::getBeforePivot($pivot, $column, $limit, $order, $relations, $depth, $query);
-    }
-
     public static function getPurchaseAfterPivot(
         mixed $pivot,
         string $column = null,
@@ -82,22 +66,6 @@ final class PurchaseBillMapper extends BillMapper
     {
         $query = self::getQuery(null, [], $relations, $depth);
         $query->where(BillTypeMapper::getTable() . '_' . ($depth - 1) . '.billing_type_transfer_type', '=', BillTransferType::PURCHASE);
-
-        return self::getAfterPivot($pivot, $column, $limit, $order, $relations, $depth, $query);
-    }
-
-    public static function getStockAfterPivot(
-        mixed $pivot,
-        string $column = null,
-        int $limit = 50,
-        string $order = 'ASC',
-        int $relations = RelationType::ALL,
-        int $depth = 3,
-        Builder $query = null
-    ) : array
-    {
-        $query = self::getQuery(null, [], $relations, $depth);
-        $query->where(BillTypeMapper::getTable() . '_' . ($depth - 1) . '.billing_type_transfer_type', '=', BillTransferType::STOCK);
 
         return self::getAfterPivot($pivot, $column, $limit, $order, $relations, $depth, $query);
     }
@@ -145,10 +113,10 @@ final class PurchaseBillMapper extends BillMapper
             ->execute()
             ->fetch();
 
-        return new Money((int) (((int) $result[0]) / ((int) $result[1])));
+        return new Money($result === false || $result[1] == 0 ? 0 : (int) (((int) $result[0]) / ((int) $result[1])));
     }
 
-    public static function getLastOrderDateByItemId(int $id) : \DateTimeImmutable
+    public static function getLastOrderDateByItemId(int $id) : ?\DateTimeImmutable
     {
         // @todo: only delivers/invoice/production (no offers ...)
         $query  = new Builder(self::$db);
@@ -162,10 +130,10 @@ final class PurchaseBillMapper extends BillMapper
             ->execute()
             ->fetch();
 
-        return new \DateTimeImmutable($result[0]);
+        return $result === false ? null : new \DateTimeImmutable($result[0]);
     }
 
-    public static function getLastOrderDateBySupplierId(int $id) : \DateTimeImmutable
+    public static function getLastOrderDateBySupplierId(int $id) : ?\DateTimeImmutable
     {
         // @todo: only delivers/invoice/production (no offers ...)
         $query  = new Builder(self::$db);
@@ -177,7 +145,7 @@ final class PurchaseBillMapper extends BillMapper
             ->execute()
             ->fetch();
 
-        return new \DateTimeImmutable($result[0]);
+        return $result === false ? null : new \DateTimeImmutable($result[0]);
     }
 
     public static function getItemRetentionRate(int $id, \DateTime $start, \DateTime $end) : float

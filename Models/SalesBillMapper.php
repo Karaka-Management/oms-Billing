@@ -2,7 +2,7 @@
 /**
  * Orange Management
  *
- * PHP Version 7.4
+ * PHP Version 8.0
  *
  * @package   Modules\Billing\Models
  * @copyright Dennis Eichhorn
@@ -113,10 +113,10 @@ final class SalesBillMapper extends BillMapper
             ->execute()
             ->fetch();
 
-        return new Money((int) (((int) $result[0]) / ((int) $result[1])));
+        return new Money($result === false || $result[1] == 0 ? 0 : (int) (((int) $result[0]) / ((int) $result[1])));
     }
 
-    public static function getLastOrderDateByItemId(int $id) : \DateTimeImmutable
+    public static function getLastOrderDateByItemId(int $id) : ?\DateTimeImmutable
     {
         // @todo: only delivers/invoice/production (no offers ...)
         $query  = new Builder(self::$db);
@@ -130,10 +130,10 @@ final class SalesBillMapper extends BillMapper
             ->execute()
             ->fetch();
 
-        return new \DateTimeImmutable($result[0]);
+        return $result === false ? null : new \DateTimeImmutable($result[0]);
     }
 
-    public static function getLastOrderDateByClientId(int $id) : \DateTimeImmutable
+    public static function getLastOrderDateByClientId(int $id) : ?\DateTimeImmutable
     {
         // @todo: only delivers/invoice/production (no offers ...)
         $query  = new Builder(self::$db);
@@ -145,7 +145,7 @@ final class SalesBillMapper extends BillMapper
             ->execute()
             ->fetch();
 
-        return new \DateTimeImmutable($result[0]);
+        return $result === false ? null : new \DateTimeImmutable($result[0]);
     }
 
     public static function getItemRetentionRate(int $id, \DateTime $start, \DateTime $end) : float

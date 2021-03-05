@@ -2,7 +2,7 @@
 /**
  * Orange Management
  *
- * PHP Version 7.4
+ * PHP Version 8.0
  *
  * @package   Modules\Billing\Models
  * @copyright Dennis Eichhorn
@@ -52,9 +52,7 @@ class Bill implements \JsonSerializable
      * @var int|BillType
      * @since 1.0.0
      */
-    public int |
-
- BillType $type = 0;
+    public int | BillType $type = 0;
 
     /**
      * Bill status.

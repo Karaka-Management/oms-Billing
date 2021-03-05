@@ -72,4 +72,37 @@ return [
             ],
         ],
     ],
+    '^.*/warehouse/bill/create.*$' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingStockInvoiceCreate',
+            'verb'       => RouteVerb::GET,
+            'permission' => [
+                'module' => BackendController::MODULE_NAME,
+                'type'   => PermissionType::CREATE,
+                'state'  => PermissionState::PURCHASE_INVOICE,
+            ],
+        ],
+    ],
+    '^.*/warehouse/bill/list.*$' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingStockList',
+            'verb'       => RouteVerb::GET,
+            'permission' => [
+                'module' => BackendController::MODULE_NAME,
+                'type'   => PermissionType::READ,
+                'state'  => PermissionState::PURCHASE_INVOICE,
+            ],
+        ],
+    ],
+    '^.*/warehouse/bill\?.*$' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingStockInvoice',
+            'verb'       => RouteVerb::GET,
+            'permission' => [
+                'module' => BackendController::MODULE_NAME,
+                'type'   => PermissionType::READ,
+                'state'  => PermissionState::SALES_INVOICE,
+            ],
+        ],
+    ],
 ];

@@ -2,7 +2,7 @@
 /**
  * Orange Management
  *
- * PHP Version 7.4
+ * PHP Version 8.0
  *
  * @package   Modules\Billing
  * @copyright Dennis Eichhorn
@@ -16,6 +16,7 @@ namespace Modules\Billing\Controller;
 
 use Modules\Billing\Models\SalesBillMapper;
 use Modules\Billing\Models\PurchaseBillMapper;
+use Modules\Billing\Models\StockBillMapper;
 use Modules\Billing\Models\BillTypeL11n;
 use phpOMS\Contract\RenderableInterface;
 use phpOMS\Message\RequestAbstract;
@@ -173,6 +174,69 @@ final class BackendController extends Controller
         $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response));
 
         $bill = PurchaseBillMapper::get((int) $request->getData('id'));
+
+        $view->setData('bill', $bill);
+
+        return $view;
+    }
+
+    /**
+     * Routing end-point for application behaviour.
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
+     *
+     * @return RenderableInterface
+     *
+     * @since 1.0.0
+     * @codeCoverageIgnore
+     */
+    public function viewBillingStockList(RequestAbstract $request, ResponseAbstract $response, $data = null) : RenderableInterface
+    {
+        $view = new View($this->app->l11nManager, $request, $response);
+        $view->setTemplate('/Modules/Billing/Theme/Backend/purchase-bill-list');
+        $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005106001, $request, $response));
+
+        if ($request->getData('ptype') === 'p') {
+            $view->setData('bills',
+                StockBillMapper::withConditional('language', $response->getLanguage(), [BillTypeL11n::class])
+                    ::getStockBeforePivot((int) ($request->getData('id') ?? 0), limit: 25, depth: 3)
+            );
+        } elseif ($request->getData('ptype') === 'n') {
+            $view->setData('bills',
+                StockBillMapper::withConditional('language', $response->getLanguage(), [BillTypeL11n::class])
+                    ::getStockAfterPivot((int) ($request->getData('id') ?? 0), limit: 25, depth: 3)
+            );
+        } else {
+            $view->setData('bills',
+                StockBillMapper::withConditional('language', $response->getLanguage(), [BillTypeL11n::class])
+                    ::getStockAfterPivot(0, limit: 25, depth: 3)
+            );
+        }
+
+        return $view;
+    }
+
+    /**
+     * Routing end-point for application behaviour.
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
+     *
+     * @return RenderableInterface
+     *
+     * @since 1.0.0
+     * @codeCoverageIgnore
+     */
+    public function viewBillingStockInvoice(RequestAbstract $request, ResponseAbstract $response, $data = null) : RenderableInterface
+    {
+        $view = new View($this->app->l11nManager, $request, $response);
+        $view->setTemplate('/Modules/Billing/Theme/Backend/purchase-bill');
+        $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005106001, $request, $response));
+
+        $bill = StockBillMapper::get((int) $request->getData('id'));
 
         $view->setData('bill', $bill);
 

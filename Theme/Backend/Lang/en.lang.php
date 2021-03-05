@@ -2,9 +2,9 @@
 /**
  * Orange Management
  *
- * PHP Version 7.4
+ * PHP Version 8.0
  *
- * @package   Modules\Billing
+ * @package   Modules\Localization
  * @copyright Dennis Eichhorn
  * @license   OMS License 1.0
  * @version   1.0.0
@@ -16,6 +16,7 @@ return ['Billing' => [
     'Address'         => 'Address',
     'Addresses'       => 'Addresses',
     'AlreadyPaid'     => 'Already Paid',
+    'Bills'           => 'Bills',
     'Bonus'           => 'Bonus',
     'Cashback'        => 'Cash Back',
     'City'            => 'City',
@@ -49,6 +50,7 @@ return ['Billing' => [
     'Payment'         => 'Payment',
     'Postal'          => 'Postal',
     'Prepaid'         => 'Prepaid',
+    'Preview'         => 'Preview',
     'Price'           => 'Price',
     'Profit'          => 'Profit',
     'Quantity'        => 'Quantity',
