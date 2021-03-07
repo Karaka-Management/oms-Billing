@@ -5,7 +5,7 @@ use Mpdf\Mpdf;
 /**
  * @var \phpOMS\Views\View $this
  */
-$bill = $this->getData('bill');
+$bill     = $this->getData('bill');
 $elements = $bill->getElements();
 
 $mpdf = new Mpdf([
@@ -13,11 +13,11 @@ $mpdf = new Mpdf([
     'format'      => 'A4-L',
     'orientation' => 'L',
     'margin_left' => 20,
-	'margin_right' => 15,
-	'margin_top' => 48,
-	'margin_bottom' => 25,
-	'margin_header' => 10,
-	'margin_footer' => 10
+	'margin_right'   => 15,
+	'margin_top'     => 48,
+	'margin_bottom'  => 25,
+	'margin_header'  => 10,
+	'margin_footer'  => 10,
 ]);
 
 $mpdf->SetDisplayMode('fullpage');

@@ -14,11 +14,8 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Models;
 
-use Modules\SupplierManagement\Models\SupplierMapper;
 use phpOMS\DataStorage\Database\Query\Builder;
 use phpOMS\DataStorage\Database\RelationType;
-use phpOMS\Localization\Defaults\CountryMapper;
-use phpOMS\Localization\Money;
 
 /**
  * Mapper class.
