@@ -29,6 +29,21 @@
                 "children": []
             },
             {
+                "id": 1005104201,
+                "pid": "/sales/bill",
+                "type": 3,
+                "subtype": 1,
+                "name": "Archiv",
+                "uri": "{/prefix}sales/bill/archiv",
+                "target": "self",
+                "icon": null,
+                "order": 1,
+                "from": "Billing",
+                "permission": { "permission": 2, "type": null, "element": null },
+                "parent": 1005104001,
+                "children": []
+            },
+            {
                 "id": 1005104301,
                 "pid": "/sales/bill",
                 "type": 3,
@@ -75,6 +90,21 @@
                 "children": []
             },
             {
+                "id": 1005105201,
+                "pid": "/purchase/bill",
+                "type": 3,
+                "subtype": 1,
+                "name": "Archiv",
+                "uri": "{/prefix}purchase/bill/archiv",
+                "target": "self",
+                "icon": null,
+                "order": 1,
+                "from": "Billing",
+                "permission": { "permission": 2, "type": null, "element": null },
+                "parent": 1005105001,
+                "children": []
+            },
+            {
                 "id": 1005105301,
                 "pid": "/purchase/bill",
                 "type": 3,
@@ -112,6 +142,21 @@
                 "subtype": 1,
                 "name": "List",
                 "uri": "{/prefix}warehouse/bill/list",
+                "target": "self",
+                "icon": null,
+                "order": 1,
+                "from": "Billing",
+                "permission": { "permission": 2, "type": null, "element": null },
+                "parent": 1005106001,
+                "children": []
+            },
+            {
+                "id": 1005106201,
+                "pid": "/warehouse/bill",
+                "type": 3,
+                "subtype": 1,
+                "name": "Archiv",
+                "uri": "{/prefix}warehouse/bill/archiv",
                 "target": "self",
                 "icon": null,
                 "order": 1,
