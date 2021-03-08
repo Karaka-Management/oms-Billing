@@ -214,7 +214,7 @@ final class PurchaseBillMapper extends BillMapper
             ->groupBy(SupplierMapper::getTable() . '_' . $depth . '.suppliermgmt_supplier_id');
 
         $suppliers = SupplierMapper::getAllByQuery($query, RelationType::ALL, $depth);
-        $data    = SupplierMapper::getDataLastQuery();
+        $data      = SupplierMapper::getDataLastQuery();
 
         return [$suppliers, $data];
     }

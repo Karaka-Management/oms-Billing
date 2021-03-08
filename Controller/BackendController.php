@@ -14,10 +14,10 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Controller;
 
-use Modules\Billing\Models\SalesBillMapper;
-use Modules\Billing\Models\PurchaseBillMapper;
-use Modules\Billing\Models\StockBillMapper;
 use Modules\Billing\Models\BillTypeL11n;
+use Modules\Billing\Models\PurchaseBillMapper;
+use Modules\Billing\Models\SalesBillMapper;
+use Modules\Billing\Models\StockBillMapper;
 use phpOMS\Contract\RenderableInterface;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;

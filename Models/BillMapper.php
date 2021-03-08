@@ -19,10 +19,6 @@ use Modules\ClientManagement\Models\ClientMapper;
 use Modules\Media\Models\MediaMapper;
 use Modules\SupplierManagement\Models\SupplierMapper;
 use phpOMS\DataStorage\Database\DataMapperAbstract;
-use phpOMS\DataStorage\Database\Query\Builder;
-use phpOMS\DataStorage\Database\RelationType;
-use phpOMS\Localization\Defaults\CountryMapper;
-use phpOMS\Localization\Money;
 
 /**
  * Mapper class.
