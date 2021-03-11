@@ -53,17 +53,17 @@ final class BackendController extends Controller
 
         if ($request->getData('ptype') === 'p') {
             $view->setData('bills',
-                SalesBillMapper::withConditional('language', $response->getLanguage(), [BillTypeL11n::class])
+                SalesBillMapper::with('language', $response->getLanguage(), [BillTypeL11n::class])
                     ::getSalesBeforePivot((int) ($request->getData('id') ?? 0), limit: 25, depth: 3)
             );
         } elseif ($request->getData('ptype') === 'n') {
             $view->setData('bills',
-                SalesBillMapper::withConditional('language', $response->getLanguage(), [BillTypeL11n::class])
+                SalesBillMapper::with('language', $response->getLanguage(), [BillTypeL11n::class])
                     ::getSalesAfterPivot((int) ($request->getData('id') ?? 0), limit: 25, depth: 3)
             );
         } else {
             $view->setData('bills',
-                SalesBillMapper::withConditional('language', $response->getLanguage(), [BillTypeL11n::class])
+                SalesBillMapper::with('language', $response->getLanguage(), [BillTypeL11n::class])
                     ::getSalesAfterPivot(0, limit: 25, depth: 3)
             );
         }
@@ -137,17 +137,17 @@ final class BackendController extends Controller
 
         if ($request->getData('ptype') === 'p') {
             $view->setData('bills',
-                PurchaseBillMapper::withConditional('language', $response->getLanguage(), [BillTypeL11n::class])
+                PurchaseBillMapper::with('language', $response->getLanguage(), [BillTypeL11n::class])
                     ::getPurchaseBeforePivot((int) ($request->getData('id') ?? 0), limit: 25, depth: 3)
             );
         } elseif ($request->getData('ptype') === 'n') {
             $view->setData('bills',
-                PurchaseBillMapper::withConditional('language', $response->getLanguage(), [BillTypeL11n::class])
+                PurchaseBillMapper::with('language', $response->getLanguage(), [BillTypeL11n::class])
                     ::getPurchaseAfterPivot((int) ($request->getData('id') ?? 0), limit: 25, depth: 3)
             );
         } else {
             $view->setData('bills',
-                PurchaseBillMapper::withConditional('language', $response->getLanguage(), [BillTypeL11n::class])
+                PurchaseBillMapper::with('language', $response->getLanguage(), [BillTypeL11n::class])
                     ::getPurchaseAfterPivot(0, limit: 25, depth: 3)
             );
         }
@@ -200,17 +200,17 @@ final class BackendController extends Controller
 
         if ($request->getData('ptype') === 'p') {
             $view->setData('bills',
-                StockBillMapper::withConditional('language', $response->getLanguage(), [BillTypeL11n::class])
+                StockBillMapper::with('language', $response->getLanguage(), [BillTypeL11n::class])
                     ::getStockBeforePivot((int) ($request->getData('id') ?? 0), limit: 25, depth: 3)
             );
         } elseif ($request->getData('ptype') === 'n') {
             $view->setData('bills',
-                StockBillMapper::withConditional('language', $response->getLanguage(), [BillTypeL11n::class])
+                StockBillMapper::with('language', $response->getLanguage(), [BillTypeL11n::class])
                     ::getStockAfterPivot((int) ($request->getData('id') ?? 0), limit: 25, depth: 3)
             );
         } else {
             $view->setData('bills',
-                StockBillMapper::withConditional('language', $response->getLanguage(), [BillTypeL11n::class])
+                StockBillMapper::with('language', $response->getLanguage(), [BillTypeL11n::class])
                     ::getStockAfterPivot(0, limit: 25, depth: 3)
             );
         }

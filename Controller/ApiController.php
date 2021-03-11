@@ -184,7 +184,7 @@ final class ApiController extends Controller
             return $element;
         }
 
-        $item = ItemMapper::withConditional('language', $response->getLanguage())::get($element->item);
+        $item = ItemMapper::with('language', $response->getLanguage())::get($element->item);
         // @todo: which item name should be stored in the database? server language (problem for international company with subsidiaries)? customer default language/customer invoice language?
         $element->itemNumber = $item->number;
         $element->itemName   = $item->getL11n('name1')->description;
