@@ -16,9 +16,9 @@ namespace Modules\Billing\Models;
 
 use Modules\Admin\Models\Account;
 use Modules\Admin\Models\NullAccount;
+use Modules\ClientManagement\Models\Client;
 use Modules\Media\Models\Media;
 use Modules\Media\Models\NullMedia;
-use Modules\ClientManagement\Models\Client;
 use Modules\SupplierManagement\Models\Supplier;
 use phpOMS\Localization\ISO4217CharEnum;
 use phpOMS\Localization\Money;
@@ -99,9 +99,13 @@ class Bill implements \JsonSerializable
      */
     public Account $createdBy;
 
-    public int | Client $client = 0;
+    public int |
 
-    public int | Supplier $supplier = 0;
+ Client $client = 0;
+
+    public int |
+
+ Supplier $supplier = 0;
 
     /**
      * Receiver.
@@ -271,9 +275,9 @@ class Bill implements \JsonSerializable
         $this->costs      = new Money(0);
         $this->profit     = new Money(0);
 
-        $this->createdAt       = new \DateTimeImmutable();
-        $this->performanceDate = new \DateTime();
-        $this->createdBy       = new NullAccount();
+        $this->createdAt        = new \DateTimeImmutable();
+        $this->performanceDate  = new \DateTime();
+        $this->createdBy        = new NullAccount();
         $this->referral         = new NullAccount();
     }
 
