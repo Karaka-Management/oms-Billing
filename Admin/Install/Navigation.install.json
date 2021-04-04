@@ -33,8 +33,8 @@
                 "pid": "/sales/bill",
                 "type": 3,
                 "subtype": 1,
-                "name": "Archiv",
-                "uri": "{/prefix}sales/bill/archiv",
+                "name": "Archive",
+                "uri": "{/prefix}sales/bill/archive",
                 "target": "self",
                 "icon": null,
                 "order": 1,
@@ -94,8 +94,8 @@
                 "pid": "/purchase/bill",
                 "type": 3,
                 "subtype": 1,
-                "name": "Archiv",
-                "uri": "{/prefix}purchase/bill/archiv",
+                "name": "Archive",
+                "uri": "{/prefix}purchase/bill/archive",
                 "target": "self",
                 "icon": null,
                 "order": 1,
@@ -155,8 +155,8 @@
                 "pid": "/warehouse/bill",
                 "type": 3,
                 "subtype": 1,
-                "name": "Archiv",
-                "uri": "{/prefix}warehouse/bill/archiv",
+                "name": "Archive",
+                "uri": "{/prefix}warehouse/bill/archive",
                 "target": "self",
                 "icon": null,
                 "order": 1,
@@ -181,5 +181,20 @@
                 "children": []
             }
         ]
+    },
+    {
+        "id": 1005107001,
+        "pid": "/sales/analysis",
+        "type": 3,
+        "subtype": 1,
+        "name": "Bill",
+        "uri": "{/prefix}sales/analysis/bill",
+        "target": "self",
+        "icon": null,
+        "order": 5,
+        "from": "Billing",
+        "permission": { "permission": 2, "type": null, "element": null },
+        "parent": 1001602001,
+        "children": []
     }
 ]

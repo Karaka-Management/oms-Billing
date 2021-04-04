@@ -137,18 +137,6 @@ echo $this->getData('nav')->render(); ?>
                         <label>
                             <i class="filter fa fa-filter"></i>
                         </label>
-                    <td><?= $this->getHtml('Gross'); ?>
-                        <label for="billList-sort-19">
-                            <input type="radio" name="billList-sort" id="billList-sort-19">
-                            <i class="sort-asc fa fa-chevron-up"></i>
-                        </label>
-                        <label for="billList-sort-20">
-                            <input type="radio" name="billList-sort" id="billList-sort-20">
-                            <i class="sort-desc fa fa-chevron-down"></i>
-                        </label>
-                        <label>
-                            <i class="filter fa fa-filter"></i>
-                        </label>
                     <td><?= $this->getHtml('Profit'); ?>
                         <label for="billList-sort-21">
                             <input type="radio" name="billList-sort" id="billList-sort-21">
@@ -192,12 +180,11 @@ echo $this->getData('nav')->render(); ?>
                         <td><a href="<?= $url; ?>"><?= $value->billCity; ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->billCountry; ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->net->getCurrency(); ?></a>
-                        <td><a href="<?= $url; ?>"><?= $value->gross->getCurrency(); ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->profit->getCurrency(); ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->createdAt->format('Y-m-d'); ?></a>
                 <?php endforeach; ?>
                 <?php if ($count === 0) : ?>
-                    <tr><td colspan="9" class="empty"><?= $this->getHtml('Empty', '0', '0'); ?>
+                    <tr><td colspan="12" class="empty"><?= $this->getHtml('Empty', '0', '0'); ?>
                 <?php endif; ?>
             </table>
         </div>

@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace Modules\Billing\Models;
 
 use phpOMS\Localization\Money;
+use phpOMS\Stdlib\Base\FloatInt;
 
 /**
  * Bill class.
@@ -34,9 +35,9 @@ class BillElement implements \JsonSerializable
      */
     protected int $id = 0;
 
-    private int $order = 0;
+    public int $order = 0;
 
-    public $item = null;
+    public ?int $item = null;
 
     public string $itemNumber = '';
 
@@ -50,35 +51,35 @@ class BillElement implements \JsonSerializable
 
     public Money $totalSalesPriceNet;
 
-    private $singleDiscountP = null;
+    public ?FloatInt $singleDiscountP = null;
 
-    private $totalDiscountP = null;
+    public ?FloatInt $totalDiscountP = null;
 
-    private $singleDiscountR = 0;
+    public ?FloatInt $singleDiscountR = null;
 
-    private $discountQ = 0;
+    public ?FloatInt $discountQ = null;
 
-    private $singlePriceNet = null;
+    public ?FloatInt $singlePriceNet = null;
 
-    private $totalPriceNet = null;
+    public ?FloatInt $totalPriceNet = null;
 
     public Money $singlePurchasePriceNet;
 
     public Money $totalPurchasePriceNet;
 
-    private $taxP = null;
+    public ?FloatInt $taxP = null;
 
-    private $taxR = 0.0;
+    public ?FloatInt $taxR = null;
 
-    private $singleSalesPriceGross = null;
+    public ?FloatInt $singleSalesPriceGross = null;
 
-    private $totalSalesPriceGross = null;
+    public ?FloatInt $totalSalesPriceGross = null;
 
-    private $event = 0;
+    public $event = 0;
 
-    private $promotion = 0;
+    public $promotion = 0;
 
-    public $bill = 0;
+    public int | Bill $bill = 0;
 
     public function __construct()
     {
@@ -191,370 +192,6 @@ class BillElement implements \JsonSerializable
     public function setItem($item) : void
     {
         $this->item = $item;
-    }
-
-    /**
-     * Set item name.
-     *
-     * @param string $name Name
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function setItemName(string $name) : void
-    {
-        $this->itemName = $name;
-    }
-
-    /**
-     * Get item name.
-     *
-     * @return string
-     *
-     * @since 1.0.0
-     */
-    public function getItemName() : string
-    {
-        return $this->itemName;
-    }
-
-    /**
-     * Set item description.
-     *
-     * @param string $description Description
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function setItemDescription(string $description) : void
-    {
-        $this->itemDescription = $description;
-    }
-
-    /**
-     * Get item description.
-     *
-     * @return string
-     *
-     * @since 1.0.0
-     */
-    public function getItemDescripion() : string
-    {
-        return $this->itemDescription;
-    }
-
-    /**
-     * Set single unit price.
-     *
-     * @param Money $price Single unit price
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function setSinglePrice(Money $price) : void
-    {
-        $this->singlePrice = $price;
-    }
-
-    /**
-     * Get single unit price.
-     *
-     * @return null|Money
-     *
-     * @since 1.0.0
-     */
-    public function getSinglePrice() : ?Money
-    {
-        return $this->singlePrice;
-    }
-
-    /**
-     * Set total price.
-     *
-     * @param Money $price Total price
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function setTotalPrice(Money $price) : void
-    {
-        $this->totalPrice = $price;
-    }
-
-    /**
-     * Get total price.
-     *
-     * @return null|Money
-     *
-     * @since 1.0.0
-     */
-    public function getTotalPrice() : ?Money
-    {
-        return $this->totalPrice;
-    }
-
-    /**
-     * Set discount price.
-     *
-     * @param Money $discount Discount
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function setDiscountPrice(Money $discount) : void
-    {
-        $this->singleDiscountP = $discount;
-    }
-
-    /**
-     * Get discount price.
-     *
-     * @return null|Money
-     *
-     * @since 1.0.0
-     */
-    public function getDiscountPrice() : ?Money
-    {
-        return $this->singleDiscountP;
-    }
-
-    /**
-     * Set total discount price.
-     *
-     * @param Money $discount Discount price
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function setTotalDiscountPrice(Money $discount) : void
-    {
-        $this->totalDiscountP = $discount;
-    }
-
-    /**
-     * Get total discount price.
-     *
-     * @return null|Money
-     *
-     * @since 1.0.0
-     */
-    public function getTotalDiscountPrice() : ?Money
-    {
-        return $this->totalDiscountP;
-    }
-
-    /**
-     * Set discount percentage.
-     *
-     * @param float $discount Discount percentag
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function setDiscountPercentage(float $discount) : void
-    {
-        $this->singleDiscountR = $discount;
-    }
-
-    /**
-     * Get discount percentage.
-     *
-     * @return float
-     *
-     * @since 1.0.0
-     */
-    public function getDiscountPercentage() : float
-    {
-        return $this->singleDiscountR;
-    }
-
-    /**
-     * Set discount quantity.
-     *
-     * @param int|float $quantity Quantity
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function setDiscountQuantity($quantity) : void
-    {
-        $this->discountQ = $quantity;
-    }
-
-    /**
-     * Get discount quantity.
-     *
-     * @return int|float
-     *
-     * @since 1.0.0
-     */
-    public function getDiscountQuantity()
-    {
-        return $this->discountQ;
-    }
-
-    /**
-     * Set single net price.
-     *
-     * @param Money $price Net price
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function setSingleNetPrice(Money $price) : void
-    {
-        $this->singlePriceNet = $price;
-    }
-
-    /**
-     * Get single net price.
-     *
-     * @return null|Money
-     *
-     * @since 1.0.0
-     */
-    public function getSingleNetPrice() : ?Money
-    {
-        return $this->singlePriceNet;
-    }
-
-    /**
-     * Set total net price.
-     *
-     * @param Money $price Total net price
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function setTotalNetPrice(Money $price) : void
-    {
-        $this->totalPriceNet = $price;
-    }
-
-    /**
-     * Get total net price.
-     *
-     * @return null|Money
-     *
-     * @since 1.0.0
-     */
-    public function getTotalNetPrice() : ?Money
-    {
-        return $this->totalPriceNet;
-    }
-
-    /**
-     * Set tax price.
-     *
-     * @param Money $tax Tax price
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function setTaxPrice(Money $tax) : void
-    {
-        $this->taxP = $tax;
-    }
-
-    /**
-     * Get tax price.
-     *
-     * @return null|Money
-     *
-     * @since 1.0.0
-     */
-    public function getTaxPrice() : ?Money
-    {
-        return $this->taxP;
-    }
-
-    /**
-     * Set tax rate.
-     *
-     * @param float $tax Tax rate
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function setTaxPercentage(float $tax) : void
-    {
-        $this->taxR = $tax;
-    }
-
-    /**
-     * Get tax rate.
-     *
-     * @return float
-     *
-     * @since 1.0.0
-     */
-    public function getTaxPercentage() : float
-    {
-        return $this->taxR;
-    }
-
-    /**
-     * Set single gross price.
-     *
-     * @param Money $price Single gross price
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function setSingleGrossPrice(Money $price) : void
-    {
-        $this->singlePriceGross = $price;
-    }
-
-    /**
-     * Get single gross price.
-     *
-     * @return null|Money
-     *
-     * @since 1.0.0
-     */
-    public function getSingleGrossPrice() : ?Money
-    {
-        return $this->singlePriceGross;
-    }
-
-    /**
-     * Set total gross price.
-     *
-     * @param Money $price Total gross price
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function setTotalGrossPrice(Money $price) : void
-    {
-        $this->totalPriceGross = $price;
-    }
-
-    /**
-     * Get total gross price.
-     *
-     * @return null|Money
-     *
-     * @since 1.0.0
-     */
-    public function getTotalGrossPrice() : ?Money
-    {
-        return $this->totalPriceGross;
     }
 
     /**

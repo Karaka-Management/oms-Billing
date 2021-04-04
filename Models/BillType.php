@@ -41,9 +41,9 @@ class BillType
     /**
      * Localization
      *
-     * @var int|int[]|BillTypeL11n|BillTypeL11n[]
+     * @var string|BillTypeL11n
      */
-    protected $l11n = 0;
+    protected string | BillTypeL11n $l11n;
 
     /**
      * Constructor.

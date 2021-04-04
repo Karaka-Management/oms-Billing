@@ -110,7 +110,7 @@ BillType $type = 0;
      *
      * @since 1.0.0
      */
-    public function getType() : int
+    public function getType() : int | BillType
     {
         return $this->type;
     }

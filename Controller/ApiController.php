@@ -84,14 +84,16 @@ final class ApiController extends Controller
      */
     public function createBillFromRequest(RequestAbstract $request, ResponseAbstract $response, $data = null) : Bill
     {
+        $account = null;
         if ($request->getData('client') !== null) {
             $account = ClientMapper::get((int) $request->getData('client'));
         } elseif ($request->getData('supplier') !== null) {
             $account = SupplierMapper::get((int) $request->getData('supplier'));
         }
 
+        /* @var \Modules\Account\Models\Account $account */
         $bill = new Bill();
-        $bill->setCreatedBy(new NullAccount($request->header->account));
+        $bill->createdBy = new NullAccount($request->header->account);
         $bill->number = '{y}-{id}'; // @todo: use admin defined format
         $bill->billTo = $request->getData('billto')
             ?? ($account->profile->account->name1 . (!empty($account->profile->account->name2) ? ', ' . $account->profile->account->name2 : '')); // @todo: use defaultInvoiceAddress or mainAddress. also consider to use billto1, billto2, billto3 (for multiple lines e.g. name2, fao etc.)
@@ -214,7 +216,7 @@ final class ApiController extends Controller
      * @param BillElement $element Bill element
      * @param int         $type    Change type (0 = update, -1 = remove, +1 = add)
      *
-     * @return BillElement
+     * @return Bill
      *
      * @since 1.0.0
      */

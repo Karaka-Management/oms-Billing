@@ -150,10 +150,12 @@ final class SalesBillMapper extends BillMapper
 
     public static function getItemRetentionRate(int $id, \DateTime $start, \DateTime $end) : float
     {
+        return 0.0;
     }
 
     public static function getItemLivetimeValue(int $id, \DateTime $start, \DateTime $end) : Money
     {
+        return new Money();
     }
 
     public static function getNewestItemInvoices(int $id, int $limit = 10) : array
@@ -217,6 +219,48 @@ final class SalesBillMapper extends BillMapper
         $data    = ClientMapper::getDataLastQuery();
 
         return [$clients, $data];
+    }
+
+    public static function getItemBills(int $id, \DateTime $start, \DateTime $end) : array
+    {
+        $depth = 3;
+
+        // @todo: limit is not working correctly... only returns / 2 or something like that?. Maybe because bills arent unique?
+
+        $query ??= self::getQuery(null, [], RelationType::ALL, $depth);
+        $query->leftJoin(BillElementMapper::getTable(), BillElementMapper::getTable() . '_' . $depth)
+                ->on(self::$table . '_' . $depth . '.billing_bill_id', '=', BillElementMapper::getTable() . '_' . $depth . '.billing_bill_element_bill')
+            ->where(BillElementMapper::getTable() . '_' . $depth . '.billing_bill_element_item', '=', $id)
+            ->limit($limit = 10);
+
+        if (!empty(self::$createdAt)) {
+            $query->orderBy(self::$table  . '_' . $depth . '.' . self::$columns[self::$createdAt]['name'], 'DESC');
+        } else {
+            $query->orderBy(self::$table  . '_' . $depth . '.' . self::$columns[self::$primaryField]['name'], 'DESC');
+        }
+
+        return self::getAllByQuery($query, RelationType::ALL, $depth);
+    }
+
+    public static function getClientItem(int $client, \DateTime $start, \DateTime $end) : array
+    {
+        $depth = 3;
+
+        // @todo: limit is not working correctly... only returns / 2 or something like that?. Maybe because bills arent unique?
+
+        $query ??= BillElementMapper::getQuery(null, [], RelationType::ALL, $depth);
+        $query->leftJoin(self::$table, self::$table . '_' . $depth)
+                ->on(BillElementMapper::getTable() . '_' . $depth . '.billing_bill_element_bill', '=', self::$table . '_' . $depth . '.billing_bill_id')
+            ->where(self::$table . '_' . $depth . '.billing_bill_client', '=', $client)
+            ->limit($limit = 10);
+
+        if (!empty(self::$createdAt)) {
+            $query->orderBy(self::$table  . '_' . $depth . '.' . self::$columns[self::$createdAt]['name'], 'DESC');
+        } else {
+            $query->orderBy(self::$table  . '_' . $depth . '.' . self::$columns[self::$primaryField]['name'], 'DESC');
+        }
+
+        return BillElementMapper::getAllByQuery($query, RelationType::ALL, $depth);
     }
 
     public static function getItemRegionSales(int $id, \DateTime $start, \DateTime $end) : array

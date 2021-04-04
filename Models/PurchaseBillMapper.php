@@ -150,10 +150,12 @@ final class PurchaseBillMapper extends BillMapper
 
     public static function getItemRetentionRate(int $id, \DateTime $start, \DateTime $end) : float
     {
+        return 0.0;
     }
 
     public static function getItemLivetimeValue(int $id, \DateTime $start, \DateTime $end) : Money
     {
+        return new Money();
     }
 
     public static function getNewestItemInvoices(int $id, int $limit = 10) : array

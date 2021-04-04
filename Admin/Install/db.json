@@ -205,22 +205,22 @@
             },
             "billing_bill_gross": {
                 "name": "billing_bill_gross",
-                "type": "INT",
+                "type": "BIGINT",
                 "null": false
             },
             "billing_bill_net": {
                 "name": "billing_bill_net",
-                "type": "INT",
+                "type": "BIGINT",
                 "null": false
             },
             "billing_bill_costs": {
                 "name": "billing_bill_costs",
-                "type": "INT",
+                "type": "BIGINT",
                 "null": false
             },
             "billing_bill_profit": {
                 "name": "billing_bill_profit",
-                "type": "INT",
+                "type": "BIGINT",
                 "null": false
             },
             "billing_bill_currency": {
@@ -385,19 +385,19 @@
             },
             "billing_bill_element_price_single_net": {
                 "name": "billing_bill_element_price_single_net",
-                "type": "INT",
+                "type": "BIGINT",
                 "null": true,
                 "default": null
             },
             "billing_bill_element_price_total_net": {
                 "name": "billing_bill_element_price_total_net",
-                "type": "INT",
+                "type": "BIGINT",
                 "null": true,
                 "default": null
             },
             "billing_bill_element_tax_price": {
                 "name": "billing_bill_element_tax_price",
-                "type": "INT",
+                "type": "BIGINT",
                 "null": true,
                 "default": null
             },
@@ -415,13 +415,13 @@
             },
             "billing_bill_element_price_single_gross": {
                 "name": "billing_bill_element_price_single_gross",
-                "type": "INT",
+                "type": "BIGINT",
                 "null": true,
                 "default": null
             },
             "billing_bill_element_price_total_gross": {
                 "name": "billing_bill_element_price_total_gross",
-                "type": "INT",
+                "type": "BIGINT",
                 "null": true,
                 "default": null
             },

@@ -105,4 +105,15 @@ return [
             ],
         ],
     ],
+    '^.*/sales/analysis/bill(\?.*|$)$' => [
+        [
+            'dest'       => '\Modules\ClientManagement\Controller\BackendController:viewBillAnalysis',
+            'verb'       => RouteVerb::GET,
+            'permission' => [
+                'module' => BackendController::MODULE_NAME,
+                'type'   => PermissionType::READ,
+                'state'  => PermissionState::SALES_INVOICE,
+            ],
+        ],
+    ],
 ];

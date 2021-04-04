@@ -17,6 +17,9 @@ namespace Modules\Billing\Models;
 use Modules\Admin\Models\Account;
 use Modules\Admin\Models\NullAccount;
 use Modules\Media\Models\Media;
+use Modules\Media\Models\NullMedia;
+use Modules\ClientManagement\Models\Client;
+use Modules\SupplierManagement\Models\Supplier;
 use phpOMS\Localization\ISO4217CharEnum;
 use phpOMS\Localization\Money;
 
@@ -67,7 +70,7 @@ class Bill implements \JsonSerializable
     /**
      * Bill created at.
      *
-     * @var \DateTime
+     * @var \DateTimeImmutable
      * @since 1.0.0
      */
     public \DateTimeImmutable $createdAt;
@@ -96,9 +99,9 @@ class Bill implements \JsonSerializable
      */
     public Account $createdBy;
 
-    public $client = 0;
+    public int | Client $client = 0;
 
-    public $supplier = 0;
+    public int | Supplier $supplier = 0;
 
     /**
      * Receiver.
@@ -114,7 +117,7 @@ class Bill implements \JsonSerializable
      * @var string
      * @since 1.0.0
      */
-    private $shipFAO = '';
+    public string $shipFAO = '';
 
     /**
      * Shipping address.
@@ -122,7 +125,7 @@ class Bill implements \JsonSerializable
      * @var string
      * @since 1.0.0
      */
-    private $shipAddress = '';
+    public string $shipAddress = '';
 
     /**
      * Shipping city.
@@ -130,7 +133,7 @@ class Bill implements \JsonSerializable
      * @var string
      * @since 1.0.0
      */
-    private $shipCity = '';
+    public string $shipCity = '';
 
     /**
      * Shipping zip.
@@ -138,7 +141,7 @@ class Bill implements \JsonSerializable
      * @var string
      * @since 1.0.0
      */
-    private $shipZip = '';
+    public string $shipZip = '';
 
     /**
      * Shipping country.
@@ -146,7 +149,7 @@ class Bill implements \JsonSerializable
      * @var string
      * @since 1.0.0
      */
-    private $shipCountry = '';
+    public string $shipCountry = '';
 
     /**
      * Billing.
@@ -199,12 +202,12 @@ class Bill implements \JsonSerializable
     /**
      * Person refering for this order.
      *
-     * @var int
+     * @var Account
      * @since 1.0.0
      */
-    private $referral;
+    public Account $referral;
 
-    private $referralName = '';
+    public string $referralName = '';
 
     public Money $net;
 
@@ -214,27 +217,31 @@ class Bill implements \JsonSerializable
 
     public Money $profit;
 
-    private $currency = ISO4217CharEnum::_EUR;
+    public Money $insurance;
 
-    private $info = '';
+    public Money $freight;
 
-    private $payment = 0;
+    private string $currency = ISO4217CharEnum::_EUR;
 
-    private $paymentText = '';
+    public string $info = '';
 
-    private $terms = 0;
+    public $payment = 0;
 
-    private $termsText = '';
+    public string $paymentText = '';
 
-    private $shipping = 0;
+    public $terms = 0;
 
-    private $shippingText = '';
+    public string $termsText = '';
 
-    private $vouchers = [];
+    public $shipping = 0;
 
-    private $trackings = [];
+    public string $shippingText = '';
 
-    private $elements = [];
+    private array $vouchers = [];
+
+    private array $trackings = [];
+
+    private array $elements = [];
 
     /**
      * Reference to other Bill (delivery note/credit note etc).
@@ -267,33 +274,7 @@ class Bill implements \JsonSerializable
         $this->createdAt       = new \DateTimeImmutable();
         $this->performanceDate = new \DateTime();
         $this->createdBy       = new NullAccount();
-        $this->referer         = new NullAccount();
-    }
-
-    /**
-     * Get created by
-     *
-     * @return Account
-     *
-     * @since 1.0.0
-     */
-    public function getCreatedBy() : Account
-    {
-        return $this->createdBy;
-    }
-
-    /**
-     * Set created by
-     *
-     * @param Account $account Created by
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function setCreatedBy(Account $account) : void
-    {
-        $this->createdBy = $account;
+        $this->referral         = new NullAccount();
     }
 
     /**
@@ -332,7 +313,7 @@ class Bill implements \JsonSerializable
                 $this->createdAt->format('m'),
                 $this->createdAt->format('d'),
                 $this->id,
-                $this->type->getId(),
+                \is_int($this->type) ? $this->type : $this->type->getId(),
             ],
             $number
         );
@@ -355,11 +336,11 @@ class Bill implements \JsonSerializable
     /**
      * Get type
      *
-     * @return int
+     * @return int | BillType
      *
      * @since 1.0.0
      */
-    public function getType() : int
+    public function getType() : int | BillType
     {
         return $this->type;
     }
@@ -367,13 +348,13 @@ class Bill implements \JsonSerializable
     /**
      * Set type
      *
-     * @param int $type Type
+     * @param int|BillType $type Type
      *
      * @return void
      *
      * @since 1.0.0
      */
-    public function setType(int $type) : void
+    public function setType(int | BillType $type) : void
     {
         $this->type = $type;
     }
@@ -402,18 +383,6 @@ class Bill implements \JsonSerializable
     public function setStatus(int $status) : void
     {
         $this->status = $status;
-    }
-
-    /**
-     * Get created at date time
-     *
-     * @return \DateTime
-     *
-     * @since 1.0.0
-     */
-    public function getCreatedAt() : \DateTime
-    {
-        return $this->createdAt;
     }
 
     /**
@@ -778,136 +747,6 @@ class Bill implements \JsonSerializable
     public function getBillCountry() : string
     {
         return $this->billCountry;
-    }
-
-    /**
-     * Set referer.
-     *
-     * @param int $referer Referer
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function setReferer(int $referer) : void
-    {
-        $this->referer = $referer;
-    }
-
-    /**
-     * Get referer.
-     *
-     * @return int
-     *
-     * @since 1.0.0
-     */
-    public function getReferer() : int
-    {
-        return $this->referer;
-    }
-
-    /**
-     * Set referer name.
-     *
-     * @param string $refererName Referer name
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function setRefererName(string $refererName) : void
-    {
-        $this->refererName = $refererName;
-    }
-
-    /**
-     * Get referer name.
-     *
-     * @return string
-     *
-     * @since 1.0.0
-     */
-    public function getRefererName() : string
-    {
-        return $this->refererName;
-    }
-
-    /**
-     * Set tax id.
-     *
-     * @param string $tax Tax id
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function setTaxId(string $tax) : void
-    {
-        $this->taxId = $tax;
-    }
-
-    /**
-     * Get tax id.
-     *
-     * @return string
-     *
-     * @since 1.0.0
-     */
-    public function getTaxId() : string
-    {
-        return $this->taxId;
-    }
-
-    /**
-     * Set insurance.
-     *
-     * @param Money $insurance Insurance fee
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function setInsurance(Money $insurance) : void
-    {
-        $this->insurance = $insurance;
-    }
-
-    /**
-     * Get insurance.
-     *
-     * @return Money
-     *
-     * @since 1.0.0
-     */
-    public function getInsurance() : Money
-    {
-        return $this->insurance;
-    }
-
-    /**
-     * Set freight.
-     *
-     * @param Money $freight Freight fee
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function setFreight(Money $freight) : void
-    {
-        $this->freight = $freight;
-    }
-
-    /**
-     * Get freight.
-     *
-     * @return Money
-     *
-     * @since 1.0.0
-     */
-    public function getFreight() : Money
-    {
-        return $this->freight;
     }
 
     /**
