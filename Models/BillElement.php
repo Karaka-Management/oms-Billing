@@ -79,7 +79,9 @@ class BillElement implements \JsonSerializable
 
     public $promotion = 0;
 
-    public int | Bill $bill = 0;
+    public int |
+
+ Bill $bill = 0;
 
     public function __construct()
     {
