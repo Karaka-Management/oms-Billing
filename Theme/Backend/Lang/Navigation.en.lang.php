@@ -14,6 +14,6 @@ declare(strict_types=1);
 
 return ['Navigation' => [
     'Archive' => 'Archive',
-    'Bill' => 'Bill',
+    'Bill'    => 'Bill',
     'Billing' => 'Billing',
 ]];
