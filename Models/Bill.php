@@ -99,13 +99,9 @@ class Bill implements \JsonSerializable
      */
     public Account $createdBy;
 
-    public int |
+    public ?Client $client = null;
 
- Client $client = 0;
-
-    public int |
-
- Supplier $supplier = 0;
+    public ?Supplier $supplier = null;
 
     /**
      * Receiver.

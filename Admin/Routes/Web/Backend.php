@@ -107,12 +107,34 @@ return [
     ],
     '^.*/sales/analysis/bill(\?.*|$)$' => [
         [
-            'dest'       => '\Modules\ClientManagement\Controller\BackendController:viewBillAnalysis',
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewBillAnalysis',
             'verb'       => RouteVerb::GET,
             'permission' => [
                 'module' => BackendController::MODULE_NAME,
                 'type'   => PermissionType::READ,
                 'state'  => PermissionState::SALES_INVOICE,
+            ],
+        ],
+    ],
+    '^.*/sales/analysis/rep(\?.*|$)$' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewSalesRepAnalysis',
+            'verb'       => RouteVerb::GET,
+            'permission' => [
+                'module' => BackendController::MODULE_NAME,
+                'type'   => PermissionType::READ,
+                'state'  => PermissionState::SALES_ANALYSIS,
+            ],
+        ],
+    ],
+    '^.*/sales/analysis/region(\?.*|$)$' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewRegionAnalysis',
+            'verb'       => RouteVerb::GET,
+            'permission' => [
+                'module' => BackendController::MODULE_NAME,
+                'type'   => PermissionType::READ,
+                'state'  => PermissionState::SALES_ANALYSIS,
             ],
         ],
     ],
