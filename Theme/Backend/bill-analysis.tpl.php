@@ -12,9 +12,6 @@
  */
 declare(strict_types=1);
 
-use phpOMS\Localization\Money;
-use phpOMS\Utils\RnG\Name;
-
 /* @todo: single month/quarter/fiscal year/calendar year */
 /* @todo: time range (<= 12 month = monthly view; else annual view/comparison) */
 
@@ -22,4 +19,3 @@ use phpOMS\Utils\RnG\Name;
  * @var \phpOMS\Views\View $this
  */
 echo $this->getData('nav')->render();
-?>
