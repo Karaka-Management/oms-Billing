@@ -14,9 +14,9 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Admin\Install;
 
+use phpOMS\Application\ApplicationAbstract;
 use phpOMS\Autoloader;
 use phpOMS\DataStorage\Database\Schema\Builder;
-use phpOMS\Application\ApplicationAbstract;
 
 /**
  * WarehouseManagement class.
@@ -31,8 +31,8 @@ class WarehouseManagement
     /**
      * Install comment relation
      *
-     * @param string       $path   Module path
-     * @param ApplicationAbstract $app Application
+     * @param string              $path Module path
+     * @param ApplicationAbstract $app  Application
      *
      * @return void
      *
