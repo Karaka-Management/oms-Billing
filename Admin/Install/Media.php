@@ -16,7 +16,7 @@ namespace Modules\Billing\Admin\Install;
 
 use Model\Setting;
 use Model\SettingMapper;
-use phpOMS\DataStorage\Database\DatabasePool;
+use phpOMS\Application\ApplicationAbstract;
 
 /**
  * Media class.
@@ -32,15 +32,15 @@ class Media
      * Install media providing
      *
      * @param string       $path   Module path
-     * @param DatabasePool $dbPool Database pool for database interaction
+     * @param ApplicationAbstract $app Application
      *
      * @return void
      *
      * @since 1.0.0
      */
-    public static function install(string $path, DatabasePool $dbPool) : void
+    public static function install(string $path, ApplicationAbstract $app) : void
     {
-        $media = \Modules\Media\Admin\Installer::installExternal($dbPool, ['path' => __DIR__ . '/Media.install.json']);
+        $media = \Modules\Media\Admin\Installer::installExternal($app, ['path' => __DIR__ . '/Media.install.json']);
 
         $defaultTemplate = \reset($media['upload'][0]);
 

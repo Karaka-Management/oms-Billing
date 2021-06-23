@@ -15,8 +15,8 @@ declare(strict_types=1);
 namespace Modules\Billing\Admin\Install;
 
 use phpOMS\Autoloader;
-use phpOMS\DataStorage\Database\DatabasePool;
 use phpOMS\DataStorage\Database\Schema\Builder;
+use phpOMS\Application\ApplicationAbstract;
 
 /**
  * WarehouseManagement class.
@@ -32,20 +32,20 @@ class WarehouseManagement
      * Install comment relation
      *
      * @param string       $path   Module path
-     * @param DatabasePool $dbPool Database pool for database interaction
+     * @param ApplicationAbstract $app Application
      *
      * @return void
      *
      * @since 1.0.0
      */
-    public static function install(string $path, DatabasePool $dbPool) : void
+    public static function install(string $path, ApplicationAbstract $app) : void
     {
-        $builder = new Builder($dbPool->get('schema'));
+        $builder = new Builder($app->dbPool->get('schema'));
         $builder->alterTable('billing_bill')
             ->addConstraint('billing_bill_stock_from', 'warehousemgmt_stocklocation', 'warehousemgmt_stocklocation_id')
             ->execute();
 
-        $builder = new Builder($dbPool->get('schema'));
+        $builder = new Builder($app->dbPool->get('schema'));
         $builder->alterTable('billing_bill')
             ->addConstraint('billing_bill_stock_to', 'warehousemgmt_stocklocation', 'warehousemgmt_stocklocation_id')
             ->execute();
