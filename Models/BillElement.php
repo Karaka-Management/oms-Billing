@@ -75,14 +75,29 @@ class BillElement implements \JsonSerializable
 
     public ?FloatInt $totalSalesPriceGross = null;
 
-    public $event = 0;
+    /**
+     * Event assigned to this element.
+     *
+     * @var int
+     * @since 1.0.0
+     */
+    public int $event = 0;
 
-    public $promotion = 0;
+    /**
+     * Promotion assigned to this element.
+     *
+     * @var int
+     * @since 1.0.0
+     */
+    public int $promotion = 0;
 
-    public int |
+    public int|Bill $bill = 0;
 
- Bill $bill = 0;
-
+    /**
+     * Constructor.
+     *
+     * @since 1.0.0
+     */
     public function __construct()
     {
         $this->singleSalesPriceNet = new Money();
@@ -102,58 +117,6 @@ class BillElement implements \JsonSerializable
     public function getId() : int
     {
         return $this->id;
-    }
-
-    /**
-     * Set event.
-     *
-     * @param int $event Event
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function setEvent(int $event) : void
-    {
-        $this->event = $event;
-    }
-
-    /**
-     * Get event.
-     *
-     * @return mixed
-     *
-     * @since 1.0.0
-     */
-    public function getEvent()
-    {
-        return $this->event;
-    }
-
-    /**
-     * Set promotion.
-     *
-     * @param int $promotion Promotion
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function setPromotion(int $promotion) : void
-    {
-        $this->promotion = $promotion;
-    }
-
-    /**
-     * Get promotion.
-     *
-     * @return string
-     *
-     * @since 1.0.0
-     */
-    public function getPromotion()
-    {
-        return $this->promotion;
     }
 
     /**

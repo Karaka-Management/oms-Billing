@@ -43,9 +43,7 @@ class BillType
      *
      * @var string|BillTypeL11n
      */
-    protected string |
-
- BillTypeL11n $l11n;
+    protected string|BillTypeL11n $l11n;
 
     /**
      * Constructor.
@@ -85,12 +83,12 @@ class BillType
     {
         if ($l11n instanceof BillTypeL11n) {
             $this->l11n = $l11n;
-        } elseif (\is_string($l11n)) {
-            $this->l11n        = new BillTypeL11n();
-            $this->l11n->name  = $l11n;
-            $this->l11n->setLanguage($lang);
-        } elseif ($this->l11n instanceof BillTypeL11n && \is_string($l11n)) {
+        } elseif ($this->l11n instanceof BillTypeL11n) {
             $this->l11n->name = $l11n;
+        } else {
+            $this->l11n       = new BillTypeL11n();
+            $this->l11n->name = $l11n;
+            $this->l11n->setLanguage($lang);
         }
     }
 

@@ -26,9 +26,9 @@ use phpOMS\Stdlib\Base\Enum;
  */
 abstract class BillTransferType extends Enum
 {
-    public const SALES   = 1;
+    public const SALES = 1;
 
     public const PURCHASE = 2;
 
-    public const STOCK  = 4;
+    public const STOCK = 4;
 }

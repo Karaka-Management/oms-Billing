@@ -46,7 +46,7 @@ final class StockBillMapper extends BillMapper
     ) : array
     {
         $query = self::getQuery(null, [], $relations, $depth);
-        $query->where(BillTypeMapper::getTable() . '_' . ($depth - 1) . '.billing_type_transfer_type', '=', BillTransferType::STOCK);
+        $query->where(BillTypeMapper::getTable() . '_d' . ($depth - 1) . '.billing_type_transfer_type', '=', BillTransferType::STOCK);
 
         return self::getBeforePivot($pivot, $column, $limit, $order, $relations, $depth, $query);
     }
@@ -62,7 +62,7 @@ final class StockBillMapper extends BillMapper
     ) : array
     {
         $query = self::getQuery(null, [], $relations, $depth);
-        $query->where(BillTypeMapper::getTable() . '_' . ($depth - 1) . '.billing_type_transfer_type', '=', BillTransferType::STOCK);
+        $query->where(BillTypeMapper::getTable() . '_d' . ($depth - 1) . '.billing_type_transfer_type', '=', BillTransferType::STOCK);
 
         return self::getAfterPivot($pivot, $column, $limit, $order, $relations, $depth, $query);
     }

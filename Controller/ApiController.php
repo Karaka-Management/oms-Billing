@@ -92,10 +92,10 @@ final class ApiController extends Controller
         }
 
         /* @var \Modules\Account\Models\Account $account */
-        $bill            = new Bill();
-        $bill->createdBy = new NullAccount($request->header->account);
-        $bill->number    = '{y}-{id}'; // @todo: use admin defined format
-        $bill->billTo    = $request->getData('billto')
+        $bill                  = new Bill();
+        $bill->createdBy       = new NullAccount($request->header->account);
+        $bill->number          = '{y}-{id}'; // @todo: use admin defined format
+        $bill->billTo          = $request->getData('billto')
             ?? ($account->profile->account->name1 . (!empty($account->profile->account->name2) ? ', ' . $account->profile->account->name2 : '')); // @todo: use defaultInvoiceAddress or mainAddress. also consider to use billto1, billto2, billto3 (for multiple lines e.g. name2, fao etc.)
         $bill->billZip         = $request->getData('billtopostal') ?? $account->mainAddress->postal;
         $bill->billCity        = $request->getData('billtocity') ?? $account->mainAddress->city;

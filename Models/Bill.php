@@ -55,9 +55,7 @@ class Bill implements \JsonSerializable
      * @var int|BillType
      * @since 1.0.0
      */
-    public int |
-
- BillType $type = 0;
+    public int|BillType $type = 0;
 
     /**
      * Bill status.
@@ -225,15 +223,15 @@ class Bill implements \JsonSerializable
 
     public string $info = '';
 
-    public $payment = 0;
+    public int $payment = 0;
 
     public string $paymentText = '';
 
-    public $terms = 0;
+    public int $terms = 0;
 
     public string $termsText = '';
 
-    public $shipping = 0;
+    public int $shipping = 0;
 
     public string $shippingText = '';
 
@@ -266,15 +264,15 @@ class Bill implements \JsonSerializable
      */
     public function __construct()
     {
-        $this->net        = new Money(0);
-        $this->gross      = new Money(0);
-        $this->costs      = new Money(0);
-        $this->profit     = new Money(0);
+        $this->net    = new Money(0);
+        $this->gross  = new Money(0);
+        $this->costs  = new Money(0);
+        $this->profit = new Money(0);
 
-        $this->createdAt        = new \DateTimeImmutable();
-        $this->performanceDate  = new \DateTime();
-        $this->createdBy        = new NullAccount();
-        $this->referral         = new NullAccount();
+        $this->createdAt       = new \DateTimeImmutable();
+        $this->performanceDate = new \DateTime();
+        $this->createdBy       = new NullAccount();
+        $this->referral        = new NullAccount();
     }
 
     /**
@@ -825,31 +823,6 @@ class Bill implements \JsonSerializable
         return $this->info;
     }
 
-    /**
-     * Set payment term.
-     *
-     * @param int $payment Payment term
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function setPayment(int $payment) : void
-    {
-        $this->payment = $payment;
-    }
-
-    /**
-     * Get payment term.
-     *
-     * @return null|int
-     *
-     * @since 1.0.0
-     */
-    public function getPayment() : ?int
-    {
-        return $this->payment;
-    }
 
     /**
      * Set payment text.

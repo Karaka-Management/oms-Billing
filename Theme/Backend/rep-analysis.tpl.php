@@ -319,12 +319,12 @@ echo $this->getData('nav')->render();
             </div>
 
             <div class="row">
-            	<div class="col-xs-12">
+                <div class="col-xs-12">
                     <section class="portlet">
-                    	<div class="portlet-head">
-                    		Sales / Rep
-                    		<?php include __DIR__ . '/../../../../Web/Backend/Themes/popup-export-data.tpl.php'; ?>
-                    	</div>
+                        <div class="portlet-head">
+                            Sales / Rep
+                            <?php include __DIR__ . '/../../../../Web/Backend/Themes/popup-export-data.tpl.php'; ?>
+                        </div>
                         <table class="default">
                             <thead>
                                 <tr>

@@ -32,13 +32,13 @@ echo $this->getData('nav')->render();
         </ul>
     </div>
     <div class="tab-content">
-    	<input type="radio" id="c-tab-1" name="tabular-2"<?= $this->request->uri->fragment === 'c-tab-1' ? ' checked' : ''; ?>>
+        <input type="radio" id="c-tab-1" name="tabular-2"<?= $this->request->uri->fragment === 'c-tab-1' ? ' checked' : ''; ?>>
         <div class="tab">
-        	<div class="row">
+            <div class="row">
                 <div class="col-xs-12 col-lg-6">
                     <section class="portlet">
-                    	<form>
-                    	   <div class="portlet-head"><?= $this->getHtml('Filter'); ?></div>
+                        <form>
+                           <div class="portlet-head"><?= $this->getHtml('Filter'); ?></div>
                             <div class="portlet-body">
                                 <div class="form-group">
                                     <label for="iId"><?= $this->getHtml('Client'); ?></label>
@@ -86,579 +86,579 @@ echo $this->getData('nav')->render();
                             </div>
                             <div class="portlet-foot"><input id="iSubmitGeneral" name="submitGeneral" type="submit" value="<?= $this->getHtml('Save', '0', '0'); ?>"></div>
                         </form>
-        			</section>
-        		</div>
-        	</div>
+                    </section>
+                </div>
+            </div>
         </div>
 
         <input type="radio" id="c-tab-2" name="tabular-2"<?= $this->request->uri->fragment === 'c-tab-1' ? ' checked' : ''; ?>>
         <div class="tab">
-			<div class="row">
-				<div class="col-xs-12 col-lg-6">
-				    <section class="portlet">
-				        <div class="portlet-head">
-				            Sales per Region - Current
-				            <?php include __DIR__ . '/../../../../Web/Backend/Themes/popup-export-data.tpl.php'; ?>
-				        </div>
-				        <?php $customerRegion = $this->getData('currentCustomerRegion'); ?>
-				        <div class="portlet-body">
-				            <canvas id="sales-region" data-chart='{
-				                        "type": "pie",
-				                        "data": {
-				                            "labels": [
-				                                    "Europe", "America", "Asia", "Africa", "CIS", "Other"
-				                                ],
-				                            "datasets": [{
-				                                "data": [
-				                                    <?= (int) ($customerRegion['Europe'] ?? 0); ?>,
-				                                    <?= (int) ($customerRegion['America'] ?? 0); ?>,
-				                                    <?= (int) ($customerRegion['Asia'] ?? 0); ?>,
-				                                    <?= (int) ($customerRegion['Africa'] ?? 0); ?>,
-				                                    <?= (int) ($customerRegion['CIS'] ?? 0); ?>,
-				                                    <?= (int) ($customerRegion['Other'] ?? 0); ?>
-				                                ],
-				                                "backgroundColor": [
-				                                    "rgb(255, 99, 132)",
-				                                    "rgb(255, 159, 64)",
-				                                    "rgb(255, 205, 86)",
-				                                    "rgb(75, 192, 192)",
-				                                    "rgb(54, 162, 235)",
-				                                    "rgb(153, 102, 255)"
-				                                ]
-				                            }]
-				                        },
-				                        "options": {
-				                            "title": {
-				                                "display": false,
-				                                "text": "Customers per Region - Currently"
-				                            }
-				                        }
-				                }'></canvas>
+            <div class="row">
+                <div class="col-xs-12 col-lg-6">
+                    <section class="portlet">
+                        <div class="portlet-head">
+                            Sales per Region - Current
+                            <?php include __DIR__ . '/../../../../Web/Backend/Themes/popup-export-data.tpl.php'; ?>
+                        </div>
+                        <?php $customerRegion = $this->getData('currentCustomerRegion'); ?>
+                        <div class="portlet-body">
+                            <canvas id="sales-region" data-chart='{
+                                        "type": "pie",
+                                        "data": {
+                                            "labels": [
+                                                    "Europe", "America", "Asia", "Africa", "CIS", "Other"
+                                                ],
+                                            "datasets": [{
+                                                "data": [
+                                                    <?= (int) ($customerRegion['Europe'] ?? 0); ?>,
+                                                    <?= (int) ($customerRegion['America'] ?? 0); ?>,
+                                                    <?= (int) ($customerRegion['Asia'] ?? 0); ?>,
+                                                    <?= (int) ($customerRegion['Africa'] ?? 0); ?>,
+                                                    <?= (int) ($customerRegion['CIS'] ?? 0); ?>,
+                                                    <?= (int) ($customerRegion['Other'] ?? 0); ?>
+                                                ],
+                                                "backgroundColor": [
+                                                    "rgb(255, 99, 132)",
+                                                    "rgb(255, 159, 64)",
+                                                    "rgb(255, 205, 86)",
+                                                    "rgb(75, 192, 192)",
+                                                    "rgb(54, 162, 235)",
+                                                    "rgb(153, 102, 255)"
+                                                ]
+                                            }]
+                                        },
+                                        "options": {
+                                            "title": {
+                                                "display": false,
+                                                "text": "Customers per Region - Currently"
+                                            }
+                                        }
+                                }'></canvas>
 
-				            <div class="more-container">
-				                <input id="more-customer-region" type="checkbox">
-				                <label for="more-customer-region">
-				                    <span>Data</span>
-				                    <i class="fa fa-chevron-right expand"></i>
-				                </label>
-				                <div>
-				                <table class="default">
-				                    <thead>
-				                        <tr>
-				                            <td>Region
-				                            <td>Customer count
-				                    <tbody>
-				                        <?php
-				                            $sum = 0;
-				                        foreach ($customerRegion as $region => $values) : $sum += $values; ?>
-				                            <tr>
-				                                <td><?= $region; ?>
-				                                <td><?= $values; ?>
-				                        <?php endforeach; ?>
-				                            <tr>
-				                                <td>Total
-				                                <td><?= $sum; ?>
-				                </table>
-				                </div>
-				            </div>
-				        </div>
-				    </section>
-				</div>
+                            <div class="more-container">
+                                <input id="more-customer-region" type="checkbox">
+                                <label for="more-customer-region">
+                                    <span>Data</span>
+                                    <i class="fa fa-chevron-right expand"></i>
+                                </label>
+                                <div>
+                                <table class="default">
+                                    <thead>
+                                        <tr>
+                                            <td>Region
+                                            <td>Customer count
+                                    <tbody>
+                                        <?php
+                                            $sum = 0;
+                                        foreach ($customerRegion as $region => $values) : $sum += $values; ?>
+                                            <tr>
+                                                <td><?= $region; ?>
+                                                <td><?= $values; ?>
+                                        <?php endforeach; ?>
+                                            <tr>
+                                                <td>Total
+                                                <td><?= $sum; ?>
+                                </table>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
 
-				<div class="col-xs-12 col-lg-6">
-			        <section class="portlet">
-			            <div class="portlet-head">
-			                Sales per Region - Annual
-			                <?php include __DIR__ . '/../../../../Web/Backend/Themes/popup-export-data.tpl.php'; ?>
-			            </div>
-			            <?php $customerRegion = $this->getData('annualCustomerRegion'); ?>
-			            <div class="portlet-body">
-			                <canvas id="sales-region" data-chart='{
-			                                "type": "line",
-			                                "data": {
-			                                    "labels": [
-			                                        <?php
-			                                            $temp = [];
-			                                            foreach ($customerRegion as $annual) {
-			                                                $temp[] = (string) $annual['year'];
-			                                            }
-			                                        ?>
-			                                        <?= '"' . \implode('", "', $temp) . '"'; ?>
-			                                    ],
-			                                    "datasets": [
-			                                        {
-			                                            "label": "<?= $this->getHtml('Total'); ?>",
-			                                            "type": "line",
-			                                            "data": [
-			                                                <?php
-			                                                    $temp = [];
-			                                                    foreach ($customerRegion as $annual) {
-			                                                        $temp[] = ((int) ($annual['Total'] ?? 0));
-			                                                    }
-			                                                ?>
-			                                                <?= \implode(',', $temp); ?>
-			                                            ],
-			                                            "fill": false,
-			                                            "borderColor": "rgb(139, 139, 139)",
-			                                            "backgroundColor": "rgb(139, 139, 139)",
-			                                            "tension": 0.0
-			                                        },
-			                                        {
-			                                            "label": "<?= $this->getHtml('Europe'); ?>",
-			                                            "type": "line",
-			                                            "data": [
-			                                                <?php
-			                                                    $temp = [];
-			                                                    foreach ($customerRegion as $annual) {
-			                                                        $temp[] = ((int) ($annual['Europe'] ?? 0));
-			                                                    }
-			                                                ?>
-			                                                <?= \implode(',', $temp); ?>
-			                                            ],
-			                                            "fill": false,
-			                                            "borderColor": "rgb(255, 99, 132)",
-			                                            "backgroundColor": "rgb(255, 99, 132)",
-			                                            "tension": 0.0
-			                                        },
-			                                        {
-			                                            "label": "<?= $this->getHtml('America'); ?>",
-			                                            "type": "line",
-			                                            "data": [
-			                                                <?php
-			                                                    $temp = [];
-			                                                    foreach ($customerRegion as $annual) {
-			                                                        $temp[] = ((int) ($annual['America'] ?? 0));
-			                                                    }
-			                                                ?>
-			                                                <?= \implode(',', $temp); ?>
-			                                            ],
-			                                            "fill": false,
-			                                            "borderColor": "rgb(255, 159, 64)",
-			                                            "backgroundColor": "rgb(255, 159, 64)",
-			                                            "tension": 0.0
-			                                        },
-			                                        {
-			                                            "label": "<?= $this->getHtml('Asia'); ?>",
-			                                            "type": "line",
-			                                            "data": [
-			                                                <?php
-			                                                    $temp = [];
-			                                                    foreach ($customerRegion as $annual) {
-			                                                        $temp[] = ((int) ($annual['Asia'] ?? 0));
-			                                                    }
-			                                                ?>
-			                                                <?= \implode(',', $temp); ?>
-			                                            ],
-			                                            "fill": false,
-			                                            "borderColor": "rgb(255, 205, 86)",
-			                                            "backgroundColor": "rgb(255, 205, 86)",
-			                                            "tension": 0.0
-			                                        },
-			                                        {
-			                                            "label": "<?= $this->getHtml('Africa'); ?>",
-			                                            "type": "line",
-			                                            "data": [
-			                                                <?php
-			                                                    $temp = [];
-			                                                    foreach ($customerRegion as $annual) {
-			                                                        $temp[] = ((int) ($annual['Africa'] ?? 0));
-			                                                    }
-			                                                ?>
-			                                                <?= \implode(',', $temp); ?>
-			                                            ],
-			                                            "fill": false,
-			                                            "borderColor": "rgb(75, 192, 192)",
-			                                            "backgroundColor": "rgb(75, 192, 192)",
-			                                            "tension": 0.0
-			                                        },
-			                                        {
-			                                            "label": "<?= $this->getHtml('CIS'); ?>",
-			                                            "type": "line",
-			                                            "data": [
-			                                                <?php
-			                                                    $temp = [];
-			                                                    foreach ($customerRegion as $annual) {
-			                                                        $temp[] = ((int) ($annual['CIS'] ?? 0));
-			                                                    }
-			                                                ?>
-			                                                <?= \implode(',', $temp); ?>
-			                                            ],
-			                                            "fill": false,
-			                                            "borderColor": "rgb(54, 162, 235)",
-			                                            "backgroundColor": "rgb(54, 162, 235)",
-			                                            "tension": 0.0
-			                                        },
-			                                        {
-			                                            "label": "<?= $this->getHtml('Other'); ?>",
-			                                            "type": "line",
-			                                            "data": [
-			                                                <?php
-			                                                    $temp = [];
-			                                                    foreach ($customerRegion as $annual) {
-			                                                        $temp[] = ((int) ($annual['Other'] ?? 0));
-			                                                    }
-			                                                ?>
-			                                                <?= \implode(',', $temp); ?>
-			                                            ],
-			                                            "fill": false,
-			                                            "borderColor": "rgb(153, 102, 255)",
-			                                            "backgroundColor": "rgb(153, 102, 255)",
-			                                            "tension": 0.0
-			                                        }
-			                                    ]
-			                                },
-			                                "options": {
-			                                    "title": {
-			                                        "display": false,
-			                                        "text": "Sales per Region - Annual"
-			                                    },
-			                                    "scales": {
-			                                        "yAxes": [
-			                                            {
-			                                                "id": "axis-1",
-			                                                "display": true,
-			                                                "position": "left"
-			                                            }
-			                                        ]
-			                                    }
-			                                }
-			                        }'></canvas>
+                <div class="col-xs-12 col-lg-6">
+                    <section class="portlet">
+                        <div class="portlet-head">
+                            Sales per Region - Annual
+                            <?php include __DIR__ . '/../../../../Web/Backend/Themes/popup-export-data.tpl.php'; ?>
+                        </div>
+                        <?php $customerRegion = $this->getData('annualCustomerRegion'); ?>
+                        <div class="portlet-body">
+                            <canvas id="sales-region" data-chart='{
+                                            "type": "line",
+                                            "data": {
+                                                "labels": [
+                                                    <?php
+                                                        $temp = [];
+                                                        foreach ($customerRegion as $annual) {
+                                                            $temp[] = (string) $annual['year'];
+                                                        }
+                                                    ?>
+                                                    <?= '"' . \implode('", "', $temp) . '"'; ?>
+                                                ],
+                                                "datasets": [
+                                                    {
+                                                        "label": "<?= $this->getHtml('Total'); ?>",
+                                                        "type": "line",
+                                                        "data": [
+                                                            <?php
+                                                                $temp = [];
+                                                                foreach ($customerRegion as $annual) {
+                                                                    $temp[] = ((int) ($annual['Total'] ?? 0));
+                                                                }
+                                                            ?>
+                                                            <?= \implode(',', $temp); ?>
+                                                        ],
+                                                        "fill": false,
+                                                        "borderColor": "rgb(139, 139, 139)",
+                                                        "backgroundColor": "rgb(139, 139, 139)",
+                                                        "tension": 0.0
+                                                    },
+                                                    {
+                                                        "label": "<?= $this->getHtml('Europe'); ?>",
+                                                        "type": "line",
+                                                        "data": [
+                                                            <?php
+                                                                $temp = [];
+                                                                foreach ($customerRegion as $annual) {
+                                                                    $temp[] = ((int) ($annual['Europe'] ?? 0));
+                                                                }
+                                                            ?>
+                                                            <?= \implode(',', $temp); ?>
+                                                        ],
+                                                        "fill": false,
+                                                        "borderColor": "rgb(255, 99, 132)",
+                                                        "backgroundColor": "rgb(255, 99, 132)",
+                                                        "tension": 0.0
+                                                    },
+                                                    {
+                                                        "label": "<?= $this->getHtml('America'); ?>",
+                                                        "type": "line",
+                                                        "data": [
+                                                            <?php
+                                                                $temp = [];
+                                                                foreach ($customerRegion as $annual) {
+                                                                    $temp[] = ((int) ($annual['America'] ?? 0));
+                                                                }
+                                                            ?>
+                                                            <?= \implode(',', $temp); ?>
+                                                        ],
+                                                        "fill": false,
+                                                        "borderColor": "rgb(255, 159, 64)",
+                                                        "backgroundColor": "rgb(255, 159, 64)",
+                                                        "tension": 0.0
+                                                    },
+                                                    {
+                                                        "label": "<?= $this->getHtml('Asia'); ?>",
+                                                        "type": "line",
+                                                        "data": [
+                                                            <?php
+                                                                $temp = [];
+                                                                foreach ($customerRegion as $annual) {
+                                                                    $temp[] = ((int) ($annual['Asia'] ?? 0));
+                                                                }
+                                                            ?>
+                                                            <?= \implode(',', $temp); ?>
+                                                        ],
+                                                        "fill": false,
+                                                        "borderColor": "rgb(255, 205, 86)",
+                                                        "backgroundColor": "rgb(255, 205, 86)",
+                                                        "tension": 0.0
+                                                    },
+                                                    {
+                                                        "label": "<?= $this->getHtml('Africa'); ?>",
+                                                        "type": "line",
+                                                        "data": [
+                                                            <?php
+                                                                $temp = [];
+                                                                foreach ($customerRegion as $annual) {
+                                                                    $temp[] = ((int) ($annual['Africa'] ?? 0));
+                                                                }
+                                                            ?>
+                                                            <?= \implode(',', $temp); ?>
+                                                        ],
+                                                        "fill": false,
+                                                        "borderColor": "rgb(75, 192, 192)",
+                                                        "backgroundColor": "rgb(75, 192, 192)",
+                                                        "tension": 0.0
+                                                    },
+                                                    {
+                                                        "label": "<?= $this->getHtml('CIS'); ?>",
+                                                        "type": "line",
+                                                        "data": [
+                                                            <?php
+                                                                $temp = [];
+                                                                foreach ($customerRegion as $annual) {
+                                                                    $temp[] = ((int) ($annual['CIS'] ?? 0));
+                                                                }
+                                                            ?>
+                                                            <?= \implode(',', $temp); ?>
+                                                        ],
+                                                        "fill": false,
+                                                        "borderColor": "rgb(54, 162, 235)",
+                                                        "backgroundColor": "rgb(54, 162, 235)",
+                                                        "tension": 0.0
+                                                    },
+                                                    {
+                                                        "label": "<?= $this->getHtml('Other'); ?>",
+                                                        "type": "line",
+                                                        "data": [
+                                                            <?php
+                                                                $temp = [];
+                                                                foreach ($customerRegion as $annual) {
+                                                                    $temp[] = ((int) ($annual['Other'] ?? 0));
+                                                                }
+                                                            ?>
+                                                            <?= \implode(',', $temp); ?>
+                                                        ],
+                                                        "fill": false,
+                                                        "borderColor": "rgb(153, 102, 255)",
+                                                        "backgroundColor": "rgb(153, 102, 255)",
+                                                        "tension": 0.0
+                                                    }
+                                                ]
+                                            },
+                                            "options": {
+                                                "title": {
+                                                    "display": false,
+                                                    "text": "Sales per Region - Annual"
+                                                },
+                                                "scales": {
+                                                    "yAxes": [
+                                                        {
+                                                            "id": "axis-1",
+                                                            "display": true,
+                                                            "position": "left"
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                    }'></canvas>
 
-			                <div class="more-container">
-			                    <input id="more-customer-region-annual" type="checkbox">
-			                    <label for="more-customer-region-annual">
-			                        <span>Data</span>
-			                        <i class="fa fa-chevron-right expand"></i>
-			                    </label>
-			                    <div>
-			                    <table class="default">
-			                        <thead>
-			                            <tr>
-			                                <td>Region
-			                                <?php foreach ([2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020] as $year => $values) : ?>
-			                                    <td><?= $values; ?>
-			                                <?php endforeach; ?>
-			                        <tbody>
-			                            <?php
-			                            $regions = [
-			                                'Europe',
-			                                'America',
-			                                'Asia',
-			                                'Africa',
-			                                'CIS',
-			                                'Other',
-			                                'Total',
-			                            ];
-			                            foreach ($regions as $region) : ?>
-			                                    <tr>
-			                                        <td><?= $region; ?>
-			                                    <?php foreach ($customerRegion as $year => $annual) : ?>
-			                                        <td><?= $annual[$region] ?? 0; ?>
-			                            <?php endforeach; endforeach; ?>
-			                    </table>
-			                    </div>
-			                </div>
-			            </div>
-			        </section>
-			    </div>
-			</div>
+                            <div class="more-container">
+                                <input id="more-customer-region-annual" type="checkbox">
+                                <label for="more-customer-region-annual">
+                                    <span>Data</span>
+                                    <i class="fa fa-chevron-right expand"></i>
+                                </label>
+                                <div>
+                                <table class="default">
+                                    <thead>
+                                        <tr>
+                                            <td>Region
+                                            <?php foreach ([2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020] as $year => $values) : ?>
+                                                <td><?= $values; ?>
+                                            <?php endforeach; ?>
+                                    <tbody>
+                                        <?php
+                                        $regions = [
+                                            'Europe',
+                                            'America',
+                                            'Asia',
+                                            'Africa',
+                                            'CIS',
+                                            'Other',
+                                            'Total',
+                                        ];
+                                        foreach ($regions as $region) : ?>
+                                                <tr>
+                                                    <td><?= $region; ?>
+                                                <?php foreach ($customerRegion as $year => $annual) : ?>
+                                                    <td><?= $annual[$region] ?? 0; ?>
+                                        <?php endforeach; endforeach; ?>
+                                </table>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
 
-			<div class="row">
-			    <div class="col-xs-12 col-lg-6">
-				    <section class="portlet">
-				        <div class="portlet-head">
-				            Profit per Region - Current
-				            <?php include __DIR__ . '/../../../../Web/Backend/Themes/popup-export-data.tpl.php'; ?>
-				        </div>
-				        <?php $customerRegion = $this->getData('currentCustomerRegion'); ?>
-				        <div class="portlet-body">
-				            <canvas id="sales-region" data-chart='{
-				                        "type": "pie",
-				                        "data": {
-				                            "labels": [
-				                                    "Europe", "America", "Asia", "Africa", "CIS", "Other"
-				                                ],
-				                            "datasets": [{
-				                                "data": [
-				                                    <?= (int) ($customerRegion['Europe'] ?? 0); ?>,
-				                                    <?= (int) ($customerRegion['America'] ?? 0); ?>,
-				                                    <?= (int) ($customerRegion['Asia'] ?? 0); ?>,
-				                                    <?= (int) ($customerRegion['Africa'] ?? 0); ?>,
-				                                    <?= (int) ($customerRegion['CIS'] ?? 0); ?>,
-				                                    <?= (int) ($customerRegion['Other'] ?? 0); ?>
-				                                ],
-				                                "backgroundColor": [
-				                                    "rgb(255, 99, 132)",
-				                                    "rgb(255, 159, 64)",
-				                                    "rgb(255, 205, 86)",
-				                                    "rgb(75, 192, 192)",
-				                                    "rgb(54, 162, 235)",
-				                                    "rgb(153, 102, 255)"
-				                                ]
-				                            }]
-				                        },
-				                        "options": {
-				                            "title": {
-				                                "display": false,
-				                                "text": "Customers per Region - Currently"
-				                            }
-				                        }
-				                }'></canvas>
+            <div class="row">
+                <div class="col-xs-12 col-lg-6">
+                    <section class="portlet">
+                        <div class="portlet-head">
+                            Profit per Region - Current
+                            <?php include __DIR__ . '/../../../../Web/Backend/Themes/popup-export-data.tpl.php'; ?>
+                        </div>
+                        <?php $customerRegion = $this->getData('currentCustomerRegion'); ?>
+                        <div class="portlet-body">
+                            <canvas id="sales-region" data-chart='{
+                                        "type": "pie",
+                                        "data": {
+                                            "labels": [
+                                                    "Europe", "America", "Asia", "Africa", "CIS", "Other"
+                                                ],
+                                            "datasets": [{
+                                                "data": [
+                                                    <?= (int) ($customerRegion['Europe'] ?? 0); ?>,
+                                                    <?= (int) ($customerRegion['America'] ?? 0); ?>,
+                                                    <?= (int) ($customerRegion['Asia'] ?? 0); ?>,
+                                                    <?= (int) ($customerRegion['Africa'] ?? 0); ?>,
+                                                    <?= (int) ($customerRegion['CIS'] ?? 0); ?>,
+                                                    <?= (int) ($customerRegion['Other'] ?? 0); ?>
+                                                ],
+                                                "backgroundColor": [
+                                                    "rgb(255, 99, 132)",
+                                                    "rgb(255, 159, 64)",
+                                                    "rgb(255, 205, 86)",
+                                                    "rgb(75, 192, 192)",
+                                                    "rgb(54, 162, 235)",
+                                                    "rgb(153, 102, 255)"
+                                                ]
+                                            }]
+                                        },
+                                        "options": {
+                                            "title": {
+                                                "display": false,
+                                                "text": "Customers per Region - Currently"
+                                            }
+                                        }
+                                }'></canvas>
 
-				            <div class="more-container">
-				                <input id="more-customer-region" type="checkbox">
-				                <label for="more-customer-region">
-				                    <span>Data</span>
-				                    <i class="fa fa-chevron-right expand"></i>
-				                </label>
-				                <div>
-				                <table class="default">
-				                    <thead>
-				                        <tr>
-				                            <td>Region
-				                            <td>Customer count
-				                    <tbody>
-				                        <?php
-				                            $sum = 0;
-				                        foreach ($customerRegion as $region => $values) : $sum += $values; ?>
-				                            <tr>
-				                                <td><?= $region; ?>
-				                                <td><?= $values; ?>
-				                        <?php endforeach; ?>
-				                            <tr>
-				                                <td>Total
-				                                <td><?= $sum; ?>
-				                </table>
-				                </div>
-				            </div>
-				        </div>
-				    </section>
-				</div>
+                            <div class="more-container">
+                                <input id="more-customer-region" type="checkbox">
+                                <label for="more-customer-region">
+                                    <span>Data</span>
+                                    <i class="fa fa-chevron-right expand"></i>
+                                </label>
+                                <div>
+                                <table class="default">
+                                    <thead>
+                                        <tr>
+                                            <td>Region
+                                            <td>Customer count
+                                    <tbody>
+                                        <?php
+                                            $sum = 0;
+                                        foreach ($customerRegion as $region => $values) : $sum += $values; ?>
+                                            <tr>
+                                                <td><?= $region; ?>
+                                                <td><?= $values; ?>
+                                        <?php endforeach; ?>
+                                            <tr>
+                                                <td>Total
+                                                <td><?= $sum; ?>
+                                </table>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
 
-				<div class="col-xs-12 col-lg-6">
-			        <section class="portlet">
-			            <div class="portlet-head">
-			                Profit per Region - Annual
-			                <?php include __DIR__ . '/../../../../Web/Backend/Themes/popup-export-data.tpl.php'; ?>
-			            </div>
-			            <?php $customerRegion = $this->getData('annualCustomerRegion'); ?>
-			            <div class="portlet-body">
-			                <canvas id="sales-region" data-chart='{
-			                                "type": "line",
-			                                "data": {
-			                                    "labels": [
-			                                        <?php
-			                                            $temp = [];
-			                                            foreach ($customerRegion as $annual) {
-			                                                $temp[] = (string) $annual['year'];
-			                                            }
-			                                        ?>
-			                                        <?= '"' . \implode('", "', $temp) . '"'; ?>
-			                                    ],
-			                                    "datasets": [
-			                                        {
-			                                            "label": "<?= $this->getHtml('Total'); ?>",
-			                                            "type": "line",
-			                                            "data": [
-			                                                <?php
-			                                                    $temp = [];
-			                                                    foreach ($customerRegion as $annual) {
-			                                                        $temp[] = ((int) ($annual['Total'] ?? 0));
-			                                                    }
-			                                                ?>
-			                                                <?= \implode(',', $temp); ?>
-			                                            ],
-			                                            "fill": false,
-			                                            "borderColor": "rgb(139, 139, 139)",
-			                                            "backgroundColor": "rgb(139, 139, 139)",
-			                                            "tension": 0.0
-			                                        },
-			                                        {
-			                                            "label": "<?= $this->getHtml('Europe'); ?>",
-			                                            "type": "line",
-			                                            "data": [
-			                                                <?php
-			                                                    $temp = [];
-			                                                    foreach ($customerRegion as $annual) {
-			                                                        $temp[] = ((int) ($annual['Europe'] ?? 0));
-			                                                    }
-			                                                ?>
-			                                                <?= \implode(',', $temp); ?>
-			                                            ],
-			                                            "fill": false,
-			                                            "borderColor": "rgb(255, 99, 132)",
-			                                            "backgroundColor": "rgb(255, 99, 132)",
-			                                            "tension": 0.0
-			                                        },
-			                                        {
-			                                            "label": "<?= $this->getHtml('America'); ?>",
-			                                            "type": "line",
-			                                            "data": [
-			                                                <?php
-			                                                    $temp = [];
-			                                                    foreach ($customerRegion as $annual) {
-			                                                        $temp[] = ((int) ($annual['America'] ?? 0));
-			                                                    }
-			                                                ?>
-			                                                <?= \implode(',', $temp); ?>
-			                                            ],
-			                                            "fill": false,
-			                                            "borderColor": "rgb(255, 159, 64)",
-			                                            "backgroundColor": "rgb(255, 159, 64)",
-			                                            "tension": 0.0
-			                                        },
-			                                        {
-			                                            "label": "<?= $this->getHtml('Asia'); ?>",
-			                                            "type": "line",
-			                                            "data": [
-			                                                <?php
-			                                                    $temp = [];
-			                                                    foreach ($customerRegion as $annual) {
-			                                                        $temp[] = ((int) ($annual['Asia'] ?? 0));
-			                                                    }
-			                                                ?>
-			                                                <?= \implode(',', $temp); ?>
-			                                            ],
-			                                            "fill": false,
-			                                            "borderColor": "rgb(255, 205, 86)",
-			                                            "backgroundColor": "rgb(255, 205, 86)",
-			                                            "tension": 0.0
-			                                        },
-			                                        {
-			                                            "label": "<?= $this->getHtml('Africa'); ?>",
-			                                            "type": "line",
-			                                            "data": [
-			                                                <?php
-			                                                    $temp = [];
-			                                                    foreach ($customerRegion as $annual) {
-			                                                        $temp[] = ((int) ($annual['Africa'] ?? 0));
-			                                                    }
-			                                                ?>
-			                                                <?= \implode(',', $temp); ?>
-			                                            ],
-			                                            "fill": false,
-			                                            "borderColor": "rgb(75, 192, 192)",
-			                                            "backgroundColor": "rgb(75, 192, 192)",
-			                                            "tension": 0.0
-			                                        },
-			                                        {
-			                                            "label": "<?= $this->getHtml('CIS'); ?>",
-			                                            "type": "line",
-			                                            "data": [
-			                                                <?php
-			                                                    $temp = [];
-			                                                    foreach ($customerRegion as $annual) {
-			                                                        $temp[] = ((int) ($annual['CIS'] ?? 0));
-			                                                    }
-			                                                ?>
-			                                                <?= \implode(',', $temp); ?>
-			                                            ],
-			                                            "fill": false,
-			                                            "borderColor": "rgb(54, 162, 235)",
-			                                            "backgroundColor": "rgb(54, 162, 235)",
-			                                            "tension": 0.0
-			                                        },
-			                                        {
-			                                            "label": "<?= $this->getHtml('Other'); ?>",
-			                                            "type": "line",
-			                                            "data": [
-			                                                <?php
-			                                                    $temp = [];
-			                                                    foreach ($customerRegion as $annual) {
-			                                                        $temp[] = ((int) ($annual['Other'] ?? 0));
-			                                                    }
-			                                                ?>
-			                                                <?= \implode(',', $temp); ?>
-			                                            ],
-			                                            "fill": false,
-			                                            "borderColor": "rgb(153, 102, 255)",
-			                                            "backgroundColor": "rgb(153, 102, 255)",
-			                                            "tension": 0.0
-			                                        }
-			                                    ]
-			                                },
-			                                "options": {
-			                                    "title": {
-			                                        "display": false,
-			                                        "text": "Sales per Region - Annual"
-			                                    },
-			                                    "scales": {
-			                                        "yAxes": [
-			                                            {
-			                                                "id": "axis-1",
-			                                                "display": true,
-			                                                "position": "left"
-			                                            }
-			                                        ]
-			                                    }
-			                                }
-			                        }'></canvas>
+                <div class="col-xs-12 col-lg-6">
+                    <section class="portlet">
+                        <div class="portlet-head">
+                            Profit per Region - Annual
+                            <?php include __DIR__ . '/../../../../Web/Backend/Themes/popup-export-data.tpl.php'; ?>
+                        </div>
+                        <?php $customerRegion = $this->getData('annualCustomerRegion'); ?>
+                        <div class="portlet-body">
+                            <canvas id="sales-region" data-chart='{
+                                            "type": "line",
+                                            "data": {
+                                                "labels": [
+                                                    <?php
+                                                        $temp = [];
+                                                        foreach ($customerRegion as $annual) {
+                                                            $temp[] = (string) $annual['year'];
+                                                        }
+                                                    ?>
+                                                    <?= '"' . \implode('", "', $temp) . '"'; ?>
+                                                ],
+                                                "datasets": [
+                                                    {
+                                                        "label": "<?= $this->getHtml('Total'); ?>",
+                                                        "type": "line",
+                                                        "data": [
+                                                            <?php
+                                                                $temp = [];
+                                                                foreach ($customerRegion as $annual) {
+                                                                    $temp[] = ((int) ($annual['Total'] ?? 0));
+                                                                }
+                                                            ?>
+                                                            <?= \implode(',', $temp); ?>
+                                                        ],
+                                                        "fill": false,
+                                                        "borderColor": "rgb(139, 139, 139)",
+                                                        "backgroundColor": "rgb(139, 139, 139)",
+                                                        "tension": 0.0
+                                                    },
+                                                    {
+                                                        "label": "<?= $this->getHtml('Europe'); ?>",
+                                                        "type": "line",
+                                                        "data": [
+                                                            <?php
+                                                                $temp = [];
+                                                                foreach ($customerRegion as $annual) {
+                                                                    $temp[] = ((int) ($annual['Europe'] ?? 0));
+                                                                }
+                                                            ?>
+                                                            <?= \implode(',', $temp); ?>
+                                                        ],
+                                                        "fill": false,
+                                                        "borderColor": "rgb(255, 99, 132)",
+                                                        "backgroundColor": "rgb(255, 99, 132)",
+                                                        "tension": 0.0
+                                                    },
+                                                    {
+                                                        "label": "<?= $this->getHtml('America'); ?>",
+                                                        "type": "line",
+                                                        "data": [
+                                                            <?php
+                                                                $temp = [];
+                                                                foreach ($customerRegion as $annual) {
+                                                                    $temp[] = ((int) ($annual['America'] ?? 0));
+                                                                }
+                                                            ?>
+                                                            <?= \implode(',', $temp); ?>
+                                                        ],
+                                                        "fill": false,
+                                                        "borderColor": "rgb(255, 159, 64)",
+                                                        "backgroundColor": "rgb(255, 159, 64)",
+                                                        "tension": 0.0
+                                                    },
+                                                    {
+                                                        "label": "<?= $this->getHtml('Asia'); ?>",
+                                                        "type": "line",
+                                                        "data": [
+                                                            <?php
+                                                                $temp = [];
+                                                                foreach ($customerRegion as $annual) {
+                                                                    $temp[] = ((int) ($annual['Asia'] ?? 0));
+                                                                }
+                                                            ?>
+                                                            <?= \implode(',', $temp); ?>
+                                                        ],
+                                                        "fill": false,
+                                                        "borderColor": "rgb(255, 205, 86)",
+                                                        "backgroundColor": "rgb(255, 205, 86)",
+                                                        "tension": 0.0
+                                                    },
+                                                    {
+                                                        "label": "<?= $this->getHtml('Africa'); ?>",
+                                                        "type": "line",
+                                                        "data": [
+                                                            <?php
+                                                                $temp = [];
+                                                                foreach ($customerRegion as $annual) {
+                                                                    $temp[] = ((int) ($annual['Africa'] ?? 0));
+                                                                }
+                                                            ?>
+                                                            <?= \implode(',', $temp); ?>
+                                                        ],
+                                                        "fill": false,
+                                                        "borderColor": "rgb(75, 192, 192)",
+                                                        "backgroundColor": "rgb(75, 192, 192)",
+                                                        "tension": 0.0
+                                                    },
+                                                    {
+                                                        "label": "<?= $this->getHtml('CIS'); ?>",
+                                                        "type": "line",
+                                                        "data": [
+                                                            <?php
+                                                                $temp = [];
+                                                                foreach ($customerRegion as $annual) {
+                                                                    $temp[] = ((int) ($annual['CIS'] ?? 0));
+                                                                }
+                                                            ?>
+                                                            <?= \implode(',', $temp); ?>
+                                                        ],
+                                                        "fill": false,
+                                                        "borderColor": "rgb(54, 162, 235)",
+                                                        "backgroundColor": "rgb(54, 162, 235)",
+                                                        "tension": 0.0
+                                                    },
+                                                    {
+                                                        "label": "<?= $this->getHtml('Other'); ?>",
+                                                        "type": "line",
+                                                        "data": [
+                                                            <?php
+                                                                $temp = [];
+                                                                foreach ($customerRegion as $annual) {
+                                                                    $temp[] = ((int) ($annual['Other'] ?? 0));
+                                                                }
+                                                            ?>
+                                                            <?= \implode(',', $temp); ?>
+                                                        ],
+                                                        "fill": false,
+                                                        "borderColor": "rgb(153, 102, 255)",
+                                                        "backgroundColor": "rgb(153, 102, 255)",
+                                                        "tension": 0.0
+                                                    }
+                                                ]
+                                            },
+                                            "options": {
+                                                "title": {
+                                                    "display": false,
+                                                    "text": "Sales per Region - Annual"
+                                                },
+                                                "scales": {
+                                                    "yAxes": [
+                                                        {
+                                                            "id": "axis-1",
+                                                            "display": true,
+                                                            "position": "left"
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                    }'></canvas>
 
-			                <div class="more-container">
-			                    <input id="more-customer-region-annual" type="checkbox">
-			                    <label for="more-customer-region-annual">
-			                        <span>Data</span>
-			                        <i class="fa fa-chevron-right expand"></i>
-			                    </label>
-			                    <div>
-			                    <table class="default">
-			                        <thead>
-			                            <tr>
-			                                <td>Region
-			                                <?php foreach ([2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020] as $year => $values) : ?>
-			                                    <td><?= $values; ?>
-			                                <?php endforeach; ?>
-			                        <tbody>
-			                            <?php
-			                            $regions = [
-			                                'Europe',
-			                                'America',
-			                                'Asia',
-			                                'Africa',
-			                                'CIS',
-			                                'Other',
-			                                'Total',
-			                            ];
-			                            foreach ($regions as $region) : ?>
-			                                    <tr>
-			                                        <td><?= $region; ?>
-			                                    <?php foreach ($customerRegion as $year => $annual) : ?>
-			                                        <td><?= $annual[$region] ?? 0; ?>
-			                            <?php endforeach; endforeach; ?>
-			                    </table>
-			                    </div>
-			                </div>
-			            </div>
-			        </section>
-			    </div>
-			</div>
+                            <div class="more-container">
+                                <input id="more-customer-region-annual" type="checkbox">
+                                <label for="more-customer-region-annual">
+                                    <span>Data</span>
+                                    <i class="fa fa-chevron-right expand"></i>
+                                </label>
+                                <div>
+                                <table class="default">
+                                    <thead>
+                                        <tr>
+                                            <td>Region
+                                            <?php foreach ([2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020] as $year => $values) : ?>
+                                                <td><?= $values; ?>
+                                            <?php endforeach; ?>
+                                    <tbody>
+                                        <?php
+                                        $regions = [
+                                            'Europe',
+                                            'America',
+                                            'Asia',
+                                            'Africa',
+                                            'CIS',
+                                            'Other',
+                                            'Total',
+                                        ];
+                                        foreach ($regions as $region) : ?>
+                                                <tr>
+                                                    <td><?= $region; ?>
+                                                <?php foreach ($customerRegion as $year => $annual) : ?>
+                                                    <td><?= $annual[$region] ?? 0; ?>
+                                        <?php endforeach; endforeach; ?>
+                                </table>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
 
-			<div class="row">
-				<div class="col-xs-12">
-			        <section class="portlet">
-			        	<div class="portlet-head">
-			        		Sales / Region
-			        		<?php include __DIR__ . '/../../../../Web/Backend/Themes/popup-export-data.tpl.php'; ?>
-			        	</div>
-			            <table class="default">
-			                <thead>
-			                    <tr>
-			                        <td>Country
-			                        <td>Sales PY
-			                        <td>Sales B
-			                        <td>Sales A
-			                        <td>Diff PY
-			                        <td>Diff B
-			                <tbody>
-			            </table>
-			       </section>
-			    </div>
-			</div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <section class="portlet">
+                        <div class="portlet-head">
+                            Sales / Region
+                            <?php include __DIR__ . '/../../../../Web/Backend/Themes/popup-export-data.tpl.php'; ?>
+                        </div>
+                        <table class="default">
+                            <thead>
+                                <tr>
+                                    <td>Country
+                                    <td>Sales PY
+                                    <td>Sales B
+                                    <td>Sales A
+                                    <td>Diff PY
+                                    <td>Diff B
+                            <tbody>
+                        </table>
+                   </section>
+                </div>
+            </div>
         </div>
 
         <input type="radio" id="c-tab-3" name="tabular-2"<?= $this->request->uri->fragment === 'c-tab-3' ? ' checked' : ''; ?>>
         <div class="tab">
-        	<div class="row">
+            <div class="row">
                 <div class="col-xs-12 col-lg-6">
                     <section class="portlet">
                         <form>
@@ -675,7 +675,7 @@ echo $this->getData('nav')->render();
                 </div>
             </div>
 
-        	<div class="row">
+            <div class="row">
                 <div class="col-xs-12 col-lg-6">
                     <section class="portlet">
                         <div class="portlet-head">
@@ -1750,7 +1750,7 @@ echo $this->getData('nav')->render();
                     </section>
                 </div>
             </div>
-    	</div>
+        </div>
 
     </div>
 </div>
