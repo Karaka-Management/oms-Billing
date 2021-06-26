@@ -9,10 +9,10 @@ $bill     = $this->getData('bill');
 $elements = $bill->getElements();
 
 $mpdf = new Mpdf([
-    'mode'        => 'utf-8',
-    'format'      => 'A4-L',
-    'orientation' => 'L',
-    'margin_left' => 20,
+    'mode'           => 'utf-8',
+    'format'         => 'A4-L',
+    'orientation'    => 'L',
+    'margin_left'    => 20,
     'margin_right'   => 15,
     'margin_top'     => 48,
     'margin_bottom'  => 25,

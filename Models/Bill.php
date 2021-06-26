@@ -55,7 +55,9 @@ class Bill implements \JsonSerializable
      * @var int|BillType
      * @since 1.0.0
      */
-    public int|BillType $type = 0;
+    public int |
+
+BillType $type = 0;
 
     /**
      * Bill status.
@@ -822,7 +824,6 @@ class Bill implements \JsonSerializable
     {
         return $this->info;
     }
-
 
     /**
      * Set payment text.
