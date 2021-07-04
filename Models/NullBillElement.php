@@ -14,25 +14,26 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Models;
 
-use phpOMS\Stdlib\Base\Enum;
-
 /**
- * Bill status enum.
+ * Null bill element class.
  *
  * @package Modules\Billing\Models
  * @license OMS License 1.0
  * @link    https://orange-management.org
  * @since   1.0.0
  */
-abstract class BillStatus extends Enum
+final class NullBillElement extends BillElement
 {
-    public const ACTIVE = 1;
-
-    public const ARCHIVED = 2;
-
-    public const DELETED = 4;
-
-    public const DONE = 8;
-
-    public const DRAFT = 16;
+    /**
+     * Constructor
+     *
+     * @param int $id Model id
+     *
+     * @since 1.0.0
+     */
+    public function __construct(int $id = 0)
+    {
+        $this->id = $id;
+        parent::__construct();
+    }
 }

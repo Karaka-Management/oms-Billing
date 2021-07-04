@@ -17,7 +17,7 @@ namespace Modules\Billing\Models;
 use phpOMS\Stdlib\Base\Enum;
 
 /**
- * Task type enum.
+ * Bill transfer type enum.
  *
  * @package Modules\Billing\Models
  * @license OMS License 1.0

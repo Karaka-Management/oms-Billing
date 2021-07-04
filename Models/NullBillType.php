@@ -15,7 +15,7 @@ declare(strict_types=1);
 namespace Modules\Billing\Models;
 
 /**
- * Null account class.
+ * Null bill type class.
  *
  * @package Modules\Billing\Models
  * @license OMS License 1.0

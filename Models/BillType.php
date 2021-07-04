@@ -17,7 +17,7 @@ namespace Modules\Billing\Models;
 use phpOMS\Localization\ISO639x1Enum;
 
 /**
- * Task type enum.
+ * Bill type enum.
  *
  * @package Modules\Billing\Models
  * @license OMS License 1.0
@@ -85,7 +85,7 @@ BillTypeL11n $l11n;
     {
         if ($l11n instanceof BillTypeL11n) {
             $this->l11n = $l11n;
-        } elseif ($this->l11n instanceof BillTypeL11n) {
+        } elseif (isset($this->l11n) && $this->l11n instanceof BillTypeL11n) {
             $this->l11n->name = $l11n;
         } else {
             $this->l11n       = new BillTypeL11n();

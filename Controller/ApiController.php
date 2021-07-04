@@ -277,8 +277,12 @@ final class ApiController extends Controller
             . $bill->createdAt->format('m') . '/'
             . $bill->createdAt->format('d') . '/';
 
-        if (!\is_dir($pdfDir)) {
-            \mkdir($pdfDir, 0755, true);
+        $status = !\is_dir($pdfDir) ? \mkdir($pdfDir, 0755, true) : true;
+        if ($status === false) {
+            $response->set($request->uri->__toString(), new FormValidation($status));
+            $response->header->status = RequestStatusCode::R_400;
+
+            return;
         }
 
         $view = new View($this->app->l11nManager, $request, $response);
