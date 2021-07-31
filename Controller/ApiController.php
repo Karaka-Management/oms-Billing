@@ -279,7 +279,7 @@ final class ApiController extends Controller
 
         $status = !\is_dir($pdfDir) ? \mkdir($pdfDir, 0755, true) : true;
         if ($status === false) {
-            $response->set($request->uri->__toString(), new FormValidation($status));
+            $response->set($request->uri->__toString(), new FormValidation(['status' => $status]));
             $response->header->status = RequestStatusCode::R_400;
 
             return;
