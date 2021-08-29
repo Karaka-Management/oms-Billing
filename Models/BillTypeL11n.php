@@ -41,7 +41,9 @@ class BillTypeL11n implements \JsonSerializable, ArrayableInterface
      * @var int
      * @since 1.0.0
      */
-    protected int|BillType $type = 0;
+    protected int |
+
+BillType $type = 0;
 
     /**
      * Language.
