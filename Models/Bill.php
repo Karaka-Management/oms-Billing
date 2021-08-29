@@ -207,38 +207,140 @@ class Bill implements \JsonSerializable
 
     public string $referralName = '';
 
+    /**
+     * Net amount.
+     *
+     * @var Money
+     * @since 1.0.0
+     */
     public Money $net;
 
+    /**
+     * Gross amount.
+     *
+     * @var Money
+     * @since 1.0.0
+     */
     public Money $gross;
 
+    /**
+     * Costs in net.
+     *
+     * @var Money
+     * @since 1.0.0
+     */
     public Money $costs;
 
+    /**
+     * Profit in net.
+     *
+     * @var Money
+     * @since 1.0.0
+     */
     public Money $profit;
 
+    /**
+     * Insurance fees in net.
+     *
+     * @var Money
+     * @since 1.0.0
+     */
     public Money $insurance;
 
+    /**
+     * Freight in net.
+     *
+     * @var Money
+     * @since 1.0.0
+     */
     public Money $freight;
 
+    /**
+     * Currency.
+     *
+     * @var string
+     * @since 1.0.0
+     */
     private string $currency = ISO4217CharEnum::_EUR;
 
+    /**
+     * Info text.
+     *
+     * @var string
+     * @since 1.0.0
+     */
     public string $info = '';
 
+    /**
+     * Payment type.
+     *
+     * @var int
+     * @since 1.0.0
+     */
     public int $payment = 0;
 
+    /**
+     * Payment text.
+     *
+     * @var string
+     * @since 1.0.0
+     */
     public string $paymentText = '';
 
+    /**
+     * Terms.
+     *
+     * @var int
+     * @since 1.0.0
+     */
     public int $terms = 0;
 
+    /**
+     * Terms text.
+     *
+     * @var string
+     * @since 1.0.0
+     */
     public string $termsText = '';
 
+    /**
+     * Shipping.
+     *
+     * @var int
+     * @since 1.0.0
+     */
     public int $shipping = 0;
 
+    /**
+     * Shipping text.
+     *
+     * @var string
+     * @since 1.0.0
+     */
     public string $shippingText = '';
 
+    /**
+     * Vouchers used.
+     *
+     * @var array
+     * @since 1.0.0
+     */
     private array $vouchers = [];
 
+    /**
+     * Tracking ids for shipping.
+     *
+     * @var array
+     * @since 1.0.0
+     */
     private array $trackings = [];
 
+    /**
+     * Bill elements / bill lines.
+     *
+     * @var BillElement[]
+     * @since 1.0.0
+     */
     private array $elements = [];
 
     /**
