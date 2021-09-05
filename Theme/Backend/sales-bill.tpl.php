@@ -274,9 +274,6 @@ echo $this->getData('nav')->render(); ?>
                                 <td><?= $this->getHtml('Name'); ?>
                                 <td class="wf-100"><?= $this->getHtml('Log'); ?>
                                 <td><?= $this->getHtml('Date'); ?>
-                            <tfoot>
-                            <tr>
-                                <td colspan="6">
                             <tbody>
                             <tr>
                                 <td><?= $this->printHtml($this->request->getOrigin()); ?>
