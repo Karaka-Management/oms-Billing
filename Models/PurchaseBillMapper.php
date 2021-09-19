@@ -42,7 +42,6 @@ final class PurchaseBillMapper extends BillMapper
         mixed $pivot,
         string $column = null,
         int $limit = 50,
-        string $order = 'ASC',
         int $relations = RelationType::ALL,
         int $depth = 3,
         Builder $query = null
@@ -51,14 +50,13 @@ final class PurchaseBillMapper extends BillMapper
         $query = self::getQuery(null, [], $relations, $depth);
         $query->where(BillTypeMapper::getTable() . '_d' . ($depth - 1) . '.billing_type_transfer_type', '=', BillTransferType::PURCHASE);
 
-        return self::getBeforePivot($pivot, $column, $limit, $order, $relations, $depth, $query);
+        return self::getBeforePivot($pivot, $column, $limit, $relations, $depth, $query);
     }
 
     public static function getPurchaseAfterPivot(
         mixed $pivot,
         string $column = null,
         int $limit = 50,
-        string $order = 'ASC',
         int $relations = RelationType::ALL,
         int $depth = 3,
         Builder $query = null
@@ -67,7 +65,7 @@ final class PurchaseBillMapper extends BillMapper
         $query = self::getQuery(null, [], $relations, $depth);
         $query->where(BillTypeMapper::getTable() . '_d' . ($depth - 1) . '.billing_type_transfer_type', '=', BillTransferType::PURCHASE);
 
-        return self::getAfterPivot($pivot, $column, $limit, $order, $relations, $depth, $query);
+        return self::getAfterPivot($pivot, $column, $limit, $relations, $depth, $query);
     }
 
     public static function getPurchaseByItemId(int $id, \DateTime $start, \DateTime $end) : Money
