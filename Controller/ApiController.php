@@ -269,7 +269,7 @@ final class ApiController extends Controller
 
         $bill = BillMapper::get($request->getData('bill'));
 
-        $defaultTemplate = $this->app->appSettings->get(null, 'default_template', self::MODULE_NAME);
+        $defaultTemplate = $this->app->appSettings->get(null, 'default_template', null, self::MODULE_NAME);
         $template        = CollectionMapper::get((int) $defaultTemplate['content']);
 
         $pdfDir = __DIR__ . '/../../../Modules/Media/Files/Modules/Billing/Bills/'
@@ -306,7 +306,7 @@ final class ApiController extends Controller
                 . $bill->createdAt->format('Y') . '/'
                 . $bill->createdAt->format('m') . '/'
                 . $bill->createdAt->format('d'),
-            'bill'
+            null // @todo: get bill MediaType
         );
 
         $this->createModelRelation(
