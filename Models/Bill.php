@@ -1102,8 +1102,6 @@ BillType $type = 0;
      *
      * @return void
      *
-     * @todo do same for actual tracking information per trackign id
-     *
      * @since 1.0.0
      */
     public function addTracking(string $tracking) : void

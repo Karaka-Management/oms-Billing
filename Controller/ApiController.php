@@ -175,6 +175,7 @@ final class ApiController extends Controller
      * @return BillElement
      *
      * @since 1.0.0
+     * @todo in the database the customer localized version should be stored because this is the version which went out
      */
     public function createBillElementFromRequest(RequestAbstract $request, ResponseAbstract $response, $data = null) : BillElement
     {
@@ -187,7 +188,6 @@ final class ApiController extends Controller
         }
 
         $item = ItemMapper::with('language', $response->getLanguage())::get($element->item);
-        // @todo: which item name should be stored in the database? server language (problem for international company with subsidiaries)? customer default language/customer invoice language?
         $element->itemNumber = $item->number;
         $element->itemName   = $item->getL11n('name1')->description;
         $element->quantity   = $request->getData('quantity', 'int');
