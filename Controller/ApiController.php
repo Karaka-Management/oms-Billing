@@ -187,7 +187,7 @@ final class ApiController extends Controller
             return $element;
         }
 
-        $item = ItemMapper::with('language', $response->getLanguage())::get($element->item);
+        $item                = ItemMapper::with('language', $response->getLanguage())::get($element->item);
         $element->itemNumber = $item->number;
         $element->itemName   = $item->getL11n('name1')->description;
         $element->quantity   = $request->getData('quantity', 'int');
