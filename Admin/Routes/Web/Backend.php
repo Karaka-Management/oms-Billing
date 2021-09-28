@@ -23,7 +23,7 @@ return [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingSalesInvoiceCreate',
             'verb'       => RouteVerb::GET,
             'permission' => [
-                'module' => BackendController::MODULE_NAME,
+                'module' => BackendController::NAME,
                 'type'   => PermissionType::CREATE,
                 'state'  => PermissionState::SALES_INVOICE,
             ],
@@ -34,7 +34,7 @@ return [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingSalesList',
             'verb'       => RouteVerb::GET,
             'permission' => [
-                'module' => BackendController::MODULE_NAME,
+                'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
                 'state'  => PermissionState::SALES_INVOICE,
             ],
@@ -45,7 +45,7 @@ return [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingSalesInvoice',
             'verb'       => RouteVerb::GET,
             'permission' => [
-                'module' => BackendController::MODULE_NAME,
+                'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
                 'state'  => PermissionState::SALES_INVOICE,
             ],
@@ -56,7 +56,7 @@ return [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingPurchaseInvoiceCreate',
             'verb'       => RouteVerb::GET,
             'permission' => [
-                'module' => BackendController::MODULE_NAME,
+                'module' => BackendController::NAME,
                 'type'   => PermissionType::CREATE,
                 'state'  => PermissionState::PURCHASE_INVOICE,
             ],
@@ -67,7 +67,7 @@ return [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingPurchaseList',
             'verb'       => RouteVerb::GET,
             'permission' => [
-                'module' => BackendController::MODULE_NAME,
+                'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
                 'state'  => PermissionState::PURCHASE_INVOICE,
             ],
@@ -78,7 +78,7 @@ return [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingPurchaseInvoice',
             'verb'       => RouteVerb::GET,
             'permission' => [
-                'module' => BackendController::MODULE_NAME,
+                'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
                 'state'  => PermissionState::SALES_INVOICE,
             ],
@@ -89,7 +89,7 @@ return [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingStockInvoiceCreate',
             'verb'       => RouteVerb::GET,
             'permission' => [
-                'module' => BackendController::MODULE_NAME,
+                'module' => BackendController::NAME,
                 'type'   => PermissionType::CREATE,
                 'state'  => PermissionState::PURCHASE_INVOICE,
             ],
@@ -100,7 +100,7 @@ return [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingStockList',
             'verb'       => RouteVerb::GET,
             'permission' => [
-                'module' => BackendController::MODULE_NAME,
+                'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
                 'state'  => PermissionState::PURCHASE_INVOICE,
             ],
@@ -111,7 +111,7 @@ return [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingStockInvoice',
             'verb'       => RouteVerb::GET,
             'permission' => [
-                'module' => BackendController::MODULE_NAME,
+                'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
                 'state'  => PermissionState::SALES_INVOICE,
             ],
@@ -122,7 +122,7 @@ return [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillAnalysis',
             'verb'       => RouteVerb::GET,
             'permission' => [
-                'module' => BackendController::MODULE_NAME,
+                'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
                 'state'  => PermissionState::SALES_INVOICE,
             ],
@@ -133,7 +133,7 @@ return [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewSalesRepAnalysis',
             'verb'       => RouteVerb::GET,
             'permission' => [
-                'module' => BackendController::MODULE_NAME,
+                'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
                 'state'  => PermissionState::SALES_ANALYSIS,
             ],
@@ -144,7 +144,7 @@ return [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewRegionAnalysis',
             'verb'       => RouteVerb::GET,
             'permission' => [
-                'module' => BackendController::MODULE_NAME,
+                'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
                 'state'  => PermissionState::SALES_ANALYSIS,
             ],
