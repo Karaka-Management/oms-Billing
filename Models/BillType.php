@@ -43,9 +43,7 @@ class BillType
      *
      * @var string|BillTypeL11n
      */
-    protected string |
-
-BillTypeL11n $l11n;
+    protected string | BillTypeL11n $l11n;
 
     /**
      * Constructor.

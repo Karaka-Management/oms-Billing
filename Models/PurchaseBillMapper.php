@@ -38,6 +38,9 @@ final class PurchaseBillMapper extends BillMapper
      */
     protected static string $model = Bill::class;
 
+    /**
+     * Placeholder
+     */
     public static function getPurchaseBeforePivot(
         mixed $pivot,
         string $column = null,
@@ -53,6 +56,9 @@ final class PurchaseBillMapper extends BillMapper
         return self::getBeforePivot($pivot, $column, $limit, $relations, $depth, $query);
     }
 
+    /**
+     * Placeholder
+     */
     public static function getPurchaseAfterPivot(
         mixed $pivot,
         string $column = null,
@@ -68,6 +74,9 @@ final class PurchaseBillMapper extends BillMapper
         return self::getAfterPivot($pivot, $column, $limit, $relations, $depth, $query);
     }
 
+    /**
+     * Placeholder
+     */
     public static function getPurchaseByItemId(int $id, \DateTime $start, \DateTime $end) : Money
     {
         $query  = new Builder(self::$db);
@@ -84,6 +93,9 @@ final class PurchaseBillMapper extends BillMapper
         return new Money((int) $result[0]);
     }
 
+    /**
+     * Placeholder
+     */
     public static function getPurchaseBySupplierId(int $id, \DateTime $start, \DateTime $end) : Money
     {
         $query  = new Builder(self::$db);
@@ -98,6 +110,9 @@ final class PurchaseBillMapper extends BillMapper
         return new Money((int) $result[0]);
     }
 
+    /**
+     * Placeholder
+     */
     public static function getAvgPurchasePriceByItemId(int $id, \DateTime $start, \DateTime $end) : Money
     {
         $query  = new Builder(self::$db);
@@ -114,6 +129,9 @@ final class PurchaseBillMapper extends BillMapper
         return new Money($result === false || $result[1] == 0 ? 0 : (int) (((int) $result[0]) / ((int) $result[1])));
     }
 
+    /**
+     * Placeholder
+     */
     public static function getLastOrderDateByItemId(int $id) : ?\DateTimeImmutable
     {
         // @todo: only delivers/invoice/production (no offers ...)
@@ -131,6 +149,9 @@ final class PurchaseBillMapper extends BillMapper
         return $result === false ? null : new \DateTimeImmutable($result[0]);
     }
 
+    /**
+     * Placeholder
+     */
     public static function getLastOrderDateBySupplierId(int $id) : ?\DateTimeImmutable
     {
         // @todo: only delivers/invoice/production (no offers ...)
@@ -146,16 +167,25 @@ final class PurchaseBillMapper extends BillMapper
         return $result === false ? null : new \DateTimeImmutable($result[0]);
     }
 
+    /**
+     * Placeholder
+     */
     public static function getItemRetentionRate(int $id, \DateTime $start, \DateTime $end) : float
     {
         return 0.0;
     }
 
+    /**
+     * Placeholder
+     */
     public static function getItemLivetimeValue(int $id, \DateTime $start, \DateTime $end) : Money
     {
         return new Money();
     }
 
+    /**
+     * Placeholder
+     */
     public static function getNewestItemInvoices(int $id, int $limit = 10) : array
     {
         $depth = 3;
@@ -177,6 +207,9 @@ final class PurchaseBillMapper extends BillMapper
         return self::getAllByQuery($query, RelationType::ALL, $depth);
     }
 
+    /**
+     * Placeholder
+     */
     public static function getNewestSupplierInvoices(int $id, int $limit = 10) : array
     {
         $depth = 3;
@@ -196,6 +229,9 @@ final class PurchaseBillMapper extends BillMapper
         return self::getAllByQuery($query, RelationType::ALL, $depth);
     }
 
+    /**
+     * Placeholder
+     */
     public static function getItemTopSuppliers(int $id, \DateTime $start, \DateTime $end, int $limit = 10) : array
     {
         $depth = 3;
@@ -219,6 +255,9 @@ final class PurchaseBillMapper extends BillMapper
         return [$suppliers, $data];
     }
 
+    /**
+     * Placeholder
+     */
     public static function getItemRegionPurchase(int $id, \DateTime $start, \DateTime $end) : array
     {
         $query  = new Builder(self::$db);
@@ -239,6 +278,9 @@ final class PurchaseBillMapper extends BillMapper
         return $result;
     }
 
+    /**
+     * Placeholder
+     */
     public static function getItemCountryPurchase(int $id, \DateTime $start, \DateTime $end, int $limit = 10) : array
     {
         $query  = new Builder(self::$db);
@@ -261,6 +303,9 @@ final class PurchaseBillMapper extends BillMapper
         return $result;
     }
 
+    /**
+     * Placeholder
+     */
     public static function getItemMonthlyPurchaseCosts(int $id, \DateTime $start, \DateTime $end) : array
     {
         $query  = new Builder(self::$db);
@@ -282,6 +327,9 @@ final class PurchaseBillMapper extends BillMapper
         return $result;
     }
 
+    /**
+     * Placeholder
+     */
     public static function getSupplierMonthlyPurchaseCosts(int $id, \DateTime $start, \DateTime $end) : array
     {
         $query  = new Builder(self::$db);

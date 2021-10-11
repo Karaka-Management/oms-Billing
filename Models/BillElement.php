@@ -91,9 +91,7 @@ class BillElement implements \JsonSerializable
      */
     public int $promotion = 0;
 
-    public int |
-
-Bill $bill = 0;
+    public int | Bill $bill = 0;
 
     /**
      * Constructor.

@@ -35,6 +35,9 @@ final class StockBillMapper extends BillMapper
      */
     protected static string $model = Bill::class;
 
+    /**
+     * Placeholder
+     */
     public static function getStockBeforePivot(
         mixed $pivot,
         string $column = null,
@@ -50,6 +53,9 @@ final class StockBillMapper extends BillMapper
         return self::getBeforePivot($pivot, $column, $limit, $relations, $depth, $query);
     }
 
+    /**
+     * Placeholder
+     */
     public static function getStockAfterPivot(
         mixed $pivot,
         string $column = null,

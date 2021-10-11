@@ -38,6 +38,9 @@ final class SalesBillMapper extends BillMapper
      */
     protected static string $model = Bill::class;
 
+    /**
+     * Placeholder
+     */
     public static function getSalesBeforePivot(
         mixed $pivot,
         string $column = null,
@@ -53,6 +56,9 @@ final class SalesBillMapper extends BillMapper
         return self::getBeforePivot($pivot, $column, $limit, $relations, $depth, $query);
     }
 
+    /**
+     * Placeholder
+     */
     public static function getSalesAfterPivot(
         mixed $pivot,
         string $column = null,
@@ -68,6 +74,9 @@ final class SalesBillMapper extends BillMapper
         return self::getAfterPivot($pivot, $column, $limit, $relations, $depth, $query);
     }
 
+    /**
+     * Placeholder
+     */
     public static function getSalesByItemId(int $id, \DateTime $start, \DateTime $end) : Money
     {
         $query  = new Builder(self::$db);
@@ -84,6 +93,9 @@ final class SalesBillMapper extends BillMapper
         return new Money((int) $result[0]);
     }
 
+    /**
+     * Placeholder
+     */
     public static function getSalesByClientId(int $id, \DateTime $start, \DateTime $end) : Money
     {
         $query  = new Builder(self::$db);
@@ -98,6 +110,9 @@ final class SalesBillMapper extends BillMapper
         return new Money((int) $result[0]);
     }
 
+    /**
+     * Placeholder
+     */
     public static function getAvgSalesPriceByItemId(int $id, \DateTime $start, \DateTime $end) : Money
     {
         $query  = new Builder(self::$db);
@@ -114,6 +129,9 @@ final class SalesBillMapper extends BillMapper
         return new Money($result === false || $result[1] == 0 ? 0 : (int) (((int) $result[0]) / ((int) $result[1])));
     }
 
+    /**
+     * Placeholder
+     */
     public static function getLastOrderDateByItemId(int $id) : ?\DateTimeImmutable
     {
         // @todo: only delivers/invoice/production (no offers ...)
@@ -131,6 +149,9 @@ final class SalesBillMapper extends BillMapper
         return $result === false ? null : new \DateTimeImmutable($result[0]);
     }
 
+    /**
+     * Placeholder
+     */
     public static function getLastOrderDateByClientId(int $id) : ?\DateTimeImmutable
     {
         // @todo: only delivers/invoice/production (no offers ...)
@@ -146,16 +167,25 @@ final class SalesBillMapper extends BillMapper
         return $result === false ? null : new \DateTimeImmutable($result[0]);
     }
 
+    /**
+     * Placeholder
+     */
     public static function getItemRetentionRate(int $id, \DateTime $start, \DateTime $end) : float
     {
         return 0.0;
     }
 
+    /**
+     * Placeholder
+     */
     public static function getItemLivetimeValue(int $id, \DateTime $start, \DateTime $end) : Money
     {
         return new Money();
     }
 
+    /**
+     * Placeholder
+     */
     public static function getNewestItemInvoices(int $id, int $limit = 10) : array
     {
         $depth = 3;
@@ -177,6 +207,9 @@ final class SalesBillMapper extends BillMapper
         return self::getAllByQuery($query, RelationType::ALL, $depth);
     }
 
+    /**
+     * Placeholder
+     */
     public static function getNewestClientInvoices(int $id, int $limit = 10) : array
     {
         $depth = 3;
@@ -196,6 +229,9 @@ final class SalesBillMapper extends BillMapper
         return self::getAllByQuery($query, RelationType::ALL, $depth);
     }
 
+    /**
+     * Placeholder
+     */
     public static function getItemTopCustomers(int $id, \DateTime $start, \DateTime $end, int $limit = 10) : array
     {
         $depth = 3;
@@ -219,6 +255,9 @@ final class SalesBillMapper extends BillMapper
         return [$clients, $data];
     }
 
+    /**
+     * Placeholder
+     */
     public static function getItemBills(int $id, \DateTime $start, \DateTime $end) : array
     {
         $depth = 3;
@@ -240,6 +279,9 @@ final class SalesBillMapper extends BillMapper
         return self::getAllByQuery($query, RelationType::ALL, $depth);
     }
 
+    /**
+     * Placeholder
+     */
     public static function getClientItem(int $client, \DateTime $start, \DateTime $end) : array
     {
         $depth = 3;
@@ -261,6 +303,9 @@ final class SalesBillMapper extends BillMapper
         return BillElementMapper::getAllByQuery($query, RelationType::ALL, $depth);
     }
 
+    /**
+     * Placeholder
+     */
     public static function getItemRegionSales(int $id, \DateTime $start, \DateTime $end) : array
     {
         $query  = new Builder(self::$db);
@@ -281,6 +326,9 @@ final class SalesBillMapper extends BillMapper
         return $result;
     }
 
+    /**
+     * Placeholder
+     */
     public static function getItemCountrySales(int $id, \DateTime $start, \DateTime $end, int $limit = 10) : array
     {
         $query  = new Builder(self::$db);
@@ -303,6 +351,9 @@ final class SalesBillMapper extends BillMapper
         return $result;
     }
 
+    /**
+     * Placeholder
+     */
     public static function getItemMonthlySalesCosts(int $id, \DateTime $start, \DateTime $end) : array
     {
         $query  = new Builder(self::$db);
@@ -324,6 +375,9 @@ final class SalesBillMapper extends BillMapper
         return $result;
     }
 
+    /**
+     * Placeholder
+     */
     public static function getClientMonthlySalesCosts(int $id, \DateTime $start, \DateTime $end) : array
     {
         $query  = new Builder(self::$db);
