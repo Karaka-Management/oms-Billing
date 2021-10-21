@@ -38,7 +38,7 @@ use phpOMS\Utils\RnG\DateTime;
  *
  * @internal
  */
-class ApiControllerTest extends \PHPUnit\Framework\TestCase
+final class ApiControllerTest extends \PHPUnit\Framework\TestCase
 {
     protected ApplicationAbstract $app;
 

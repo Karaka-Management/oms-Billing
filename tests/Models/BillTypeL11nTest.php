@@ -20,7 +20,7 @@ use phpOMS\Localization\ISO639x1Enum;
 /**
  * @internal
  */
-class BillTypeL11nTest extends \PHPUnit\Framework\TestCase
+final class BillTypeL11nTest extends \PHPUnit\Framework\TestCase
 {
     private BillTypeL11n $l11n;
 

@@ -20,7 +20,7 @@ use Modules\Billing\Models\BillTypeL11n;
 /**
  * @internal
  */
-class BillTypeTest extends \PHPUnit\Framework\TestCase
+final class BillTypeTest extends \PHPUnit\Framework\TestCase
 {
     private BillType $type;
 

@@ -20,7 +20,7 @@ use phpOMS\Localization\ISO4217CharEnum;
 /**
  * @internal
  */
-class BillElementTest extends \PHPUnit\Framework\TestCase
+final class BillElementTest extends \PHPUnit\Framework\TestCase
 {
     private BillElement $element;
 
