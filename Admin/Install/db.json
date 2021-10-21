@@ -225,7 +225,7 @@
             },
             "billing_bill_currency": {
                 "name": "billing_bill_currency",
-                "type": "INT",
+                "type": "VARCHAR(3)",
                 "null": false
             },
             "billing_bill_referral": {

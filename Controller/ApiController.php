@@ -120,15 +120,10 @@ final class ApiController extends Controller
     private function validateBillCreate(RequestAbstract $request) : array
     {
         $val = [];
-        /*if (($val['title'] = empty($request->getData('title')))
-            || ($val['plain'] = empty($request->getData('plain')))
-            || ($val['status'] = (
-                $request->getData('status') !== null
-                && !WikiStatus::isValidValue((int) $request->getData('status'))
-            ))
+        if (($val['client/customer'] = empty($request->getData('client') && empty($request->getData('supplier'))))
         ) {
             return $val;
-        }*/
+        }
 
         return [];
     }
@@ -292,6 +287,12 @@ final class ApiController extends Controller
 
         $pdf = $view->build();
 
+        if (!\is_file($pdfDir . $request->getData('bill') . '.pdf')) {
+            $response->header->status = RequestStatusCode::R_400;
+
+            return;
+        }
+
         $media = $this->app->moduleManager->get('Media')->createDbEntry(
             [
                 'status'    => UploadStatus::OK,
@@ -315,6 +316,8 @@ final class ApiController extends Controller
             $media->getId(),
             BillMapper::class, 'media', '', $request->getOrigin()
         );
+
+        $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'PDF', 'Bill Pdf successfully created.', $media);
     }
 
     /**

@@ -58,7 +58,7 @@ class BillMapper extends DataMapperAbstract
         'billing_bill_net'                     => ['name' => 'billing_bill_net',      'type' => 'Serializable',    'internal' => 'net'],
         'billing_bill_costs'                   => ['name' => 'billing_bill_costs',      'type' => 'Serializable',    'internal' => 'costs'],
         'billing_bill_profit'                  => ['name' => 'billing_bill_profit',      'type' => 'Serializable',    'internal' => 'profit'],
-        'billing_bill_currency'                => ['name' => 'billing_bill_currency',      'type' => 'int',    'internal' => 'currency'],
+        'billing_bill_currency'                => ['name' => 'billing_bill_currency',      'type' => 'string',    'internal' => 'currency'],
         'billing_bill_referral'                => ['name' => 'billing_bill_referral',      'type' => 'int',    'internal' => 'referral'],
         'billing_bill_referral_name'           => ['name' => 'billing_bill_referral_name',      'type' => 'string',    'internal' => 'referralName'],
         'billing_bill_reference'               => ['name' => 'billing_bill_reference',      'type' => 'int',    'internal' => 'reference'],

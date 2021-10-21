@@ -41,7 +41,7 @@ class BillTypeL11n implements \JsonSerializable, ArrayableInterface
      * @var int
      * @since 1.0.0
      */
-    protected int | BillType $type = 0;
+    public int | BillType $type = 0;
 
     /**
      * Language.
@@ -85,32 +85,6 @@ class BillTypeL11n implements \JsonSerializable, ArrayableInterface
     public function getId() : int
     {
         return $this->id;
-    }
-
-    /**
-     * Set type.
-     *
-     * @param int $type Type id
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function setBillType(int $type) : void
-    {
-        $this->type = $type;
-    }
-
-    /**
-     * Get type
-     *
-     * @return int
-     *
-     * @since 1.0.0
-     */
-    public function getType() : int | BillType
-    {
-        return $this->type;
     }
 
     /**

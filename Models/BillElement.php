@@ -120,41 +120,15 @@ class BillElement implements \JsonSerializable
     }
 
     /**
-     * Set order.
-     *
-     * @param int $order Order
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function setOrder(int $order) : void
-    {
-        $this->order = $order;
-    }
-
-    /**
-     * Get order.
-     *
-     * @return int
-     *
-     * @since 1.0.0
-     */
-    public function getOrder() : int
-    {
-        return $this->order;
-    }
-
-    /**
      * Set item.
      *
-     * @param mixed $item Item
+     * @param int $item Item
      *
      * @return void
      *
      * @since 1.0.0
      */
-    public function setItem($item) : void
+    public function setItem(int $item) : void
     {
         $this->item = $item;
     }
