@@ -624,8 +624,32 @@ class Bill implements \JsonSerializable
     /**
      * {@inheritdoc}
      */
+    public function toArray() : array
+    {
+        return [
+            'id' => $this->id,
+            'number' => $this->number,
+            'type' => $this->type,
+            'shipTo' => $this->shipTo,
+            'shipFAO' => $this->shipFAO,
+            'shipAddress' => $this->shipAddress,
+            'shipCity' => $this->shipCity,
+            'shipZip' => $this->shipZip,
+            'shipCountry' => $this->shipCountry,
+            'billTo' => $this->billTo,
+            'billFAO' => $this->billFAO,
+            'billAddress' => $this->billAddress,
+            'billCity' => $this->billCity,
+            'billZip' => $this->billZip,
+            'billCountry' => $this->billCountry,
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function jsonSerialize()
     {
-        return [];
+        return $this->toArray();
     }
 }

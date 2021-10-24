@@ -120,7 +120,7 @@ final class ApiController extends Controller
     private function validateBillCreate(RequestAbstract $request) : array
     {
         $val = [];
-        if (($val['client/customer'] = empty($request->getData('client') && empty($request->getData('supplier'))))
+        if (($val['client/customer'] = (empty($request->getData('client')) && empty($request->getData('supplier'))))
         ) {
             return $val;
         }
@@ -274,10 +274,12 @@ final class ApiController extends Controller
 
         $status = !\is_dir($pdfDir) ? \mkdir($pdfDir, 0755, true) : true;
         if ($status === false) {
+            // @codeCoverageIgnoreStart
             $response->set($request->uri->__toString(), new FormValidation(['status' => $status]));
             $response->header->status = RequestStatusCode::R_400;
 
             return;
+            // @codeCoverageIgnoreEnd
         }
 
         $view = new View($this->app->l11nManager, $request, $response);

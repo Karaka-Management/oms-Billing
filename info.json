@@ -31,8 +31,9 @@
     "load": [
         {
             "pid": [
-                "/sales/billing",
-                "/purchase/billing"
+                "/sales/bill",
+                "/purchase/bill",
+                "/warehouse/bill"
             ],
             "type": 4,
             "for": 0,

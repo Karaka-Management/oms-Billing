@@ -136,8 +136,25 @@ class BillElement implements \JsonSerializable
     /**
      * {@inheritdoc}
      */
+    public function toArray() : array
+    {
+        return [
+            'id' => $this->id,
+            'order' => $this->order,
+            'item' => $this->item,
+            'itemNumber' => $this->itemNumber,
+            'itemName' => $this->itemName,
+            'itemDescription' => $this->itemDescription,
+            'quantity' => $this->quantity,
+            'bill' => $this->bill,
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function jsonSerialize()
     {
-        return [];
+        return $this->toArray();
     }
 }

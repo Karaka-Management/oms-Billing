@@ -48,7 +48,7 @@ class BillType
     /**
      * Constructor.
      *
-     * @param string $name Name/identifier of the attribute type
+     * @param string $name Name
      *
      * @since 1.0.0
      */

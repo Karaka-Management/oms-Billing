@@ -232,7 +232,7 @@ final class SalesBillMapper extends BillMapper
     /**
      * Placeholder
      */
-    public static function getItemTopCustomers(int $id, \DateTime $start, \DateTime $end, int $limit = 10) : array
+    public static function getItemTopClients(int $id, \DateTime $start, \DateTime $end, int $limit = 10) : array
     {
         $depth = 3;
 

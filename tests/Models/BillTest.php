@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace Modules\Billing\tests\Models;
 
 use Modules\Billing\Models\Bill;
+use Modules\Billing\Models\BillElement;
 use Modules\Billing\Models\BillStatus;
 use Modules\Billing\Models\BillType;
 use phpOMS\Localization\ISO4217CharEnum;
@@ -138,5 +139,58 @@ final class BillTest extends \PHPUnit\Framework\TestCase
     {
         $this->bill->addTracking('TEST');
         self::assertEquals(['TEST'], $this->bill->getTrackings());
+    }
+
+    /**
+     * @covers Modules\Billing\Models\Bill
+     * @group module
+     */
+    public function testElementInputOutput() : void
+    {
+        $this->bill->addElement(new BillElement());
+        self::assertCount(1, $this->bill->getElements());
+    }
+
+    /**
+     * @covers Modules\Billing\Models\Bill
+     * @group module
+     */
+    public function testSerialize() : void
+    {
+        $this->bill->number = '123456';
+        $this->bill->type = 2;
+        $this->bill->shipTo = 'To';
+        $this->bill->shipFAO = 'FAO';
+        $this->bill->shipAddress = 'Address';
+        $this->bill->shipCity = 'City';
+        $this->bill->shipZip = 'Zip';
+        $this->bill->shipCountry = 'Country';
+        $this->bill->billTo = 'To';
+        $this->bill->billFAO = 'FAO';
+        $this->bill->billAddress = 'Address';
+        $this->bill->billCity = 'City';
+        $this->bill->billZip = 'Zip';
+        $this->bill->billCountry = 'Country';
+
+        self::assertEquals(
+            [
+                'id' => 0,
+                'number' => '123456',
+                'type' => 2,
+                'shipTo' => 'To',
+                'shipFAO' => 'FAO',
+                'shipAddress' => 'Address',
+                'shipCity' => 'City',
+                'shipZip' => 'Zip',
+                'shipCountry' => 'Country',
+                'billTo' => 'To',
+                'billFAO' => 'FAO',
+                'billAddress' => 'Address',
+                'billCity' => 'City',
+                'billZip' => 'Zip',
+                'billCountry' => 'Country',
+            ],
+            $this->bill->jsonSerialize()
+        );
     }
 }
