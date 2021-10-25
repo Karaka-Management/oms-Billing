@@ -604,21 +604,22 @@ class Bill implements \JsonSerializable
     /**
      * Get media file by type
      *
-     * @param string $type Media type
+     * @param null|int $type Media type
      *
-     * @return Media
+     * @return array
      *
      * @since 1.0.0
      */
-    public function getMediaByType(string $type) : Media
+    public function getMediaByType(int $type = null) : array
     {
-        foreach ($this->media as $media) {
-            if ($media->type === $type) {
-                return $media;
+        $files = [];
+        foreach ($this->media as $file) {
+            if ($file->type === $type) {
+                $files[] = $file;
             }
         }
 
-        return new NullMedia();
+        return $files;
     }
 
     /**

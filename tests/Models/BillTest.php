@@ -18,6 +18,7 @@ use Modules\Billing\Models\Bill;
 use Modules\Billing\Models\BillElement;
 use Modules\Billing\Models\BillStatus;
 use Modules\Billing\Models\BillType;
+use Modules\Media\Models\Media;
 use phpOMS\Localization\ISO4217CharEnum;
 
 /**
@@ -53,6 +54,7 @@ final class BillTest extends \PHPUnit\Framework\TestCase
         self::assertEquals(null, $this->bill->supplier);
         self::assertEquals([], $this->bill->getVouchers());
         self::assertEquals([], $this->bill->getTrackings());
+        self::assertEquals([], $this->bill->getMediaByType(0));
 
         self::assertEquals('', $this->bill->shipTo);
         self::assertEquals('', $this->bill->shipFAO);
@@ -119,6 +121,17 @@ final class BillTest extends \PHPUnit\Framework\TestCase
     {
         $this->bill->setCurrency(ISO4217CharEnum::_USD);
         self::assertEquals(ISO4217CharEnum::_USD, $this->bill->getCurrency());
+    }
+
+    /**
+     * @covers Modules\Billing\Models\Bill
+     * @group module
+     */
+    public function testMediaInputOutput() : void
+    {
+        $this->bill->addMedia($temp = new Media());
+        self::assertCount(1, $this->bill->getMedia());
+        self::assertEquals([$temp], $this->bill->getMediaByType());
     }
 
     /**
