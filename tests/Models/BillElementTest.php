@@ -15,7 +15,6 @@ declare(strict_types=1);
 namespace Modules\Billing\tests\Models;
 
 use Modules\Billing\Models\BillElement;
-use phpOMS\Localization\ISO4217CharEnum;
 
 /**
  * @internal
@@ -61,24 +60,24 @@ final class BillElementTest extends \PHPUnit\Framework\TestCase
      */
     public function testSerialize() : void
     {
-        $this->element->order = 2;
-        $this->element->item = 3;
-        $this->element->itemNumber = '123456';
-        $this->element->itemName = 'Test';
+        $this->element->order           = 2;
+        $this->element->item            = 3;
+        $this->element->itemNumber      = '123456';
+        $this->element->itemName        = 'Test';
         $this->element->itemDescription = 'Description';
-        $this->element->quantity = 4;
-        $this->element->bill = 5;
+        $this->element->quantity        = 4;
+        $this->element->bill            = 5;
 
         self::assertEquals(
             [
-                'id'       => 0,
-                'order' => 2,
-                'item' => 3,
-                'itemNumber' => '123456',
-                'itemName' => 'Test',
+                'id'              => 0,
+                'order'           => 2,
+                'item'            => 3,
+                'itemNumber'      => '123456',
+                'itemName'        => 'Test',
                 'itemDescription' => 'Description',
-                'quantity' => 4,
-                'bill' => 5,
+                'quantity'        => 4,
+                'bill'            => 5,
             ],
             $this->element->jsonSerialize()
         );

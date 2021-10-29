@@ -24,7 +24,7 @@ namespace Modules\Billing\Models;
  */
 final class NullBill extends Bill
 {
-	/**
+    /**
      * Constructor
      *
      * @param int $id Model id

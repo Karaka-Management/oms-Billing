@@ -15,7 +15,6 @@ declare(strict_types=1);
 namespace Modules\Billing\tests\Models;
 
 use Modules\Billing\Models\StockBillMapper;
-use phpOMS\Utils\TestUtils;
 
 /**
  * @testdox Modules\Billing\tests\Models\StockBillMapperTest: App database mapper
@@ -24,7 +23,7 @@ use phpOMS\Utils\TestUtils;
  */
 final class StockBillMapperTest extends \PHPUnit\Framework\TestCase
 {
-	/**
+    /**
      * @covers Modules\Billing\Models\StockBillMapper
      * @group module
      */

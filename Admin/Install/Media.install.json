@@ -26,6 +26,7 @@
         "name": "Default",
         "virtualPath": "/Modules/Billing/Templates",
         "path": "/Modules/Media/Files/Modules/Billing/Templates/Default",
+        "fixed_names": true,
         "files": [
             "/Modules/Billing/Admin/Install/Media"
         ],

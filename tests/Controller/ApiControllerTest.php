@@ -16,22 +16,21 @@ namespace Modules\Billing\tests\Controller;
 
 use Model\CoreSettings;
 use Modules\Admin\Models\AccountPermission;
-use Modules\Billing\Models\AuditMapper;
 use phpOMS\Account\Account;
 use phpOMS\Account\AccountManager;
 use phpOMS\Account\PermissionType;
 use phpOMS\Application\ApplicationAbstract;
 use phpOMS\Dispatcher\Dispatcher;
 use phpOMS\Event\EventManager;
-use phpOMS\Module\ModuleAbstract;
-use phpOMS\Module\ModuleManager;
-use phpOMS\Router\WebRouter;
-use phpOMS\Utils\TestUtils;
 use phpOMS\Message\Http\HttpRequest;
 use phpOMS\Message\Http\HttpResponse;
 use phpOMS\Message\Http\RequestStatusCode;
+use phpOMS\Module\ModuleAbstract;
+use phpOMS\Module\ModuleManager;
+use phpOMS\Router\WebRouter;
 use phpOMS\Uri\HttpUri;
 use phpOMS\Utils\RnG\DateTime;
+use phpOMS\Utils\TestUtils;
 
 /**
  * @testdox Modules\tests\Billing\Controller\ApiControllerTest: Billing api controller

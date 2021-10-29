@@ -18,7 +18,6 @@ use Modules\Admin\Models\Account;
 use Modules\Admin\Models\NullAccount;
 use Modules\ClientManagement\Models\Client;
 use Modules\Media\Models\Media;
-use Modules\Media\Models\NullMedia;
 use Modules\SupplierManagement\Models\Supplier;
 use phpOMS\Localization\ISO4217CharEnum;
 use phpOMS\Localization\Money;
@@ -628,20 +627,20 @@ class Bill implements \JsonSerializable
     public function toArray() : array
     {
         return [
-            'id' => $this->id,
-            'number' => $this->number,
-            'type' => $this->type,
-            'shipTo' => $this->shipTo,
-            'shipFAO' => $this->shipFAO,
+            'id'          => $this->id,
+            'number'      => $this->number,
+            'type'        => $this->type,
+            'shipTo'      => $this->shipTo,
+            'shipFAO'     => $this->shipFAO,
             'shipAddress' => $this->shipAddress,
-            'shipCity' => $this->shipCity,
-            'shipZip' => $this->shipZip,
+            'shipCity'    => $this->shipCity,
+            'shipZip'     => $this->shipZip,
             'shipCountry' => $this->shipCountry,
-            'billTo' => $this->billTo,
-            'billFAO' => $this->billFAO,
+            'billTo'      => $this->billTo,
+            'billFAO'     => $this->billFAO,
             'billAddress' => $this->billAddress,
-            'billCity' => $this->billCity,
-            'billZip' => $this->billZip,
+            'billCity'    => $this->billCity,
+            'billZip'     => $this->billZip,
             'billCountry' => $this->billCountry,
         ];
     }

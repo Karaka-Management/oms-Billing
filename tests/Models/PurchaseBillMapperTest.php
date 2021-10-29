@@ -15,7 +15,6 @@ declare(strict_types=1);
 namespace Modules\Billing\tests\Models;
 
 use Modules\Billing\Models\PurchaseBillMapper;
-use phpOMS\Utils\TestUtils;
 
 /**
  * @testdox Modules\Billing\tests\Models\PurchaseBillMapperTest: App database mapper
@@ -75,7 +74,7 @@ final class PurchaseBillMapperTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetLastOrderDateByItemIdInvalid() : void
     {
-        self::assertEquals(null, PurchaseBillMapper::getLastOrderDateByItemId(99999));
+        self::assertNull(PurchaseBillMapper::getLastOrderDateByItemId(99999));
     }
 
     /**
@@ -84,7 +83,7 @@ final class PurchaseBillMapperTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetLastOrderDateBySupplierIdInvalid() : void
     {
-        self::assertEquals(null, PurchaseBillMapper::getLastOrderDateBySupplierId(99999));
+        self::assertNull(PurchaseBillMapper::getLastOrderDateBySupplierId(99999));
     }
 
     /**

@@ -49,9 +49,9 @@ final class BillTest extends \PHPUnit\Framework\TestCase
         self::assertEquals(0, $this->bill->type);
         self::assertInstanceOf('\DateTimeImmutable', $this->bill->createdAt);
         self::assertInstanceOf('\DateTime', $this->bill->performanceDate);
-        self::assertEquals(null, $this->bill->send);
-        self::assertEquals(null, $this->bill->client);
-        self::assertEquals(null, $this->bill->supplier);
+        self::assertNull($this->bill->send);
+        self::assertNull($this->bill->client);
+        self::assertNull($this->bill->supplier);
         self::assertEquals([], $this->bill->getVouchers());
         self::assertEquals([], $this->bill->getTrackings());
         self::assertEquals([], $this->bill->getMediaByType(0));
@@ -170,37 +170,37 @@ final class BillTest extends \PHPUnit\Framework\TestCase
      */
     public function testSerialize() : void
     {
-        $this->bill->number = '123456';
-        $this->bill->type = 2;
-        $this->bill->shipTo = 'To';
-        $this->bill->shipFAO = 'FAO';
+        $this->bill->number      = '123456';
+        $this->bill->type        = 2;
+        $this->bill->shipTo      = 'To';
+        $this->bill->shipFAO     = 'FAO';
         $this->bill->shipAddress = 'Address';
-        $this->bill->shipCity = 'City';
-        $this->bill->shipZip = 'Zip';
+        $this->bill->shipCity    = 'City';
+        $this->bill->shipZip     = 'Zip';
         $this->bill->shipCountry = 'Country';
-        $this->bill->billTo = 'To';
-        $this->bill->billFAO = 'FAO';
+        $this->bill->billTo      = 'To';
+        $this->bill->billFAO     = 'FAO';
         $this->bill->billAddress = 'Address';
-        $this->bill->billCity = 'City';
-        $this->bill->billZip = 'Zip';
+        $this->bill->billCity    = 'City';
+        $this->bill->billZip     = 'Zip';
         $this->bill->billCountry = 'Country';
 
         self::assertEquals(
             [
-                'id' => 0,
-                'number' => '123456',
-                'type' => 2,
-                'shipTo' => 'To',
-                'shipFAO' => 'FAO',
+                'id'          => 0,
+                'number'      => '123456',
+                'type'        => 2,
+                'shipTo'      => 'To',
+                'shipFAO'     => 'FAO',
                 'shipAddress' => 'Address',
-                'shipCity' => 'City',
-                'shipZip' => 'Zip',
+                'shipCity'    => 'City',
+                'shipZip'     => 'Zip',
                 'shipCountry' => 'Country',
-                'billTo' => 'To',
-                'billFAO' => 'FAO',
+                'billTo'      => 'To',
+                'billFAO'     => 'FAO',
                 'billAddress' => 'Address',
-                'billCity' => 'City',
-                'billZip' => 'Zip',
+                'billCity'    => 'City',
+                'billZip'     => 'Zip',
                 'billCountry' => 'Country',
             ],
             $this->bill->jsonSerialize()

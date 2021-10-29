@@ -139,14 +139,14 @@ class BillElement implements \JsonSerializable
     public function toArray() : array
     {
         return [
-            'id' => $this->id,
-            'order' => $this->order,
-            'item' => $this->item,
-            'itemNumber' => $this->itemNumber,
-            'itemName' => $this->itemName,
+            'id'              => $this->id,
+            'order'           => $this->order,
+            'item'            => $this->item,
+            'itemNumber'      => $this->itemNumber,
+            'itemName'        => $this->itemName,
             'itemDescription' => $this->itemDescription,
-            'quantity' => $this->quantity,
-            'bill' => $this->bill,
+            'quantity'        => $this->quantity,
+            'bill'            => $this->bill,
         ];
     }
 
