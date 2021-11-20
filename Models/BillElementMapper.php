@@ -40,10 +40,26 @@ final class BillElementMapper extends DataMapperAbstract
         'billing_bill_element_item_name'                           => ['name' => 'billing_bill_element_item_name',      'type' => 'string',    'internal' => 'itemName'],
         'billing_bill_element_item_desc'                           => ['name' => 'billing_bill_element_item_desc',      'type' => 'string',    'internal' => 'itemDescription'],
         'billing_bill_element_quantity'                            => ['name' => 'billing_bill_element_quantity',      'type' => 'int',    'internal' => 'quantity'],
-        'billing_bill_element_single_salesprice_net'               => ['name' => 'billing_bill_element_single_salesprice_net',      'type' => 'Serializable',    'internal' => 'singleSalesPriceNet'],
-        'billing_bill_element_single_purchaseprice_net'            => ['name' => 'billing_bill_element_single_purchaseprice_net',      'type' => 'Serializable',    'internal' => 'singlePurchasePriceNet'],
-        'billing_bill_element_total_salesprice_net'                => ['name' => 'billing_bill_element_total_salesprice_net',      'type' => 'Serializable',    'internal' => 'totalSalesPriceNet'],
-        'billing_bill_element_total_purchaseprice_net'             => ['name' => 'billing_bill_element_total_purchaseprice_net',      'type' => 'Serializable',    'internal' => 'totalPurchasePriceNet'],
+
+        'billing_bill_element_single_netlistprice'               => ['name' => 'billing_bill_element_single_netlistprice',      'type' => 'Serializable',    'internal' => 'singleListPriceNet'],
+        'billing_bill_element_single_grosslistprice'               => ['name' => 'billing_bill_element_single_grosslistprice',      'type' => 'Serializable',    'internal' => 'singleListPriceGross'],
+        'billing_bill_element_total_netlistprice'                => ['name' => 'billing_bill_element_total_netlistprice',      'type' => 'Serializable',    'internal' => 'totalListPriceNet'],
+        'billing_bill_element_total_grosslistprice'                => ['name' => 'billing_bill_element_total_grosslistprice',      'type' => 'Serializable',    'internal' => 'totalListPriceGross'],
+
+        'billing_bill_element_single_netsalesprice'               => ['name' => 'billing_bill_element_single_netsalesprice',      'type' => 'Serializable',    'internal' => 'singleSalesPriceNet'],
+        'billing_bill_element_single_grosssalesprice'               => ['name' => 'billing_bill_element_single_grosssalesprice',      'type' => 'Serializable',    'internal' => 'singleSalesPriceGross'],
+        'billing_bill_element_total_netsalesprice'                => ['name' => 'billing_bill_element_total_netsalesprice',      'type' => 'Serializable',    'internal' => 'totalSalesPriceNet'],
+        'billing_bill_element_total_grosssalesprice'                => ['name' => 'billing_bill_element_total_grosssalesprice',      'type' => 'Serializable',    'internal' => 'totalSalesPriceGross'],
+
+        'billing_bill_element_single_netprofit'               => ['name' => 'billing_bill_element_single_netprofit',      'type' => 'Serializable',    'internal' => 'singleProfitNet'],
+        'billing_bill_element_single_grossprofit'               => ['name' => 'billing_bill_element_single_grossprofit',      'type' => 'Serializable',    'internal' => 'singleProfitGross'],
+        'billing_bill_element_total_netprofit'                => ['name' => 'billing_bill_element_total_netprofit',      'type' => 'Serializable',    'internal' => 'totalProfitNet'],
+        'billing_bill_element_total_grossprofit'                => ['name' => 'billing_bill_element_total_grossprofit',      'type' => 'Serializable',    'internal' => 'totalProfitGross'],
+
+        'billing_bill_element_single_netpurchaseprice'               => ['name' => 'billing_bill_element_single_netpurchaseprice',      'type' => 'Serializable',    'internal' => 'singlePurchasePriceNet'],
+        'billing_bill_element_single_grosspurchaseprice'               => ['name' => 'billing_bill_element_single_grosspurchaseprice',      'type' => 'Serializable',    'internal' => 'singlePurchasePriceGross'],
+        'billing_bill_element_total_netpurchaseprice'                => ['name' => 'billing_bill_element_total_netpurchaseprice',      'type' => 'Serializable',    'internal' => 'totalPurchasePriceNet'],
+        'billing_bill_element_total_grosspurchaseprice'                => ['name' => 'billing_bill_element_total_grosspurchaseprice',      'type' => 'Serializable',    'internal' => 'totalPurchasePriceGross'],
         'billing_bill_element_bill'                                => ['name' => 'billing_bill_element_bill',      'type' => 'int',    'internal' => 'bill'],
     ];
 

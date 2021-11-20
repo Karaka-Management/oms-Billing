@@ -70,6 +70,11 @@
                 "type": "VARCHAR(255)",
                 "null": false
             },
+            "billing_bill_numberformat": {
+                "name": "billing_bill_numberformat",
+                "type": "VARCHAR(255)",
+                "null": false
+            },
             "billing_bill_info": {
                 "name": "billing_bill_info",
                 "type": "TEXT",
@@ -203,23 +208,43 @@
                 "foreignTable": "account",
                 "foreignKey": "account_id"
             },
-            "billing_bill_gross": {
-                "name": "billing_bill_gross",
+            "billing_bill_netprofit": {
+                "name": "billing_bill_netprofit",
                 "type": "BIGINT",
                 "null": false
             },
-            "billing_bill_net": {
-                "name": "billing_bill_net",
+            "billing_bill_grossprofit": {
+                "name": "billing_bill_grossprofit",
                 "type": "BIGINT",
                 "null": false
             },
-            "billing_bill_costs": {
-                "name": "billing_bill_costs",
+            "billing_bill_netcosts": {
+                "name": "billing_bill_netcosts",
                 "type": "BIGINT",
                 "null": false
             },
-            "billing_bill_profit": {
-                "name": "billing_bill_profit",
+            "billing_bill_grosscosts": {
+                "name": "billing_bill_grosscosts",
+                "type": "BIGINT",
+                "null": false
+            },
+            "billing_bill_netsales": {
+                "name": "billing_bill_netsales",
+                "type": "BIGINT",
+                "null": false
+            },
+            "billing_bill_grosssales": {
+                "name": "billing_bill_grosssales",
+                "type": "BIGINT",
+                "null": false
+            },
+            "billing_bill_netdiscount": {
+                "name": "billing_bill_netdiscount",
+                "type": "BIGINT",
+                "null": false
+            },
+            "billing_bill_grossdiscount": {
+                "name": "billing_bill_grossdiscount",
                 "type": "BIGINT",
                 "null": false
             },
@@ -329,26 +354,98 @@
                 "type": "INT",
                 "null": false
             },
-            "billing_bill_element_single_salesprice_net": {
-                "name": "billing_bill_element_single_salesprice_net",
+            "billing_bill_element_single_netlistprice": {
+                "name": "billing_bill_element_single_netlistprice",
                 "type": "BIGINT",
                 "null": true,
                 "default": null
             },
-            "billing_bill_element_single_purchaseprice_net": {
-                "name": "billing_bill_element_single_purchaseprice_net",
+            "billing_bill_element_single_grosslistprice": {
+                "name": "billing_bill_element_single_netlistprice",
                 "type": "BIGINT",
                 "null": true,
                 "default": null
             },
-            "billing_bill_element_total_salesprice_net": {
-                "name": "billing_bill_element_total_salesprice_net",
+            "billing_bill_element_total_netlistprice": {
+                "name": "billing_bill_element_total_netlistprice",
                 "type": "BIGINT",
                 "null": true,
                 "default": null
             },
-            "billing_bill_element_total_purchaseprice_net": {
-                "name": "billing_bill_element_total_purchaseprice_net",
+            "billing_bill_element_total_grosslistprice": {
+                "name": "billing_bill_element_total_netlistprice",
+                "type": "BIGINT",
+                "null": true,
+                "default": null
+            },
+            "billing_bill_element_single_netsalesprice": {
+                "name": "billing_bill_element_single_netsalesprice",
+                "type": "BIGINT",
+                "null": true,
+                "default": null
+            },
+            "billing_bill_element_single_grosssalesprice": {
+                "name": "billing_bill_element_single_netsalesprice",
+                "type": "BIGINT",
+                "null": true,
+                "default": null
+            },
+            "billing_bill_element_total_netsalesprice": {
+                "name": "billing_bill_element_total_netsalesprice",
+                "type": "BIGINT",
+                "null": true,
+                "default": null
+            },
+            "billing_bill_element_total_grosssalesprice": {
+                "name": "billing_bill_element_total_netsalesprice",
+                "type": "BIGINT",
+                "null": true,
+                "default": null
+            },
+            "billing_bill_element_single_netpurchaseprice": {
+                "name": "billing_bill_element_single_netpurchaseprice",
+                "type": "BIGINT",
+                "null": true,
+                "default": null
+            },
+            "billing_bill_element_single_grosspurchaseprice": {
+                "name": "billing_bill_element_single_netpurchaseprice",
+                "type": "BIGINT",
+                "null": true,
+                "default": null
+            },
+            "billing_bill_element_total_netpurchaseprice": {
+                "name": "billing_bill_element_total_netpurchaseprice",
+                "type": "BIGINT",
+                "null": true,
+                "default": null
+            },
+            "billing_bill_element_total_grosspurchaseprice": {
+                "name": "billing_bill_element_total_netpurchaseprice",
+                "type": "BIGINT",
+                "null": true,
+                "default": null
+            },
+            "billing_bill_element_single_netprofit": {
+                "name": "billing_bill_element_single_netprofit",
+                "type": "BIGINT",
+                "null": true,
+                "default": null
+            },
+            "billing_bill_element_single_grossprofit": {
+                "name": "billing_bill_element_single_netprofit",
+                "type": "BIGINT",
+                "null": true,
+                "default": null
+            },
+            "billing_bill_element_total_netprofit": {
+                "name": "billing_bill_element_total_netprofit",
+                "type": "BIGINT",
+                "null": true,
+                "default": null
+            },
+            "billing_bill_element_total_grossprofit": {
+                "name": "billing_bill_element_total_netprofit",
                 "type": "BIGINT",
                 "null": true,
                 "default": null
@@ -469,6 +566,32 @@
                 "null": false,
                 "foreignTable": "media",
                 "foreignKey": "media_id"
+            }
+        }
+    },
+    "billing_bill_note": {
+        "name": "billing_bill_note",
+        "fields": {
+            "billing_bill_note_id": {
+                "name": "billing_bill_note_id",
+                "type": "INT",
+                "null": false,
+                "primary": true,
+                "autoincrement": true
+            },
+            "billing_bill_note_item": {
+                "name": "billing_bill_note_bill",
+                "type": "INT",
+                "null": false,
+                "foreignTable": "billing_bill",
+                "foreignKey": "billing_bill_id"
+            },
+            "billing_bill_note_doc": {
+                "name": "billing_bill_note_doc",
+                "type": "INT",
+                "null": false,
+                "foreignTable": "editor_doc",
+                "foreignKey": "editor_doc_id"
             }
         }
     }

@@ -68,6 +68,11 @@ final class ApiController extends Controller
 
         $bill = $this->createBillFromRequest($request, $response, $data);
         $this->createModel($request->header->account, $bill, BillMapper::class, 'bill', $request->getOrigin());
+
+        $new = clone $bill;
+        $new->buildNumber(); // The bill id is part of the number
+        $this->updateModel($request->header->account, $bill, $new, BillMapper::class, 'bill', $request->getOrigin());
+
         $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Bill', 'Bill successfully created.', $bill);
     }
 
@@ -121,6 +126,73 @@ final class ApiController extends Controller
     {
         $val = [];
         if (($val['client/customer'] = (empty($request->getData('client')) && empty($request->getData('supplier'))))
+        ) {
+            return $val;
+        }
+
+        return [];
+    }
+
+    public function apiMediaAddToBill(RequestAbstract $request, ResponseAbstract $response, $data = null) : void
+    {
+        if (!empty($val = $this->validateMediaAddToBill($request))) {
+            $response->set($request->uri->__toString(), new FormValidation($val));
+            $response->header->status = RequestStatusCode::R_400;
+
+            return;
+        }
+
+        if (!empty($uploadedFiles = $request->getFiles() ?? [])) {
+            $uploaded = $this->app->moduleManager->get('Media')->uploadFiles(
+                [],
+                [],
+                $uploadedFiles,
+                $request->header->account,
+                __DIR__ . '/../../../Modules/Media/Files/Modules/Editor',
+                '/Modules/Editor',
+            );
+
+            foreach ($uploaded as $media) {
+                $this->createModelRelation(
+                    $request->header->account,
+                    $request->getData('bill'),
+                    $media->getId(),
+                    BillMapper::class, 'media', '', $request->getOrigin()
+                );
+            }
+        }
+
+        if (!empty($mediaFiles = $request->getDataJson('media') ?? [])) {
+            foreach ($mediaFiles as $media) {
+                $this->createModelRelation(
+                    $request->header->account,
+                    $request->getData('bill'),
+                    $media,
+                    BillMapper::class, 'media', '', $request->getOrigin()
+                );
+            }
+        }
+
+        $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Media', 'Media added to bill.', [
+            'upload' => $uploaded,
+            'media' => $mediaFiles
+        ]);
+    }
+
+    /**
+     * Method to validate bill creation from request
+     *
+     * @param RequestAbstract $request Request
+     *
+     * @return array<string, bool>
+     *
+     * @since 1.0.0
+     */
+    private function validateMediaAddToBill(RequestAbstract $request) : array
+    {
+        $val = [];
+        if (($val['media'] = empty($request->getData('media')) && empty($request->getFiles()))
+            || ($val['bill'] = empty($request->getData('bill')))
         ) {
             return $val;
         }
@@ -337,5 +409,58 @@ final class ApiController extends Controller
      */
     public function apiBillPdfCreate(RequestAbstract $request, ResponseAbstract $response, $data = null) : void
     {
+    }
+
+    /**
+     * Api method to create item files
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
+     *
+     * @return void
+     *
+     * @api
+     *
+     * @since 1.0.0
+     */
+    public function apiNoteCreate(RequestAbstract $request, ResponseAbstract $response, $data = null) : void
+    {
+        if (!empty($val = $this->validateNoteCreate($request))) {
+            $response->set('item_note_create', new FormValidation($val));
+            $response->header->status = RequestStatusCode::R_400;
+
+            return;
+        }
+
+        $request->setData('virtualpath', '/Modules/Billing/Articles/' . $request->getData('id'), true);
+        $this->app->moduleManager->get('Editor')->apiEditorCreate($request, $response, $data);
+
+        if ($response->header->status !== RequestStatusCode::R_200) {
+            return;
+        }
+
+        $model = $response->get($request->uri->__toString())['response'];
+        $this->createModelRelation($request->header->account, $request->getData('id'), $model->getId(), BillMapper::class, 'notes', '', $request->getOrigin());
+    }
+
+    /**
+     * Validate item note create request
+     *
+     * @param RequestAbstract $request Request
+     *
+     * @return array<string, bool>
+     *
+     * @since 1.0.0
+     */
+    private function validateNoteCreate(RequestAbstract $request) : array
+    {
+        $val = [];
+        if (($val['id'] = empty($request->getData('id')))
+        ) {
+            return $val;
+        }
+
+        return [];
     }
 }

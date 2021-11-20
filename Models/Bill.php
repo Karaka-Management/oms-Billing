@@ -21,6 +21,8 @@ use Modules\Media\Models\Media;
 use Modules\SupplierManagement\Models\Supplier;
 use phpOMS\Localization\ISO4217CharEnum;
 use phpOMS\Localization\Money;
+use Modules\Editor\Models\EditorDoc;
+use Mpdf\Tag\P;
 
 /**
  * Bill class.
@@ -47,6 +49,14 @@ class Bill implements \JsonSerializable
      * @since 1.0.0
      */
     public string $number = '';
+
+    /**
+     * Number format ID.
+     *
+     * @var string
+     * @since 1.0.0
+     */
+    public string $numberFormat = '';
 
     /**
      * Bill type.
@@ -95,6 +105,14 @@ class Bill implements \JsonSerializable
      * @since 1.0.0
      */
     public Account $createdBy;
+
+    /**
+     * Files.
+     *
+     * @var EditorDoc[]
+     * @since 1.0.0
+     */
+    private array $notes = [];
 
     public ?Client $client = null;
 
@@ -212,7 +230,7 @@ class Bill implements \JsonSerializable
      * @var Money
      * @since 1.0.0
      */
-    public Money $net;
+    public Money $netProfit;
 
     /**
      * Gross amount.
@@ -220,7 +238,7 @@ class Bill implements \JsonSerializable
      * @var Money
      * @since 1.0.0
      */
-    public Money $gross;
+    public Money $grossProfit;
 
     /**
      * Costs in net.
@@ -228,7 +246,7 @@ class Bill implements \JsonSerializable
      * @var Money
      * @since 1.0.0
      */
-    public Money $costs;
+    public Money $netCosts;
 
     /**
      * Profit in net.
@@ -236,7 +254,39 @@ class Bill implements \JsonSerializable
      * @var Money
      * @since 1.0.0
      */
-    public Money $profit;
+    public Money $grossCosts;
+
+    /**
+     * Costs in net.
+     *
+     * @var Money
+     * @since 1.0.0
+     */
+    public Money $netSales;
+
+    /**
+     * Profit in net.
+     *
+     * @var Money
+     * @since 1.0.0
+     */
+    public Money $grossSales;
+
+    /**
+     * Costs in net.
+     *
+     * @var Money
+     * @since 1.0.0
+     */
+    public Money $netDiscount;
+
+    /**
+     * Profit in net.
+     *
+     * @var Money
+     * @since 1.0.0
+     */
+    public Money $grossDiscount;
 
     /**
      * Insurance fees in net.
@@ -365,10 +415,14 @@ class Bill implements \JsonSerializable
      */
     public function __construct()
     {
-        $this->net    = new Money(0);
-        $this->gross  = new Money(0);
-        $this->costs  = new Money(0);
-        $this->profit = new Money(0);
+        $this->netProfit    = new Money(0);
+        $this->grossProfit  = new Money(0);
+        $this->netCosts    = new Money(0);
+        $this->grossCosts  = new Money(0);
+        $this->netSales    = new Money(0);
+        $this->grossSales  = new Money(0);
+        $this->netDiscount    = new Money(0);
+        $this->grossDiscount  = new Money(0);
 
         $this->createdAt       = new \DateTimeImmutable();
         $this->performanceDate = new \DateTime();
@@ -389,17 +443,15 @@ class Bill implements \JsonSerializable
     }
 
     /**
-     * Get Bill number.
+     * Build the invoice number.
      *
-     * @return string
+     * @return void
      *
      * @since 1.0.0
      */
-    public function getNumber() : string
+    public function buildNumber() : void
     {
-        $number = $this->number;
-
-        return \str_replace(
+        $this->number =  \str_replace(
             [
                 '{y}',
                 '{m}',
@@ -414,8 +466,20 @@ class Bill implements \JsonSerializable
                 $this->id,
                 \is_int($this->type) ? $this->type : $this->type->getId(),
             ],
-            $number
+            $this->numberFormat
         );
+    }
+
+    /**
+     * Get Bill number.
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
+    public function getNumber() : string
+    {
+        return $this->number;
     }
 
     /**
@@ -575,6 +639,32 @@ class Bill implements \JsonSerializable
     }
 
     /**
+     * Add note to item
+     *
+     * @param EditorDoc $note Note
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
+    public function addNote(EditorDoc $note) : void
+    {
+        $this->notes[] = $note;
+    }
+
+    /**
+     * Get notes
+     *
+     * @return EditorDoc[]
+     *
+     * @since 1.0.0
+     */
+    public function getNotes() : array
+    {
+        return $this->notes;
+    }
+
+    /**
      * Get all media
      *
      * @return Media[]
@@ -629,6 +719,7 @@ class Bill implements \JsonSerializable
         return [
             'id'          => $this->id,
             'number'      => $this->number,
+            'numberFormat'      => $this->numberFormat,
             'type'        => $this->type,
             'shipTo'      => $this->shipTo,
             'shipFAO'     => $this->shipFAO,

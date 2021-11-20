@@ -19,6 +19,7 @@ use Modules\ClientManagement\Models\ClientMapper;
 use Modules\Media\Models\MediaMapper;
 use Modules\SupplierManagement\Models\SupplierMapper;
 use phpOMS\DataStorage\Database\DataMapperAbstract;
+use Modules\Editor\Models\EditorDocMapper;
 
 /**
  * Mapper class.
@@ -39,6 +40,7 @@ class BillMapper extends DataMapperAbstract
     protected static array $columns = [
         'billing_bill_id'                      => ['name' => 'billing_bill_id',      'type' => 'int',    'internal' => 'id'],
         'billing_bill_number'                  => ['name' => 'billing_bill_number',      'type' => 'string',    'internal' => 'number'],
+        'billing_bill_numberformat'                  => ['name' => 'billing_bill_numberformat',      'type' => 'string',    'internal' => 'numberFormat'],
         'billing_bill_type'                    => ['name' => 'billing_bill_type',      'type' => 'int',    'internal' => 'type'],
         'billing_bill_info'                    => ['name' => 'billing_bill_info',      'type' => 'string',    'internal' => 'info'],
         'billing_bill_status'                  => ['name' => 'billing_bill_status',      'type' => 'int',    'internal' => 'status'],
@@ -54,10 +56,14 @@ class BillMapper extends DataMapperAbstract
         'billing_bill_billCity'                => ['name' => 'billing_bill_billCity',      'type' => 'string',    'internal' => 'billCity'],
         'billing_bill_billZip'                 => ['name' => 'billing_bill_billZip',      'type' => 'string',    'internal' => 'billZip'],
         'billing_bill_billCountry'             => ['name' => 'billing_bill_billCountry',      'type' => 'string',    'internal' => 'billCountry'],
-        'billing_bill_gross'                   => ['name' => 'billing_bill_gross',      'type' => 'Serializable',    'internal' => 'gross'],
-        'billing_bill_net'                     => ['name' => 'billing_bill_net',      'type' => 'Serializable',    'internal' => 'net'],
-        'billing_bill_costs'                   => ['name' => 'billing_bill_costs',      'type' => 'Serializable',    'internal' => 'costs'],
-        'billing_bill_profit'                  => ['name' => 'billing_bill_profit',      'type' => 'Serializable',    'internal' => 'profit'],
+        'billing_bill_netprofit'                     => ['name' => 'billing_bill_netprofit',      'type' => 'Serializable',    'internal' => 'netProfit'],
+        'billing_bill_grossprofit'                     => ['name' => 'billing_bill_grossprofit',      'type' => 'Serializable',    'internal' => 'grossProfit'],
+        'billing_bill_netcosts'                     => ['name' => 'billing_bill_netcosts',      'type' => 'Serializable',    'internal' => 'netCosts'],
+        'billing_bill_grosscosts'                     => ['name' => 'billing_bill_grosscosts',      'type' => 'Serializable',    'internal' => 'grossCosts'],
+        'billing_bill_netsales'                     => ['name' => 'billing_bill_netsales',      'type' => 'Serializable',    'internal' => 'netSales'],
+        'billing_bill_grosssales'                     => ['name' => 'billing_bill_grosssales',      'type' => 'Serializable',    'internal' => 'grossSales'],
+        'billing_bill_netdiscount'                     => ['name' => 'billing_bill_netdiscount',      'type' => 'Serializable',    'internal' => 'netDiscount'],
+        'billing_bill_grossdiscount'                     => ['name' => 'billing_bill_grossdiscount',      'type' => 'Serializable',    'internal' => 'grossDiscount'],
         'billing_bill_currency'                => ['name' => 'billing_bill_currency',      'type' => 'string',    'internal' => 'currency'],
         'billing_bill_referral'                => ['name' => 'billing_bill_referral',      'type' => 'int',    'internal' => 'referral'],
         'billing_bill_referral_name'           => ['name' => 'billing_bill_referral_name',      'type' => 'string',    'internal' => 'referralName'],
@@ -93,6 +99,12 @@ class BillMapper extends DataMapperAbstract
             'table'    => 'billing_bill_media',
             'external' => 'billing_bill_media_dst',
             'self'     => 'billing_bill_media_src',
+        ],
+        'notes' => [
+            'mapper'   => EditorDocMapper::class,            /* mapper of the related object */
+            'table'    => 'billing_bill_note',         /* table of the related object, null if no relation table is used (many->1) */
+            'external' => 'billing_bill_note_doc',
+            'self'     => 'billing_bill_note_item',
         ],
     ];
 

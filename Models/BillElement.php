@@ -49,7 +49,11 @@ class BillElement implements \JsonSerializable
 
     public Money $singleSalesPriceNet;
 
+    public Money $singleSalesPriceGross;
+
     public Money $totalSalesPriceNet;
+
+    public Money $totalSalesPriceGross;
 
     public ?FloatInt $singleDiscountP = null;
 
@@ -59,21 +63,33 @@ class BillElement implements \JsonSerializable
 
     public ?FloatInt $discountQ = null;
 
-    public ?FloatInt $singlePriceNet = null;
+    public Money $singleListPriceNet;
 
-    public ?FloatInt $totalPriceNet = null;
+    public Money $singleListPriceGross;
+
+    public Money $totalListPriceNet;
+
+    public Money $totalListPriceGross;
 
     public Money $singlePurchasePriceNet;
 
+    public Money $singlePurchasePriceGross;
+
     public Money $totalPurchasePriceNet;
+
+    public Money $totalPurchasePriceGross;
+
+    public Money $singleProfitNet;
+
+    public Money $singleProfitGross;
+
+    public Money $totalProfitNet;
+
+    public Money $totalProfitGross;
 
     public ?FloatInt $taxP = null;
 
     public ?FloatInt $taxR = null;
-
-    public ?FloatInt $singleSalesPriceGross = null;
-
-    public ?FloatInt $totalSalesPriceGross = null;
 
     /**
      * Event assigned to this element.
@@ -100,11 +116,29 @@ class BillElement implements \JsonSerializable
      */
     public function __construct()
     {
+        $this->singleListPriceNet = new Money();
+        $this->singleListPriceGross = new Money();
+
+        $this->totalListPriceNet  = new Money();
+        $this->totalListPriceGross  = new Money();
+
         $this->singleSalesPriceNet = new Money();
+        $this->singleSalesPriceGross = new Money();
+
         $this->totalSalesPriceNet  = new Money();
+        $this->totalSalesPriceGross  = new Money();
 
         $this->singlePurchasePriceNet = new Money();
+        $this->singlePurchasePriceGross = new Money();
+
         $this->totalPurchasePriceNet  = new Money();
+        $this->totalPurchasePriceGross  = new Money();
+
+        $this->singleProfitNet = new Money();
+        $this->singleProfitGross = new Money();
+
+        $this->totalProfitNet  = new Money();
+        $this->totalProfitGross  = new Money();
     }
 
     /**
