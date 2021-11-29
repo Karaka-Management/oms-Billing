@@ -70,10 +70,14 @@ final class BillTest extends \PHPUnit\Framework\TestCase
         self::assertEquals('', $this->bill->billZip);
         self::assertEquals('', $this->bill->billCountry);
 
-        self::assertInstanceOf('\phpOMS\Localization\Money', $this->bill->net);
-        self::assertInstanceOf('\phpOMS\Localization\Money', $this->bill->gross);
-        self::assertInstanceOf('\phpOMS\Localization\Money', $this->bill->costs);
-        self::assertInstanceOf('\phpOMS\Localization\Money', $this->bill->profit);
+        self::assertInstanceOf('\phpOMS\Localization\Money', $this->bill->netSales);
+        self::assertInstanceOf('\phpOMS\Localization\Money', $this->bill->grossSales);
+
+        self::assertInstanceOf('\phpOMS\Localization\Money', $this->bill->netProfit);
+        self::assertInstanceOf('\phpOMS\Localization\Money', $this->bill->grossProfit);
+
+        self::assertInstanceOf('\phpOMS\Localization\Money', $this->bill->netCosts);
+        self::assertInstanceOf('\phpOMS\Localization\Money', $this->bill->grossCosts);
 
         self::assertEquals(0, $this->bill->payment);
         self::assertEquals('', $this->bill->paymentText);
@@ -89,7 +93,7 @@ final class BillTest extends \PHPUnit\Framework\TestCase
      */
     public function testNumberRendering() : void
     {
-        $this->bill->number = '{y}{m}{d}-{id}';
+        $this->bill->numberFormat = '{y}{m}{d}-{id}';
         self::assertEquals(\date('Y') . \date('m') . \date('d') . '-0', $this->bill->getNumber());
     }
 
@@ -171,6 +175,7 @@ final class BillTest extends \PHPUnit\Framework\TestCase
     public function testSerialize() : void
     {
         $this->bill->number      = '123456';
+        $this->bill->numberFormat      = '{y}';
         $this->bill->type        = 2;
         $this->bill->shipTo      = 'To';
         $this->bill->shipFAO     = 'FAO';
@@ -189,6 +194,7 @@ final class BillTest extends \PHPUnit\Framework\TestCase
             [
                 'id'          => 0,
                 'number'      => '123456',
+                'numberFormat'      => '{y}',
                 'type'        => 2,
                 'shipTo'      => 'To',
                 'shipFAO'     => 'FAO',

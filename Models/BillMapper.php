@@ -104,7 +104,7 @@ class BillMapper extends DataMapperAbstract
             'mapper'   => EditorDocMapper::class,            /* mapper of the related object */
             'table'    => 'billing_bill_note',         /* table of the related object, null if no relation table is used (many->1) */
             'external' => 'billing_bill_note_doc',
-            'self'     => 'billing_bill_note_item',
+            'self'     => 'billing_bill_note_bill',
         ],
     ];
 

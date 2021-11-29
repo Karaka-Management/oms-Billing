@@ -361,7 +361,7 @@
                 "default": null
             },
             "billing_bill_element_single_grosslistprice": {
-                "name": "billing_bill_element_single_netlistprice",
+                "name": "billing_bill_element_single_grosslistprice",
                 "type": "BIGINT",
                 "null": true,
                 "default": null
@@ -373,7 +373,7 @@
                 "default": null
             },
             "billing_bill_element_total_grosslistprice": {
-                "name": "billing_bill_element_total_netlistprice",
+                "name": "billing_bill_element_total_grosslistprice",
                 "type": "BIGINT",
                 "null": true,
                 "default": null
@@ -385,7 +385,7 @@
                 "default": null
             },
             "billing_bill_element_single_grosssalesprice": {
-                "name": "billing_bill_element_single_netsalesprice",
+                "name": "billing_bill_element_single_grosssalesprice",
                 "type": "BIGINT",
                 "null": true,
                 "default": null
@@ -397,7 +397,7 @@
                 "default": null
             },
             "billing_bill_element_total_grosssalesprice": {
-                "name": "billing_bill_element_total_netsalesprice",
+                "name": "billing_bill_element_total_grosssalesprice",
                 "type": "BIGINT",
                 "null": true,
                 "default": null
@@ -409,7 +409,7 @@
                 "default": null
             },
             "billing_bill_element_single_grosspurchaseprice": {
-                "name": "billing_bill_element_single_netpurchaseprice",
+                "name": "billing_bill_element_single_grosspurchaseprice",
                 "type": "BIGINT",
                 "null": true,
                 "default": null
@@ -421,7 +421,7 @@
                 "default": null
             },
             "billing_bill_element_total_grosspurchaseprice": {
-                "name": "billing_bill_element_total_netpurchaseprice",
+                "name": "billing_bill_element_total_grosspurchaseprice",
                 "type": "BIGINT",
                 "null": true,
                 "default": null
@@ -433,7 +433,7 @@
                 "default": null
             },
             "billing_bill_element_single_grossprofit": {
-                "name": "billing_bill_element_single_netprofit",
+                "name": "billing_bill_element_single_grossprofit",
                 "type": "BIGINT",
                 "null": true,
                 "default": null
@@ -445,7 +445,7 @@
                 "default": null
             },
             "billing_bill_element_total_grossprofit": {
-                "name": "billing_bill_element_total_netprofit",
+                "name": "billing_bill_element_total_grossprofit",
                 "type": "BIGINT",
                 "null": true,
                 "default": null
@@ -579,7 +579,7 @@
                 "primary": true,
                 "autoincrement": true
             },
-            "billing_bill_note_item": {
+            "billing_bill_note_bill": {
                 "name": "billing_bill_note_bill",
                 "type": "INT",
                 "null": false,

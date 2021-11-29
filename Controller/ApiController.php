@@ -290,8 +290,8 @@ final class ApiController extends Controller
     public function updateBillWithBillElement(Bill $bill, BillElement $element, int $type = 1) : Bill
     {
         if ($type === 1) {
-            $bill->net->add($element->singleSalesPriceNet);
-            $bill->costs->add($element->singlePurchasePriceNet);
+            $bill->netSales->add($element->totalSalesPriceNet);
+            $bill->netCosts->add($element->totalPurchasePriceNet);
         }
 
         return $bill;
@@ -412,7 +412,7 @@ final class ApiController extends Controller
     }
 
     /**
-     * Api method to create item files
+     * Api method to create bill files
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
@@ -427,13 +427,13 @@ final class ApiController extends Controller
     public function apiNoteCreate(RequestAbstract $request, ResponseAbstract $response, $data = null) : void
     {
         if (!empty($val = $this->validateNoteCreate($request))) {
-            $response->set('item_note_create', new FormValidation($val));
+            $response->set('bill_note_create', new FormValidation($val));
             $response->header->status = RequestStatusCode::R_400;
 
             return;
         }
 
-        $request->setData('virtualpath', '/Modules/Billing/Articles/' . $request->getData('id'), true);
+        $request->setData('virtualpath', '/Modules/Billing/Bills/' . $request->getData('id'), true);
         $this->app->moduleManager->get('Editor')->apiEditorCreate($request, $response, $data);
 
         if ($response->header->status !== RequestStatusCode::R_200) {
@@ -445,7 +445,7 @@ final class ApiController extends Controller
     }
 
     /**
-     * Validate item note create request
+     * Validate bill note create request
      *
      * @param RequestAbstract $request Request
      *

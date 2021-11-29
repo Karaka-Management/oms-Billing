@@ -80,7 +80,7 @@ final class SalesBillMapper extends BillMapper
     public static function getSalesByItemId(int $id, \DateTime $start, \DateTime $end) : Money
     {
         $query  = new Builder(self::$db);
-        $result = $query->select('SUM(billing_bill_element_total_salesprice_net)')
+        $result = $query->select('SUM(billing_bill_element_total_netsalesprice)')
             ->from(self::$table)
             ->leftJoin(BillElementMapper::getTable())
                 ->on(self::$table . '.billing_bill_id', '=', BillElementMapper::getTable() . '.billing_bill_element_bill')
@@ -99,7 +99,7 @@ final class SalesBillMapper extends BillMapper
     public static function getSalesByClientId(int $id, \DateTime $start, \DateTime $end) : Money
     {
         $query  = new Builder(self::$db);
-        $result = $query->select('SUM(billing_bill_net)')
+        $result = $query->select('SUM(billing_bill_netsales)')
             ->from(self::$table)
             ->where(self::$table . '.billing_bill_client', '=', $id)
             ->andWhere(self::$table . '.billing_bill_performance_date', '>=', $start)
@@ -116,7 +116,7 @@ final class SalesBillMapper extends BillMapper
     public static function getAvgSalesPriceByItemId(int $id, \DateTime $start, \DateTime $end) : Money
     {
         $query  = new Builder(self::$db);
-        $result = $query->select('SUM(billing_bill_element_single_salesprice_net)', 'COUNT(billing_bill_element_total_salesprice_net)')
+        $result = $query->select('SUM(billing_bill_element_single_netsalesprice)', 'COUNT(billing_bill_element_total_netsalesprice)')
             ->from(self::$table)
             ->leftJoin(BillElementMapper::getTable())
                 ->on(self::$table . '.billing_bill_id', '=', BillElementMapper::getTable() . '.billing_bill_element_bill')
@@ -192,7 +192,7 @@ final class SalesBillMapper extends BillMapper
 
         // @todo: limit is not working correctly... only returns / 2 or something like that?. Maybe because bills arent unique?
 
-        $query ??= self::getQuery(null, [], RelationType::ALL, $depth);
+        $query = self::getQuery(null, [], RelationType::ALL, $depth);
         $query->leftJoin(BillElementMapper::getTable(), BillElementMapper::getTable() . '_d' . $depth)
                 ->on(self::$table . '_d' . $depth . '.billing_bill_id', '=', BillElementMapper::getTable() . '_d' . $depth . '.billing_bill_element_bill')
             ->where(BillElementMapper::getTable() . '_d' . $depth . '.billing_bill_element_item', '=', $id)
@@ -216,7 +216,7 @@ final class SalesBillMapper extends BillMapper
 
         // @todo: limit is not working correctly... only returns / 2 or something like that?. Maybe because bills arent unique?
 
-        $query ??= self::getQuery(null, [], RelationType::ALL, $depth);
+        $query = self::getQuery(null, [], RelationType::ALL, $depth);
         $query->where(self::$table . '_d' . $depth . '.billing_bill_client', '=', $id)
             ->limit($limit);
 
@@ -236,8 +236,8 @@ final class SalesBillMapper extends BillMapper
     {
         $depth = 3;
 
-        $query ??= ClientMapper::getQuery(null, [], RelationType::ALL, $depth);
-        $query->selectAs('SUM(billing_bill_element_total_salesprice_net)', 'net_sales')
+        $query = ClientMapper::getQuery(null, [], RelationType::ALL, $depth);
+        $query->selectAs('SUM(billing_bill_element_total_netsalesprice)', 'net_sales')
             ->leftJoin(self::$table, self::$table . '_d' . $depth)
                 ->on(ClientMapper::getTable() . '_d' . $depth . '.clientmgmt_client_id', '=', self::$table . '_d' . $depth . '.billing_bill_client')
             ->leftJoin(BillElementMapper::getTable(), BillElementMapper::getTable() . '_d' . $depth)
@@ -264,7 +264,7 @@ final class SalesBillMapper extends BillMapper
 
         // @todo: limit is not working correctly... only returns / 2 or something like that?. Maybe because bills arent unique?
 
-        $query ??= self::getQuery(null, [], RelationType::ALL, $depth);
+        $query = self::getQuery(null, [], RelationType::ALL, $depth);
         $query->leftJoin(BillElementMapper::getTable(), BillElementMapper::getTable() . '_d' . $depth)
                 ->on(self::$table . '_d' . $depth . '.billing_bill_id', '=', BillElementMapper::getTable() . '_d' . $depth . '.billing_bill_element_bill')
             ->where(BillElementMapper::getTable() . '_d' . $depth . '.billing_bill_element_item', '=', $id)
@@ -288,7 +288,7 @@ final class SalesBillMapper extends BillMapper
 
         // @todo: limit is not working correctly... only returns / 2 or something like that?. Maybe because bills arent unique?
 
-        $query ??= BillElementMapper::getQuery(null, [], RelationType::ALL, $depth);
+        $query = BillElementMapper::getQuery(null, [], RelationType::ALL, $depth);
         $query->leftJoin(self::$table, self::$table . '_d' . $depth)
                 ->on(BillElementMapper::getTable() . '_d' . $depth . '.billing_bill_element_bill', '=', self::$table . '_d' . $depth . '.billing_bill_id')
             ->where(self::$table . '_d' . $depth . '.billing_bill_client', '=', $client)
@@ -310,7 +310,7 @@ final class SalesBillMapper extends BillMapper
     {
         $query  = new Builder(self::$db);
         $result = $query->select(CountryMapper::getTable() . '.country_region')
-            ->selectAs('SUM(billing_bill_element_total_salesprice_net)', 'net_sales')
+            ->selectAs('SUM(billing_bill_element_total_netsalesprice)', 'net_sales')
             ->from(self::$table)
             ->leftJoin(BillElementMapper::getTable())
                 ->on(self::$table . '.billing_bill_id', '=', BillElementMapper::getTable() . '.billing_bill_element_bill')
@@ -333,7 +333,7 @@ final class SalesBillMapper extends BillMapper
     {
         $query  = new Builder(self::$db);
         $result = $query->select(CountryMapper::getTable() . '.country_code2')
-            ->selectAs('SUM(billing_bill_element_total_salesprice_net)', 'net_sales')
+            ->selectAs('SUM(billing_bill_element_total_netsalesprice)', 'net_sales')
             ->from(self::$table)
             ->leftJoin(BillElementMapper::getTable())
                 ->on(self::$table . '.billing_bill_id', '=', BillElementMapper::getTable() . '.billing_bill_element_bill')
@@ -357,8 +357,8 @@ final class SalesBillMapper extends BillMapper
     public static function getItemMonthlySalesCosts(int $id, \DateTime $start, \DateTime $end) : array
     {
         $query  = new Builder(self::$db);
-        $result = $query->selectAs('SUM(billing_bill_element_total_salesprice_net)', 'net_sales')
-            ->selectAs('SUM(billing_bill_element_total_purchaseprice_net)', 'net_costs')
+        $result = $query->selectAs('SUM(billing_bill_element_total_netsalesprice)', 'net_sales')
+            ->selectAs('SUM(billing_bill_element_total_netpurchaseprice)', 'net_costs')
             ->selectAs('YEAR(billing_bill_performance_date)', 'year')
             ->selectAs('MONTH(billing_bill_performance_date)', 'month')
             ->from(self::$table)
@@ -381,8 +381,8 @@ final class SalesBillMapper extends BillMapper
     public static function getClientMonthlySalesCosts(int $id, \DateTime $start, \DateTime $end) : array
     {
         $query  = new Builder(self::$db);
-        $result = $query->selectAs('SUM(billing_bill_net)', 'net_sales')
-            ->selectAs('SUM(billing_bill_costs)', 'net_costs')
+        $result = $query->selectAs('SUM(billing_bill_netsales)', 'net_sales')
+            ->selectAs('SUM(billing_bill_netcosts)', 'net_costs')
             ->selectAs('YEAR(billing_bill_performance_date)', 'year')
             ->selectAs('MONTH(billing_bill_performance_date)', 'month')
             ->from(self::$table)

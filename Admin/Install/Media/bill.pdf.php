@@ -4,8 +4,12 @@ use Mpdf\Mpdf;
 
 /**
  * @var \phpOMS\Views\View $this
+ * @var \Modules\Billing\Models\Bill
  */
 $bill     = $this->getData('bill');
+/**
+ * @var \Modules\Billing\Models\BillElement[] $elements
+ */
 $elements = $bill->getElements();
 
 $mpdf = new Mpdf([
@@ -140,7 +144,7 @@ $html .= '
         <tr>
             <td class="blanktotal" colspan="3" rowspan="6"></td>
             <td class="totals">Subtotal:</td>
-            <td class="totals cost">' . $bill->net->getCurrency(null) . '</td>
+            <td class="totals cost">' . $bill->netSales->getCurrency(null) . '</td>
         </tr>
         <tr>
             <td class="totals">Tax:</td>
@@ -152,7 +156,7 @@ $html .= '
         </tr>
         <tr>
             <td class="totals"><strong>TOTAL:</strong></td>
-            <td class="totals cost"><strong>' . $bill->gross->getCurrency(null) . '</strong></td>
+            <td class="totals cost"><strong>' . $bill->grossSales->getCurrency(null) . '</strong></td>
         </tr>
         <tr>
             <td class="totals">Deposit:</td>

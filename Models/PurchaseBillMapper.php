@@ -80,7 +80,7 @@ final class PurchaseBillMapper extends BillMapper
     public static function getPurchaseByItemId(int $id, \DateTime $start, \DateTime $end) : Money
     {
         $query  = new Builder(self::$db);
-        $result = $query->select('SUM(billing_bill_element_total_purchaseprice_net)')
+        $result = $query->select('SUM(billing_bill_element_total_netpurchaseprice)')
             ->from(self::$table)
             ->leftJoin(BillElementMapper::getTable())
                 ->on(self::$table . '.billing_bill_id', '=', BillElementMapper::getTable() . '.billing_bill_element_bill')
@@ -99,7 +99,7 @@ final class PurchaseBillMapper extends BillMapper
     public static function getPurchaseBySupplierId(int $id, \DateTime $start, \DateTime $end) : Money
     {
         $query  = new Builder(self::$db);
-        $result = $query->select('SUM(billing_bill_net)')
+        $result = $query->select('SUM(billing_bill_netcosts)')
             ->from(self::$table)
             ->where(self::$table . '.billing_bill_supplier', '=', $id)
             ->andWhere(self::$table . '.billing_bill_performance_date', '>=', $start)
@@ -116,7 +116,7 @@ final class PurchaseBillMapper extends BillMapper
     public static function getAvgPurchasePriceByItemId(int $id, \DateTime $start, \DateTime $end) : Money
     {
         $query  = new Builder(self::$db);
-        $result = $query->select('SUM(billing_bill_element_single_purchaseprice_net)', 'COUNT(billing_bill_element_total_purchaseprice_net)')
+        $result = $query->select('SUM(billing_bill_element_single_netpurchaseprice)', 'COUNT(billing_bill_element_total_netpurchaseprice)')
             ->from(self::$table)
             ->leftJoin(BillElementMapper::getTable())
                 ->on(self::$table . '.billing_bill_id', '=', BillElementMapper::getTable() . '.billing_bill_element_bill')
@@ -192,7 +192,7 @@ final class PurchaseBillMapper extends BillMapper
 
         // @todo: limit is not working correctly... only returns / 2 or something like that?. Maybe because bills arent unique?
 
-        $query ??= self::getQuery(null, [], RelationType::ALL, $depth);
+        $query = self::getQuery(null, [], RelationType::ALL, $depth);
         $query->leftJoin(BillElementMapper::getTable(), BillElementMapper::getTable() . '_d' . $depth)
                 ->on(self::$table . '_d' . $depth . '.billing_bill_id', '=', BillElementMapper::getTable() . '_d' . $depth . '.billing_bill_element_bill')
             ->where(BillElementMapper::getTable() . '_d' . $depth . '.billing_bill_element_item', '=', $id)
@@ -216,7 +216,7 @@ final class PurchaseBillMapper extends BillMapper
 
         // @todo: limit is not working correctly... only returns / 2 or something like that?. Maybe because bills arent unique?
 
-        $query ??= self::getQuery(null, [], RelationType::ALL, $depth);
+        $query = self::getQuery(null, [], RelationType::ALL, $depth);
         $query->where(self::$table . '_d' . $depth . '.billing_bill_supplier', '=', $id)
             ->limit($limit);
 
@@ -236,8 +236,8 @@ final class PurchaseBillMapper extends BillMapper
     {
         $depth = 3;
 
-        $query ??= SupplierMapper::getQuery(null, [], RelationType::ALL, $depth);
-        $query->selectAs('SUM(billing_bill_element_total_purchaseprice_net)', 'net_purchase')
+        $query = SupplierMapper::getQuery(null, [], RelationType::ALL, $depth);
+        $query->selectAs('SUM(billing_bill_element_total_netpurchaseprice)', 'net_purchase')
             ->leftJoin(self::$table, self::$table . '_d' . $depth)
                 ->on(SupplierMapper::getTable() . '_d' . $depth . '.suppliermgmt_supplier_id', '=', self::$table . '_d' . $depth . '.billing_bill_supplier')
             ->leftJoin(BillElementMapper::getTable(), BillElementMapper::getTable() . '_d' . $depth)
@@ -262,7 +262,7 @@ final class PurchaseBillMapper extends BillMapper
     {
         $query  = new Builder(self::$db);
         $result = $query->select(CountryMapper::getTable() . '.country_region')
-            ->selectAs('SUM(billing_bill_element_total_purchaseprice_net)', 'net_purchase')
+            ->selectAs('SUM(billing_bill_element_total_netpurchaseprice)', 'net_purchase')
             ->from(self::$table)
             ->leftJoin(BillElementMapper::getTable())
                 ->on(self::$table . '.billing_bill_id', '=', BillElementMapper::getTable() . '.billing_bill_element_bill')
@@ -285,7 +285,7 @@ final class PurchaseBillMapper extends BillMapper
     {
         $query  = new Builder(self::$db);
         $result = $query->select(CountryMapper::getTable() . '.country_code2')
-            ->selectAs('SUM(billing_bill_element_total_purchaseprice_net)', 'net_purchase')
+            ->selectAs('SUM(billing_bill_element_total_netpurchaseprice)', 'net_purchase')
             ->from(self::$table)
             ->leftJoin(BillElementMapper::getTable())
                 ->on(self::$table . '.billing_bill_id', '=', BillElementMapper::getTable() . '.billing_bill_element_bill')
@@ -309,8 +309,7 @@ final class PurchaseBillMapper extends BillMapper
     public static function getItemMonthlyPurchaseCosts(int $id, \DateTime $start, \DateTime $end) : array
     {
         $query  = new Builder(self::$db);
-        $result = $query->selectAs('SUM(billing_bill_element_total_purchaseprice_net)', 'net_purchase')
-            ->selectAs('SUM(billing_bill_element_total_purchaseprice_net)', 'net_costs')
+        $result = $query->selectAs('SUM(billing_bill_element_total_netpurchaseprice)', 'net_purchase')
             ->selectAs('YEAR(billing_bill_performance_date)', 'year')
             ->selectAs('MONTH(billing_bill_performance_date)', 'month')
             ->from(self::$table)
@@ -333,8 +332,7 @@ final class PurchaseBillMapper extends BillMapper
     public static function getSupplierMonthlyPurchaseCosts(int $id, \DateTime $start, \DateTime $end) : array
     {
         $query  = new Builder(self::$db);
-        $result = $query->selectAs('SUM(billing_bill_net)', 'net_purchase')
-            ->selectAs('SUM(billing_bill_costs)', 'net_costs')
+        $result = $query->selectAs('SUM(billing_bill_netcosts)', 'net_purchase')
             ->selectAs('YEAR(billing_bill_performance_date)', 'year')
             ->selectAs('MONTH(billing_bill_performance_date)', 'month')
             ->from(self::$table)

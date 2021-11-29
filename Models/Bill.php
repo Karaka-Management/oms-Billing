@@ -479,6 +479,10 @@ class Bill implements \JsonSerializable
      */
     public function getNumber() : string
     {
+        if (empty($this->number)) {
+            $this->buildNumber();
+        }
+
         return $this->number;
     }
 
