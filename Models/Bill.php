@@ -22,6 +22,7 @@ use Modules\SupplierManagement\Models\Supplier;
 use phpOMS\Localization\ISO4217CharEnum;
 use phpOMS\Localization\Money;
 use Modules\Editor\Models\EditorDoc;
+use Modules\Media\Models\NullMedia;
 use Mpdf\Tag\P;
 
 /**
@@ -713,6 +714,27 @@ class Bill implements \JsonSerializable
         }
 
         return $files;
+    }
+
+    /**
+     * Get media file by type
+     *
+     * @param null|int $type Media type
+     *
+     * @return Media
+     *
+     * @since 1.0.0
+     */
+    public function getFileByType(int $type = null) : Media
+    {
+        $files = [];
+        foreach ($this->media as $file) {
+            if ($file->type === $type) {
+                return $file;
+            }
+        }
+
+        return new NullMedia();
     }
 
     /**

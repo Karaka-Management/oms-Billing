@@ -14,7 +14,7 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Models;
 
-use phpOMS\DataStorage\Database\DataMapperAbstract;
+use phpOMS\DataStorage\Database\Mapper\DataMapperFactory;
 
 /**
  * Billing mapper class.
@@ -24,7 +24,7 @@ use phpOMS\DataStorage\Database\DataMapperAbstract;
  * @link    https://orange-management.org
  * @since   1.0.0
  */
-final class BillTypeMapper extends DataMapperAbstract
+final class BillTypeMapper extends DataMapperFactory
 {
     /**
      * Columns.
@@ -32,7 +32,7 @@ final class BillTypeMapper extends DataMapperAbstract
      * @var array<string, array{name:string, type:string, internal:string, autocomplete?:bool, readonly?:bool, writeonly?:bool, annotations?:array}>
      * @since 1.0.0
      */
-    protected static array $columns = [
+    public const COLUMNS = [
         'billing_type_id'                => ['name' => 'billing_type_id',    'type' => 'int',    'internal' => 'id'],
         'billing_type_transfer_type'     => ['name' => 'billing_type_transfer_type',    'type' => 'int',    'internal' => 'transferType'],
         'billing_type_transfer_stock'    => ['name' => 'billing_type_transfer_stock',    'type' => 'bool',    'internal' => 'transferStock'],
@@ -44,13 +44,12 @@ final class BillTypeMapper extends DataMapperAbstract
      * @var array<string, array{mapper:string, table:string, self?:?string, external?:?string, column?:string}>
      * @since 1.0.0
      */
-    protected static array $hasMany = [
+    public const HAS_MANY = [
         'l11n' => [
             'mapper'            => BillTypeL11nMapper::class,
             'table'             => 'billing_type_l11n',
             'self'              => 'billing_type_l11n_type',
             'column'            => 'name',
-            'conditional'       => true,
             'external'          => null,
         ],
     ];
@@ -62,7 +61,7 @@ final class BillTypeMapper extends DataMapperAbstract
      * @since 1.0.0
      */
     /*
-    protected static array $belongsTo = [
+    public const BELONGS_TO = [
         'owner' => [
             'mapper' => AccountMapper::class,
             'external'   => 'billing_type_owner',
@@ -76,7 +75,7 @@ final class BillTypeMapper extends DataMapperAbstract
      * @var string
      * @since 1.0.0
      */
-    protected static string $model = BillType::class;
+    public const MODEL = BillType::class;
 
     /**
      * Primary table.
@@ -84,7 +83,7 @@ final class BillTypeMapper extends DataMapperAbstract
      * @var string
      * @since 1.0.0
      */
-    protected static string $table = 'billing_type';
+    public const TABLE = 'billing_type';
 
     /**
      * Primary field name.
@@ -92,5 +91,5 @@ final class BillTypeMapper extends DataMapperAbstract
      * @var string
      * @since 1.0.0
      */
-    protected static string $primaryField = 'billing_type_id';
+    public const PRIMARYFIELD ='billing_type_id';
 }

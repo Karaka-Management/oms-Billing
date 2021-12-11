@@ -14,7 +14,7 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Models;
 
-use phpOMS\DataStorage\Database\DataMapperAbstract;
+use phpOMS\DataStorage\Database\Mapper\DataMapperFactory;
 
 /**
  * Bill type mapper class.
@@ -24,7 +24,7 @@ use phpOMS\DataStorage\Database\DataMapperAbstract;
  * @link    https://orange-management.org
  * @since   1.0.0
  */
-final class BillTypeL11nMapper extends DataMapperAbstract
+final class BillTypeL11nMapper extends DataMapperFactory
 {
     /**
      * Columns.
@@ -32,7 +32,7 @@ final class BillTypeL11nMapper extends DataMapperAbstract
      * @var array<string, array{name:string, type:string, internal:string, autocomplete?:bool, readonly?:bool, writeonly?:bool, annotations?:array}>
      * @since 1.0.0
      */
-    protected static array $columns = [
+    public const COLUMNS = [
         'billing_type_l11n_id'        => ['name' => 'billing_type_l11n_id',       'type' => 'int',    'internal' => 'id'],
         'billing_type_l11n_name'      => ['name' => 'billing_type_l11n_name',    'type' => 'string', 'internal' => 'name', 'autocomplete' => true],
         'billing_type_l11n_type'      => ['name' => 'billing_type_l11n_type',      'type' => 'int',    'internal' => 'type'],
@@ -45,7 +45,7 @@ final class BillTypeL11nMapper extends DataMapperAbstract
      * @var string
      * @since 1.0.0
      */
-    protected static string $table = 'billing_type_l11n';
+    public const TABLE = 'billing_type_l11n';
 
     /**
      * Primary field name.
@@ -53,5 +53,5 @@ final class BillTypeL11nMapper extends DataMapperAbstract
      * @var string
      * @since 1.0.0
      */
-    protected static string $primaryField = 'billing_type_l11n_id';
+    public const PRIMARYFIELD ='billing_type_l11n_id';
 }

@@ -14,7 +14,7 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Models;
 
-use phpOMS\DataStorage\Database\DataMapperAbstract;
+use phpOMS\DataStorage\Database\Mapper\DataMapperFactory;
 
 /**
  * Mapper class.
@@ -24,7 +24,7 @@ use phpOMS\DataStorage\Database\DataMapperAbstract;
  * @link    https://orange-management.org
  * @since   1.0.0
  */
-final class BillElementMapper extends DataMapperAbstract
+final class BillElementMapper extends DataMapperFactory
 {
     /**
      * Columns.
@@ -32,7 +32,7 @@ final class BillElementMapper extends DataMapperAbstract
      * @var array<string, array{name:string, type:string, internal:string, autocomplete?:bool, readonly?:bool, writeonly?:bool, annotations?:array}>
      * @since 1.0.0
      */
-    protected static array $columns = [
+    public const COLUMNS = [
         'billing_bill_element_id'                                  => ['name' => 'billing_bill_element_id',      'type' => 'int',    'internal' => 'id'],
         'billing_bill_element_order'                               => ['name' => 'billing_bill_element_order',      'type' => 'int',    'internal' => 'order'],
         'billing_bill_element_item'                                => ['name' => 'billing_bill_element_item',      'type' => 'int',    'internal' => 'item'],
@@ -69,7 +69,7 @@ final class BillElementMapper extends DataMapperAbstract
      * @var array<string, array{mapper:string, external:string}>
      * @since 1.0.0
      */
-    protected static array $belongsTo = [
+    public const BELONGS_TO = [
         'bill' => [
             'mapper'     => BillMapper::class,
             'external'   => 'billing_bill_element_bill',
@@ -82,7 +82,7 @@ final class BillElementMapper extends DataMapperAbstract
      * @var string
      * @since 1.0.0
      */
-    public static string $primaryField = 'billing_bill_element_id';
+    public const PRIMARYFIELD = 'billing_bill_element_id';
 
     /**
      * Primary table.
@@ -90,5 +90,5 @@ final class BillElementMapper extends DataMapperAbstract
      * @var string
      * @since 1.0.0
      */
-    public static string $table = 'billing_bill_element';
+    public const TABLE = 'billing_bill_element';
 }

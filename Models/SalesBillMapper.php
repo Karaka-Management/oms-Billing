@@ -16,7 +16,6 @@ namespace Modules\Billing\Models;
 
 use Modules\ClientManagement\Models\ClientMapper;
 use phpOMS\DataStorage\Database\Query\Builder;
-use phpOMS\DataStorage\Database\RelationType;
 use phpOMS\Localization\Defaults\CountryMapper;
 use phpOMS\Localization\Money;
 
@@ -36,7 +35,7 @@ final class SalesBillMapper extends BillMapper
      * @var string
      * @since 1.0.0
      */
-    protected static string $model = Bill::class;
+    public const MODEL = Bill::class;
 
     /**
      * Placeholder
@@ -45,15 +44,16 @@ final class SalesBillMapper extends BillMapper
         mixed $pivot,
         string $column = null,
         int $limit = 50,
-        int $relations = RelationType::ALL,
         int $depth = 3,
         Builder $query = null
     ) : array
     {
-        $query = self::getQuery(null, [], $relations, $depth);
-        $query->where(BillTypeMapper::getTable() . '_d' . ($depth - 1) . '.billing_type_transfer_type', '=', BillTransferType::SALES);
-
-        return self::getBeforePivot($pivot, $column, $limit, $relations, $depth, $query);
+        return self::getAll()
+            ->with('type')
+            ->where('id', $pivot, '<')
+            ->where('transferType', BillTransferType::SALES)
+            ->limit($limit)
+            ->execute();
     }
 
     /**
@@ -63,15 +63,16 @@ final class SalesBillMapper extends BillMapper
         mixed $pivot,
         string $column = null,
         int $limit = 50,
-        int $relations = RelationType::ALL,
         int $depth = 3,
         Builder $query = null
     ) : array
     {
-        $query = self::getQuery(null, [], $relations, $depth);
-        $query->where(BillTypeMapper::getTable() . '_d' . ($depth - 1) . '.billing_type_transfer_type', '=', BillTransferType::SALES);
-
-        return self::getAfterPivot($pivot, $column, $limit, $relations, $depth, $query);
+        return self::getAll()
+            ->with('type')
+            ->where('id', $pivot, '>')
+            ->where('transferType', BillTransferType::SALES)
+            ->limit($limit)
+            ->execute();
     }
 
     /**
@@ -81,12 +82,12 @@ final class SalesBillMapper extends BillMapper
     {
         $query  = new Builder(self::$db);
         $result = $query->select('SUM(billing_bill_element_total_netsalesprice)')
-            ->from(self::$table)
-            ->leftJoin(BillElementMapper::getTable())
-                ->on(self::$table . '.billing_bill_id', '=', BillElementMapper::getTable() . '.billing_bill_element_bill')
-            ->where(BillElementMapper::getTable() . '.billing_bill_element_item', '=', $id)
-            ->andWhere(self::$table . '.billing_bill_performance_date', '>=', $start)
-            ->andWhere(self::$table . '.billing_bill_performance_date', '<=', $end)
+            ->from(self::TABLE)
+            ->leftJoin(BillElementMapper::TABLE)
+                ->on(self::TABLE . '.billing_bill_id', '=', BillElementMapper::TABLE . '.billing_bill_element_bill')
+            ->where(BillElementMapper::TABLE . '.billing_bill_element_item', '=', $id)
+            ->andWhere(self::TABLE . '.billing_bill_performance_date', '>=', $start)
+            ->andWhere(self::TABLE . '.billing_bill_performance_date', '<=', $end)
             ->execute()
             ->fetch();
 
@@ -100,10 +101,10 @@ final class SalesBillMapper extends BillMapper
     {
         $query  = new Builder(self::$db);
         $result = $query->select('SUM(billing_bill_netsales)')
-            ->from(self::$table)
-            ->where(self::$table . '.billing_bill_client', '=', $id)
-            ->andWhere(self::$table . '.billing_bill_performance_date', '>=', $start)
-            ->andWhere(self::$table . '.billing_bill_performance_date', '<=', $end)
+            ->from(self::TABLE)
+            ->where(self::TABLE . '.billing_bill_client', '=', $id)
+            ->andWhere(self::TABLE . '.billing_bill_performance_date', '>=', $start)
+            ->andWhere(self::TABLE . '.billing_bill_performance_date', '<=', $end)
             ->execute()
             ->fetch();
 
@@ -117,12 +118,12 @@ final class SalesBillMapper extends BillMapper
     {
         $query  = new Builder(self::$db);
         $result = $query->select('SUM(billing_bill_element_single_netsalesprice)', 'COUNT(billing_bill_element_total_netsalesprice)')
-            ->from(self::$table)
-            ->leftJoin(BillElementMapper::getTable())
-                ->on(self::$table . '.billing_bill_id', '=', BillElementMapper::getTable() . '.billing_bill_element_bill')
-            ->where(BillElementMapper::getTable() . '.billing_bill_element_item', '=', $id)
-            ->andWhere(self::$table . '.billing_bill_performance_date', '>=', $start)
-            ->andWhere(self::$table . '.billing_bill_performance_date', '<=', $end)
+            ->from(self::TABLE)
+            ->leftJoin(BillElementMapper::TABLE)
+                ->on(self::TABLE . '.billing_bill_id', '=', BillElementMapper::TABLE . '.billing_bill_element_bill')
+            ->where(BillElementMapper::TABLE . '.billing_bill_element_item', '=', $id)
+            ->andWhere(self::TABLE . '.billing_bill_performance_date', '>=', $start)
+            ->andWhere(self::TABLE . '.billing_bill_performance_date', '<=', $end)
             ->execute()
             ->fetch();
 
@@ -137,10 +138,10 @@ final class SalesBillMapper extends BillMapper
         // @todo: only delivers/invoice/production (no offers ...)
         $query  = new Builder(self::$db);
         $result = $query->select('billing_bill_performance_date')
-            ->from(self::$table)
-            ->leftJoin(BillElementMapper::getTable())
-                ->on(self::$table . '.billing_bill_id', '=', BillElementMapper::getTable() . '.billing_bill_element_bill')
-            ->where(BillElementMapper::getTable() . '.billing_bill_element_item', '=', $id)
+            ->from(self::TABLE)
+            ->leftJoin(BillElementMapper::TABLE)
+                ->on(self::TABLE . '.billing_bill_id', '=', BillElementMapper::TABLE . '.billing_bill_element_bill')
+            ->where(BillElementMapper::TABLE . '.billing_bill_element_item', '=', $id)
             ->orderBy('billing_bill_id', 'DESC')
             ->limit(1)
             ->execute()
@@ -157,8 +158,8 @@ final class SalesBillMapper extends BillMapper
         // @todo: only delivers/invoice/production (no offers ...)
         $query  = new Builder(self::$db);
         $result = $query->select('billing_bill_performance_date')
-            ->from(self::$table)
-            ->where(self::$table . '.billing_bill_client', '=', $id)
+            ->from(self::TABLE)
+            ->where(self::TABLE . '.billing_bill_client', '=', $id)
             ->orderBy('billing_bill_id', 'DESC')
             ->limit(1)
             ->execute()
@@ -188,23 +189,22 @@ final class SalesBillMapper extends BillMapper
      */
     public static function getNewestItemInvoices(int $id, int $limit = 10) : array
     {
-        $depth = 3;
 
         // @todo: limit is not working correctly... only returns / 2 or something like that?. Maybe because bills arent unique?
 
-        $query = self::getQuery(null, [], RelationType::ALL, $depth);
-        $query->leftJoin(BillElementMapper::getTable(), BillElementMapper::getTable() . '_d' . $depth)
-                ->on(self::$table . '_d' . $depth . '.billing_bill_id', '=', BillElementMapper::getTable() . '_d' . $depth . '.billing_bill_element_bill')
-            ->where(BillElementMapper::getTable() . '_d' . $depth . '.billing_bill_element_item', '=', $id)
+        $query = self::getQuery();
+        $query->leftJoin(BillElementMapper::TABLE, BillElementMapper::TABLE . '_d1')
+                ->on(self::TABLE . '_d1.billing_bill_id', '=', BillElementMapper::TABLE . '_d1.billing_bill_element_bill')
+            ->where(BillElementMapper::TABLE . '_d1.billing_bill_element_item', '=', $id)
             ->limit($limit);
 
-        if (!empty(self::$createdAt)) {
-            $query->orderBy(self::$table  . '_d' . $depth . '.' . self::$columns[self::$createdAt]['name'], 'DESC');
+        if (!empty(self::CREATED_AT)) {
+            $query->orderBy(self::TABLE  . '_d1.' . self::COLUMNS[self::CREATED_AT]['name'], 'DESC');
         } else {
-            $query->orderBy(self::$table  . '_d' . $depth . '.' . self::$columns[self::$primaryField]['name'], 'DESC');
+            $query->orderBy(self::TABLE  . '_d1.' . self::COLUMNS[self::PRIMARYFIELD]['name'], 'DESC');
         }
 
-        return self::getAllByQuery($query, RelationType::ALL, $depth);
+        return self::getAll()->execute($query);
     }
 
     /**
@@ -212,21 +212,20 @@ final class SalesBillMapper extends BillMapper
      */
     public static function getNewestClientInvoices(int $id, int $limit = 10) : array
     {
-        $depth = 3;
 
         // @todo: limit is not working correctly... only returns / 2 or something like that?. Maybe because bills arent unique?
 
-        $query = self::getQuery(null, [], RelationType::ALL, $depth);
-        $query->where(self::$table . '_d' . $depth . '.billing_bill_client', '=', $id)
+        $query = self::getQuery();
+        $query->where(self::TABLE . '_d1.billing_bill_client', '=', $id)
             ->limit($limit);
 
-        if (!empty(self::$createdAt)) {
-            $query->orderBy(self::$table  . '_d' . $depth . '.' . self::$columns[self::$createdAt]['name'], 'DESC');
+        if (!empty(self::CREATED_AT)) {
+            $query->orderBy(self::TABLE  . '_d1.' . self::COLUMNS[self::CREATED_AT]['name'], 'DESC');
         } else {
-            $query->orderBy(self::$table  . '_d' . $depth . '.' . self::$columns[self::$primaryField]['name'], 'DESC');
+            $query->orderBy(self::TABLE  . '_d1.' . self::COLUMNS[self::PRIMARYFIELD]['name'], 'DESC');
         }
 
-        return self::getAllByQuery($query, RelationType::ALL, $depth);
+        return self::getAll()->execute($query);
     }
 
     /**
@@ -234,23 +233,22 @@ final class SalesBillMapper extends BillMapper
      */
     public static function getItemTopClients(int $id, \DateTime $start, \DateTime $end, int $limit = 10) : array
     {
-        $depth = 3;
 
-        $query = ClientMapper::getQuery(null, [], RelationType::ALL, $depth);
+        $query = ClientMapper::getQuery();
         $query->selectAs('SUM(billing_bill_element_total_netsalesprice)', 'net_sales')
-            ->leftJoin(self::$table, self::$table . '_d' . $depth)
-                ->on(ClientMapper::getTable() . '_d' . $depth . '.clientmgmt_client_id', '=', self::$table . '_d' . $depth . '.billing_bill_client')
-            ->leftJoin(BillElementMapper::getTable(), BillElementMapper::getTable() . '_d' . $depth)
-                ->on(self::$table . '_d' . $depth . '.billing_bill_id', '=', BillElementMapper::getTable() . '_d' . $depth . '.billing_bill_element_bill')
-            ->where(BillElementMapper::getTable() . '_d' . $depth . '.billing_bill_element_item', '=', $id)
-            ->andWhere(self::$table . '_d' . $depth . '.billing_bill_performance_date', '>=', $start)
-            ->andWhere(self::$table . '_d' . $depth . '.billing_bill_performance_date', '<=', $end)
+            ->leftJoin(self::TABLE, self::TABLE . '_d1')
+                ->on(ClientMapper::TABLE . '_d1.clientmgmt_client_id', '=', self::TABLE . '_d1.billing_bill_client')
+            ->leftJoin(BillElementMapper::TABLE, BillElementMapper::TABLE . '_d1')
+                ->on(self::TABLE . '_d1.billing_bill_id', '=', BillElementMapper::TABLE . '_d1.billing_bill_element_bill')
+            ->where(BillElementMapper::TABLE . '_d1.billing_bill_element_item', '=', $id)
+            ->andWhere(self::TABLE . '_d1.billing_bill_performance_date', '>=', $start)
+            ->andWhere(self::TABLE . '_d1.billing_bill_performance_date', '<=', $end)
             ->orderBy('net_sales', 'DESC')
             ->limit($limit)
-            ->groupBy(ClientMapper::getTable() . '_d' . $depth . '.clientmgmt_client_id');
+            ->groupBy(ClientMapper::TABLE . '_d1.clientmgmt_client_id');
 
-        $clients = ClientMapper::getAllByQuery($query, RelationType::ALL, $depth);
-        $data    = ClientMapper::getDataLastQuery();
+        $clients = ClientMapper::getAll()->execute($query);
+        $data    = ClientMapper::getRaw()->execute();
 
         return [$clients, $data];
     }
@@ -260,23 +258,22 @@ final class SalesBillMapper extends BillMapper
      */
     public static function getItemBills(int $id, \DateTime $start, \DateTime $end) : array
     {
-        $depth = 3;
 
         // @todo: limit is not working correctly... only returns / 2 or something like that?. Maybe because bills arent unique?
 
-        $query = self::getQuery(null, [], RelationType::ALL, $depth);
-        $query->leftJoin(BillElementMapper::getTable(), BillElementMapper::getTable() . '_d' . $depth)
-                ->on(self::$table . '_d' . $depth . '.billing_bill_id', '=', BillElementMapper::getTable() . '_d' . $depth . '.billing_bill_element_bill')
-            ->where(BillElementMapper::getTable() . '_d' . $depth . '.billing_bill_element_item', '=', $id)
+        $query = self::getQuery();
+        $query->leftJoin(BillElementMapper::TABLE, BillElementMapper::TABLE . '_d1')
+                ->on(self::TABLE . '_d1.billing_bill_id', '=', BillElementMapper::TABLE . '_d1.billing_bill_element_bill')
+            ->where(BillElementMapper::TABLE . '_d1.billing_bill_element_item', '=', $id)
             ->limit($limit = 10);
 
-        if (!empty(self::$createdAt)) {
-            $query->orderBy(self::$table  . '_d' . $depth . '.' . self::$columns[self::$createdAt]['name'], 'DESC');
+        if (!empty(self::CREATED_AT)) {
+            $query->orderBy(self::TABLE  . '_d1.' . self::COLUMNS[self::CREATED_AT]['name'], 'DESC');
         } else {
-            $query->orderBy(self::$table  . '_d' . $depth . '.' . self::$columns[self::$primaryField]['name'], 'DESC');
+            $query->orderBy(self::TABLE  . '_d1.' . self::COLUMNS[self::PRIMARYFIELD]['name'], 'DESC');
         }
 
-        return self::getAllByQuery($query, RelationType::ALL, $depth);
+        return self::getAll()->execute($query);
     }
 
     /**
@@ -284,23 +281,22 @@ final class SalesBillMapper extends BillMapper
      */
     public static function getClientItem(int $client, \DateTime $start, \DateTime $end) : array
     {
-        $depth = 3;
 
         // @todo: limit is not working correctly... only returns / 2 or something like that?. Maybe because bills arent unique?
 
-        $query = BillElementMapper::getQuery(null, [], RelationType::ALL, $depth);
-        $query->leftJoin(self::$table, self::$table . '_d' . $depth)
-                ->on(BillElementMapper::getTable() . '_d' . $depth . '.billing_bill_element_bill', '=', self::$table . '_d' . $depth . '.billing_bill_id')
-            ->where(self::$table . '_d' . $depth . '.billing_bill_client', '=', $client)
+        $query = BillElementMapper::getQuery();
+        $query->leftJoin(self::TABLE, self::TABLE . '_d1')
+                ->on(BillElementMapper::TABLE . '_d1.billing_bill_element_bill', '=', self::TABLE . '_d1.billing_bill_id')
+            ->where(self::TABLE . '_d1.billing_bill_client', '=', $client)
             ->limit($limit = 10);
 
-        if (!empty(self::$createdAt)) {
-            $query->orderBy(self::$table  . '_d' . $depth . '.' . self::$columns[self::$createdAt]['name'], 'DESC');
+        if (!empty(self::CREATED_AT)) {
+            $query->orderBy(self::TABLE  . '_d1.' . self::COLUMNS[self::CREATED_AT]['name'], 'DESC');
         } else {
-            $query->orderBy(self::$table  . '_d' . $depth . '.' . self::$columns[self::$primaryField]['name'], 'DESC');
+            $query->orderBy(self::TABLE  . '_d1.' . self::COLUMNS[self::PRIMARYFIELD]['name'], 'DESC');
         }
 
-        return BillElementMapper::getAllByQuery($query, RelationType::ALL, $depth);
+        return BillElementMapper::getAll()->execute($query);
     }
 
     /**
@@ -309,17 +305,17 @@ final class SalesBillMapper extends BillMapper
     public static function getItemRegionSales(int $id, \DateTime $start, \DateTime $end) : array
     {
         $query  = new Builder(self::$db);
-        $result = $query->select(CountryMapper::getTable() . '.country_region')
+        $result = $query->select(CountryMapper::TABLE . '.country_region')
             ->selectAs('SUM(billing_bill_element_total_netsalesprice)', 'net_sales')
-            ->from(self::$table)
-            ->leftJoin(BillElementMapper::getTable())
-                ->on(self::$table . '.billing_bill_id', '=', BillElementMapper::getTable() . '.billing_bill_element_bill')
-            ->leftJoin(CountryMapper::getTable())
-                ->on(self::$table . '.billing_bill_billCountry', '=', CountryMapper::getTable() . '.country_code2')
-            ->where(BillElementMapper::getTable() . '.billing_bill_element_item', '=', $id)
-            ->andWhere(self::$table . '.billing_bill_performance_date', '>=', $start)
-            ->andWhere(self::$table . '.billing_bill_performance_date', '<=', $end)
-            ->groupBy(CountryMapper::getTable() . '.country_region')
+            ->from(self::TABLE)
+            ->leftJoin(BillElementMapper::TABLE)
+                ->on(self::TABLE . '.billing_bill_id', '=', BillElementMapper::TABLE . '.billing_bill_element_bill')
+            ->leftJoin(CountryMapper::TABLE)
+                ->on(self::TABLE . '.billing_bill_billCountry', '=', CountryMapper::TABLE . '.country_code2')
+            ->where(BillElementMapper::TABLE . '.billing_bill_element_item', '=', $id)
+            ->andWhere(self::TABLE . '.billing_bill_performance_date', '>=', $start)
+            ->andWhere(self::TABLE . '.billing_bill_performance_date', '<=', $end)
+            ->groupBy(CountryMapper::TABLE . '.country_region')
             ->execute()
             ->fetchAll(\PDO::FETCH_KEY_PAIR);
 
@@ -332,17 +328,17 @@ final class SalesBillMapper extends BillMapper
     public static function getItemCountrySales(int $id, \DateTime $start, \DateTime $end, int $limit = 10) : array
     {
         $query  = new Builder(self::$db);
-        $result = $query->select(CountryMapper::getTable() . '.country_code2')
+        $result = $query->select(CountryMapper::TABLE . '.country_code2')
             ->selectAs('SUM(billing_bill_element_total_netsalesprice)', 'net_sales')
-            ->from(self::$table)
-            ->leftJoin(BillElementMapper::getTable())
-                ->on(self::$table . '.billing_bill_id', '=', BillElementMapper::getTable() . '.billing_bill_element_bill')
-            ->leftJoin(CountryMapper::getTable())
-                ->on(self::$table . '.billing_bill_billCountry', '=', CountryMapper::getTable() . '.country_code2')
-            ->where(BillElementMapper::getTable() . '.billing_bill_element_item', '=', $id)
-            ->andWhere(self::$table . '.billing_bill_performance_date', '>=', $start)
-            ->andWhere(self::$table . '.billing_bill_performance_date', '<=', $end)
-            ->groupBy(CountryMapper::getTable() . '.country_code2')
+            ->from(self::TABLE)
+            ->leftJoin(BillElementMapper::TABLE)
+                ->on(self::TABLE . '.billing_bill_id', '=', BillElementMapper::TABLE . '.billing_bill_element_bill')
+            ->leftJoin(CountryMapper::TABLE)
+                ->on(self::TABLE . '.billing_bill_billCountry', '=', CountryMapper::TABLE . '.country_code2')
+            ->where(BillElementMapper::TABLE . '.billing_bill_element_item', '=', $id)
+            ->andWhere(self::TABLE . '.billing_bill_performance_date', '>=', $start)
+            ->andWhere(self::TABLE . '.billing_bill_performance_date', '<=', $end)
+            ->groupBy(CountryMapper::TABLE . '.country_code2')
             ->orderBy('net_sales', 'DESC')
             ->limit($limit)
             ->execute()
@@ -361,12 +357,12 @@ final class SalesBillMapper extends BillMapper
             ->selectAs('SUM(billing_bill_element_total_netpurchaseprice)', 'net_costs')
             ->selectAs('YEAR(billing_bill_performance_date)', 'year')
             ->selectAs('MONTH(billing_bill_performance_date)', 'month')
-            ->from(self::$table)
-            ->leftJoin(BillElementMapper::getTable())
-                ->on(self::$table . '.billing_bill_id', '=', BillElementMapper::getTable() . '.billing_bill_element_bill')
-            ->where(BillElementMapper::getTable() . '.billing_bill_element_item', '=', $id)
-            ->andWhere(self::$table . '.billing_bill_performance_date', '>=', $start)
-            ->andWhere(self::$table . '.billing_bill_performance_date', '<=', $end)
+            ->from(self::TABLE)
+            ->leftJoin(BillElementMapper::TABLE)
+                ->on(self::TABLE . '.billing_bill_id', '=', BillElementMapper::TABLE . '.billing_bill_element_bill')
+            ->where(BillElementMapper::TABLE . '.billing_bill_element_item', '=', $id)
+            ->andWhere(self::TABLE . '.billing_bill_performance_date', '>=', $start)
+            ->andWhere(self::TABLE . '.billing_bill_performance_date', '<=', $end)
             ->groupBy('year', 'month')
             ->orderBy(['year', 'month'], ['ASC', 'ASC'])
             ->execute()
@@ -385,10 +381,10 @@ final class SalesBillMapper extends BillMapper
             ->selectAs('SUM(billing_bill_netcosts)', 'net_costs')
             ->selectAs('YEAR(billing_bill_performance_date)', 'year')
             ->selectAs('MONTH(billing_bill_performance_date)', 'month')
-            ->from(self::$table)
-            ->where(self::$table . '.billing_bill_client', '=', $id)
-            ->andWhere(self::$table . '.billing_bill_performance_date', '>=', $start)
-            ->andWhere(self::$table . '.billing_bill_performance_date', '<=', $end)
+            ->from(self::TABLE)
+            ->where(self::TABLE . '.billing_bill_client', '=', $id)
+            ->andWhere(self::TABLE . '.billing_bill_performance_date', '>=', $start)
+            ->andWhere(self::TABLE . '.billing_bill_performance_date', '<=', $end)
             ->groupBy('year', 'month')
             ->orderBy(['year', 'month'], ['ASC', 'ASC'])
             ->execute()

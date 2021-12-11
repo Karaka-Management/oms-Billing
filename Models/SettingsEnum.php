@@ -26,5 +26,5 @@ use phpOMS\Stdlib\Base\Enum;
  */
 abstract class SettingsEnum extends Enum
 {
-
+    public const DEFAULT_SALES_INVOICE_TEMPLATE = '1005100001_1';
 }

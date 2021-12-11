@@ -16,6 +16,7 @@ namespace Modules\Billing\Admin\Install;
 
 use Model\Setting;
 use Model\SettingMapper;
+use Modules\Billing\Models\SettingsEnum;
 use phpOMS\Application\ApplicationAbstract;
 
 /**
@@ -45,6 +46,6 @@ class Media
         $defaultTemplate = \reset($media['upload'][0]);
 
         $setting = new Setting();
-        SettingMapper::create($setting->with(0, 'default_template', (string) $defaultTemplate->getId(), '\\d+', null, 'Billing'));
+        SettingMapper::create()->execute($setting->with(0, SettingsEnum::DEFAULT_SALES_INVOICE_TEMPLATE, (string) $defaultTemplate->getId(), '\\d+', null, 'Billing'));
     }
 }

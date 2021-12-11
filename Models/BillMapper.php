@@ -18,7 +18,7 @@ use Modules\Admin\Models\AccountMapper;
 use Modules\ClientManagement\Models\ClientMapper;
 use Modules\Media\Models\MediaMapper;
 use Modules\SupplierManagement\Models\SupplierMapper;
-use phpOMS\DataStorage\Database\DataMapperAbstract;
+use phpOMS\DataStorage\Database\Mapper\DataMapperFactory;
 use Modules\Editor\Models\EditorDocMapper;
 
 /**
@@ -29,7 +29,7 @@ use Modules\Editor\Models\EditorDocMapper;
  * @link    https://orange-management.org
  * @since   1.0.0
  */
-class BillMapper extends DataMapperAbstract
+class BillMapper extends DataMapperFactory
 {
     /**
      * Columns.
@@ -37,7 +37,7 @@ class BillMapper extends DataMapperAbstract
      * @var array<string, array{name:string, type:string, internal:string, autocomplete?:bool, readonly?:bool, writeonly?:bool, annotations?:array}>
      * @since 1.0.0
      */
-    protected static array $columns = [
+    public const COLUMNS = [
         'billing_bill_id'                      => ['name' => 'billing_bill_id',      'type' => 'int',    'internal' => 'id'],
         'billing_bill_number'                  => ['name' => 'billing_bill_number',      'type' => 'string',    'internal' => 'number'],
         'billing_bill_numberformat'                  => ['name' => 'billing_bill_numberformat',      'type' => 'string',    'internal' => 'numberFormat'],
@@ -87,7 +87,7 @@ class BillMapper extends DataMapperAbstract
      * @var array<string, array{mapper:string, table:string, self?:?string, external?:?string, column?:string}>
      * @since 1.0.0
      */
-    protected static array $hasMany = [
+    public const HAS_MANY = [
         'elements' => [
             'mapper'       => BillElementMapper::class,
             'table'        => 'billing_bill_element',
@@ -114,7 +114,7 @@ class BillMapper extends DataMapperAbstract
      * @var array<string, array{mapper:string, external:string, by?:string, column?:string, conditional?:bool}>
      * @since 1.0.0
      */
-    protected static array $ownsOne = [
+    public const OWNS_ONE = [
         'type'  => [
             'mapper'     => BillTypeMapper::class,
             'external'   => 'billing_bill_type',
@@ -131,7 +131,7 @@ class BillMapper extends DataMapperAbstract
      * @var array<string, array{mapper:string, external:string}>
      * @since 1.0.0
      */
-    protected static array $belongsTo = [
+    public const BELONGS_TO = [
         'createdBy' => [
             'mapper'     => AccountMapper::class,
             'external'   => 'billing_bill_created_by',
@@ -152,7 +152,7 @@ class BillMapper extends DataMapperAbstract
      * @var string
      * @since 1.0.0
      */
-    protected static string $primaryField = 'billing_bill_id';
+    public const PRIMARYFIELD ='billing_bill_id';
 
     /**
      * Primary table.
@@ -160,5 +160,5 @@ class BillMapper extends DataMapperAbstract
      * @var string
      * @since 1.0.0
      */
-    protected static string $table = 'billing_bill';
+    public const TABLE = 'billing_bill';
 }

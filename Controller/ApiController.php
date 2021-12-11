@@ -20,6 +20,7 @@ use Modules\Billing\Models\BillElement;
 use Modules\Billing\Models\BillElementMapper;
 use Modules\Billing\Models\BillMapper;
 use Modules\Billing\Models\NullBillType;
+use Modules\Billing\Models\SettingsEnum;
 use Modules\ClientManagement\Models\ClientMapper;
 use Modules\ItemManagement\Models\ItemMapper;
 use Modules\Media\Models\CollectionMapper;
@@ -91,9 +92,19 @@ final class ApiController extends Controller
     {
         $account = null;
         if ($request->getData('client') !== null) {
-            $account = ClientMapper::get((int) $request->getData('client'));
+            $account = ClientMapper::get()
+                ->with('profile')
+                ->with('profile/account')
+                ->with('mainAddress')
+                ->where('id', (int) $request->getData('client'))
+                ->execute();
         } elseif ($request->getData('supplier') !== null) {
-            $account = SupplierMapper::get((int) $request->getData('supplier'));
+            $account = SupplierMapper::get()
+                ->with('profile')
+                ->with('profile/account')
+                ->with('mainAddress')
+                ->where('id', (int) $request->getData('supplier'))
+                ->execute();
         }
 
         /* @var \Modules\Account\Models\Account $account */
@@ -225,7 +236,7 @@ final class ApiController extends Controller
         $element = $this->createBillElementFromRequest($request, $response, $data);
         $this->createModel($request->header->account, $element, BillElementMapper::class, 'bill_element', $request->getOrigin());
 
-        $old = BillMapper::get($element->bill);
+        $old = BillMapper::get()->where('id', $element->bill)->execute();
         $new = $this->updateBillWithBillElement(clone $old, $element, 1);
         $this->updateModel($request->header->account, $old, $new, BillMapper::class, 'bill_element', $request->getOrigin());
 
@@ -254,7 +265,7 @@ final class ApiController extends Controller
             return $element;
         }
 
-        $item                = ItemMapper::with('language', $response->getLanguage())::get($element->item);
+        $item                = ItemMapper::get()->with('l11n')->where('id', $element->item)->where('l11n/language', $response->getLanguage())->execute();
         $element->itemNumber = $item->number;
         $element->itemName   = $item->getL11n('name1')->description;
         $element->quantity   = $request->getData('quantity', 'int');
@@ -334,10 +345,14 @@ final class ApiController extends Controller
     {
         Autoloader::addPath(__DIR__ . '/../../../Resources/');
 
-        $bill = BillMapper::get($request->getData('bill'));
+        $bill = BillMapper::get()->where('id', $request->getData('bill'))->execute();
 
-        $defaultTemplate = $this->app->appSettings->get(null, 'default_template', null, self::NAME);
-        $template        = CollectionMapper::get((int) $defaultTemplate->content);
+        // @todo: change once bill types have media files/templates assigned
+        $defaultTemplate = $this->app->appSettings->get(
+            names: SettingsEnum::DEFAULT_SALES_INVOICE_TEMPLATE,
+            module: self::NAME
+        );
+        $template        = CollectionMapper::get()->where('id', (int) $defaultTemplate->content)->execute();
 
         $pdfDir = __DIR__ . '/../../../Modules/Media/Files/Modules/Billing/Bills/'
             . $bill->createdAt->format('Y') . '/'

@@ -14,12 +14,14 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Controller;
 
+use Modules\Billing\Models\BillMapper;
 use Modules\Billing\Models\BillTypeL11n;
 use Modules\Billing\Models\PurchaseBillMapper;
 use Modules\Billing\Models\SalesBillMapper;
 use Modules\Billing\Models\StockBillMapper;
 use phpOMS\Asset\AssetType;
 use phpOMS\Contract\RenderableInterface;
+use phpOMS\DataStorage\Database\Query\OrderType;
 use phpOMS\Localization\ISO3166CharEnum;
 use phpOMS\Localization\ISO3166NameEnum;
 use phpOMS\Message\RequestAbstract;
@@ -57,18 +59,15 @@ final class BackendController extends Controller
 
         if ($request->getData('ptype') === 'p') {
             $view->setData('bills',
-                SalesBillMapper::with('language', $response->getLanguage(), [BillTypeL11n::class])
-                    ::getSalesBeforePivot((int) ($request->getData('id') ?? 0), limit: 25, depth: 3)
+                SalesBillMapper::getAll()->with('client')->where('id', (int) ($request->getData('id') ?? 0), '<')->where('client', null, '!=')->sort('id', OrderType::DESC)->limit(25)->execute()
             );
         } elseif ($request->getData('ptype') === 'n') {
             $view->setData('bills',
-                SalesBillMapper::with('language', $response->getLanguage(), [BillTypeL11n::class])
-                    ::getSalesAfterPivot((int) ($request->getData('id') ?? 0), limit: 25, depth: 3)
+                SalesBillMapper::getAll()->with('client')->where('id', (int) ($request->getData('id') ?? 0), '>')->where('client', null, '!=')->sort('id', OrderType::DESC)->limit(25)->execute()
             );
         } else {
             $view->setData('bills',
-                SalesBillMapper::with('language', $response->getLanguage(), [BillTypeL11n::class])
-                    ::getSalesAfterPivot(0, limit: 25, depth: 3)
+                SalesBillMapper::getAll()->with('client')->where('id', 0, '>')->where('client', null, '!=')->sort('id', OrderType::DESC)->limit(25)->execute()
             );
         }
 
@@ -93,7 +92,7 @@ final class BackendController extends Controller
         $view->setTemplate('/Modules/Billing/Theme/Backend/sales-bill');
         $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response));
 
-        $bill = SalesBillMapper::get((int) $request->getData('id'));
+        $bill = SalesBillMapper::get()->with('elements')->where('id', (int) $request->getData('id'))->execute();
 
         $view->setData('bill', $bill);
 
@@ -183,18 +182,15 @@ final class BackendController extends Controller
 
         if ($request->getData('ptype') === 'p') {
             $view->setData('bills',
-                PurchaseBillMapper::with('language', $response->getLanguage(), [BillTypeL11n::class])
-                    ::getPurchaseBeforePivot((int) ($request->getData('id') ?? 0), limit: 25, depth: 3)
+                PurchaseBillMapper::getAll()->where('id', (int) ($request->getData('id') ?? 0), '<')->limit(25)->execute()
             );
         } elseif ($request->getData('ptype') === 'n') {
             $view->setData('bills',
-                PurchaseBillMapper::with('language', $response->getLanguage(), [BillTypeL11n::class])
-                    ::getPurchaseAfterPivot((int) ($request->getData('id') ?? 0), limit: 25, depth: 3)
+                PurchaseBillMapper::getAll()->where('id', (int) ($request->getData('id') ?? 0), '>')->limit(25)->execute()
             );
         } else {
             $view->setData('bills',
-                PurchaseBillMapper::with('language', $response->getLanguage(), [BillTypeL11n::class])
-                    ::getPurchaseAfterPivot(0, limit: 25, depth: 3)
+                PurchaseBillMapper::getAll()->where('id', 0, '>')->limit(25)->execute()
             );
         }
 
@@ -219,7 +215,7 @@ final class BackendController extends Controller
         $view->setTemplate('/Modules/Billing/Theme/Backend/purchase-bill');
         $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response));
 
-        $bill = PurchaseBillMapper::get((int) $request->getData('id'));
+        $bill = PurchaseBillMapper::get()->where('id', (int) $request->getData('id'))->execute();
 
         $view->setData('bill', $bill);
 
@@ -246,18 +242,15 @@ final class BackendController extends Controller
 
         if ($request->getData('ptype') === 'p') {
             $view->setData('bills',
-                StockBillMapper::with('language', $response->getLanguage(), [BillTypeL11n::class])
-                    ::getStockBeforePivot((int) ($request->getData('id') ?? 0), limit: 25, depth: 3)
+                StockBillMapper::getAll()->where('id', (int) ($request->getData('id') ?? 0), '<')->limit(25)->execute()
             );
         } elseif ($request->getData('ptype') === 'n') {
             $view->setData('bills',
-                StockBillMapper::with('language', $response->getLanguage(), [BillTypeL11n::class])
-                    ::getStockAfterPivot((int) ($request->getData('id') ?? 0), limit: 25, depth: 3)
+                StockBillMapper::getAll()->where('id', (int) ($request->getData('id') ?? 0), '>')->limit(25)->execute()
             );
         } else {
             $view->setData('bills',
-                StockBillMapper::with('language', $response->getLanguage(), [BillTypeL11n::class])
-                    ::getStockAfterPivot(0, limit: 25, depth: 3)
+                StockBillMapper::getAll()->where('id', 0, '>')->limit(25)->execute()
             );
         }
 
@@ -282,7 +275,7 @@ final class BackendController extends Controller
         $view->setTemplate('/Modules/Billing/Theme/Backend/purchase-bill');
         $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005106001, $request, $response));
 
-        $bill = StockBillMapper::get((int) $request->getData('id'));
+        $bill = StockBillMapper::get()->where('id', (int) $request->getData('id'))->execute();
 
         $view->setData('bill', $bill);
 

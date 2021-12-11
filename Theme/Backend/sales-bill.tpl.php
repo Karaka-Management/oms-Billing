@@ -17,11 +17,11 @@ use phpOMS\Uri\UriFactory;
 /**
  * @var \phpOMS\Views\View $this
  */
-
+/** @var Modules\Billing\Models\Bill $bill */
 $bill     = $this->getData('bill');
 $elements = $bill->getElements();
 
-$billPdf = $bill->getMediaByType('bill');
+$billPdf = $bill->getFileByType(0);
 
 echo $this->getData('nav')->render(); ?>
 
@@ -179,9 +179,9 @@ echo $this->getData('nav')->render(); ?>
                         </table>
                         <div class="portlet-foot">
                             <?= $this->getHtml('Freightage'); ?>: 0.00 -
-                            <?= $this->getHtml('Net'); ?>: <?= $bill->net->getCurrency(); ?> -
+                            <?= $this->getHtml('Net'); ?>: <?= $bill->netSales->getCurrency(); ?> -
                             <?= $this->getHtml('Tax'); ?>: 0.00 -
-                            <?= $this->getHtml('Total'); ?>: <?= $bill->gross->getCurrency(); ?>
+                            <?= $this->getHtml('Total'); ?>: <?= $bill->grossSales->getCurrency(); ?>
                         </div>
                     </div>
                 </div>
