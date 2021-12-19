@@ -14,8 +14,6 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Controller;
 
-use Modules\Billing\Models\BillMapper;
-use Modules\Billing\Models\BillTypeL11n;
 use Modules\Billing\Models\PurchaseBillMapper;
 use Modules\Billing\Models\SalesBillMapper;
 use Modules\Billing\Models\StockBillMapper;
@@ -57,17 +55,34 @@ final class BackendController extends Controller
         $view->setTemplate('/Modules/Billing/Theme/Backend/sales-bill-list');
         $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response));
 
+        $mapperQuery = SalesBillMapper::getAll()
+            ->with('type')
+            ->with('type/l11n')
+            ->with('client')
+            ->sort('id', OrderType::DESC)
+            ->limit(25);
+
         if ($request->getData('ptype') === 'p') {
             $view->setData('bills',
-                SalesBillMapper::getAll()->with('client')->where('id', (int) ($request->getData('id') ?? 0), '<')->where('client', null, '!=')->sort('id', OrderType::DESC)->limit(25)->execute()
+                $mapperQuery
+                    ->where('id', (int) ($request->getData('id') ?? 0), '<')
+                    ->where('client', null, '!=')
+                    ->where('type/l11n/language', $response->getLanguage())
+                    ->execute()
             );
         } elseif ($request->getData('ptype') === 'n') {
             $view->setData('bills',
-                SalesBillMapper::getAll()->with('client')->where('id', (int) ($request->getData('id') ?? 0), '>')->where('client', null, '!=')->sort('id', OrderType::DESC)->limit(25)->execute()
+                $mapperQuery->where('id', (int) ($request->getData('id') ?? 0), '>')
+                    ->where('client', null, '!=')
+                    ->where('type/l11n/language', $response->getLanguage())
+                    ->execute()
             );
         } else {
             $view->setData('bills',
-                SalesBillMapper::getAll()->with('client')->where('id', 0, '>')->where('client', null, '!=')->sort('id', OrderType::DESC)->limit(25)->execute()
+                $mapperQuery->where('id', 0, '>')
+                    ->where('client', null, '!=')
+                    ->where('type/l11n/language', $response->getLanguage())
+                    ->execute()
             );
         }
 

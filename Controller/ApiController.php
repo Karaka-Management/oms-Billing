@@ -110,9 +110,10 @@ final class ApiController extends Controller
         /* @var \Modules\Account\Models\Account $account */
         $bill                  = new Bill();
         $bill->createdBy       = new NullAccount($request->header->account);
-        $bill->number          = '{y}-{id}'; // @todo: use admin defined format
+        $bill->numberFormat    = '{y}-{id}'; // @todo: use admin defined format
         $bill->billTo          = $request->getData('billto')
             ?? ($account->profile->account->name1 . (!empty($account->profile->account->name2) ? ', ' . $account->profile->account->name2 : '')); // @todo: use defaultInvoiceAddress or mainAddress. also consider to use billto1, billto2, billto3 (for multiple lines e.g. name2, fao etc.)
+        $bill->billAddress     = $request->getData('billaddress') ?? $account->mainAddress->address;
         $bill->billZip         = $request->getData('billtopostal') ?? $account->mainAddress->postal;
         $bill->billCity        = $request->getData('billtocity') ?? $account->mainAddress->city;
         $bill->billCountry     = $request->getData('billtocountry') ?? $account->mainAddress->getCountry();
@@ -144,6 +145,19 @@ final class ApiController extends Controller
         return [];
     }
 
+    /**
+     * Api method to create a bill
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
+     *
+     * @return void
+     *
+     * @api
+     *
+     * @since 1.0.0
+     */
     public function apiMediaAddToBill(RequestAbstract $request, ResponseAbstract $response, $data = null) : void
     {
         if (!empty($val = $this->validateMediaAddToBill($request))) {
@@ -153,6 +167,7 @@ final class ApiController extends Controller
             return;
         }
 
+        $uploaded = [];
         if (!empty($uploadedFiles = $request->getFiles() ?? [])) {
             $uploaded = $this->app->moduleManager->get('Media')->uploadFiles(
                 [],

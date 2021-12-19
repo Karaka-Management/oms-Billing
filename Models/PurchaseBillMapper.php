@@ -189,9 +189,6 @@ final class PurchaseBillMapper extends BillMapper
      */
     public static function getNewestItemInvoices(int $id, int $limit = 10) : array
     {
-
-        // @todo: limit is not working correctly... only returns / 2 or something like that?. Maybe because bills arent unique?
-
         $query = self::getQuery();
         $query->leftJoin(BillElementMapper::TABLE, BillElementMapper::TABLE . '_d1')
                 ->on(self::TABLE . '_d1.billing_bill_id', '=', BillElementMapper::TABLE . '_d1.billing_bill_element_bill')
@@ -212,9 +209,6 @@ final class PurchaseBillMapper extends BillMapper
      */
     public static function getNewestSupplierInvoices(int $id, int $limit = 10) : array
     {
-
-        // @todo: limit is not working correctly... only returns / 2 or something like that?. Maybe because bills arent unique?
-
         $query = self::getQuery();
         $query->where(self::TABLE . '_d1.billing_bill_supplier', '=', $id)
             ->limit($limit);

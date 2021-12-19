@@ -2,11 +2,10 @@
 
 use Mpdf\Mpdf;
 
-/**
- * @var \phpOMS\Views\View $this
- * @var \Modules\Billing\Models\Bill
- */
-$bill     = $this->getData('bill');
+/** @var \phpOMS\Views\View $this */
+/** @var \Modules\Billing\Models\Bill $bill */
+$bill = $this->getData('bill');
+
 /**
  * @var \Modules\Billing\Models\BillElement[] $elements
  */

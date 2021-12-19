@@ -116,29 +116,29 @@ class BillElement implements \JsonSerializable
      */
     public function __construct()
     {
-        $this->singleListPriceNet = new Money();
+        $this->singleListPriceNet   = new Money();
         $this->singleListPriceGross = new Money();
 
-        $this->totalListPriceNet  = new Money();
-        $this->totalListPriceGross  = new Money();
+        $this->totalListPriceNet   = new Money();
+        $this->totalListPriceGross = new Money();
 
-        $this->singleSalesPriceNet = new Money();
+        $this->singleSalesPriceNet   = new Money();
         $this->singleSalesPriceGross = new Money();
 
-        $this->totalSalesPriceNet  = new Money();
-        $this->totalSalesPriceGross  = new Money();
+        $this->totalSalesPriceNet   = new Money();
+        $this->totalSalesPriceGross = new Money();
 
-        $this->singlePurchasePriceNet = new Money();
+        $this->singlePurchasePriceNet   = new Money();
         $this->singlePurchasePriceGross = new Money();
 
-        $this->totalPurchasePriceNet  = new Money();
-        $this->totalPurchasePriceGross  = new Money();
+        $this->totalPurchasePriceNet   = new Money();
+        $this->totalPurchasePriceGross = new Money();
 
-        $this->singleProfitNet = new Money();
+        $this->singleProfitNet   = new Money();
         $this->singleProfitGross = new Money();
 
-        $this->totalProfitNet  = new Money();
-        $this->totalProfitGross  = new Money();
+        $this->totalProfitNet   = new Money();
+        $this->totalProfitGross = new Money();
     }
 
     /**

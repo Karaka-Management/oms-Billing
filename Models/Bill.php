@@ -23,7 +23,6 @@ use phpOMS\Localization\ISO4217CharEnum;
 use phpOMS\Localization\Money;
 use Modules\Editor\Models\EditorDoc;
 use Modules\Media\Models\NullMedia;
-use Mpdf\Tag\P;
 
 /**
  * Bill class.
@@ -416,14 +415,14 @@ class Bill implements \JsonSerializable
      */
     public function __construct()
     {
-        $this->netProfit    = new Money(0);
-        $this->grossProfit  = new Money(0);
-        $this->netCosts    = new Money(0);
-        $this->grossCosts  = new Money(0);
-        $this->netSales    = new Money(0);
-        $this->grossSales  = new Money(0);
-        $this->netDiscount    = new Money(0);
-        $this->grossDiscount  = new Money(0);
+        $this->netProfit     = new Money(0);
+        $this->grossProfit   = new Money(0);
+        $this->netCosts      = new Money(0);
+        $this->grossCosts    = new Money(0);
+        $this->netSales      = new Money(0);
+        $this->grossSales    = new Money(0);
+        $this->netDiscount   = new Money(0);
+        $this->grossDiscount = new Money(0);
 
         $this->createdAt       = new \DateTimeImmutable();
         $this->performanceDate = new \DateTime();
