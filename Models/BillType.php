@@ -14,6 +14,8 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Models;
 
+use Modules\Media\Models\Collection;
+use Modules\Media\Models\NullCollection;
 use phpOMS\Localization\ISO639x1Enum;
 
 /**
@@ -33,6 +35,10 @@ class BillType
      * @since 1.0.0
      */
     protected int $id = 0;
+
+    public Collection $template;
+
+    public string $numberFormat = '';
 
     public int $transferType = BillTransferType::SALES;
 
@@ -54,6 +60,7 @@ class BillType
      */
     public function __construct(string $name = '')
     {
+        $this->media = new NullCollection();
         $this->setL11n($name);
     }
 

@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Models;
 
+use Modules\Media\Models\CollectionMapper;
 use phpOMS\DataStorage\Database\Mapper\DataMapperFactory;
 
 /**
@@ -33,9 +34,24 @@ final class BillTypeMapper extends DataMapperFactory
      * @since 1.0.0
      */
     public const COLUMNS = [
-        'billing_type_id'                => ['name' => 'billing_type_id',    'type' => 'int',    'internal' => 'id'],
-        'billing_type_transfer_type'     => ['name' => 'billing_type_transfer_type',    'type' => 'int',    'internal' => 'transferType'],
-        'billing_type_transfer_stock'    => ['name' => 'billing_type_transfer_stock',    'type' => 'bool',    'internal' => 'transferStock'],
+        'billing_type_id'             => ['name' => 'billing_type_id',             'type' => 'int',    'internal' => 'id'],
+        'billing_type_number_format'       => ['name' => 'billing_type_number_format',       'type' => 'string',    'internal' => 'numberFormat'],
+        'billing_type_template'       => ['name' => 'billing_type_template',       'type' => 'int',    'internal' => 'template'],
+        'billing_type_transfer_type'  => ['name' => 'billing_type_transfer_type',  'type' => 'int',    'internal' => 'transferType'],
+        'billing_type_transfer_stock' => ['name' => 'billing_type_transfer_stock', 'type' => 'bool',   'internal' => 'transferStock'],
+    ];
+
+    /**
+     * Belongs to.
+     *
+     * @var array<string, array{mapper:string, external:string}>
+     * @since 1.0.0
+     */
+    public const OWNS_ONE = [
+        'template' => [
+            'mapper'   => CollectionMapper::class,
+            'external' => 'billing_type_template',
+        ],
     ];
 
     /**

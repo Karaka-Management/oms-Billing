@@ -19,11 +19,10 @@ use Modules\Billing\Models\Bill;
 use Modules\Billing\Models\BillElement;
 use Modules\Billing\Models\BillElementMapper;
 use Modules\Billing\Models\BillMapper;
-use Modules\Billing\Models\NullBillType;
+use Modules\Billing\Models\BillTypeMapper;
 use Modules\Billing\Models\SettingsEnum;
 use Modules\ClientManagement\Models\ClientMapper;
 use Modules\ItemManagement\Models\ItemMapper;
-use Modules\Media\Models\CollectionMapper;
 use Modules\Media\Models\UploadStatus;
 use Modules\SupplierManagement\Models\SupplierMapper;
 use phpOMS\Autoloader;
@@ -107,17 +106,20 @@ final class ApiController extends Controller
                 ->execute();
         }
 
+        /** @var \Modules\Billing\Models\BillType $billType */
+        $billType = BillTypeMapper::get()->where('id', (int) ($request->getData('type') ?? 1))->execute();
+
         /* @var \Modules\Account\Models\Account $account */
         $bill                  = new Bill();
         $bill->createdBy       = new NullAccount($request->header->account);
-        $bill->numberFormat    = '{y}-{id}'; // @todo: use admin defined format
+        $bill->type            = $billType;
+        $bill->numberFormat    = $billType->numberFormat;
         $bill->billTo          = $request->getData('billto')
             ?? ($account->profile->account->name1 . (!empty($account->profile->account->name2) ? ', ' . $account->profile->account->name2 : '')); // @todo: use defaultInvoiceAddress or mainAddress. also consider to use billto1, billto2, billto3 (for multiple lines e.g. name2, fao etc.)
         $bill->billAddress     = $request->getData('billaddress') ?? $account->mainAddress->address;
         $bill->billZip         = $request->getData('billtopostal') ?? $account->mainAddress->postal;
         $bill->billCity        = $request->getData('billtocity') ?? $account->mainAddress->city;
         $bill->billCountry     = $request->getData('billtocountry') ?? $account->mainAddress->getCountry();
-        $bill->type            = new NullBillType((int) $request->getData('type'));
         $bill->client          = $request->getData('client') === null ? null : $account;
         $bill->supplier        = $request->getData('supplier') === null ? null : $account;
         $bill->performanceDate = new \DateTime($request->getData('performancedate') ?? 'now');
@@ -360,14 +362,19 @@ final class ApiController extends Controller
     {
         Autoloader::addPath(__DIR__ . '/../../../Resources/');
 
-        $bill = BillMapper::get()->where('id', $request->getData('bill'))->execute();
+        $bill = BillMapper::get()
+            ->with('type')
+            ->with('type/template')
+            ->with('type/template/sources')
+            ->where('id', $request->getData('bill') ?? 0)
+            ->execute();
 
-        // @todo: change once bill types have media files/templates assigned
-        $defaultTemplate = $this->app->appSettings->get(
-            names: SettingsEnum::DEFAULT_SALES_INVOICE_TEMPLATE,
+        $previewType = (int) $this->app->appSettings->get(
+            names: SettingsEnum::PREVIEW_MEDIA_TYPE,
             module: self::NAME
-        );
-        $template        = CollectionMapper::get()->where('id', (int) $defaultTemplate->content)->execute();
+        )->content;
+
+        $template = $bill->type->template;
 
         $pdfDir = __DIR__ . '/../../../Modules/Media/Files/Modules/Billing/Bills/'
             . $bill->createdAt->format('Y') . '/'
@@ -411,7 +418,7 @@ final class ApiController extends Controller
                 . $bill->createdAt->format('Y') . '/'
                 . $bill->createdAt->format('m') . '/'
                 . $bill->createdAt->format('d'),
-            null // @todo: get bill MediaType
+            $previewType
         );
 
         $this->createModelRelation(

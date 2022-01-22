@@ -12,7 +12,11 @@
  */
 declare(strict_types=1);
 
+use phpOMS\System\File\FileUtils;
 use phpOMS\Uri\UriFactory;
+
+// Media helper functions (e.g. file icon generator)
+include __DIR__ . '/../../../Media/Theme/Backend/template-functions.php';
 
 /**
  * @var \phpOMS\Views\View $this
@@ -20,8 +24,10 @@ use phpOMS\Uri\UriFactory;
 /** @var Modules\Billing\Models\Bill $bill */
 $bill     = $this->getData('bill');
 $elements = $bill->getElements();
+$media    = $bill->getMedia();
 
-$billPdf = $bill->getFileByType(0);
+$previewType = $this->getData('previewType');
+$billPdf     = $bill->getFileByType($previewType);
 
 echo $this->getData('nav')->render(); ?>
 
@@ -257,6 +263,40 @@ echo $this->getData('nav')->render(); ?>
                             </form>
                         </div>
                     </section>
+                </div>
+
+                <div class="col-xs-12 col-md-6 col-lg-8">
+                    <div class="portlet">
+                        <div class="portlet-head"><?= $this->getHtml('Media'); ?><i class="fa fa-download floatRight download btn"></i></div>
+                        <table class="default" id="invoice-item-list">
+                            <thead>
+                            <tr>
+                                <td>
+                                <td>
+                                <td class="wf-100"><?= $this->getHtml('Name'); ?>
+                                <td><?= $this->getHtml('Type'); ?>
+                            <tbody>
+                            <?php foreach ($media as $file) :
+                                $url = $file->extension === 'collection'
+                                ? UriFactory::build('{/prefix}media/list?path=' . \rtrim($file->getVirtualPath(), '/') . '/' . $file->name)
+                                : UriFactory::build('{/prefix}media/single?id=' . $file->getId()
+                                    . '&path={?path}' . (
+                                            $file->getId() === 0
+                                                ? '/' . $file->name
+                                                : ''
+                                        )
+                                );
+
+                                $icon = $fileIconFunction(FileUtils::getExtensionType($file->extension));
+                            ?>
+                            <tr data-href="<?= $url; ?>">
+                                <td>
+                                <td data-label="<?= $this->getHtml('Type'); ?>"><a href="<?= $url; ?>"><i class="fa fa-<?= $this->printHtml($icon); ?>"></i></a>
+                                <td><a href="<?= $url; ?>"><?= $file->name; ?></a>
+                                <td><a href="<?= $url; ?>"><?= $file->extension; ?></a>
+                            <?php endforeach; ?>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

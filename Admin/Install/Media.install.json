@@ -21,15 +21,17 @@
         "user": 1
     },
     {
-        "type": "upload",
-        "create_collection": true,
-        "name": "Default",
-        "virtualPath": "/Modules/Billing/Templates",
-        "path": "/Modules/Media/Files/Modules/Billing/Templates/Default",
-        "fixed_names": true,
-        "files": [
-            "/Modules/Billing/Admin/Install/Media"
-        ],
-        "user": 1
+        "type": "type",
+        "name": "preview",
+        "l11n": [
+            {
+                "title": "Preview",
+                "lang": "en"
+            },
+            {
+                "title": "Vorschau",
+                "lang": "de"
+            }
+        ]
     }
 ]

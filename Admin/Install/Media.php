@@ -43,9 +43,18 @@ class Media
     {
         $media = \Modules\Media\Admin\Installer::installExternal($app, ['path' => __DIR__ . '/Media.install.json']);
 
-        $defaultTemplate = \reset($media['upload'][0]);
+        $preivewType = (int) \reset($media['type'][0]);
 
         $setting = new Setting();
-        SettingMapper::create()->execute($setting->with(0, SettingsEnum::DEFAULT_SALES_INVOICE_TEMPLATE, (string) $defaultTemplate->getId(), '\\d+', null, 'Billing'));
+        SettingMapper::create()->execute(
+            $setting->with(
+                0,
+                SettingsEnum::PREVIEW_MEDIA_TYPE,
+                (string) $preivewType,
+                '\\d+',
+                null,
+                'Billing'
+            )
+        );
     }
 }

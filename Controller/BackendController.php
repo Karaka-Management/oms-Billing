@@ -16,6 +16,7 @@ namespace Modules\Billing\Controller;
 
 use Modules\Billing\Models\PurchaseBillMapper;
 use Modules\Billing\Models\SalesBillMapper;
+use Modules\Billing\Models\SettingsEnum;
 use Modules\Billing\Models\StockBillMapper;
 use phpOMS\Asset\AssetType;
 use phpOMS\Contract\RenderableInterface;
@@ -107,9 +108,21 @@ final class BackendController extends Controller
         $view->setTemplate('/Modules/Billing/Theme/Backend/sales-bill');
         $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response));
 
-        $bill = SalesBillMapper::get()->with('elements')->where('id', (int) $request->getData('id'))->execute();
+        $bill = SalesBillMapper::get()
+            ->with('elements')
+            ->with('media')
+            ->with('notes')
+            ->where('id', (int) $request->getData('id'))
+            ->execute();
 
         $view->setData('bill', $bill);
+
+        $previewType = (int) $this->app->appSettings->get(
+            names: SettingsEnum::PREVIEW_MEDIA_TYPE,
+            module: self::NAME
+        )->content;
+
+        $view->setData('previewType', $previewType);
 
         return $view;
     }
@@ -233,6 +246,13 @@ final class BackendController extends Controller
         $bill = PurchaseBillMapper::get()->where('id', (int) $request->getData('id'))->execute();
 
         $view->setData('bill', $bill);
+
+        $previewType = (int) $this->app->appSettings->get(
+            names: SettingsEnum::PREVIEW_MEDIA_TYPE,
+            module: self::NAME
+        )->content;
+
+        $view->setData('previewType', $previewType);
 
         return $view;
     }
