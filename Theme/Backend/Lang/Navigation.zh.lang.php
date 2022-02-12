@@ -13,7 +13,7 @@
 declare(strict_types=1);
 
 return ['Navigation' => [
-    'Archive' => 'Archive',
-    'Bill'    => 'Bill',
-    'Billing' => 'Billing',
+    'Archive' => '档案',
+    'Bill'    => '账单',
+    'Billing' => '结算',
 ]];

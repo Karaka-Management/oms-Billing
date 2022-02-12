@@ -13,7 +13,7 @@
 declare(strict_types=1);
 
 return ['Navigation' => [
-    'Archive' => 'Archive',
-    'Bill'    => 'Bill',
-    'Billing' => 'Billing',
+    'Archive' => 'Archivo',
+    'Bill'    => 'Factura',
+    'Billing' => 'Facturación',
 ]];
