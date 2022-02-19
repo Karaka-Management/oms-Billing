@@ -25,7 +25,7 @@ $mpdf = new Mpdf([
 
 $mpdf->SetDisplayMode('fullpage');
 $mpdf->SetTitle($bill->getNumber());
-$mpdf->SetAuthor('Orange Management');
+$mpdf->SetAuthor('Karaka');
 
 $html = '
 <html>
@@ -73,7 +73,7 @@ $html = '
     <table width="100%">
         <tr>
             <td width="50%" style="color:#0000BB; ">
-                <span style="font-weight: bold; font-size: 14pt;">Orange Management</span><br />
+                <span style="font-weight: bold; font-size: 14pt;">Karaka</span><br />
                 123 1313 Webfoot Street<br />
                 Duckburg<br />
             </td>
