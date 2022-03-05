@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Controller;
 
+use Modules\Billing\Models\BillTransferType;
 use Modules\Billing\Models\PurchaseBillMapper;
 use Modules\Billing\Models\SalesBillMapper;
 use Modules\Billing\Models\SettingsEnum;
@@ -60,6 +61,7 @@ final class BackendController extends Controller
             ->with('type')
             ->with('type/l11n')
             ->with('client')
+            ->where('type/transferType', BillTransferType::SALES)
             ->sort('id', OrderType::DESC)
             ->limit(25);
 
@@ -206,19 +208,37 @@ final class BackendController extends Controller
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/purchase-bill-list');
-        $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response));
+        $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005105001, $request, $response));
+
+        $mapperQuery = PurchaseBillMapper::getAll()
+            ->with('type')
+            ->with('type/l11n')
+            ->with('supplier')
+            ->where('type/transferType', BillTransferType::PURCHASE)
+            ->sort('id', OrderType::DESC)
+            ->limit(25);
 
         if ($request->getData('ptype') === 'p') {
             $view->setData('bills',
-                PurchaseBillMapper::getAll()->where('id', (int) ($request->getData('id') ?? 0), '<')->limit(25)->execute()
+                $mapperQuery
+                    ->where('id', (int) ($request->getData('id') ?? 0), '<')
+                    ->where('supplier', null, '!=')
+                    ->where('type/l11n/language', $response->getLanguage())
+                    ->execute()
             );
         } elseif ($request->getData('ptype') === 'n') {
             $view->setData('bills',
-                PurchaseBillMapper::getAll()->where('id', (int) ($request->getData('id') ?? 0), '>')->limit(25)->execute()
+                $mapperQuery->where('id', (int) ($request->getData('id') ?? 0), '>')
+                    ->where('supplier', null, '!=')
+                    ->where('type/l11n/language', $response->getLanguage())
+                    ->execute()
             );
         } else {
             $view->setData('bills',
-                PurchaseBillMapper::getAll()->where('id', 0, '>')->limit(25)->execute()
+                $mapperQuery->where('id', 0, '>')
+                    ->where('supplier', null, '!=')
+                    ->where('type/l11n/language', $response->getLanguage())
+                    ->execute()
             );
         }
 
@@ -243,7 +263,12 @@ final class BackendController extends Controller
         $view->setTemplate('/Modules/Billing/Theme/Backend/purchase-bill');
         $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response));
 
-        $bill = PurchaseBillMapper::get()->where('id', (int) $request->getData('id'))->execute();
+        $bill = PurchaseBillMapper::get()
+            ->with('elements')
+            ->with('media')
+            ->with('notes')
+            ->where('id', (int) $request->getData('id'))
+            ->execute();
 
         $view->setData('bill', $bill);
 
@@ -253,6 +278,13 @@ final class BackendController extends Controller
         )->content;
 
         $view->setData('previewType', $previewType);
+
+        $originalType = (int) $this->app->appSettings->get(
+            names: SettingsEnum::ORIGINAL_MEDIA_TYPE,
+            module: self::NAME
+        )->content;
+
+        $view->setData('originalType', $originalType);
 
         return $view;
     }

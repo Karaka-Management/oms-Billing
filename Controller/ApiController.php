@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Karaka
  *
@@ -10,6 +11,7 @@
  * @version   1.0.0
  * @link      https://karaka.app
  */
+
 declare(strict_types=1);
 
 namespace Modules\Billing\Controller;
@@ -19,19 +21,30 @@ use Modules\Billing\Models\Bill;
 use Modules\Billing\Models\BillElement;
 use Modules\Billing\Models\BillElementMapper;
 use Modules\Billing\Models\BillMapper;
+use Modules\Billing\Models\BillStatus;
+use Modules\Billing\Models\BillTransferType;
 use Modules\Billing\Models\BillTypeMapper;
 use Modules\Billing\Models\SettingsEnum;
 use Modules\ClientManagement\Models\ClientMapper;
 use Modules\ItemManagement\Models\ItemMapper;
+use Modules\Media\Models\PathSettings;
 use Modules\Media\Models\UploadStatus;
 use Modules\SupplierManagement\Models\SupplierMapper;
+use phpOMS\Ai\Ocr\Tesseract\TesseractOcr;
 use phpOMS\Autoloader;
+use phpOMS\Image\Skew;
+use phpOMS\Image\Thresholding;
 use phpOMS\Localization\Money;
+use phpOMS\Message\Http\HttpRequest;
+use phpOMS\Message\Http\HttpResponse;
 use phpOMS\Message\Http\RequestStatusCode;
 use phpOMS\Message\NotificationLevel;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
 use phpOMS\Model\Message\FormValidation;
+use phpOMS\System\SystemUtils;
+use phpOMS\Uri\HttpUri;
+use phpOMS\Utils\StringUtils;
 use phpOMS\Views\View;
 
 /**
@@ -45,6 +58,73 @@ use phpOMS\Views\View;
 final class ApiController extends Controller
 {
     /**
+     * Api method to update a bill
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
+     *
+     * @return void
+     *
+     * @api
+     *
+     * @since 1.0.0
+     */
+    public function apiBillUpdate(RequestAbstract $request, ResponseAbstract $response, $data = null): void
+    {
+        if (!empty($val = $this->validateBillUpdate($request))) {
+            $response->set($request->uri->__toString(), new FormValidation($val));
+            $response->header->status = RequestStatusCode::R_400;
+
+            return;
+        }
+
+        $old = clone BillMapper::get()->where('id', (int) $request->getData('bill'));
+        $new = $this->updateBillFromRequest($request, $response, $data);
+        $this->updateModel($request->header->account, $old, $new, BillMapper::class, 'bill', $request->getOrigin());
+
+        $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Bill', 'Bill successfully created.', $new);
+    }
+
+    /**
+     * Method to validate bill creation from request
+     *
+     * @param RequestAbstract $request Request
+     *
+     * @return array<string, bool>
+     *
+     * @since 1.0.0
+     */
+    private function validateBillUpdate(RequestAbstract $request): array
+    {
+        $val = [];
+        if (($val['bill'] = empty($request->getData('bill')))) {
+            return $val;
+        }
+
+        return [];
+    }
+
+    /**
+     * Method to create a bill from request.
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
+     *
+     * @return Bill
+     *
+     * @since 1.0.0
+     */
+    public function updateBillFromRequest(RequestAbstract $request, ResponseAbstract $response, $data = null): Bill
+    {
+        /** @var Bill $bill */
+        $bill = BillMapper::get()->where('id', (int) $request->getData('bill'))->execute();
+
+        return $bill;
+    }
+
+    /**
      * Api method to create a bill
      *
      * @param RequestAbstract  $request  Request
@@ -57,7 +137,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillCreate(RequestAbstract $request, ResponseAbstract $response, $data = null) : void
+    public function apiBillCreate(RequestAbstract $request, ResponseAbstract $response, $data = null): void
     {
         if (!empty($val = $this->validateBillCreate($request))) {
             $response->set($request->uri->__toString(), new FormValidation($val));
@@ -87,7 +167,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function createBillFromRequest(RequestAbstract $request, ResponseAbstract $response, $data = null) : Bill
+    public function createBillFromRequest(RequestAbstract $request, ResponseAbstract $response, $data = null): Bill
     {
         $account = null;
         if ($request->getData('client') !== null) {
@@ -113,6 +193,7 @@ final class ApiController extends Controller
         $bill                  = new Bill();
         $bill->createdBy       = new NullAccount($request->header->account);
         $bill->type            = $billType;
+        $bill->setStatus((int) ($request->getData('status') ?? BillStatus::ACTIVE));
         $bill->numberFormat    = $billType->numberFormat;
         $bill->billTo          = $request->getData('billto')
             ?? ($account->profile->account->name1 . (!empty($account->profile->account->name2) ? ', ' . $account->profile->account->name2 : '')); // @todo: use defaultInvoiceAddress or mainAddress. also consider to use billto1, billto2, billto3 (for multiple lines e.g. name2, fao etc.)
@@ -136,11 +217,10 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    private function validateBillCreate(RequestAbstract $request) : array
+    private function validateBillCreate(RequestAbstract $request): array
     {
         $val = [];
-        if (($val['client/customer'] = (empty($request->getData('client')) && empty($request->getData('supplier'))))
-        ) {
+        if (($val['client/supplier'] = (empty($request->getData('client')) && empty($request->getData('supplier'))))) {
             return $val;
         }
 
@@ -160,7 +240,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiMediaAddToBill(RequestAbstract $request, ResponseAbstract $response, $data = null) : void
+    public function apiMediaAddToBill(RequestAbstract $request, ResponseAbstract $response, $data = null): void
     {
         if (!empty($val = $this->validateMediaAddToBill($request))) {
             $response->set($request->uri->__toString(), new FormValidation($val));
@@ -169,6 +249,9 @@ final class ApiController extends Controller
             return;
         }
 
+        $bill = BillMapper::get()->where('id', (int) $request->getData('bill'))->execute();
+        $path = $this->createBillDir($bill);
+
         $uploaded = [];
         if (!empty($uploadedFiles = $request->getFiles() ?? [])) {
             $uploaded = $this->app->moduleManager->get('Media')->uploadFiles(
@@ -176,16 +259,21 @@ final class ApiController extends Controller
                 [],
                 $uploadedFiles,
                 $request->header->account,
-                __DIR__ . '/../../../Modules/Media/Files/Modules/Editor',
-                '/Modules/Editor',
+                __DIR__ . '/../../../Modules/Media/Files' . $path,
+                $path,
+                type: $request->getData('type') ?? null,
+                pathSettings: PathSettings::FILE_PATH
             );
 
             foreach ($uploaded as $media) {
                 $this->createModelRelation(
                     $request->header->account,
-                    $request->getData('bill'),
+                    $bill->getId(),
                     $media->getId(),
-                    BillMapper::class, 'media', '', $request->getOrigin()
+                    BillMapper::class,
+                    'media',
+                    '',
+                    $request->getOrigin()
                 );
             }
         }
@@ -194,9 +282,12 @@ final class ApiController extends Controller
             foreach ($mediaFiles as $media) {
                 $this->createModelRelation(
                     $request->header->account,
-                    $request->getData('bill'),
+                    $bill->getId(),
                     $media,
-                    BillMapper::class, 'media', '', $request->getOrigin()
+                    BillMapper::class,
+                    'media',
+                    '',
+                    $request->getOrigin()
                 );
             }
         }
@@ -205,6 +296,15 @@ final class ApiController extends Controller
             'upload' => $uploaded,
             'media' => $mediaFiles
         ]);
+    }
+
+    private function createBillDir(Bill $bill): string
+    {
+        return '/Modules/Billing/Bills/'
+            . $bill->createdAt->format('Y') . '/'
+            . $bill->createdAt->format('m') . '/'
+            . $bill->createdAt->format('d') . '/'
+            . $bill->getId();
     }
 
     /**
@@ -216,10 +316,10 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    private function validateMediaAddToBill(RequestAbstract $request) : array
+    private function validateMediaAddToBill(RequestAbstract $request): array
     {
         $val = [];
-        if (($val['media'] = empty($request->getData('media')) && empty($request->getFiles()))
+        if (($val['media'] = (empty($request->getData('media')) && empty($request->getFiles())))
             || ($val['bill'] = empty($request->getData('bill')))
         ) {
             return $val;
@@ -241,7 +341,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillElementCreate(RequestAbstract $request, ResponseAbstract $response, $data = null) : void
+    public function apiBillElementCreate(RequestAbstract $request, ResponseAbstract $response, $data = null): void
     {
         if (!empty($val = $this->validateBillElementCreate($request))) {
             $response->set($request->uri->__toString(), new FormValidation($val));
@@ -272,7 +372,7 @@ final class ApiController extends Controller
      * @since 1.0.0
      * @todo in the database the customer localized version should be stored because this is the version which went out
      */
-    public function createBillElementFromRequest(RequestAbstract $request, ResponseAbstract $response, $data = null) : BillElement
+    public function createBillElementFromRequest(RequestAbstract $request, ResponseAbstract $response, $data = null): BillElement
     {
         $element       = new BillElement();
         $element->bill = (int) $request->getData('bill');
@@ -315,7 +415,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function updateBillWithBillElement(Bill $bill, BillElement $element, int $type = 1) : Bill
+    public function updateBillWithBillElement(Bill $bill, BillElement $element, int $type = 1): Bill
     {
         if ($type === 1) {
             $bill->netSales->add($element->totalSalesPriceNet);
@@ -334,11 +434,10 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    private function validateBillElementCreate(RequestAbstract $request) : array
+    private function validateBillElementCreate(RequestAbstract $request): array
     {
         $val = [];
-        if (($val['bill'] = empty($request->getData('bill')))
-        ) {
+        if (($val['bill'] = empty($request->getData('bill')))) {
             return $val;
         }
 
@@ -358,7 +457,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillPdfArchiveCreate(RequestAbstract $request, ResponseAbstract $response, $data = null) : void
+    public function apiBillPdfArchiveCreate(RequestAbstract $request, ResponseAbstract $response, $data = null): void
     {
         Autoloader::addPath(__DIR__ . '/../../../Resources/');
 
@@ -376,10 +475,8 @@ final class ApiController extends Controller
 
         $template = $bill->type->template;
 
-        $pdfDir = __DIR__ . '/../../../Modules/Media/Files/Modules/Billing/Bills/'
-            . $bill->createdAt->format('Y') . '/'
-            . $bill->createdAt->format('m') . '/'
-            . $bill->createdAt->format('d') . '/';
+        $path   = $this->createBillDir($bill);;
+        $pdfDir = __DIR__ . '/../../../Modules/Media/Files' . $path;
 
         $status = !\is_dir($pdfDir) ? \mkdir($pdfDir, 0755, true) : true;
         if ($status === false) {
@@ -394,11 +491,11 @@ final class ApiController extends Controller
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/' . \substr($template->getSourceByName('bill.pdf.php')->getPath(), 0, -8), 'pdf.php');
         $view->setData('bill', $bill);
-        $view->setData('path', $pdfDir . $request->getData('bill') . '.pdf');
+        $view->setData('path', $pdfDir . '/' . $request->getData('bill') . '.pdf');
 
         $pdf = $view->build();
 
-        if (!\is_file($pdfDir . $request->getData('bill') . '.pdf')) {
+        if (!\is_file($pdfDir . '/' . $request->getData('bill') . '.pdf')) {
             $response->header->status = RequestStatusCode::R_400;
 
             return;
@@ -410,14 +507,11 @@ final class ApiController extends Controller
                 'name'      => $request->getData('bill') . '.pdf',
                 'path'      => $pdfDir,
                 'filename'  => $request->getData('bill') . '.pdf',
-                'size'      => \filesize($pdfDir . $request->getData('bill') . '.pdf'),
+                'size'      => \filesize($pdfDir . '/' . $request->getData('bill') . '.pdf'),
                 'extension' => 'pdf',
             ],
             $request->header->account,
-            '/Modules/Billing/Bills/'
-                . $bill->createdAt->format('Y') . '/'
-                . $bill->createdAt->format('m') . '/'
-                . $bill->createdAt->format('d'),
+            $path,
             $previewType
         );
 
@@ -425,7 +519,10 @@ final class ApiController extends Controller
             $request->header->account,
             $bill->getId(),
             $media->getId(),
-            BillMapper::class, 'media', '', $request->getOrigin()
+            BillMapper::class,
+            'media',
+            '',
+            $request->getOrigin()
         );
 
         $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'PDF', 'Bill Pdf successfully created.', $media);
@@ -444,7 +541,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillPdfCreate(RequestAbstract $request, ResponseAbstract $response, $data = null) : void
+    public function apiBillPdfCreate(RequestAbstract $request, ResponseAbstract $response, $data = null): void
     {
     }
 
@@ -461,7 +558,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiNoteCreate(RequestAbstract $request, ResponseAbstract $response, $data = null) : void
+    public function apiNoteCreate(RequestAbstract $request, ResponseAbstract $response, $data = null): void
     {
         if (!empty($val = $this->validateNoteCreate($request))) {
             $response->set('bill_note_create', new FormValidation($val));
@@ -470,7 +567,10 @@ final class ApiController extends Controller
             return;
         }
 
-        $request->setData('virtualpath', '/Modules/Billing/Bills/' . $request->getData('id'), true);
+        /** @var Bill $bill */
+        $bill = BillMapper::get()->where('id', (int) $request->getData('id'))->execute();
+
+        $request->setData('virtualpath', $this->createBillDir($bill), true);
         $this->app->moduleManager->get('Editor')->apiEditorCreate($request, $response, $data);
 
         if ($response->header->status !== RequestStatusCode::R_200) {
@@ -490,14 +590,146 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    private function validateNoteCreate(RequestAbstract $request) : array
+    private function validateNoteCreate(RequestAbstract $request): array
     {
         $val = [];
-        if (($val['id'] = empty($request->getData('id')))
-        ) {
+        if (($val['id'] = empty($request->getData('id')))) {
             return $val;
         }
 
         return [];
+    }
+
+    /**
+     * Api method to create bill files
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
+     *
+     * @return void
+     *
+     * @api
+     *
+     * @since 1.0.0
+     */
+    public function apiSupplierBillUpload(RequestAbstract $request, ResponseAbstract $response, $data = null): void
+    {
+        $originalType = (int) ($request->getData('type') ?? $this->app->appSettings->get(
+            names: SettingsEnum::ORIGINAL_MEDIA_TYPE,
+            module: self::NAME
+        )->content);
+
+        $purchaseTransferType = BillTypeMapper::get()
+            ->where('transferType', BillTransferType::PURCHASE)
+            ->limit(1)
+            ->execute();
+
+        $files = $request->getFiles();
+        foreach ($files as $file) {
+            // Create default bill
+            $billRequest = new HttpRequest(new HttpUri(''));
+            $billRequest->header->account = $request->header->account;
+            $billRequest->header->l11n = $request->header->l11n;
+            $billRequest->setData('supplier', 1); // @todo: make suppleir 1 = unknown supplier
+            $billRequest->setData('status', BillStatus::UNPARSED);
+            $billRequest->setData('type', $purchaseTransferType->getId());
+
+            $billResponse = new HttpResponse();
+            $billResponse->header->l11n = $response->header->l11n;
+
+            $this->apiBillCreate($billRequest, $billResponse, $data);
+
+            $billId = $billResponse->get('')['response']->getId();
+
+            // Upload and assign document to bill
+            $mediaRequest = new HttpRequest();
+            $mediaRequest->header->account = $request->header->account;
+            $mediaRequest->header->l11n = $request->header->l11n;
+            $mediaRequest->addFile($file);
+
+            $mediaResponse = new HttpResponse();
+            $mediaResponse->header->l11n = $response->header->l11n;
+
+            $mediaRequest->setData('bill', $billId);
+            $mediaRequest->setData('type', $originalType);
+            $this->apiMediaAddToBill($mediaRequest, $mediaResponse, $data);
+
+            $uploaded = $mediaResponse->get('')['response']['upload'];
+            $in = \reset($uploaded)->getAbsolutePath();
+
+            if (!\is_file($in)) {
+                throw new \Exception();
+            }
+
+            // Extract text from document
+            $text = '';
+            $tmpDir = \sys_get_temp_dir();
+
+            // Is PDF
+            if (StringUtils::endsWith($in, '.pdf')) {
+                SystemUtils::runProc('/usr/bin/pdftotext', '-layout ' . \escapeshellarg($in) . ' ' .  \escapeshellarg($out = \tempnam($tmpDir, 'pdf_')));
+                $text = \file_get_contents($out);
+                \unlink($out);
+            }
+
+            // Is image or PDF couldn't get parsed to text
+            if (\strlen($text) < 256) {
+                SystemUtils::runProc('/usr/bin/pdftoppm', '-jpeg -r 300 ' . \escapeshellarg($in) . ' ' .  \escapeshellarg($out = \tempnam($tmpDir, 'pdf_')));
+
+                $files = \glob($out . '*');
+                if ($files === false) {
+                    return;
+                }
+
+                foreach ($files as $file) {
+                    if (
+                        !StringUtils::endsWith($file, '.jpg')
+                        && !StringUtils::endsWith($file, '.png')
+                        && !StringUtils::endsWith($file, '.gif')
+                    ) {
+                        continue;
+                    }
+
+                    /* Too slow
+                    Thresholding::integralThresholding($file, $file);
+                    Skew::autoRotate($file, $file, 10);
+                    */
+
+                    SystemUtils::runProc(__DIR__ . '/../../../cOMS/Tools/InvoicePreprocessing/App', \escapeshellarg($file) . ' ' .  \escapeshellarg($file));
+
+                    $ocr = new TesseractOcr();
+                    $text = $ocr->parseImage($file);
+
+                    \unlink($file);
+                }
+            }
+
+            // @todo: Parse text and analyze text structure
+
+            // Update bill with parsed text
+            $billRequest = new HttpRequest();
+            $billRequest->header->account = $request->header->account;
+            $billRequest->header->l11n = $request->header->l11n;
+
+            $billRequest->setData('bill', $billId);
+            $billRequest->setData('supplier', 1);
+
+            $billResponse = new HttpResponse();
+            $billResponse->header->l11n = $response->header->l11n;
+
+            $this->apiBillUpdate($billRequest, $billResponse, $data);
+
+            // Create internal document
+            $billResponse = new HttpResponse();
+            $billRequest  = new HttpRequest(new HttpUri(''));
+
+            $billRequest->header->account = $request->header->account;
+            $billRequest->setData('bill', $billId);
+
+            $this->apiBillPdfArchiveCreate($billRequest, $billResponse);
+
+            // @todo: Start workflow for bill, if a workflow is defined for bill uploading
+        }
     }
 }

@@ -26,6 +26,10 @@ echo $this->getData('nav')->render(); ?>
             <table id="billList" class="default sticky">
                 <thead>
                 <tr>
+                    <td><label class="checkbox" for="iBillSelect-0">
+                            <input type="checkbox" id="iBillSelect-0" name="billselect">
+                            <span class="checkmark"></span>
+                        </label>
                     <td><?= $this->getHtml('ID', '0', '0'); ?>
                         <label for="billList-sort-1">
                             <input type="radio" name="billList-sort" id="billList-sort-1">
@@ -50,7 +54,7 @@ echo $this->getData('nav')->render(); ?>
                         <label>
                             <i class="filter fa fa-filter"></i>
                         </label>
-                    <td><?= $this->getHtml('ClientID'); ?>
+                    <td><?= $this->getHtml('SupplierID'); ?>
                         <label for="billList-sort-5">
                             <input type="radio" name="billList-sort" id="billList-sort-5">
                             <i class="sort-asc fa fa-chevron-up"></i>
@@ -62,7 +66,7 @@ echo $this->getData('nav')->render(); ?>
                         <label>
                             <i class="filter fa fa-filter"></i>
                         </label>
-                    <td class="wf-100"><?= $this->getHtml('Client'); ?>
+                    <td class="wf-100"><?= $this->getHtml('Supplier'); ?>
                         <label for="billList-sort-7">
                             <input type="radio" name="billList-sort" id="billList-sort-7">
                             <i class="sort-asc fa fa-chevron-up"></i>
@@ -123,24 +127,12 @@ echo $this->getData('nav')->render(); ?>
                             <i class="filter fa fa-filter"></i>
                         </label>
                     <td><?= $this->getHtml('Net'); ?>
-                        <label for="billList-sort-17">
-                            <input type="radio" name="billList-sort" id="billList-sort-17">
+                        <label for="billList-sort-7">
+                            <input type="radio" name="billList-sort" id="billList-sort-7">
                             <i class="sort-asc fa fa-chevron-up"></i>
                         </label>
                         <label for="billList-sort-18">
                             <input type="radio" name="billList-sort" id="billList-sort-18">
-                            <i class="sort-desc fa fa-chevron-down"></i>
-                        </label>
-                        <label>
-                            <i class="filter fa fa-filter"></i>
-                        </label>
-                    <td><?= $this->getHtml('Profit'); ?>
-                        <label for="billList-sort-21">
-                            <input type="radio" name="billList-sort" id="billList-sort-21">
-                            <i class="sort-asc fa fa-chevron-up"></i>
-                        </label>
-                        <label for="billList-sort-22">
-                            <input type="radio" name="billList-sort" id="billList-sort-22">
                             <i class="sort-desc fa fa-chevron-down"></i>
                         </label>
                         <label>
@@ -159,25 +151,30 @@ echo $this->getData('nav')->render(); ?>
                             <i class="filter fa fa-filter"></i>
                         </label>
                 <tbody>
-                <?php $count = 0; foreach ($bills as $key => $value) :
+                <?php $count = 0;
+                foreach ($bills as $key => $value) :
                     ++$count;
                     $url = UriFactory::build('{/prefix}purchase/bill?{?}&id=' . $value->getId());
                 ?>
                     <tr data-href="<?= $url; ?>">
+                        <td><label class="checkbox" for="iBillSelect-<?= $key; ?>">
+                                    <input type="checkbox" id="iBillSelect-<?= $key; ?>" name="billselect">
+                                    <span class="checkmark"></span>
+                                </label>
                         <td><a href="<?= $url; ?>"><?= $value->getNumber(); ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->type->getL11n(); ?></a>
-                        <td><a href="<?= $url; ?>"><?= $value->client->number; ?></a>
-                        <td><a href="<?= $url; ?>"><?= $this->printHtml($value->billTo); ?></a>
-                        <td><a href="<?= $url; ?>"><?= $value->billAddress; ?></a>
+                        <td><a class="content" href="<?= $supplier = UriFactory::build('{/prefix}purchase/supplier/profile?{?}&id=' . $value->supplier->getId()); ?>"><?= $value->supplier->number; ?></a>
+                        <td><a class="content" href="<?= $supplier; ?>"><?= $this->printHtml($value->billTo); ?></a>
+                        <td><a href="<?= $url;
+                         ?>"><?= $value->billAddress; ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->billZip; ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->billCity; ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->billCountry; ?></a>
-                        <td><a href="<?= $url; ?>"><?= $value->net->getCurrency(); ?></a>
-                        <td><a href="<?= $url; ?>"><?= $value->profit->getCurrency(); ?></a>
+                        <td><a href="<?= $url; ?>"><?= $value->netSales->getCurrency(); ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->createdAt->format('Y-m-d'); ?></a>
                 <?php endforeach; ?>
                 <?php if ($count === 0) : ?>
-                    <tr><td colspan="11" class="empty"><?= $this->getHtml('Empty', '0', '0'); ?>
+                    <tr><td colspan="12" class="empty"><?= $this->getHtml('Empty', '0', '0'); ?>
                 <?php endif; ?>
             </table>
             </div>

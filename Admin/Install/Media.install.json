@@ -33,5 +33,19 @@
                 "lang": "de"
             }
         ]
+    },
+    {
+        "type": "type",
+        "name": "original",
+        "l11n": [
+            {
+                "title": "Original",
+                "lang": "en"
+            },
+            {
+                "title": "Original",
+                "lang": "de"
+            }
+        ]
     }
 ]

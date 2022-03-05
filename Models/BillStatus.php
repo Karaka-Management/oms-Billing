@@ -35,4 +35,6 @@ abstract class BillStatus extends Enum
     public const DONE = 8;
 
     public const DRAFT = 16;
+
+    public const UNPARSED = 32;
 }

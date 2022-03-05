@@ -12,7 +12,12 @@
  */
 declare(strict_types=1);
 
+use Modules\Media\Models\NullMedia;
+use phpOMS\System\File\FileUtils;
 use phpOMS\Uri\UriFactory;
+
+// Media helper functions (e.g. file icon generator)
+include __DIR__ . '/../../../Media/Theme/Backend/template-functions.php';
 
 /**
  * @var \phpOMS\Views\View $this
@@ -21,7 +26,11 @@ use phpOMS\Uri\UriFactory;
 $bill     = $this->getData('bill');
 $elements = $bill->getElements();
 
-$billPdf = $bill->getMediaByType('bill');
+$previewType = $this->getData('previewType');
+$originalType = $this->getData('originalType');
+$billPdf = $bill->getFileByType($previewType);
+$original = $bill->getFileByType($originalType);
+$media    = $bill->getMedia();
 
 echo $this->getData('nav')->render(); ?>
 
@@ -31,9 +40,10 @@ echo $this->getData('nav')->render(); ?>
             <li><label for="c-tab-1"><?= $this->getHtml('Invoice'); ?></label></li>
             <li><label for="c-tab-2"><?= $this->getHtml('Items'); ?></label></li>
             <li><label for="c-tab-3"><?= $this->getHtml('Preview'); ?></label></li>
-            <li><label for="c-tab-4"><?= $this->getHtml('Payment'); ?></label></li>
-            <li><label for="c-tab-5"><?= $this->getHtml('Media'); ?></label></li>
-            <li><label for="c-tab-6"><?= $this->getHtml('Logs'); ?></label></li>
+            <li><label for="c-tab-4"><?= $this->getHtml('Original'); ?></label></li>
+            <li><label for="c-tab-5"><?= $this->getHtml('Payment'); ?></label></li>
+            <li><label for="c-tab-6"><?= $this->getHtml('Media'); ?></label></li>
+            <li><label for="c-tab-7"><?= $this->getHtml('Logs'); ?></label></li>
         </ul>
     </div>
     <div class="tab-content">
@@ -179,9 +189,9 @@ echo $this->getData('nav')->render(); ?>
                         </table>
                         <div class="portlet-foot">
                             <?= $this->getHtml('Freightage'); ?>: 0.00 -
-                            <?= $this->getHtml('Net'); ?>: <?= $bill->net->getCurrency(); ?> -
+                            <?= $this->getHtml('Net'); ?>: <?= $bill->netSales->getCurrency(); ?> -
                             <?= $this->getHtml('Tax'); ?>: 0.00 -
-                            <?= $this->getHtml('Total'); ?>: <?= $bill->gross->getCurrency(); ?>
+                            <?= $this->getHtml('Total'); ?>: <?= $bill->grossSales->getCurrency(); ?>
                         </div>
                     </div>
                 </div>
@@ -193,13 +203,29 @@ echo $this->getData('nav')->render(); ?>
                 <div class="col-xs-12">
                     <section id="mediaFile" class="portlet">
                         <div class="portlet-body">
-                            <iframe style="min-height: 600px;" data-form="iUiSettings" data-name="iframeHelper" id="iHelperFrame" src="<?= UriFactory::build('{/backend}Resources/mozilla/Pdf/web/viewer.html?{?}&file=' . ($billPdf->isAbsolute ? '' : '/../../../../') . $billPdf->getPath()); ?>" allowfullscreen></iframe>
+                            <?php if (!($billPdf instanceof NullMedia)) : ?>
+                            <iframe style="min-height: 600px;" data-form="iUiSettings" data-name="iframeHelper" id="iHelperFrame" src="<?= UriFactory::build('{/backend}Resources/mozilla/Pdf/web/viewer.html{?}&file=' . \urlencode(($billPdf->isAbsolute ? '' : '/../../../../') . $billPdf->getPath())); ?>" allowfullscreen></iframe>
+                            <?php endif; ?>
                         </div>
                     </section>
                 </div>
             </div>
         </div>
         <input type="radio" id="c-tab-4" name="tabular-2">
+        <div class="tab">
+            <div class="row">
+                <div class="col-xs-12">
+                    <section id="mediaFile" class="portlet">
+                        <div class="portlet-body">
+                            <?php if (!($original instanceof NullMedia)) : ?>
+                            <iframe style="min-height: 600px;" data-form="iUiSettings" data-name="iframeHelper" id="iHelperFrame" src="<?= UriFactory::build('{/backend}Resources/mozilla/Pdf/web/viewer.html{?}&file=' . (($original->isAbsolute ? '' : '/../../../../') . $original->getPath())); ?>" allowfullscreen></iframe>
+                            <?php endif; ?>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+        <input type="radio" id="c-tab-5" name="tabular-2">
         <div class="tab">
             <div class="row">
                 <div class="col-xs-12 col-md-6 col-lg-4">
@@ -238,7 +264,7 @@ echo $this->getData('nav')->render(); ?>
                 </div>
             </div>
         </div>
-        <input type="radio" id="c-tab-5" name="tabular-2">
+        <input type="radio" id="c-tab-6" name="tabular-2">
         <div class="tab">
             <div class="row">
                 <div class="col-xs-12 col-md-6 col-lg-4">
@@ -258,9 +284,43 @@ echo $this->getData('nav')->render(); ?>
                         </div>
                     </section>
                 </div>
+
+                <div class="col-xs-12 col-md-6 col-lg-8">
+                    <div class="portlet">
+                        <div class="portlet-head"><?= $this->getHtml('Media'); ?><i class="fa fa-download floatRight download btn"></i></div>
+                        <table class="default" id="invoice-item-list">
+                            <thead>
+                            <tr>
+                                <td>
+                                <td>
+                                <td class="wf-100"><?= $this->getHtml('Name'); ?>
+                                <td><?= $this->getHtml('Type'); ?>
+                            <tbody>
+                            <?php foreach ($media as $file) :
+                                $url = $file->extension === 'collection'
+                                ? UriFactory::build('{/prefix}media/list?path=' . \rtrim($file->getVirtualPath(), '/') . '/' . $file->name)
+                                : UriFactory::build('{/prefix}media/single?id=' . $file->getId()
+                                    . '&path={?path}' . (
+                                            $file->getId() === 0
+                                                ? '/' . $file->name
+                                                : ''
+                                        )
+                                );
+
+                                $icon = $fileIconFunction(FileUtils::getExtensionType($file->extension));
+                            ?>
+                            <tr data-href="<?= $url; ?>">
+                                <td>
+                                <td data-label="<?= $this->getHtml('Type'); ?>"><a href="<?= $url; ?>"><i class="fa fa-<?= $this->printHtml($icon); ?>"></i></a>
+                                <td><a href="<?= $url; ?>"><?= $file->name; ?></a>
+                                <td><a href="<?= $url; ?>"><?= $file->extension; ?></a>
+                            <?php endforeach; ?>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
-        <input type="radio" id="c-tab-6" name="tabular-2">
+        <input type="radio" id="c-tab-7" name="tabular-2">
         <div class="tab">
             <div class="row">
                 <div class="col-xs-12">
