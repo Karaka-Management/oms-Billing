@@ -27,6 +27,9 @@ use Modules\Billing\Models\BillTypeMapper;
 use Modules\Billing\Models\SettingsEnum;
 use Modules\ClientManagement\Models\ClientMapper;
 use Modules\ItemManagement\Models\ItemMapper;
+use Modules\Media\Models\CollectionMapper;
+use Modules\Media\Models\MediaMapper;
+use Modules\Media\Models\NullMedia;
 use Modules\Media\Models\PathSettings;
 use Modules\Media\Models\UploadStatus;
 use Modules\SupplierManagement\Models\SupplierMapper;
@@ -44,6 +47,7 @@ use phpOMS\Message\ResponseAbstract;
 use phpOMS\Model\Message\FormValidation;
 use phpOMS\System\SystemUtils;
 use phpOMS\Uri\HttpUri;
+use phpOMS\Utils\Parser\Pdf\PdfParser;
 use phpOMS\Utils\StringUtils;
 use phpOMS\Views\View;
 
@@ -262,9 +266,11 @@ final class ApiController extends Controller
                 __DIR__ . '/../../../Modules/Media/Files' . $path,
                 $path,
                 type: $request->getData('type') ?? null,
-                pathSettings: PathSettings::FILE_PATH
+                pathSettings: PathSettings::FILE_PATH,
+                hasAccountRelation: false
             );
 
+            $collection = null;
             foreach ($uploaded as $media) {
                 $this->createModelRelation(
                     $request->header->account,
@@ -275,6 +281,21 @@ final class ApiController extends Controller
                     '',
                     $request->getOrigin()
                 );
+
+                if ($collection === null) {
+                    $collection = MediaMapper::getParentCollection($path)->limit(1)->execute();
+
+                    if ($collection instanceof NullMedia) {
+                        $collection = $this->app->moduleManager->get('Media')->createRecursiveMediaCollection(
+                            '/Modules/Media/Files',
+                            $path,
+                            $request->header->account,
+                            __DIR__ . '/../../../Modules/Media/Files' . $path,
+                        );
+                    }
+                }
+
+                CollectionMapper::writer()->createRelationTable('sources', [$media->getId()], $collection->getId());
             }
         }
 
@@ -656,53 +677,10 @@ final class ApiController extends Controller
             $this->apiMediaAddToBill($mediaRequest, $mediaResponse, $data);
 
             $uploaded = $mediaResponse->get('')['response']['upload'];
-            $in = \reset($uploaded)->getAbsolutePath();
+            $in = \reset($uploaded)->getAbsolutePath(); // pdf is parsed in $in->content
 
             if (!\is_file($in)) {
                 throw new \Exception();
-            }
-
-            // Extract text from document
-            $text = '';
-            $tmpDir = \sys_get_temp_dir();
-
-            // Is PDF
-            if (StringUtils::endsWith($in, '.pdf')) {
-                SystemUtils::runProc('/usr/bin/pdftotext', '-layout ' . \escapeshellarg($in) . ' ' .  \escapeshellarg($out = \tempnam($tmpDir, 'pdf_')));
-                $text = \file_get_contents($out);
-                \unlink($out);
-            }
-
-            // Is image or PDF couldn't get parsed to text
-            if (\strlen($text) < 256) {
-                SystemUtils::runProc('/usr/bin/pdftoppm', '-jpeg -r 300 ' . \escapeshellarg($in) . ' ' .  \escapeshellarg($out = \tempnam($tmpDir, 'pdf_')));
-
-                $files = \glob($out . '*');
-                if ($files === false) {
-                    return;
-                }
-
-                foreach ($files as $file) {
-                    if (
-                        !StringUtils::endsWith($file, '.jpg')
-                        && !StringUtils::endsWith($file, '.png')
-                        && !StringUtils::endsWith($file, '.gif')
-                    ) {
-                        continue;
-                    }
-
-                    /* Too slow
-                    Thresholding::integralThresholding($file, $file);
-                    Skew::autoRotate($file, $file, 10);
-                    */
-
-                    SystemUtils::runProc(__DIR__ . '/../../../cOMS/Tools/InvoicePreprocessing/App', \escapeshellarg($file) . ' ' .  \escapeshellarg($file));
-
-                    $ocr = new TesseractOcr();
-                    $text = $ocr->parseImage($file);
-
-                    \unlink($file);
-                }
             }
 
             // @todo: Parse text and analyze text structure
