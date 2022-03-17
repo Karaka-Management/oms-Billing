@@ -13,7 +13,7 @@
 declare(strict_types=1);
 
 use Modules\Billing\Controller\BackendController;
-use Modules\Billing\Models\PermissionState;
+use Modules\Billing\Models\PermissionCategory;
 use phpOMS\Account\PermissionType;
 use phpOMS\Router\RouteVerb;
 
@@ -25,7 +25,7 @@ return [
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::CREATE,
-                'state'  => PermissionState::SALES_INVOICE,
+                'state'  => PermissionCategory::SALES_INVOICE,
             ],
         ],
     ],
@@ -36,7 +36,7 @@ return [
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
-                'state'  => PermissionState::SALES_INVOICE,
+                'state'  => PermissionCategory::SALES_INVOICE,
             ],
         ],
     ],
@@ -47,7 +47,7 @@ return [
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
-                'state'  => PermissionState::SALES_INVOICE,
+                'state'  => PermissionCategory::SALES_INVOICE,
             ],
         ],
     ],
@@ -58,7 +58,7 @@ return [
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::CREATE,
-                'state'  => PermissionState::PURCHASE_INVOICE,
+                'state'  => PermissionCategory::PURCHASE_INVOICE,
             ],
         ],
     ],
@@ -69,7 +69,7 @@ return [
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
-                'state'  => PermissionState::PURCHASE_INVOICE,
+                'state'  => PermissionCategory::PURCHASE_INVOICE,
             ],
         ],
     ],
@@ -80,7 +80,7 @@ return [
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
-                'state'  => PermissionState::SALES_INVOICE,
+                'state'  => PermissionCategory::SALES_INVOICE,
             ],
         ],
     ],
@@ -91,7 +91,7 @@ return [
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::CREATE,
-                'state'  => PermissionState::PURCHASE_INVOICE,
+                'state'  => PermissionCategory::PURCHASE_INVOICE,
             ],
         ],
     ],
@@ -102,7 +102,7 @@ return [
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
-                'state'  => PermissionState::PURCHASE_INVOICE,
+                'state'  => PermissionCategory::PURCHASE_INVOICE,
             ],
         ],
     ],
@@ -113,7 +113,7 @@ return [
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
-                'state'  => PermissionState::SALES_INVOICE,
+                'state'  => PermissionCategory::SALES_INVOICE,
             ],
         ],
     ],
@@ -124,7 +124,7 @@ return [
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
-                'state'  => PermissionState::SALES_INVOICE,
+                'state'  => PermissionCategory::SALES_INVOICE,
             ],
         ],
     ],
@@ -135,7 +135,7 @@ return [
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
-                'state'  => PermissionState::SALES_ANALYSIS,
+                'state'  => PermissionCategory::SALES_ANALYSIS,
             ],
         ],
     ],
@@ -146,7 +146,7 @@ return [
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
-                'state'  => PermissionState::SALES_ANALYSIS,
+                'state'  => PermissionCategory::SALES_ANALYSIS,
             ],
         ],
     ],
