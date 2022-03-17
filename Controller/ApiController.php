@@ -29,6 +29,7 @@ use Modules\ClientManagement\Models\ClientMapper;
 use Modules\ItemManagement\Models\ItemMapper;
 use Modules\Media\Models\CollectionMapper;
 use Modules\Media\Models\MediaMapper;
+use Modules\Media\Models\NullCollection;
 use Modules\Media\Models\NullMedia;
 use Modules\Media\Models\PathSettings;
 use Modules\Media\Models\UploadStatus;
@@ -285,7 +286,7 @@ final class ApiController extends Controller
                 if ($collection === null) {
                     $collection = MediaMapper::getParentCollection($path)->limit(1)->execute();
 
-                    if ($collection instanceof NullMedia) {
+                    if ($collection instanceof NullCollection) {
                         $collection = $this->app->moduleManager->get('Media')->createRecursiveMediaCollection(
                             '/Modules/Media/Files',
                             $path,

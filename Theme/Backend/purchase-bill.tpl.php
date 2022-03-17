@@ -218,7 +218,7 @@ echo $this->getData('nav')->render(); ?>
                     <section id="mediaFile" class="portlet">
                         <div class="portlet-body">
                             <?php if (!($original instanceof NullMedia)) : ?>
-                            <iframe style="min-height: 600px;" data-form="iUiSettings" data-name="iframeHelper" id="iHelperFrame" src="<?= UriFactory::build('{/backend}Resources/mozilla/Pdf/web/viewer.html{?}&file=' . (($original->isAbsolute ? '' : '/../../../../') . $original->getPath())); ?>" allowfullscreen></iframe>
+                            <iframe style="min-height: 600px;" data-form="iUiSettings" data-name="iframeHelper" id="iHelperFrame" src="<?= UriFactory::build('{/backend}Resources/mozilla/Pdf/web/viewer.html{?}&file=' . \urlencode(($original->isAbsolute ? '' : '/../../../../') . $original->getPath())); ?>" allowfullscreen></iframe>
                             <?php endif; ?>
                         </div>
                     </section>

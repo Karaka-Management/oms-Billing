@@ -18,7 +18,7 @@
                 "pid": "/sales/bill",
                 "type": 3,
                 "subtype": 1,
-                "name": "List",
+                "name": "Open",
                 "uri": "{/prefix}sales/bill/list",
                 "target": "self",
                 "icon": null,
@@ -79,7 +79,7 @@
                 "pid": "/purchase/bill",
                 "type": 3,
                 "subtype": 1,
-                "name": "List",
+                "name": "Open",
                 "uri": "{/prefix}purchase/bill/list",
                 "target": "self",
                 "icon": null,
@@ -211,5 +211,36 @@
         "permission": { "permission": 2, "type": null, "element": null },
         "parent": 1001602001,
         "children": []
+    },
+    {
+        "id": 1005108001,
+        "pid": "/purchase/analysis",
+        "type": 3,
+        "subtype": 1,
+        "name": "Bill",
+        "uri": "{/prefix}purchase/analysis/bill",
+        "target": "self",
+        "icon": null,
+        "order": 15,
+        "from": "Billing",
+        "permission": { "permission": 2, "type": null, "element": null },
+        "parent": 1001602001,
+        "children": []
+    },
+    {
+        "id": 1005109001,
+        "pid": "/",
+        "type": 2,
+        "subtype": 1,
+        "name": "Billing",
+        "uri": "{/prefix}private/billing/dashboard?{?}",
+        "target": "self",
+        "icon": null,
+        "order": 5,
+        "from": "Billing",
+        "permission": { "permission": 2, "type": null, "element": null },
+        "parent": 1003401001,
+        "children": [
+        ]
     }
 ]

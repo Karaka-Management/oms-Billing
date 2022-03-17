@@ -606,5 +606,50 @@
                 "foreignKey": "editor_doc_id"
             }
         }
+    },
+    "billing_bill_responsible": {
+        "name": "billing_bill_responsible",
+        "fields": {
+            "billing_bill_responsible_id": {
+                "name": "billing_bill_responsible_id",
+                "type": "INT",
+                "null": false,
+                "primary": true,
+                "autoincrement": true
+            },
+            "billing_bill_responsible_bill": {
+                "name": "billing_bill_responsible_bill",
+                "type": "INT",
+                "null": false,
+                "foreignTable": "billing_bill",
+                "foreignKey": "billing_bill_id"
+            },
+            "billing_bill_responsible_group": {
+                "name": "billing_bill_responsible_group",
+                "type": "INT",
+                "null": false,
+                "foreignTable": "group",
+                "foreignKey": "group_id"
+            },
+            "billing_bill_responsible_account": {
+                "name": "billing_bill_responsible_account",
+                "type": "INT",
+                "null": false,
+                "foreignTable": "account",
+                "foreignKey": "account_id"
+            },
+            "billing_bill_responsible_forwarded_by": {
+                "name": "billing_bill_responsible_forwarded_by",
+                "type": "INT",
+                "null": false,
+                "foreignTable": "account",
+                "foreignKey": "account_id"
+            },
+            "billing_bill_responsible_forwarded_at": {
+                "name": "billing_bill_responsible_forwarded_at",
+                "type": "DATETIME",
+                "null": false
+            }
+        }
     }
 }
