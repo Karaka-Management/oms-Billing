@@ -48,15 +48,15 @@ final class Installer extends InstallerAbstract
     /**
      * {@inheritdoc}
      */
-    public static function install(DatabasePool $dbPool, ModuleInfo $info, SettingsInterface $cfgHandler) : void
+    public static function install(ApplicationAbstract $app, ModuleInfo $info, SettingsInterface $cfgHandler) : void
     {
-        parent::install($dbPool, $info, $cfgHandler);
+        parent::install($app, $info, $cfgHandler);
 
         // Install bill type templates
-        $app         = new class() extends ApplicationAbstract {};
-        $app->dbPool = $dbPool;
+        $newApp         = new class() extends ApplicationAbstract {};
+        $newApp->dbPool = $app->dbPool;
 
-        $media = \Modules\Media\Admin\Installer::installExternal($app, ['path' => __DIR__ . '/Install/Media2.install.json']);
+        $media = \Modules\Media\Admin\Installer::installExternal($newApp, ['path' => __DIR__ . '/Install/Media2.install.json']);
 
         /** @var int $defaultTemplate */
         $defaultTemplate = (int) \reset($media['upload'][0])->getId();
