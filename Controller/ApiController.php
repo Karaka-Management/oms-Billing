@@ -30,14 +30,11 @@ use Modules\ItemManagement\Models\ItemMapper;
 use Modules\Media\Models\CollectionMapper;
 use Modules\Media\Models\MediaMapper;
 use Modules\Media\Models\NullCollection;
-use Modules\Media\Models\NullMedia;
 use Modules\Media\Models\PathSettings;
 use Modules\Media\Models\UploadStatus;
+use Modules\SupplierManagement\Models\NullSupplier;
 use Modules\SupplierManagement\Models\SupplierMapper;
-use phpOMS\Ai\Ocr\Tesseract\TesseractOcr;
 use phpOMS\Autoloader;
-use phpOMS\Image\Skew;
-use phpOMS\Image\Thresholding;
 use phpOMS\Localization\Money;
 use phpOMS\Message\Http\HttpRequest;
 use phpOMS\Message\Http\HttpResponse;
@@ -46,10 +43,7 @@ use phpOMS\Message\NotificationLevel;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
 use phpOMS\Model\Message\FormValidation;
-use phpOMS\System\SystemUtils;
 use phpOMS\Uri\HttpUri;
-use phpOMS\Utils\Parser\Pdf\PdfParser;
-use phpOMS\Utils\StringUtils;
 use phpOMS\Views\View;
 
 /**
@@ -182,6 +176,8 @@ final class ApiController extends Controller
                 ->with('mainAddress')
                 ->where('id', (int) $request->getData('client'))
                 ->execute();
+        } elseif (((int) ($request->getData('supplier') ?? -1)) === 0) {
+            $account = new NullSupplier();
         } elseif ($request->getData('supplier') !== null) {
             $account = SupplierMapper::get()
                 ->with('profile')
@@ -190,6 +186,7 @@ final class ApiController extends Controller
                 ->where('id', (int) $request->getData('supplier'))
                 ->execute();
         }
+
 
         /** @var \Modules\Billing\Models\BillType $billType */
         $billType = BillTypeMapper::get()->where('id', (int) ($request->getData('type') ?? 1))->execute();
@@ -225,7 +222,9 @@ final class ApiController extends Controller
     private function validateBillCreate(RequestAbstract $request): array
     {
         $val = [];
-        if (($val['client/supplier'] = (empty($request->getData('client')) && empty($request->getData('supplier'))))) {
+        if (($val['client/supplier'] = (empty($request->getData('client'))
+                && (empty($request->getData('supplier')) && ((int) ($request->getData('supplier') ?? -1) !== 0))))
+        ) {
             return $val;
         }
 
@@ -653,7 +652,7 @@ final class ApiController extends Controller
             $billRequest = new HttpRequest(new HttpUri(''));
             $billRequest->header->account = $request->header->account;
             $billRequest->header->l11n = $request->header->l11n;
-            $billRequest->setData('supplier', 1); // @todo: make suppleir 1 = unknown supplier
+            $billRequest->setData('supplier', 0);
             $billRequest->setData('status', BillStatus::UNPARSED);
             $billRequest->setData('type', $purchaseTransferType->getId());
 

@@ -261,7 +261,7 @@ final class BackendController extends Controller
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/purchase-bill');
-        $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response));
+        $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005105001, $request, $response));
 
         $bill = PurchaseBillMapper::get()
             ->with('elements')

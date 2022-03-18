@@ -31,14 +31,14 @@ class WarehouseManagement
     /**
      * Install comment relation
      *
-     * @param string              $path Module path
      * @param ApplicationAbstract $app  Application
+     * @param string              $path Module path
      *
      * @return void
      *
      * @since 1.0.0
      */
-    public static function install(string $path, ApplicationAbstract $app) : void
+    public static function install(ApplicationAbstract $app, string $path) : void
     {
         $builder = new Builder($app->dbPool->get('schema'));
         $builder->alterTable('billing_bill')
