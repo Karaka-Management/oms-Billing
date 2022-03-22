@@ -51,6 +51,7 @@ return [
             ],
         ],
     ],
+
     '^.*/purchase/bill/create.*$' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingPurchaseInvoiceCreate',
@@ -84,6 +85,18 @@ return [
             ],
         ],
     ],
+    '^.*/purchase/bill/upload\?.*$' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingPurchaseInvoiceUpload',
+            'verb'       => RouteVerb::GET,
+            'permission' => [
+                'module' => BackendController::NAME,
+                'type'   => PermissionType::READ,
+                'state'  => PermissionCategory::SALES_INVOICE,
+            ],
+        ],
+    ],
+
     '^.*/warehouse/bill/create.*$' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingStockInvoiceCreate',
@@ -117,6 +130,7 @@ return [
             ],
         ],
     ],
+
     '^.*/sales/analysis/bill(\?.*|$)$' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillAnalysis',
@@ -147,6 +161,29 @@ return [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
                 'state'  => PermissionCategory::SALES_ANALYSIS,
+            ],
+        ],
+    ],
+
+    '^.*/private/purchase/billing/dashboard.*$' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewPrivatePurchaseBillDashboard',
+            'verb'       => RouteVerb::GET,
+            'permission' => [
+                'module' => BackendController::NAME,
+                'type'   => PermissionType::READ,
+                'state'  => PermissionCategory::PRIVATE_DASHBOARD,
+            ],
+        ],
+    ],
+    '^.*/private/purchase/billing/upload.*$' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewPrivatePurchaseBillUpload',
+            'verb'       => RouteVerb::GET,
+            'permission' => [
+                'module' => BackendController::NAME,
+                'type'   => PermissionType::READ,
+                'state'  => PermissionCategory::PRIVATE_BILL_UPLOAD,
             ],
         ],
     ],

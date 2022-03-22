@@ -31,4 +31,9 @@ abstract class PermissionCategory extends Enum
     public const PURCHASE_INVOICE = 2;
 
     public const SALES_ANALYSIS = 4;
+
+    public const PRIVATE_DASHBOARD = 5;
+
+    public const PRIVATE_BILL_UPLOAD = 6;
+
 }

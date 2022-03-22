@@ -631,6 +631,16 @@
                 "foreignTable": "group",
                 "foreignKey": "group_id"
             },
+            "billing_bill_responsible_status": {
+                "name": "billing_bill_responsible_status",
+                "type": "INT",
+                "null": false
+            },
+            "billing_bill_responsible_type": {
+                "name": "billing_bill_responsible_type",
+                "type": "INT",
+                "null": false
+            },
             "billing_bill_responsible_account": {
                 "name": "billing_bill_responsible_account",
                 "type": "INT",

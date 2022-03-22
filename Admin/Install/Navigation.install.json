@@ -241,6 +241,38 @@
         "permission": { "permission": 2, "type": null, "element": null },
         "parent": 1003401001,
         "children": [
+            {
+                "id": 1005109101,
+                "pid": "/",
+                "type": 3,
+                "subtype": 1,
+                "name": "List",
+                "uri": "{/prefix}private/purchase/billing/dashboard?{?}",
+                "target": "self",
+                "icon": null,
+                "order": 1,
+                "from": "Billing",
+                "permission": { "permission": 2, "type": null, "element": null },
+                "parent": 1005109001,
+                "children": [
+                ]
+            },
+            {
+                "id": 1005109101,
+                "pid": "/",
+                "type": 3,
+                "subtype": 1,
+                "name": "Upload",
+                "uri": "{/prefix}private/purchase/billing/upload?{?}",
+                "target": "self",
+                "icon": null,
+                "order": 5,
+                "from": "Billing",
+                "permission": { "permission": 2, "type": null, "element": null },
+                "parent": 1005109001,
+                "children": [
+                ]
+            }
         ]
     }
 ]
