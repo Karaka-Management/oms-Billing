@@ -95,7 +95,7 @@
             },
             "billing_bill_status": {
                 "name": "billing_bill_status",
-                "type": "TINYINT",
+                "type": "INT",
                 "null": false
             },
             "billing_bill_type": {
@@ -464,31 +464,31 @@
             },
             "billing_bill_element_price_discount_single": {
                 "name": "billing_bill_element_price_discount_single",
-                "type": "INT",
+                "type": "BIGINT",
                 "null": true,
                 "default": null
             },
             "billing_bill_element_price_discount_total": {
                 "name": "billing_bill_element_price_discount_total",
-                "type": "INT",
+                "type": "BIGINT",
                 "null": true,
                 "default": null
             },
             "billing_bill_element_percentage_discount_single": {
                 "name": "billing_bill_element_percentage_discount_single",
-                "type": "INT",
+                "type": "BIGINT",
                 "null": true,
                 "default": null
             },
             "billing_bill_element_percentage_discount_total": {
                 "name": "billing_bill_element_percentage_discount_total",
-                "type": "INT",
+                "type": "BIGINT",
                 "null": true,
                 "default": null
             },
             "billing_bill_element_quantity_discount": {
                 "name": "billing_bill_element_quantity_discount",
-                "type": "INT",
+                "type": "BIGINT",
                 "null": true,
                 "default": null
             },

@@ -187,7 +187,6 @@ final class ApiController extends Controller
                 ->execute();
         }
 
-
         /** @var \Modules\Billing\Models\BillType $billType */
         $billType = BillTypeMapper::get()->where('id', (int) ($request->getData('type') ?? 1))->execute();
 

@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Controller;
 
+use Modules\Billing\Models\BillStatus;
 use Modules\Billing\Models\BillTransferType;
 use Modules\Billing\Models\PurchaseBillMapper;
 use Modules\Billing\Models\SalesBillMapper;
@@ -694,7 +695,7 @@ final class BackendController extends Controller
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/user-purchase-bill-upload');
-        $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1002901101, $request, $response));
+        $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005109001, $request, $response));
 
         return $view;
     }
@@ -722,6 +723,7 @@ final class BackendController extends Controller
             ->with('type/l11n')
             ->with('supplier')
             ->where('type/transferType', BillTransferType::PURCHASE)
+            ->where('status', BillStatus::UNPARSED)
             ->sort('id', OrderType::DESC)
             ->limit(25);
 
@@ -729,25 +731,66 @@ final class BackendController extends Controller
             $view->setData('bills',
                 $mapperQuery
                     ->where('id', (int) ($request->getData('id') ?? 0), '<')
-                    ->where('supplier', null, '!=')
                     ->where('type/l11n/language', $response->getLanguage())
                     ->execute()
             );
         } elseif ($request->getData('ptype') === 'n') {
             $view->setData('bills',
                 $mapperQuery->where('id', (int) ($request->getData('id') ?? 0), '>')
-                    ->where('supplier', null, '!=')
                     ->where('type/l11n/language', $response->getLanguage())
                     ->execute()
             );
         } else {
             $view->setData('bills',
                 $mapperQuery->where('id', 0, '>')
-                    ->where('supplier', null, '!=')
                     ->where('type/l11n/language', $response->getLanguage())
                     ->execute()
             );
         }
+
+        return $view;
+    }
+
+    /**
+     * Routing end-point for application behaviour.
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
+     *
+     * @return RenderableInterface
+     *
+     * @since 1.0.0
+     * @codeCoverageIgnore
+     */
+    public function viewPrivateBillingPurchaseInvoice(RequestAbstract $request, ResponseAbstract $response, $data = null) : RenderableInterface
+    {
+        $view = new View($this->app->l11nManager, $request, $response);
+        $view->setTemplate('/Modules/Billing/Theme/Backend/user-purchase-bill');
+        $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005109001, $request, $response));
+
+        $bill = PurchaseBillMapper::get()
+            ->with('elements')
+            ->with('media')
+            ->with('notes')
+            ->where('id', (int) $request->getData('id'))
+            ->execute();
+
+        $view->setData('bill', $bill);
+
+        $previewType = (int) $this->app->appSettings->get(
+            names: SettingsEnum::PREVIEW_MEDIA_TYPE,
+            module: self::NAME
+        )->content;
+
+        $view->setData('previewType', $previewType);
+
+        $originalType = (int) $this->app->appSettings->get(
+            names: SettingsEnum::ORIGINAL_MEDIA_TYPE,
+            module: self::NAME
+        )->content;
+
+        $view->setData('originalType', $originalType);
 
         return $view;
     }

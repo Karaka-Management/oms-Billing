@@ -187,4 +187,15 @@ return [
             ],
         ],
     ],
+    '^.*/private/purchase/billing/bill.*$' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewPrivateBillingPurchaseInvoice',
+            'verb'       => RouteVerb::GET,
+            'permission' => [
+                'module' => BackendController::NAME,
+                'type'   => PermissionType::READ,
+                'state'  => PermissionCategory::PRIVATE_DASHBOARD,
+            ],
+        ],
+    ],
 ];

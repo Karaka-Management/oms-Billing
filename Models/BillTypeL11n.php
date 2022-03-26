@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Models;
 
-use phpOMS\Contract\ArrayableInterface;
 use phpOMS\Localization\ISO639x1Enum;
 
 /**
@@ -25,7 +24,7 @@ use phpOMS\Localization\ISO639x1Enum;
  * @link    https://karaka.app
  * @since   1.0.0
  */
-class BillTypeL11n implements \JsonSerializable, ArrayableInterface
+class BillTypeL11n implements \JsonSerializable
 {
     /**
      * Type ID.
