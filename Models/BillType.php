@@ -60,7 +60,7 @@ class BillType
      */
     public function __construct(string $name = '')
     {
-        $this->media = new NullCollection();
+        $this->template = new NullCollection();
         $this->setL11n($name);
     }
 

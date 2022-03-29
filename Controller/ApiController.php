@@ -194,10 +194,9 @@ final class ApiController extends Controller
         $bill                  = new Bill();
         $bill->createdBy       = new NullAccount($request->header->account);
         $bill->type            = $billType;
-        $bill->setStatus((int) ($request->getData('status') ?? BillStatus::ACTIVE));
         $bill->numberFormat    = $billType->numberFormat;
         $bill->billTo          = $request->getData('billto')
-            ?? ($account->profile->account->name1 . (!empty($account->profile->account->name2) ? ', ' . $account->profile->account->name2 : '')); // @todo: use defaultInvoiceAddress or mainAddress. also consider to use billto1, billto2, billto3 (for multiple lines e.g. name2, fao etc.)
+        ?? ($account->profile->account->name1 . (!empty($account->profile->account->name2) ? ', ' . $account->profile->account->name2 : '')); // @todo: use defaultInvoiceAddress or mainAddress. also consider to use billto1, billto2, billto3 (for multiple lines e.g. name2, fao etc.)
         $bill->billAddress     = $request->getData('billaddress') ?? $account->mainAddress->address;
         $bill->billZip         = $request->getData('billtopostal') ?? $account->mainAddress->postal;
         $bill->billCity        = $request->getData('billtocity') ?? $account->mainAddress->city;
@@ -205,6 +204,7 @@ final class ApiController extends Controller
         $bill->client          = $request->getData('client') === null ? null : $account;
         $bill->supplier        = $request->getData('supplier') === null ? null : $account;
         $bill->performanceDate = new \DateTime($request->getData('performancedate') ?? 'now');
+        $bill->setStatus((int) ($request->getData('status') ?? BillStatus::ACTIVE));
 
         return $bill;
     }
@@ -286,7 +286,6 @@ final class ApiController extends Controller
 
                     if ($collection instanceof NullCollection) {
                         $collection = $this->app->moduleManager->get('Media')->createRecursiveMediaCollection(
-                            '/Modules/Media/Files',
                             $path,
                             $request->header->account,
                             __DIR__ . '/../../../Modules/Media/Files' . $path,
@@ -318,6 +317,15 @@ final class ApiController extends Controller
         ]);
     }
 
+    /**
+     * Create media directory path
+     *
+     * @param Bill $bill Bill
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
     private function createBillDir(Bill $bill): string
     {
         return '/Modules/Billing/Bills/'
@@ -495,7 +503,7 @@ final class ApiController extends Controller
 
         $template = $bill->type->template;
 
-        $path   = $this->createBillDir($bill);;
+        $path   = $this->createBillDir($bill);
         $pdfDir = __DIR__ . '/../../../Modules/Media/Files' . $path;
 
         $status = !\is_dir($pdfDir) ? \mkdir($pdfDir, 0755, true) : true;
@@ -648,14 +656,14 @@ final class ApiController extends Controller
         $files = $request->getFiles();
         foreach ($files as $file) {
             // Create default bill
-            $billRequest = new HttpRequest(new HttpUri(''));
+            $billRequest                  = new HttpRequest(new HttpUri(''));
             $billRequest->header->account = $request->header->account;
-            $billRequest->header->l11n = $request->header->l11n;
+            $billRequest->header->l11n    = $request->header->l11n;
             $billRequest->setData('supplier', 0);
             $billRequest->setData('status', BillStatus::UNPARSED);
             $billRequest->setData('type', $purchaseTransferType->getId());
 
-            $billResponse = new HttpResponse();
+            $billResponse               = new HttpResponse();
             $billResponse->header->l11n = $response->header->l11n;
 
             $this->apiBillCreate($billRequest, $billResponse, $data);
@@ -663,12 +671,12 @@ final class ApiController extends Controller
             $billId = $billResponse->get('')['response']->getId();
 
             // Upload and assign document to bill
-            $mediaRequest = new HttpRequest();
+            $mediaRequest                  = new HttpRequest();
             $mediaRequest->header->account = $request->header->account;
-            $mediaRequest->header->l11n = $request->header->l11n;
+            $mediaRequest->header->l11n    = $request->header->l11n;
             $mediaRequest->addFile($file);
 
-            $mediaResponse = new HttpResponse();
+            $mediaResponse               = new HttpResponse();
             $mediaResponse->header->l11n = $response->header->l11n;
 
             $mediaRequest->setData('bill', $billId);
@@ -676,7 +684,7 @@ final class ApiController extends Controller
             $this->apiMediaAddToBill($mediaRequest, $mediaResponse, $data);
 
             $uploaded = $mediaResponse->get('')['response']['upload'];
-            $in = \reset($uploaded)->getAbsolutePath(); // pdf is parsed in $in->content
+            $in       = \reset($uploaded)->getAbsolutePath(); // pdf is parsed in $in->content
 
             if (!\is_file($in)) {
                 throw new \Exception();
@@ -685,14 +693,14 @@ final class ApiController extends Controller
             // @todo: Parse text and analyze text structure
 
             // Update bill with parsed text
-            $billRequest = new HttpRequest();
+            $billRequest                  = new HttpRequest();
             $billRequest->header->account = $request->header->account;
-            $billRequest->header->l11n = $request->header->l11n;
+            $billRequest->header->l11n    = $request->header->l11n;
 
             $billRequest->setData('bill', $billId);
             $billRequest->setData('supplier', 1);
 
-            $billResponse = new HttpResponse();
+            $billResponse               = new HttpResponse();
             $billResponse->header->l11n = $response->header->l11n;
 
             $this->apiBillUpdate($billRequest, $billResponse, $data);

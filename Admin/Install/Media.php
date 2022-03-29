@@ -43,7 +43,7 @@ class Media
     {
         $media = \Modules\Media\Admin\Installer::installExternal($app, ['path' => __DIR__ . '/Media.install.json']);
 
-        $preivewType = (int) \reset($media['type'][0]);
+        $preivewType  = (int) \reset($media['type'][0]);
         $originalType = (int) \reset($media['type'][1]);
 
         $setting = new Setting();

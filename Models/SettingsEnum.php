@@ -29,6 +29,4 @@ abstract class SettingsEnum extends Enum
     public const PREVIEW_MEDIA_TYPE = '1005100001_1'; // internally generated preview
 
     public const ORIGINAL_MEDIA_TYPE = '1005100001_2'; // original document (mostly supplier invoice/delivery note)
-
-
 }
