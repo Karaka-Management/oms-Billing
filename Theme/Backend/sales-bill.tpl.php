@@ -144,6 +144,7 @@ echo $this->getData('nav')->render(); ?>
                 <div class="col-xs-12">
                     <div class="portlet">
                         <div class="portlet-head"><?= $this->getHtml('Invoice'); ?><i class="fa fa-download floatRight download btn"></i></div>
+                        <div class="slider">
                         <table class="default" id="invoice-item-list">
                             <thead>
                             <tr>
@@ -183,6 +184,7 @@ echo $this->getData('nav')->render(); ?>
                                 <td><input type="number" min="0" step="any">
                                 <td>
                         </table>
+                        </div>
                         <div class="portlet-foot">
                             <?= $this->getHtml('Freightage'); ?>: 0.00 -
                             <?= $this->getHtml('Net'); ?>: <?= $bill->netSales->getCurrency(); ?> -
