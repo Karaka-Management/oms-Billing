@@ -26,8 +26,8 @@ echo $this->getData('nav')->render(); ?>
             <table id="billList" class="default sticky">
                 <thead>
                 <tr>
-                    <td><label class="checkbox" for="iBillSelect-0">
-                            <input type="checkbox" id="iBillSelect-0" name="billselect">
+                    <td><label class="checkbox" for="iBillSelect-">
+                            <input type="checkbox" id="iBillSelect-" name="billselect">
                             <span class="checkmark"></span>
                         </label>
                     <td><?= $this->getHtml('ID', '0', '0'); ?>
