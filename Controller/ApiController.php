@@ -256,7 +256,7 @@ final class ApiController extends Controller
         $path = $this->createBillDir($bill);
 
         $uploaded = [];
-        if (!empty($uploadedFiles = $request->getFiles() ?? [])) {
+        if (!empty($uploadedFiles = $request->getFiles())) {
             $uploaded = $this->app->moduleManager->get('Media')->uploadFiles(
                 [],
                 [],
@@ -297,7 +297,7 @@ final class ApiController extends Controller
             }
         }
 
-        if (!empty($mediaFiles = $request->getDataJson('media') ?? [])) {
+        if (!empty($mediaFiles = $request->getDataJson('media'))) {
             foreach ($mediaFiles as $media) {
                 $this->createModelRelation(
                     $request->header->account,
