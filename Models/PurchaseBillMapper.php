@@ -227,7 +227,6 @@ final class PurchaseBillMapper extends BillMapper
      */
     public static function getItemTopSuppliers(int $id, \DateTime $start, \DateTime $end, int $limit = 10) : array
     {
-
         $query = SupplierMapper::getQuery();
         $query->selectAs('SUM(billing_bill_element_total_netpurchaseprice)', 'net_purchase')
             ->leftJoin(self::TABLE, self::TABLE . '_d1')

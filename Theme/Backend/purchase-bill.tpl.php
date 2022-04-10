@@ -26,11 +26,11 @@ include __DIR__ . '/../../../Media/Theme/Backend/template-functions.php';
 $bill     = $this->getData('bill');
 $elements = $bill->getElements();
 
-$previewType = $this->getData('previewType');
+$previewType  = $this->getData('previewType');
 $originalType = $this->getData('originalType');
-$billPdf = $bill->getFileByType($previewType);
-$original = $bill->getFileByType($originalType);
-$media    = $bill->getMedia();
+$billPdf      = $bill->getFileByType($previewType);
+$original     = $bill->getFileByType($originalType);
+$media        = $bill->getMedia();
 
 echo $this->getData('nav')->render(); ?>
 

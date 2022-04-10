@@ -34,11 +34,11 @@ final class BillTypeMapper extends DataMapperFactory
      * @since 1.0.0
      */
     public const COLUMNS = [
-        'billing_type_id'             => ['name' => 'billing_type_id',             'type' => 'int',    'internal' => 'id'],
+        'billing_type_id'                  => ['name' => 'billing_type_id',             'type' => 'int',    'internal' => 'id'],
         'billing_type_number_format'       => ['name' => 'billing_type_number_format',       'type' => 'string',    'internal' => 'numberFormat'],
-        'billing_type_template'       => ['name' => 'billing_type_template',       'type' => 'int',    'internal' => 'template'],
-        'billing_type_transfer_type'  => ['name' => 'billing_type_transfer_type',  'type' => 'int',    'internal' => 'transferType'],
-        'billing_type_transfer_stock' => ['name' => 'billing_type_transfer_stock', 'type' => 'bool',   'internal' => 'transferStock'],
+        'billing_type_template'            => ['name' => 'billing_type_template',       'type' => 'int',    'internal' => 'template'],
+        'billing_type_transfer_type'       => ['name' => 'billing_type_transfer_type',  'type' => 'int',    'internal' => 'transferType'],
+        'billing_type_transfer_stock'      => ['name' => 'billing_type_transfer_stock', 'type' => 'bool',   'internal' => 'transferStock'],
     ];
 
     /**

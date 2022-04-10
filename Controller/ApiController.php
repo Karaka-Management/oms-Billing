@@ -69,7 +69,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillUpdate(RequestAbstract $request, ResponseAbstract $response, $data = null): void
+    public function apiBillUpdate(RequestAbstract $request, ResponseAbstract $response, $data = null) : void
     {
         if (!empty($val = $this->validateBillUpdate($request))) {
             $response->set($request->uri->__toString(), new FormValidation($val));
@@ -94,7 +94,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    private function validateBillUpdate(RequestAbstract $request): array
+    private function validateBillUpdate(RequestAbstract $request) : array
     {
         $val = [];
         if (($val['bill'] = empty($request->getData('bill')))) {
@@ -115,7 +115,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function updateBillFromRequest(RequestAbstract $request, ResponseAbstract $response, $data = null): Bill
+    public function updateBillFromRequest(RequestAbstract $request, ResponseAbstract $response, $data = null) : Bill
     {
         /** @var Bill $bill */
         $bill = BillMapper::get()->where('id', (int) $request->getData('bill'))->execute();
@@ -136,7 +136,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillCreate(RequestAbstract $request, ResponseAbstract $response, $data = null): void
+    public function apiBillCreate(RequestAbstract $request, ResponseAbstract $response, $data = null) : void
     {
         if (!empty($val = $this->validateBillCreate($request))) {
             $response->set($request->uri->__toString(), new FormValidation($val));
@@ -166,7 +166,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function createBillFromRequest(RequestAbstract $request, ResponseAbstract $response, $data = null): Bill
+    public function createBillFromRequest(RequestAbstract $request, ResponseAbstract $response, $data = null) : Bill
     {
         $account = null;
         if ($request->getData('client') !== null) {
@@ -218,7 +218,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    private function validateBillCreate(RequestAbstract $request): array
+    private function validateBillCreate(RequestAbstract $request) : array
     {
         $val = [];
         if (($val['client/supplier'] = (empty($request->getData('client'))
@@ -243,7 +243,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiMediaAddToBill(RequestAbstract $request, ResponseAbstract $response, $data = null): void
+    public function apiMediaAddToBill(RequestAbstract $request, ResponseAbstract $response, $data = null) : void
     {
         if (!empty($val = $this->validateMediaAddToBill($request))) {
             $response->set($request->uri->__toString(), new FormValidation($val));
@@ -313,7 +313,7 @@ final class ApiController extends Controller
 
         $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Media', 'Media added to bill.', [
             'upload' => $uploaded,
-            'media' => $mediaFiles
+            'media'  => $mediaFiles,
         ]);
     }
 
@@ -326,7 +326,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    private function createBillDir(Bill $bill): string
+    private function createBillDir(Bill $bill) : string
     {
         return '/Modules/Billing/Bills/'
             . $bill->createdAt->format('Y') . '/'
@@ -344,7 +344,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    private function validateMediaAddToBill(RequestAbstract $request): array
+    private function validateMediaAddToBill(RequestAbstract $request) : array
     {
         $val = [];
         if (($val['media'] = (empty($request->getData('media')) && empty($request->getFiles())))
@@ -369,7 +369,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillElementCreate(RequestAbstract $request, ResponseAbstract $response, $data = null): void
+    public function apiBillElementCreate(RequestAbstract $request, ResponseAbstract $response, $data = null) : void
     {
         if (!empty($val = $this->validateBillElementCreate($request))) {
             $response->set($request->uri->__toString(), new FormValidation($val));
@@ -400,7 +400,7 @@ final class ApiController extends Controller
      * @since 1.0.0
      * @todo in the database the customer localized version should be stored because this is the version which went out
      */
-    public function createBillElementFromRequest(RequestAbstract $request, ResponseAbstract $response, $data = null): BillElement
+    public function createBillElementFromRequest(RequestAbstract $request, ResponseAbstract $response, $data = null) : BillElement
     {
         $element       = new BillElement();
         $element->bill = (int) $request->getData('bill');
@@ -443,7 +443,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function updateBillWithBillElement(Bill $bill, BillElement $element, int $type = 1): Bill
+    public function updateBillWithBillElement(Bill $bill, BillElement $element, int $type = 1) : Bill
     {
         if ($type === 1) {
             $bill->netSales->add($element->totalSalesPriceNet);
@@ -462,7 +462,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    private function validateBillElementCreate(RequestAbstract $request): array
+    private function validateBillElementCreate(RequestAbstract $request) : array
     {
         $val = [];
         if (($val['bill'] = empty($request->getData('bill')))) {
@@ -485,7 +485,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillPdfArchiveCreate(RequestAbstract $request, ResponseAbstract $response, $data = null): void
+    public function apiBillPdfArchiveCreate(RequestAbstract $request, ResponseAbstract $response, $data = null) : void
     {
         Autoloader::addPath(__DIR__ . '/../../../Resources/');
 
@@ -569,7 +569,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillPdfCreate(RequestAbstract $request, ResponseAbstract $response, $data = null): void
+    public function apiBillPdfCreate(RequestAbstract $request, ResponseAbstract $response, $data = null) : void
     {
     }
 
@@ -586,7 +586,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiNoteCreate(RequestAbstract $request, ResponseAbstract $response, $data = null): void
+    public function apiNoteCreate(RequestAbstract $request, ResponseAbstract $response, $data = null) : void
     {
         if (!empty($val = $this->validateNoteCreate($request))) {
             $response->set('bill_note_create', new FormValidation($val));
@@ -618,7 +618,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    private function validateNoteCreate(RequestAbstract $request): array
+    private function validateNoteCreate(RequestAbstract $request) : array
     {
         $val = [];
         if (($val['id'] = empty($request->getData('id')))) {
@@ -641,7 +641,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiSupplierBillUpload(RequestAbstract $request, ResponseAbstract $response, $data = null): void
+    public function apiSupplierBillUpload(RequestAbstract $request, ResponseAbstract $response, $data = null) : void
     {
         $originalType = (int) ($request->getData('type') ?? $this->app->appSettings->get(
             names: SettingsEnum::ORIGINAL_MEDIA_TYPE,

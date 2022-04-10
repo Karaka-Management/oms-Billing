@@ -227,7 +227,6 @@ final class SalesBillMapper extends BillMapper
      */
     public static function getItemTopClients(int $id, \DateTime $start, \DateTime $end, int $limit = 10) : array
     {
-
         $query = ClientMapper::getQuery();
         $query->selectAs('SUM(billing_bill_element_total_netsalesprice)', 'net_sales')
             ->leftJoin(self::TABLE, self::TABLE . '_d1')

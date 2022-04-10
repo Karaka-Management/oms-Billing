@@ -22,7 +22,6 @@ use Modules\Billing\Models\BillTypeMapper;
 use Modules\Media\Models\NullCollection;
 use phpOMS\Application\ApplicationAbstract;
 use phpOMS\Config\SettingsInterface;
-use phpOMS\DataStorage\Database\DatabasePool;
 use phpOMS\Localization\ISO639x1Enum;
 use phpOMS\Module\InstallerAbstract;
 use phpOMS\Module\ModuleInfo;
