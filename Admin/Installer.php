@@ -52,13 +52,10 @@ final class Installer extends InstallerAbstract
         parent::install($app, $info, $cfgHandler);
 
         // Install bill type templates
-        $newApp         = new class() extends ApplicationAbstract {};
-        $newApp->dbPool = $app->dbPool;
-
-        $media = \Modules\Media\Admin\Installer::installExternal($newApp, ['path' => __DIR__ . '/Install/Media2.install.json']);
+        $media = \Modules\Media\Admin\Installer::installExternal($app, ['path' => __DIR__ . '/Install/Media2.install.json']);
 
         /** @var int $defaultTemplate */
-        $defaultTemplate = (int) \reset($media['upload'][0])->getId();
+        $defaultTemplate = (int) \reset($media['upload'][0]);
 
         self::createOutgoingBillTypes($defaultTemplate);
         self::createIncomingBillTypes($defaultTemplate);
