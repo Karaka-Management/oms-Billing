@@ -69,7 +69,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillUpdate(RequestAbstract $request, ResponseAbstract $response, $data = null) : void
+    public function apiBillUpdate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateBillUpdate($request))) {
             $response->set($request->uri->__toString(), new FormValidation($val));
@@ -78,7 +78,8 @@ final class ApiController extends Controller
             return;
         }
 
-        $old = clone BillMapper::get()->where('id', (int) $request->getData('bill'));
+        /** @var \Modules\Billing\Models\Bill $old */
+        $old = BillMapper::get()->where('id', (int) $request->getData('bill'));
         $new = $this->updateBillFromRequest($request, $response, $data);
         $this->updateModel($request->header->account, $old, $new, BillMapper::class, 'bill', $request->getOrigin());
 
@@ -136,7 +137,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillCreate(RequestAbstract $request, ResponseAbstract $response, $data = null) : void
+    public function apiBillCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateBillCreate($request))) {
             $response->set($request->uri->__toString(), new FormValidation($val));
@@ -243,7 +244,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiMediaAddToBill(RequestAbstract $request, ResponseAbstract $response, $data = null) : void
+    public function apiMediaAddToBill(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateMediaAddToBill($request))) {
             $response->set($request->uri->__toString(), new FormValidation($val));
@@ -252,6 +253,7 @@ final class ApiController extends Controller
             return;
         }
 
+        /** @var \Modules\Billing\Models\Bill $bill */
         $bill = BillMapper::get()->where('id', (int) $request->getData('bill'))->execute();
         $path = $this->createBillDir($bill);
 
@@ -369,7 +371,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillElementCreate(RequestAbstract $request, ResponseAbstract $response, $data = null) : void
+    public function apiBillElementCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateBillElementCreate($request))) {
             $response->set($request->uri->__toString(), new FormValidation($val));
@@ -381,6 +383,7 @@ final class ApiController extends Controller
         $element = $this->createBillElementFromRequest($request, $response, $data);
         $this->createModel($request->header->account, $element, BillElementMapper::class, 'bill_element', $request->getOrigin());
 
+        /** @var \Modules\Billing\Models\Bill $old */
         $old = BillMapper::get()->where('id', $element->bill)->execute();
         $new = $this->updateBillWithBillElement(clone $old, $element, 1);
         $this->updateModel($request->header->account, $old, $new, BillMapper::class, 'bill_element', $request->getOrigin());
@@ -410,6 +413,7 @@ final class ApiController extends Controller
             return $element;
         }
 
+        /** @var \Modules\ItemManagement\Models\Item $item */
         $item                = ItemMapper::get()->with('l11n')->where('id', $element->item)->where('l11n/language', $response->getLanguage())->execute();
         $element->itemNumber = $item->number;
         $element->itemName   = $item->getL11n('name1')->description;
@@ -485,10 +489,11 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillPdfArchiveCreate(RequestAbstract $request, ResponseAbstract $response, $data = null) : void
+    public function apiBillPdfArchiveCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         Autoloader::addPath(__DIR__ . '/../../../Resources/');
 
+        /** @var \Modules\Billing\Models\Bill $bill */
         $bill = BillMapper::get()
             ->with('type')
             ->with('type/template')
@@ -569,7 +574,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillPdfCreate(RequestAbstract $request, ResponseAbstract $response, $data = null) : void
+    public function apiBillPdfCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
     }
 
@@ -586,7 +591,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiNoteCreate(RequestAbstract $request, ResponseAbstract $response, $data = null) : void
+    public function apiNoteCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateNoteCreate($request))) {
             $response->set('bill_note_create', new FormValidation($val));
@@ -595,7 +600,7 @@ final class ApiController extends Controller
             return;
         }
 
-        /** @var Bill $bill */
+        /** @var \Modules\Billing\Models\Bill $bill */
         $bill = BillMapper::get()->where('id', (int) $request->getData('id'))->execute();
 
         $request->setData('virtualpath', $this->createBillDir($bill), true);
@@ -641,13 +646,14 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiSupplierBillUpload(RequestAbstract $request, ResponseAbstract $response, $data = null) : void
+    public function apiSupplierBillUpload(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         $originalType = (int) ($request->getData('type') ?? $this->app->appSettings->get(
             names: SettingsEnum::ORIGINAL_MEDIA_TYPE,
             module: self::NAME
         )->content);
 
+        /** @var \Modules\Billing\Models\BillType $purchaseTransferType */
         $purchaseTransferType = BillTypeMapper::get()
             ->where('transferType', BillTransferType::PURCHASE)
             ->limit(1)

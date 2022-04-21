@@ -240,6 +240,7 @@ final class SalesBillMapper extends BillMapper
             ->limit($limit)
             ->groupBy(ClientMapper::TABLE . '_d1.clientmgmt_client_id');
 
+        /** @var \Modules\ClientManagement\Models\Client[] $clients */
         $clients = ClientMapper::getAll()->execute($query);
         $data    = ClientMapper::getRaw()->execute();
 
