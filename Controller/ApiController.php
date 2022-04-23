@@ -192,12 +192,16 @@ final class ApiController extends Controller
         $billType = BillTypeMapper::get()->where('id', (int) ($request->getData('type') ?? 1))->execute();
 
         /* @var \Modules\Account\Models\Account $account */
-        $bill                  = new Bill();
-        $bill->createdBy       = new NullAccount($request->header->account);
-        $bill->type            = $billType;
-        $bill->numberFormat    = $billType->numberFormat;
+        $bill               = new Bill();
+        $bill->createdBy    = new NullAccount($request->header->account);
+        $bill->type         = $billType;
+        $bill->numberFormat = $billType->numberFormat;
+        // @todo: use defaultInvoiceAddress or mainAddress. also consider to use billto1, billto2, billto3 (for multiple lines e.g. name2, fao etc.)
         $bill->billTo          = $request->getData('billto')
-        ?? ($account->profile->account->name1 . (!empty($account->profile->account->name2) ? ', ' . $account->profile->account->name2 : '')); // @todo: use defaultInvoiceAddress or mainAddress. also consider to use billto1, billto2, billto3 (for multiple lines e.g. name2, fao etc.)
+            ?? ($account->profile->account->name1 . (!empty($account->profile->account->name2)
+                ? ', ' . $account->profile->account->name2
+                : ''
+            ));
         $bill->billAddress     = $request->getData('billaddress') ?? $account->mainAddress->address;
         $bill->billZip         = $request->getData('billtopostal') ?? $account->mainAddress->postal;
         $bill->billCity        = $request->getData('billtocity') ?? $account->mainAddress->city;
@@ -223,7 +227,7 @@ final class ApiController extends Controller
     {
         $val = [];
         if (($val['client/supplier'] = (empty($request->getData('client'))
-                && (empty($request->getData('supplier')) && ((int) ($request->getData('supplier') ?? -1) !== 0))))
+            && (empty($request->getData('supplier')) && ((int) ($request->getData('supplier') ?? -1) !== 0))))
         ) {
             return $val;
         }
