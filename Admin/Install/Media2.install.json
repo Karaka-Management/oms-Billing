@@ -4,7 +4,7 @@
         "create_collection": true,
         "name": "Default",
         "virtualPath": "/Modules/Billing/Templates",
-        "path": "/Modules/Media/Files/Modules/Billing/Templates/Default",
+        "path": "/Modules/Billing/Templates/Default",
         "files": [
             "/Modules/Billing/Admin/Install/Media"
         ],
