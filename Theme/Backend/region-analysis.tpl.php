@@ -136,7 +136,7 @@ echo $this->getData('nav')->render();
                                 }'></canvas>
 
                             <div class="more-container">
-                                <input id="more-customer-region" type="checkbox">
+                                <input id="more-customer-region" type="checkbox" name="more-container">
                                 <label for="more-customer-region">
                                     <span>Data</span>
                                     <i class="fa fa-chevron-right expand"></i>
@@ -325,7 +325,7 @@ echo $this->getData('nav')->render();
                                     }'></canvas>
 
                             <div class="more-container">
-                                <input id="more-customer-region-annual" type="checkbox">
+                                <input id="more-customer-region-annual" type="checkbox" name="more-container">
                                 <label for="more-customer-region-annual">
                                     <span>Data</span>
                                     <i class="fa fa-chevron-right expand"></i>
@@ -406,7 +406,7 @@ echo $this->getData('nav')->render();
                                 }'></canvas>
 
                             <div class="more-container">
-                                <input id="more-customer-region" type="checkbox">
+                                <input id="more-customer-region" type="checkbox" name="more-container">
                                 <label for="more-customer-region">
                                     <span>Data</span>
                                     <i class="fa fa-chevron-right expand"></i>
@@ -595,7 +595,7 @@ echo $this->getData('nav')->render();
                                     }'></canvas>
 
                             <div class="more-container">
-                                <input id="more-customer-region-annual" type="checkbox">
+                                <input id="more-customer-region-annual" type="checkbox" name="more-container">
                                 <label for="more-customer-region-annual">
                                     <span>Data</span>
                                     <i class="fa fa-chevron-right expand"></i>
@@ -682,7 +682,7 @@ echo $this->getData('nav')->render();
                             Sales / Profit - Monthly
                             <?php include __DIR__ . '/../../../../Web/Backend/Themes/popup-export-data.tpl.php'; ?>
                         </div>
-                        <?php $salesCustomer = $this->getData('monthlySalesCustomer'); ?>
+                        <?php $saleCustomer = $this->getData('monthlySaleCustomer'); ?>
                         <div class="portlet-body">
                             <canvas id="sales-region" data-chart='{
                                             "type": "bar",
@@ -690,7 +690,7 @@ echo $this->getData('nav')->render();
                                                 "labels": [
                                                     <?php
                                                         $temp = [];
-                                                        foreach ($salesCustomer as $monthly) {
+                                                        foreach ($saleCustomer as $monthly) {
                                                             $temp[] = $monthly['month'] . '/' . \substr((string) $monthly['year'], -2);
                                                         }
                                                     ?>
@@ -703,7 +703,7 @@ echo $this->getData('nav')->render();
                                                         "data": [
                                                             <?php
                                                                 $temp = [];
-                                                                foreach ($salesCustomer as $monthly) {
+                                                                foreach ($saleCustomer as $monthly) {
                                                                     $temp[] = ((int) $monthly['customers']);
                                                                 }
                                                             ?>
@@ -721,7 +721,7 @@ echo $this->getData('nav')->render();
                                                         "data": [
                                                             <?php
                                                                 $temp = [];
-                                                                foreach ($salesCustomer as $monthly) {
+                                                                foreach ($saleCustomer as $monthly) {
                                                                     $temp[] = ((int) $monthly['net_sales']) / 1000;
                                                                 }
                                                             ?>
@@ -764,8 +764,8 @@ echo $this->getData('nav')->render();
                                             }
                                     }'></canvas>
                             <div class="more-container">
-                                <input id="more-scustomer-sales" type="checkbox">
-                                <label for="more-scustomer-sales">
+                                <input id="more-customer-sales" type="checkbox" name="more-container">
+                                <label for="more-customer-sales">
                                     <span>Data</span>
                                     <i class="fa fa-chevron-right expand"></i>
                                 </label>
@@ -781,7 +781,7 @@ echo $this->getData('nav')->render();
                                         <?php
                                             $sum1 = 0;
                                             $sum2 = 0;
-                                        foreach ($salesCustomer as $values) :
+                                        foreach ($saleCustomer as $values) :
                                             $sum1 += ((int) $values['net_sales']) / 1000;
                                             $sum2 += ((int) $values['customers']);
                                         ?>
@@ -809,7 +809,7 @@ echo $this->getData('nav')->render();
                             Sales / Profit - Annual
                             <?php include __DIR__ . '/../../../../Web/Backend/Themes/popup-export-data.tpl.php'; ?>
                         </div>
-                        <?php $salesCustomer = $this->getData('annualSalesCustomer'); ?>
+                        <?php $saleCustomer = $this->getData('annualSaleCustomer'); ?>
                         <div class="portlet-body">
                             <canvas id="sales-customer-annual" data-chart='{
                                             "type": "bar",
@@ -817,7 +817,7 @@ echo $this->getData('nav')->render();
                                                 "labels": [
                                                     <?php
                                                         $temp = [];
-                                                        foreach ($salesCustomer as $annual) {
+                                                        foreach ($saleCustomer as $annual) {
                                                             $temp[] = $annual['year'];
                                                         }
                                                     ?>
@@ -830,7 +830,7 @@ echo $this->getData('nav')->render();
                                                         "data": [
                                                             <?php
                                                                 $temp = [];
-                                                                foreach ($salesCustomer as $annual) {
+                                                                foreach ($saleCustomer as $annual) {
                                                                     $temp[] = ((int) $annual['customers']);
                                                                 }
                                                             ?>
@@ -848,7 +848,7 @@ echo $this->getData('nav')->render();
                                                         "data": [
                                                             <?php
                                                                 $temp = [];
-                                                                foreach ($salesCustomer as $annual) {
+                                                                foreach ($saleCustomer as $annual) {
                                                                     $temp[] = ((int) $annual['net_sales']) / 1000;
                                                                 }
                                                             ?>
@@ -891,8 +891,8 @@ echo $this->getData('nav')->render();
                                             }
                                     }'></canvas>
                             <div class="more-container">
-                                <input id="more-scustomer-sales-annual" type="checkbox">
-                                <label for="more-scustomer-sales-annual">
+                                <input id="more-customer-sales-annual" type="checkbox" name="more-container">
+                                <label for="more-customer-sales-annual">
                                     <span>Data</span>
                                     <i class="fa fa-chevron-right expand"></i>
                                 </label>
@@ -906,7 +906,7 @@ echo $this->getData('nav')->render();
                                             <td>Profit %
                                     <tbody>
                                         <?php
-                                        foreach ($salesCustomer as $values) :
+                                        foreach ($saleCustomer as $values) :
                                         ?>
                                             <tr>
                                                 <td><?= (string) $values['year']; ?>
@@ -979,7 +979,7 @@ echo $this->getData('nav')->render();
                             </div>
 
                             <div class="more-container">
-                                <input id="more-customer-attribute-current" type="checkbox">
+                                <input id="more-customer-attribute-current" type="checkbox" name="more-container">
                                 <label for="more-customer-attribute-current">
                                     <span>Data</span>
                                     <i class="fa fa-chevron-right expand"></i>
@@ -1177,7 +1177,7 @@ echo $this->getData('nav')->render();
                                 </div>
 
                             <div class="more-container">
-                                <input id="more-customer-attribute-annual" type="checkbox">
+                                <input id="more-customer-attribute-annual" type="checkbox" name="more-container">
                                 <label for="more-customer-attribute-annual">
                                     <span>Data</span>
                                     <i class="fa fa-chevron-right expand"></i>
@@ -1272,7 +1272,7 @@ echo $this->getData('nav')->render();
                             </div>
 
                             <div class="more-container">
-                                <input id="more-customer-attribute-current" type="checkbox">
+                                <input id="more-customer-attribute-current" type="checkbox" name="more-container">
                                 <label for="more-customer-attribute-current">
                                     <span>Data</span>
                                     <i class="fa fa-chevron-right expand"></i>
@@ -1470,7 +1470,7 @@ echo $this->getData('nav')->render();
                                 </div>
 
                             <div class="more-container">
-                                <input id="more-customer-attribute-annual" type="checkbox">
+                                <input id="more-customer-attribute-annual" type="checkbox" name="more-container">
                                 <label for="more-customer-attribute-annual">
                                     <span>Data</span>
                                     <i class="fa fa-chevron-right expand"></i>
@@ -1513,7 +1513,7 @@ echo $this->getData('nav')->render();
                             Invoices / Articles - Monthly
                             <?php include __DIR__ . '/../../../../Web/Backend/Themes/popup-export-data.tpl.php'; ?>
                         </div>
-                        <?php $salesCustomer = $this->getData('monthlySalesCustomer'); ?>
+                        <?php $saleCustomer = $this->getData('monthlySaleCustomer'); ?>
                         <div class="portlet-body">
                             <canvas id="sales-region" data-chart='{
                                             "type": "bar",
@@ -1521,7 +1521,7 @@ echo $this->getData('nav')->render();
                                                 "labels": [
                                                     <?php
                                                         $temp = [];
-                                                        foreach ($salesCustomer as $monthly) {
+                                                        foreach ($saleCustomer as $monthly) {
                                                             $temp[] = $monthly['month'] . '/' . \substr((string) $monthly['year'], -2);
                                                         }
                                                     ?>
@@ -1534,7 +1534,7 @@ echo $this->getData('nav')->render();
                                                         "data": [
                                                             <?php
                                                                 $temp = [];
-                                                                foreach ($salesCustomer as $monthly) {
+                                                                foreach ($saleCustomer as $monthly) {
                                                                     $temp[] = ((int) $monthly['customers']);
                                                                 }
                                                             ?>
@@ -1552,7 +1552,7 @@ echo $this->getData('nav')->render();
                                                         "data": [
                                                             <?php
                                                                 $temp = [];
-                                                                foreach ($salesCustomer as $monthly) {
+                                                                foreach ($saleCustomer as $monthly) {
                                                                     $temp[] = ((int) $monthly['net_sales']) / 1000;
                                                                 }
                                                             ?>
@@ -1595,8 +1595,8 @@ echo $this->getData('nav')->render();
                                             }
                                     }'></canvas>
                             <div class="more-container">
-                                <input id="more-scustomer-sales" type="checkbox">
-                                <label for="more-scustomer-sales">
+                                <input id="more-customer-sales" type="checkbox" name="more-container">
+                                <label for="more-customer-sales">
                                     <span>Data</span>
                                     <i class="fa fa-chevron-right expand"></i>
                                 </label>
@@ -1611,7 +1611,7 @@ echo $this->getData('nav')->render();
                                         <?php
                                             $sum1 = 0;
                                             $sum2 = 0;
-                                        foreach ($salesCustomer as $values) :
+                                        foreach ($saleCustomer as $values) :
                                             $sum1 += ((int) $values['net_sales']) / 1000;
                                             $sum2 += ((int) $values['customers']);
                                         ?>
@@ -1639,7 +1639,7 @@ echo $this->getData('nav')->render();
                             Invoices / Articles - Annual
                             <?php include __DIR__ . '/../../../../Web/Backend/Themes/popup-export-data.tpl.php'; ?>
                         </div>
-                        <?php $salesCustomer = $this->getData('annualSalesCustomer'); ?>
+                        <?php $saleCustomer = $this->getData('annualSaleCustomer'); ?>
                         <div class="portlet-body">
                             <canvas id="sales-customer-annual" data-chart='{
                                             "type": "bar",
@@ -1647,7 +1647,7 @@ echo $this->getData('nav')->render();
                                                 "labels": [
                                                     <?php
                                                         $temp = [];
-                                                        foreach ($salesCustomer as $annual) {
+                                                        foreach ($saleCustomer as $annual) {
                                                             $temp[] = $annual['year'];
                                                         }
                                                     ?>
@@ -1660,7 +1660,7 @@ echo $this->getData('nav')->render();
                                                         "data": [
                                                             <?php
                                                                 $temp = [];
-                                                                foreach ($salesCustomer as $annual) {
+                                                                foreach ($saleCustomer as $annual) {
                                                                     $temp[] = ((int) $annual['customers']);
                                                                 }
                                                             ?>
@@ -1678,7 +1678,7 @@ echo $this->getData('nav')->render();
                                                         "data": [
                                                             <?php
                                                                 $temp = [];
-                                                                foreach ($salesCustomer as $annual) {
+                                                                foreach ($saleCustomer as $annual) {
                                                                     $temp[] = ((int) $annual['net_sales']) / 1000;
                                                                 }
                                                             ?>
@@ -1721,8 +1721,8 @@ echo $this->getData('nav')->render();
                                             }
                                     }'></canvas>
                             <div class="more-container">
-                                <input id="more-scustomer-sales-annual" type="checkbox">
-                                <label for="more-scustomer-sales-annual">
+                                <input id="more-customer-sales-annual" type="checkbox" name="more-container">
+                                <label for="more-customer-sales-annual">
                                     <span>Data</span>
                                     <i class="fa fa-chevron-right expand"></i>
                                 </label>
@@ -1735,7 +1735,7 @@ echo $this->getData('nav')->render();
                                             <td>Articles
                                     <tbody>
                                         <?php
-                                        foreach ($salesCustomer as $values) :
+                                        foreach ($saleCustomer as $values) :
                                         ?>
                                             <tr>
                                                 <td><?= (string) $values['year']; ?>

@@ -80,7 +80,7 @@ echo $this->getData('nav')->render(); ?>
                                             </select>
                                 </table>
                             </div>
-                            <div class="portlet-foot"><input type="submit" value="<?= $this->getHtml('Create', '0', '0'); ?>"></div>
+                            <div class="portlet-foot"><input type="submit" value="<?= $this->getHtml('Create', '0', '0'); ?>" name="create-bill"></div>
                         </form>
                     </section>
                 </div>
@@ -122,15 +122,15 @@ echo $this->getData('nav')->render(); ?>
                                                 <option>
                                             </select>
                                     <tr><td><label for="iDRecipient"><?= $this->getHtml('Recipient'); ?></label>
-                                    <tr><td><input type="text" id="iDRecipient" name="drecipient">
+                                    <tr><td><input name="" type="text" id="iDRecipient" name="drecipient">
                                     <tr><td><label for="iAddress"><?= $this->getHtml('Address'); ?></label>
-                                    <tr><td><input type="text" id="iAddress" name="address">
+                                    <tr><td><input name="" type="text" id="iAddress" name="address">
                                     <tr><td><label for="iZip"><?= $this->getHtml('Zip'); ?></label>
-                                    <tr><td><input type="text" id="iZip" name="zip">
+                                    <tr><td><input name="" type="text" id="iZip" name="zip">
                                     <tr><td><label for="iCity"><?= $this->getHtml('City'); ?></label>
-                                    <tr><td><input type="text" id="iCity" name="city">
+                                    <tr><td><input name="" type="text" id="iCity" name="city">
                                     <tr><td><label for="iCountry"><?= $this->getHtml('Country'); ?></label>
-                                    <tr><td><input type="text" id="iCountry" name="country">
+                                    <tr><td><input name="" type="text" id="iCountry" name="country">
                                 </table>
                             </form>
                         </div>
@@ -162,26 +162,26 @@ echo $this->getData('nav')->render(); ?>
                             <?php foreach ($elements as $element) : ?>
                             <tr>
                                 <td><i class="fa fa-plus add"></i> <i class="fa fa-chevron-up order-up"></i> <i class="fa fa-chevron-down order-down"></i>
-                                <td><span class="input"><button type="button" formaction=""><i class="fa fa-book"></i></button><input type="text" value="<?= $element->itemNumber; ?>" required></span>
+                                <td><span class="input"><button type="button" formaction=""><i class="fa fa-book"></i></button><input name="" type="text" value="<?= $element->itemNumber; ?>" required></span>
                                 <td><textarea required><?= $element->itemName; ?></textarea>
-                                <td><input type="number" min="0" value="<?= $element->quantity; ?>" required>
-                                <td><input type="text" value="<?= $element->singleSalesPriceNet->getCurrency(); ?>">
-                                <td><input type="number" min="0">
-                                <td><input type="number" min="0" max="100" step="any">
-                                <td><input type="number" min="0" step="any">
-                                <td><input type="number" min="0" step="any">
+                                <td><input name="" type="number" min="0" value="<?= $element->quantity; ?>" required>
+                                <td><input name="" type="text" value="<?= $element->singleSalesPriceNet->getCurrency(); ?>">
+                                <td><input name="" type="number" min="0">
+                                <td><input name="" type="number" min="0" max="100" step="any">
+                                <td><input name="" type="number" min="0" step="any">
+                                <td><input name="" type="number" min="0" step="any">
                                 <td><?= $element->totalSalesPriceNet->getCurrency(); ?>
                             <?php endforeach; ?>
                             <tr>
                                 <td><i class="fa fa-plus"></i> <i class="fa fa-chevron-up order-up"></i> <i class="fa fa-chevron-down order-down"></i>
-                                <td><span class="input"><button type="button" formaction=""><i class="fa fa-book"></i></button><input type="text" required></span>
+                                <td><span class="input"><button type="button" formaction=""><i class="fa fa-book"></i></button><input name="" type="text" required></span>
                                 <td><textarea required></textarea>
-                                <td><input type="number" min="0" value="0" required>
-                                <td><input type="text">
-                                <td><input type="number" min="0">
-                                <td><input type="number" min="0" max="100" step="any">
-                                <td><input type="number" min="0" step="any">
-                                <td><input type="number" min="0" step="any">
+                                <td><input name="" type="number" min="0" value="0" required>
+                                <td><input name="" type="text">
+                                <td><input name="" type="number" min="0">
+                                <td><input name="" type="number" min="0" max="100" step="any">
+                                <td><input name="" type="number" min="0" step="any">
+                                <td><input name="" type="number" min="0" step="any">
                                 <td>
                         </table>
                         </div>
@@ -238,7 +238,7 @@ echo $this->getData('nav')->render(); ?>
                                     <tr><td><input type="datetime-local" id="iDue" name="due">
                                     <tr><td><label for="iCashBack2"><?= $this->getHtml('Cashback'); ?> 2</label>
                                     <tr><td><input type="number" id="iCashBack2" name="cashback2">
-                                    <tr><td><input type="submit" value="<?= $this->getHtml('Create', '0', '0'); ?>">
+                                    <tr><td><input type="submit" value="<?= $this->getHtml('Create', '0', '0'); ?>" name="create-bill">
                                 </table>
                             </form>
                         </div>
