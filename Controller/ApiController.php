@@ -227,7 +227,10 @@ final class ApiController extends Controller
     {
         $val = [];
         if (($val['client/supplier'] = (empty($request->getData('client'))
-            && (empty($request->getData('supplier')) && ((int) ($request->getData('supplier') ?? -1) !== 0))))
+                && (empty($request->getData('supplier'))
+                    && ((int) ($request->getData('supplier') ?? -1) !== 0)
+                )))
+            || ($val['type'] = (empty($request->getData('type'))))
         ) {
             return $val;
         }

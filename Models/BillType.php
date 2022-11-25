@@ -26,7 +26,7 @@ use phpOMS\Localization\ISO639x1Enum;
  * @link    https://karaka.app
  * @since   1.0.0
  */
-class BillType
+class BillType implements \JsonSerializable
 {
     /**
      * Id
@@ -107,5 +107,25 @@ class BillType
     public function getL11n() : string
     {
         return $this->l11n instanceof BillTypeL11n ? $this->l11n->name : $this->l11n;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function toArray() : array
+    {
+        return [
+            'id'     => $this->id,
+            'numberFormat'   => $this->numberFormat,
+            'transferType'   => $this->transferType,
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function jsonSerialize() : mixed
+    {
+        return $this->toArray();
     }
 }

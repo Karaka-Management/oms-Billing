@@ -61,10 +61,10 @@ class Bill implements \JsonSerializable
     /**
      * Bill type.
      *
-     * @var int|BillType
+     * @var BillType
      * @since 1.0.0
      */
-    public int | BillType $type = 0;
+    public BillType $type;
 
     /**
      * Bill status.
@@ -428,6 +428,7 @@ class Bill implements \JsonSerializable
         $this->performanceDate = new \DateTime();
         $this->createdBy       = new NullAccount();
         $this->referral        = new NullAccount();
+        $this->type            = new NullBillType();
     }
 
     /**
@@ -484,32 +485,6 @@ class Bill implements \JsonSerializable
         }
 
         return $this->number;
-    }
-
-    /**
-     * Get type
-     *
-     * @return int | BillType
-     *
-     * @since 1.0.0
-     */
-    public function getType() : int | BillType
-    {
-        return $this->type;
-    }
-
-    /**
-     * Set type
-     *
-     * @param int|BillType $type Type
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function setType(int | BillType $type) : void
-    {
-        $this->type = $type;
     }
 
     /**
@@ -707,7 +682,7 @@ class Bill implements \JsonSerializable
     {
         $files = [];
         foreach ($this->media as $file) {
-            if ($file->type->getId() === $type) {
+            if ($file->type !== null && $file->type->getId() === $type) {
                 $files[] = $file;
             }
         }

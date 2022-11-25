@@ -18,6 +18,7 @@ use Modules\Billing\Models\Bill;
 use Modules\Billing\Models\BillElement;
 use Modules\Billing\Models\BillStatus;
 use Modules\Billing\Models\BillType;
+use Modules\Billing\Models\NullBillType;
 use Modules\Media\Models\Media;
 use phpOMS\Localization\ISO4217CharEnum;
 
@@ -46,7 +47,7 @@ final class BillTest extends \PHPUnit\Framework\TestCase
         self::assertEquals('', $this->bill->number);
         self::assertEquals('', $this->bill->referralName);
         self::assertEquals('', $this->bill->info);
-        self::assertEquals(0, $this->bill->type);
+        self::assertInstanceOf('\Modules\Billing\Models\NullBillType', $this->bill->type);
         self::assertInstanceOf('\DateTimeImmutable', $this->bill->createdAt);
         self::assertInstanceOf('\DateTime', $this->bill->performanceDate);
         self::assertNull($this->bill->send);
@@ -95,16 +96,6 @@ final class BillTest extends \PHPUnit\Framework\TestCase
     {
         $this->bill->numberFormat = '{y}{m}{d}-{id}';
         self::assertEquals(\date('Y') . \date('m') . \date('d') . '-0', $this->bill->getNumber());
-    }
-
-    /**
-     * @covers Modules\Billing\Models\Bill
-     * @group module
-     */
-    public function testTypeInputOutput() : void
-    {
-        $this->bill->setType(new BillType());
-        self::assertInstanceOf('\Modules\Billing\Models\BillType', $this->bill->getType());
     }
 
     /**
@@ -176,7 +167,7 @@ final class BillTest extends \PHPUnit\Framework\TestCase
     {
         $this->bill->number            = '123456';
         $this->bill->numberFormat      = '{y}';
-        $this->bill->type              = 2;
+        $this->bill->type              = new NullBillType(2);
         $this->bill->shipTo            = 'To';
         $this->bill->shipFAO           = 'FAO';
         $this->bill->shipAddress       = 'Address';
@@ -195,7 +186,7 @@ final class BillTest extends \PHPUnit\Framework\TestCase
                 'id'                => 0,
                 'number'            => '123456',
                 'numberFormat'      => '{y}',
-                'type'              => 2,
+                'type'              => $this->bill->type,
                 'shipTo'            => 'To',
                 'shipFAO'           => 'FAO',
                 'shipAddress'       => 'Address',
