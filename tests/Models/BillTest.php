@@ -17,7 +17,6 @@ namespace Modules\Billing\tests\Models;
 use Modules\Billing\Models\Bill;
 use Modules\Billing\Models\BillElement;
 use Modules\Billing\Models\BillStatus;
-use Modules\Billing\Models\BillType;
 use Modules\Billing\Models\NullBillType;
 use Modules\Media\Models\Media;
 use phpOMS\Localization\ISO4217CharEnum;
