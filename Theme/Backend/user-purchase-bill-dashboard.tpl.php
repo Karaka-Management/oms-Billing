@@ -154,7 +154,7 @@ echo $this->getData('nav')->render(); ?>
                 <?php $count = 0;
                 foreach ($bills as $key => $value) :
                     ++$count;
-                    $url = UriFactory::build('private/purchase/bill?{?}&id=' . $value->getId());
+                    $url = UriFactory::build('{/lang}/{/app}/private/purchase/bill?{?}&id=' . $value->getId());
                 ?>
                     <tr data-href="<?= $url; ?>">
                         <td><label class="checkbox" for="iBillSelect-<?= $key; ?>">

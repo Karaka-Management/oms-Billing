@@ -280,8 +280,8 @@ echo $this->getData('nav')->render(); ?>
                             <tbody>
                             <?php foreach ($media as $file) :
                                 $url = $file->extension === 'collection'
-                                ? UriFactory::build('media/list?path=' . \rtrim($file->getVirtualPath(), '/') . '/' . $file->name)
-                                : UriFactory::build('media/single?id=' . $file->getId()
+                                ? UriFactory::build('{/lang}/{/app}/media/list?path=' . \rtrim($file->getVirtualPath(), '/') . '/' . $file->name)
+                                : UriFactory::build('{/lang}/{/app}/media/single?id=' . $file->getId()
                                     . '&path={?path}' . (
                                             $file->getId() === 0
                                                 ? '/' . $file->name
