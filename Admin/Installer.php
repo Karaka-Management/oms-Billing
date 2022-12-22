@@ -60,6 +60,7 @@ final class Installer extends InstallerAbstract
         self::createOutgoingBillTypes($defaultTemplate);
         self::createIncomingBillTypes($defaultTemplate);
         self::createTransferBillTypes($defaultTemplate);
+        self::createTemplateBillTypes($defaultTemplate);
     }
 
     /**
@@ -107,6 +108,14 @@ final class Installer extends InstallerAbstract
         $billType['invoice']->transferStock = false;
         BillTypeMapper::create()->execute($billType['invoice']);
         BillTypeL11nMapper::create()->execute(new BillTypeL11n($billType['invoice']->getId(), 'Rechnung', ISO639x1Enum::_DE));
+
+        $billType['proforma_invoice']                = new BillType('Proforma Invoice');
+        $billType['proforma_invoice']->numberFormat  = '{y}-{id}';
+        $billType['proforma_invoice']->template      = new NullCollection($template);
+        $billType['proforma_invoice']->transferType  = BillTransferType::SALES;
+        $billType['proforma_invoice']->transferStock = false;
+        BillTypeMapper::create()->execute($billType['proforma_invoice']);
+        BillTypeL11nMapper::create()->execute(new BillTypeL11n($billType['proforma_invoice']->getId(), 'Proforma Rechnung', ISO639x1Enum::_DE));
 
         $billType['credit_note']                = new BillType('Credit Note');
         $billType['credit_note']->numberFormat  = '{y}-{id}';
@@ -198,6 +207,56 @@ final class Installer extends InstallerAbstract
      */
     private static function createTransferBillTypes(int $template) : array
     {
-        return [];
+        $billType = [];
+
+        $billType['stock_movement']                = new BillType('Stock Movement');
+        $billType['stock_movement']->numberFormat  = '{y}-{id}';
+        $billType['stock_movement']->template      = new NullCollection($template);
+        $billType['stock_movement']->transferType  = BillTransferType::PURCHASE;
+        $billType['stock_movement']->transferStock = false;
+        BillTypeMapper::create()->execute($billType['stock_movement']);
+        BillTypeL11nMapper::create()->execute(new BillTypeL11n($billType['stock_movement']->getId(), 'Lagerumbuchung', ISO639x1Enum::_DE));
+
+        $billType['scrapping']                = new BillType('Scrapping');
+        $billType['scrapping']->numberFormat  = '{y}-{id}';
+        $billType['scrapping']->template      = new NullCollection($template);
+        $billType['scrapping']->transferType  = BillTransferType::PURCHASE;
+        $billType['scrapping']->transferStock = false;
+        BillTypeMapper::create()->execute($billType['scrapping']);
+        BillTypeL11nMapper::create()->execute(new BillTypeL11n($billType['scrapping']->getId(), 'Verschrottung', ISO639x1Enum::_DE));
+
+        return $billType;
+    }
+
+    /**
+     * Install default template bill types
+     *
+     * These bill types don't have any effect on anything, they can simply be used as templates when creating new bills.
+     *
+     * @return BillType[]
+     *
+     * @since 1.0.0
+     */
+    private static function createTemplateBillTypes(int $template) : array
+    {
+        $billType = [];
+
+        $billType['subscritpion']                = new BillType('Subscription');
+        $billType['subscritpion']->numberFormat  = '{y}-{id}';
+        $billType['subscritpion']->template      = new NullCollection($template);
+        $billType['subscritpion']->transferType  = BillTransferType::SALES;
+        $billType['subscritpion']->transferStock = false;
+        BillTypeMapper::create()->execute($billType['subscritpion']);
+        BillTypeL11nMapper::create()->execute(new BillTypeL11n($billType['subscritpion']->getId(), 'Abonnement', ISO639x1Enum::_DE));
+
+        $billType['template']                = new BillType('Template');
+        $billType['template']->numberFormat  = '{y}-{id}';
+        $billType['template']->template      = new NullCollection($template);
+        $billType['template']->transferType  = BillTransferType::SALES;
+        $billType['template']->transferStock = false;
+        BillTypeMapper::create()->execute($billType['template']);
+        BillTypeL11nMapper::create()->execute(new BillTypeL11n($billType['template']->getId(), 'Vorlage', ISO639x1Enum::_DE));
+
+        return $billType;
     }
 }

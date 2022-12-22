@@ -607,6 +607,85 @@
             }
         }
     },
+    "billing_bill_subscription": {
+        "name": "billing_bill_subscription",
+        "fields": {
+            "billing_bill_subscription_id": {
+                "name": "billing_bill_subscription_id",
+                "type": "INT",
+                "null": false,
+                "primary": true,
+                "autoincrement": true
+            },
+            "billing_bill_subscription_status": {
+                "name": "billing_bill_subscription_status",
+                "type": "TINYINT(1)",
+                "null": false
+            },
+            "billing_bill_subscription_bill": {
+                "name": "billing_bill_subscription_bill",
+                "type": "INT",
+                "null": false,
+                "foreignTable": "billing_bill",
+                "foreignKey": "billing_bill_id"
+            },
+            "billing_bill_subscription_start": {
+                "name": "billing_bill_subscription_start",
+                "type": "DATETIME",
+                "null": false
+            },
+            "billing_bill_subscription_end": {
+                "name": "billing_bill_subscription_end",
+                "type": "DATETIME",
+                "null": false
+            },
+            "billing_bill_subscription_numberofoccurrences": {
+                "name": "billing_bill_subscription_numberofoccurrences",
+                "type": "TINYINT(1)",
+                "null": false
+            },
+            "billing_bill_subscription_pattern_numberofoccurrences": {
+                "name": "billing_bill_subscription_pattern_numberofoccurrences",
+                "type": "TINYINT(1)",
+                "null": false
+            },
+            "billing_bill_subscription_pattern_type": {
+                "name": "billing_bill_subscription_pattern_type",
+                "type": "TINYINT(1)",
+                "null": false
+            },
+            "billing_bill_subscription_pattern_pattern_interval": {
+                "name": "billing_bill_subscription_pattern_pattern_interval",
+                "type": "TINYINT(1)",
+                "null": false
+            },
+            "billing_bill_subscription_pattern_dayofmonth": {
+                "name": "billing_bill_subscription_pattern_dayofmonth",
+                "type": "TINYINT(1)",
+                "null": false
+            },
+            "billing_bill_subscription_pattern_daysofweek": {
+                "name": "billing_bill_subscription_pattern_daysofweek",
+                "type": "TINYINT(1)",
+                "null": false
+            },
+            "billing_bill_subscription_pattern_index": {
+                "name": "billing_bill_subscription_pattern_index",
+                "type": "TINYINT(1)",
+                "null": false
+            },
+            "billing_bill_subscription_pattern_month": {
+                "name": "billing_bill_subscription_pattern_month",
+                "type": "TINYINT(1)",
+                "null": false
+            },
+            "billing_bill_subscription_pattern_numberofoccurrences": {
+                "name": "billing_bill_subscription_pattern_numberofoccurrences",
+                "type": "TINYINT(1)",
+                "null": false
+            },
+        }
+    },
     "billing_bill_responsible": {
         "name": "billing_bill_responsible",
         "fields": {
