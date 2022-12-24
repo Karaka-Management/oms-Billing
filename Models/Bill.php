@@ -398,7 +398,7 @@ class Bill implements \JsonSerializable
      * @var int
      * @since 1.0.0
      */
-    private int $reference = 0;
+    public int $reference = 0;
 
     /**
      * Media files
@@ -452,7 +452,7 @@ class Bill implements \JsonSerializable
      */
     public function buildNumber() : void
     {
-        $this->number =  \str_replace(
+        $this->number = \str_replace(
             [
                 '{y}',
                 '{m}',
@@ -465,7 +465,7 @@ class Bill implements \JsonSerializable
                 $this->createdAt->format('m'),
                 $this->createdAt->format('d'),
                 $this->id,
-                \is_int($this->type) ? $this->type : $this->type->getId(),
+                $this->type->getId(),
             ],
             $this->numberFormat
         );
@@ -680,6 +680,10 @@ class Bill implements \JsonSerializable
      */
     public function getMediaByType(int $type = null) : array
     {
+        if ($type === null) {
+            return $this->media;
+        }
+
         $files = [];
         foreach ($this->media as $file) {
             if ($file->type !== null && $file->type->getId() === $type) {

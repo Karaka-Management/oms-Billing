@@ -89,7 +89,7 @@ final class PurchaseBillMapper extends BillMapper
             ->andWhere(self::TABLE . '.billing_bill_performance_date', '>=', $start)
             ->andWhere(self::TABLE . '.billing_bill_performance_date', '<=', $end)
             ->execute()
-            ->fetch();
+            ?->fetch();
 
         return new Money((int) $result[0]);
     }
@@ -106,7 +106,7 @@ final class PurchaseBillMapper extends BillMapper
             ->andWhere(self::TABLE . '.billing_bill_performance_date', '>=', $start)
             ->andWhere(self::TABLE . '.billing_bill_performance_date', '<=', $end)
             ->execute()
-            ->fetch();
+            ?->fetch();
 
         return new Money((int) $result[0]);
     }
@@ -125,7 +125,7 @@ final class PurchaseBillMapper extends BillMapper
             ->andWhere(self::TABLE . '.billing_bill_performance_date', '>=', $start)
             ->andWhere(self::TABLE . '.billing_bill_performance_date', '<=', $end)
             ->execute()
-            ->fetch();
+            ?->fetch();
 
         return new Money($result === false || $result[1] == 0 ? 0 : (int) (((int) $result[0]) / ((int) $result[1])));
     }
@@ -145,7 +145,7 @@ final class PurchaseBillMapper extends BillMapper
             ->orderBy('billing_bill_id', 'DESC')
             ->limit(1)
             ->execute()
-            ->fetch();
+            ?->fetch();
 
         return $result === false ? null : new \DateTimeImmutable($result[0]);
     }
@@ -163,7 +163,7 @@ final class PurchaseBillMapper extends BillMapper
             ->orderBy('billing_bill_id', 'DESC')
             ->limit(1)
             ->execute()
-            ->fetch();
+            ?->fetch();
 
         return $result === false ? null : new \DateTimeImmutable($result[0]);
     }
@@ -195,6 +195,7 @@ final class PurchaseBillMapper extends BillMapper
             ->where(BillElementMapper::TABLE . '_d1.billing_bill_element_item', '=', $id)
             ->limit($limit);
 
+        /** @phpstan-ignore-next-line */
         if (!empty(self::CREATED_AT)) {
             $query->orderBy(self::TABLE  . '_d1.' . self::COLUMNS[self::CREATED_AT]['name'], 'DESC');
         } else {
@@ -213,6 +214,7 @@ final class PurchaseBillMapper extends BillMapper
         $query->where(self::TABLE . '_d1.billing_bill_supplier', '=', $id)
             ->limit($limit);
 
+        /** @phpstan-ignore-next-line */
         if (!empty(self::CREATED_AT)) {
             $query->orderBy(self::TABLE  . '_d1.' . self::COLUMNS[self::CREATED_AT]['name'], 'DESC');
         } else {
@@ -264,9 +266,9 @@ final class PurchaseBillMapper extends BillMapper
             ->andWhere(self::TABLE . '.billing_bill_performance_date', '<=', $end)
             ->groupBy(CountryMapper::TABLE . '.country_region')
             ->execute()
-            ->fetchAll(\PDO::FETCH_KEY_PAIR);
+            ?->fetchAll(\PDO::FETCH_KEY_PAIR);
 
-        return $result;
+        return $result ?? [];
     }
 
     /**
@@ -289,9 +291,9 @@ final class PurchaseBillMapper extends BillMapper
             ->orderBy('net_purchase', 'DESC')
             ->limit($limit)
             ->execute()
-            ->fetchAll(\PDO::FETCH_KEY_PAIR);
+            ?->fetchAll(\PDO::FETCH_KEY_PAIR);
 
-        return $result;
+        return $result ?? [];
     }
 
     /**
@@ -312,9 +314,9 @@ final class PurchaseBillMapper extends BillMapper
             ->groupBy('year', 'month')
             ->orderBy(['year', 'month'], ['ASC', 'ASC'])
             ->execute()
-            ->fetchAll();
+            ?->fetchAll();
 
-        return $result;
+        return $result ?? [];
     }
 
     /**
@@ -333,8 +335,8 @@ final class PurchaseBillMapper extends BillMapper
             ->groupBy('year', 'month')
             ->orderBy(['year', 'month'], ['ASC', 'ASC'])
             ->execute()
-            ->fetchAll();
+            ?->fetchAll();
 
-        return $result;
+        return $result ?? [];
     }
 }

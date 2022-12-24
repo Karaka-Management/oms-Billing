@@ -683,7 +683,7 @@
                 "name": "billing_bill_subscription_pattern_numberofoccurrences",
                 "type": "TINYINT(1)",
                 "null": false
-            },
+            }
         }
     },
     "billing_bill_responsible": {
