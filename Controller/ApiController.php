@@ -201,15 +201,15 @@ final class ApiController extends Controller
         $bill->type         = $billType;
         $bill->numberFormat = $billType->numberFormat;
         // @todo: use defaultInvoiceAddress or mainAddress. also consider to use billto1, billto2, billto3 (for multiple lines e.g. name2, fao etc.)
-        $bill->billTo          = $request->getData('billto')
+        $bill->billTo          = (string) ($request->getData('billto')
             ?? ($account->profile->account->name1 . (!empty($account->profile->account->name2)
                 ? ', ' . $account->profile->account->name2
                 : ''
-            ));
-        $bill->billAddress     = $request->getData('billaddress') ?? $account->mainAddress->address;
-        $bill->billZip         = $request->getData('billtopostal') ?? $account->mainAddress->postal;
-        $bill->billCity        = $request->getData('billtocity') ?? $account->mainAddress->city;
-        $bill->billCountry     = $request->getData('billtocountry') ?? $account->mainAddress->getCountry();
+            )));
+        $bill->billAddress     = (string) ($request->getData('billaddress') ?? $account->mainAddress->address);
+        $bill->billZip         = (string) ($request->getData('billtopostal') ?? $account->mainAddress->postal);
+        $bill->billCity        = (string) ($request->getData('billtocity') ?? $account->mainAddress->city);
+        $bill->billCountry     = (string) ($request->getData('billtocountry') ?? $account->mainAddress->getCountry());
         $bill->client          = !$request->hasData('client') ? null : $account;
         $bill->supplier        = !$request->hasData('supplier') ? null : $account;
         $bill->performanceDate = new \DateTime($request->getData('performancedate') ?? 'now');
@@ -425,10 +425,15 @@ final class ApiController extends Controller
         }
 
         /** @var \Modules\ItemManagement\Models\Item $item */
-        $item                = ItemMapper::get()->with('l11n')->where('id', $element->item)->where('l11n/language', $response->getLanguage())->execute();
+        $item = ItemMapper::get()
+            ->with('l11n')
+            ->where('id', $element->item)
+            ->where('l11n/language', $response->getLanguage())
+            ->execute();
+
         $element->itemNumber = $item->number;
         $element->itemName   = $item->getL11n('name1')->description;
-        $element->quantity   = $request->getData('quantity', 'int');
+        $element->quantity   = (int) ($request->getData('quantity') ?? 0);
 
         $element->singleSalesPriceNet = new Money($request->getData('singlesalespricenet', 'int') ?? $item->salesPrice->getInt());
         $element->totalSalesPriceNet  = clone $element->singleSalesPriceNet;
@@ -436,8 +441,13 @@ final class ApiController extends Controller
 
         // discounts
         if ($request->getData('discount_percentage') !== null) {
-            $element->singleSalesPriceNet->sub((int) ($element->singleSalesPriceNet->getInt() / 100 * $request->getData('discount_percentage', 'int')));
-            $element->totalSalesPriceNet->sub((int) ($element->totalSalesPriceNet->getInt() / 100 * $request->getData('discount_percentage', 'int')));
+            $discount = (int) $request->getData('discount_percentage');
+
+            $element->singleSalesPriceNet
+                ->sub((int) ($element->singleSalesPriceNet->getInt() / 100 * $discount));
+
+            $element->totalSalesPriceNet
+                ->sub((int) ($element->totalSalesPriceNet->getInt() / 100 * $discount));
         }
 
         $element->singlePurchasePriceNet = new Money($item->purchasePrice->getInt());
@@ -512,10 +522,11 @@ final class ApiController extends Controller
             ->where('id', $request->getData('bill') ?? 0)
             ->execute();
 
-        $previewType = (int) $this->app->appSettings->get(
+        /** @var \Model\Setting $previewType */
+        $previewType = $this->app->appSettings->get(
             names: SettingsEnum::PREVIEW_MEDIA_TYPE,
             module: self::NAME
-        )->content;
+        );
 
         $template = $bill->type->template;
 
@@ -556,7 +567,7 @@ final class ApiController extends Controller
             ],
             $request->header->account,
             $path,
-            $previewType
+            (int) $previewType->content
         );
 
         $this->createModelRelation(
