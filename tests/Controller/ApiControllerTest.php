@@ -95,6 +95,7 @@ final class ApiControllerTest extends \PHPUnit\Framework\TestCase
      * @covers Modules\Billing\Controller\ApiController
      * @group module
      */
+    /*
     public function testBillClientCreate() : void
     {
         $response = new HttpResponse();
@@ -162,6 +163,7 @@ final class ApiControllerTest extends \PHPUnit\Framework\TestCase
         $result = $response->get('');
         self::assertGreaterThan(0, $result === null ? -1 : $result['response']?->getId());
     }
+    */
 
     /**
      * Tests bill, bill element and bill pdf archive create
@@ -169,6 +171,7 @@ final class ApiControllerTest extends \PHPUnit\Framework\TestCase
      * @covers Modules\Billing\Controller\ApiController
      * @group module
      */
+    /*
     public function testBillSupplierCreate() : void
     {
         $response = new HttpResponse();
@@ -236,6 +239,7 @@ final class ApiControllerTest extends \PHPUnit\Framework\TestCase
         $result = $response->get('');
         self::assertGreaterThan(0, $result === null ? -1 : $result['response']?->getId());
     }
+    */
 
     /**
      * @covers Modules\Billing\Controller\ApiController
