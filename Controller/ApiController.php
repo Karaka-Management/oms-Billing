@@ -27,6 +27,7 @@ use Modules\Billing\Models\BillTypeMapper;
 use Modules\Billing\Models\SettingsEnum;
 use Modules\ClientManagement\Models\ClientMapper;
 use Modules\ItemManagement\Models\ItemMapper;
+use Modules\ItemManagement\Models\NullItem;
 use Modules\Media\Models\CollectionMapper;
 use Modules\Media\Models\MediaMapper;
 use Modules\Media\Models\NullCollection;
@@ -169,8 +170,10 @@ final class ApiController extends Controller
      */
     public function createBillFromRequest(RequestAbstract $request, ResponseAbstract $response, $data = null) : Bill
     {
+        /** @var \Modules\ClientManagement\Models\Client|\Modules\SupplierManagement\Models\Supplier $account */
         $account = null;
         if ($request->getData('client') !== null) {
+            /** @var \Modules\ClientManagement\Models\Client $account */
             $account = ClientMapper::get()
                 ->with('profile')
                 ->with('profile/account')
@@ -178,8 +181,10 @@ final class ApiController extends Controller
                 ->where('id', (int) $request->getData('client'))
                 ->execute();
         } elseif (((int) ($request->getData('supplier') ?? -1)) === 0) {
+            /** @var \Modules\SupplierManagement\Models\Supplier $account */
             $account = new NullSupplier();
         } elseif ($request->getData('supplier') !== null) {
+            /** @var \Modules\SupplierManagement\Models\Supplier $account */
             $account = SupplierMapper::get()
                 ->with('profile')
                 ->with('profile/account')
@@ -206,8 +211,8 @@ final class ApiController extends Controller
         $bill->billZip         = $request->getData('billtopostal') ?? $account->mainAddress->postal;
         $bill->billCity        = $request->getData('billtocity') ?? $account->mainAddress->city;
         $bill->billCountry     = $request->getData('billtocountry') ?? $account->mainAddress->getCountry();
-        $bill->client          = $request->getData('client') === null ? null : $account;
-        $bill->supplier        = $request->getData('supplier') === null ? null : $account;
+        $bill->client          = !$request->hasData('client') ? null : $account;
+        $bill->supplier        = !$request->hasData('supplier') ? null : $account;
         $bill->performanceDate = new \DateTime($request->getData('performancedate') ?? 'now');
         $bill->setStatus((int) ($request->getData('status') ?? BillStatus::ACTIVE));
 
@@ -414,7 +419,7 @@ final class ApiController extends Controller
     {
         $element       = new BillElement();
         $element->bill = (int) $request->getData('bill');
-        $element->item = $request->getData('item', 'int');
+        $element->item = (int) ($request->getData('item') ?? 0);
 
         if ($element->item === null) {
             return $element;

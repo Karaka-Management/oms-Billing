@@ -120,12 +120,13 @@ final class BackendController extends Controller
 
         $view->setData('bill', $bill);
 
-        $previewType = (int) $this->app->appSettings->get(
+        /** @var \Model\Setting $previewType */
+        $previewType = $this->app->appSettings->get(
             names: SettingsEnum::PREVIEW_MEDIA_TYPE,
             module: self::NAME
-        )->content;
+        );
 
-        $view->setData('previewType', $previewType);
+        $view->setData('previewType', (int) $previewType->content);
 
         return $view;
     }
@@ -273,19 +274,21 @@ final class BackendController extends Controller
 
         $view->setData('bill', $bill);
 
-        $previewType = (int) $this->app->appSettings->get(
+        /** @var \Model\Setting $previewType */
+        $previewType = $this->app->appSettings->get(
             names: SettingsEnum::PREVIEW_MEDIA_TYPE,
             module: self::NAME
-        )->content;
+        );
 
-        $view->setData('previewType', $previewType);
+        $view->setData('previewType', (int) $previewType->content);
 
-        $originalType = (int) $this->app->appSettings->get(
+        /** @var \Model\Setting $originalType */
+        $originalType = $this->app->appSettings->get(
             names: SettingsEnum::ORIGINAL_MEDIA_TYPE,
             module: self::NAME
-        )->content;
+        );
 
-        $view->setData('originalType', $originalType);
+        $view->setData('originalType', (int) $originalType->content);
 
         return $view;
     }
@@ -778,19 +781,21 @@ final class BackendController extends Controller
 
         $view->setData('bill', $bill);
 
-        $previewType = (int) $this->app->appSettings->get(
+        /** @var \Model\Setting $previewType */
+        $previewType = $this->app->appSettings->get(
             names: SettingsEnum::PREVIEW_MEDIA_TYPE,
             module: self::NAME
-        )->content;
+        );
 
-        $view->setData('previewType', $previewType);
+        $view->setData('previewType', (int) $previewType->content);
 
-        $originalType = (int) $this->app->appSettings->get(
+        /** @var \Model\Setting $originalType */
+        $originalType = $this->app->appSettings->get(
             names: SettingsEnum::ORIGINAL_MEDIA_TYPE,
             module: self::NAME
-        )->content;
+        );
 
-        $view->setData('originalType', $originalType);
+        $view->setData('originalType', (int) $originalType->content);
 
         return $view;
     }

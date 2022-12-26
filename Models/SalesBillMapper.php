@@ -91,7 +91,7 @@ final class SalesBillMapper extends BillMapper
             ->execute()
             ?->fetch();
 
-        return new Money((int) $result[0]);
+        return new Money((int) $result[0] ?? 0);
     }
 
     /**
@@ -108,7 +108,7 @@ final class SalesBillMapper extends BillMapper
             ->execute()
             ?->fetch();
 
-        return new Money((int) $result[0]);
+        return new Money((int) $result[0] ?? 0);
     }
 
     /**
@@ -127,7 +127,7 @@ final class SalesBillMapper extends BillMapper
             ->execute()
             ?->fetch();
 
-        return new Money($result === false || $result[1] == 0 ? 0 : (int) (((int) $result[0]) / ((int) $result[1])));
+        return new Money($result === false || $result[1] ?? 0 === 0 ? 0 : (int) (((int) $result[0] ?? 0) / ((int) $result[1] ?? 0)));
     }
 
     /**
