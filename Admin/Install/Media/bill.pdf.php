@@ -1,180 +1,303 @@
 <?php
+
 declare(strict_types=1);
 
-use Mpdf\Mpdf;
+class MYPDF extends TCPDF
+{
+    public string $fontName = '';
+    public int $fontSize = 8;
+    public int $sideMargin = 15;
 
-/** @var \phpOMS\Views\View $this */
-/** @var \Modules\Billing\Models\Bill $bill */
-$bill = $this->getData('bill');
+    //Page header
+    public function Header() {
+        if ($this->header_xobjid === false) {
+            $this->header_xobjid = $this->startTemplate($this->w, 0);
 
-/**
- * @var \Modules\Billing\Models\BillElement[] $elements
- */
-$elements = $bill->getElements();
+            // Set Logo
+            $image_file = __DIR__ . '/logo.png';
+            $this->Image($image_file, 15, 15, 15, 15, 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
 
-$mpdf = new Mpdf([
-    'mode'           => 'utf-8',
-    'format'         => 'A4-L',
-    'orientation'    => 'L',
-    'margin_left'    => 20,
-    'margin_right'   => 15,
-    'margin_top'     => 48,
-    'margin_bottom'  => 25,
-    'margin_header'  => 10,
-    'margin_footer'  => 10,
-]);
+            // Set Title
+            $this->SetFont('helvetica', 'B', 20);
+            $this->setX(15 + 15 + 3);
+            $this->Cell(0, 14, $this->header_title, 0, false, 'L', 0, '', 0, false, 'T', 'M');
 
-$mpdf->SetDisplayMode('fullpage');
-$mpdf->SetTitle($bill->getNumber());
-$mpdf->SetAuthor('Karaka');
+            $this->SetFont('helvetica', '', 10);
+            $this->setX(15 + 15 + 3);
+            $this->Cell(0, 26, $this->header_string, 0, false, 'L', 0, '', 0, false, 'T', 'M');
 
-$html = '
-<html>
-<head>
-    <style>
-    body {
-        font-family: sans-serif;
-        font-size: 10pt;
+            $this->endTemplate();
+        }
+
+        $x  = 0;
+        $dx = 0;
+
+        if (!$this->header_xobj_autoreset AND $this->booklet AND (($this->page % 2) == 0)) {
+            // adjust margins for booklet mode
+            $dx = ($this->original_lMargin - $this->original_rMargin);
+        }
+
+        if ($this->rtl) {
+            $x = $this->w + $dx;
+        } else {
+            $x = 0 + $dx;
+        }
+
+        $this->printTemplate($this->header_xobjid, $x, 0, 0, 0, '', '', false);
+        if ($this->header_xobj_autoreset) {
+            // reset header xobject template at each page
+            $this->header_xobjid = false;
+        }
     }
-    p {    margin: 0pt; }
-    table.items {
-        border: 0.1mm solid #000000;
-    }
-    td { vertical-align: top; }
-    .items td {
-        border-left: 0.1mm solid #000000;
-        border-right: 0.1mm solid #000000;
-    }
-    table thead td {
-        background-color: #EEEEEE;
-        text-align: center;
-        border: 0.1mm solid #000000;
-        font-variant: small-caps;
-    }
-    .items td.blanktotal {
-        background-color: #EEEEEE;
-        border: 0.1mm solid #000000;
-        background-color: #FFFFFF;
-        border: 0mm none #000000;
-        border-top: 0.1mm solid #000000;
-        border-right: 0.1mm solid #000000;
-    }
-    .items td.totals {
-        text-align: right;
-        border: 0.1mm solid #000000;
-    }
-    .items td.cost {
-        text-align: "." center;
-    }
-    </style>
-</head>
-<body>
-<!--mpdf
-<htmlpageheader name="myheader">
-    <table width="100%">
-        <tr>
-            <td width="50%" style="color:#0000BB; ">
-                <span style="font-weight: bold; font-size: 14pt;">Karaka</span><br />
-                123 1313 Webfoot Street<br />
-                Duckburg<br />
-            </td>
-            <td width="50%" style="text-align: right;">
-                Invoice No.<br />
-                <span style="font-weight: bold; font-size: 12pt;">' . $bill->getNumber() . '</span>
-            </td>
-        </tr>
-    </table>
-</htmlpageheader>
 
-<htmlpagefooter name="myfooter">
-    <div style="border-top: 1px solid #000000; font-size: 9pt; text-align: center; padding-top: 3mm; ">
-        Page {PAGENO} of {nb}
-    </div>
-</htmlpagefooter>
+    // Page footer
+    public function Footer() {
+        $this->SetY(-25);
 
-<sethtmlpageheader name="myheader" value="on" show-this-page="1" />
-<sethtmlpagefooter name="myfooter" value="on" />
-mpdf-->
+        $this->SetFont('helvetica', 'I', 7);
+        $this->Cell($this->getPageWidth() - 22, 0, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
+        $this->Ln();
+        $this->Ln();
 
-<div style="text-align: right">Date: 13th November 2008</div>
+        $this->SetFillColor(245, 245, 245);
+        $this->SetX(0);
+        $this->Cell($this->getPageWidth(), 25, '', 0, 0, 'L', true, '', 0, false, 'T', 'T');
 
-<table width="100%" style="font-family: serif;" cellpadding="10">
-    <tr>
-        <td width="45%" style="border: 0.1mm solid #888888; ">
-            <span style="font-size: 7pt; color: #555555; font-family: sans;">SOLD TO:</span><br /><br />
-            345 Anotherstreet<br />
-            Little Village<br />
-            Their City<br />
-            CB22 6SO
-        </td>
-        <td width="10%">&nbsp;</td>
-        <td width="45%" style="border: 0.1mm solid #888888;">
-            <span style="font-size: 7pt; color: #555555; font-family: sans;">SHIP TO:</span><br /><br />
-            345 Anotherstreet<br />
-            Little Village<br />
-            Their City<br />CB22 6SO</td>
-    </tr>
-</table>
-<br />
+        $this->SetFont('helvetica', '', 7);
+        $this->SetXY(15 + 10, -15, true);
+        $this->MultiCell(30, 0, "Jingga e.K.\nGartenstr. 26\n61206 Woellstadt", 0, 'L', false, 1, null, null, true, 0, false, true, 0, 'B');
 
-<table class="items" width="100%" style="font-size: 9pt; border-collapse: collapse; " cellpadding="8">
-    <thead>
-        <tr>
-            <td width="15%">Ref. No.</td>
-            <td width="10%">Quantity</td>
-            <td width="45%">Description</td>
-            <td width="15%">Unit Price</td>
-            <td width="15%">Amount</td>
-        </tr>
-    </thead>
-<tbody>';
+        $this->SetXY(25 + 15 + 20, -15, true);
+        $this->MultiCell(40, 0, "Geschäftsführer: Dennis Eichhorn\nFinanzamt: HRB ???\nUSt Id: DE ??????????", 0, 'L', false, 1, null, null, true, 0, false, true, 0, 'B');
 
-foreach ($elements as $element) {
-$html .= '
-        <tr>
-            <td align="center">' . $element->itemNumber . '</td>
-            <td align="center">' . $element->quantity . '</td>
-            <td>' . $element->itemName . '</td>
-            <td class="cost">' . $element->singleSalesPriceNet->getCurrency(null) . '</td>
-            <td class="cost">' . $element->totalSalesPriceNet->getCurrency(null) . '</td>
-        </tr>';
+        $this->SetXY(25 + 45 + 15 + 30, -15, true);
+        $this->MultiCell(35, 0, "Volksbank Mittelhessen\nBIC: ??????????\nIBAN: ???????????", 0, 'L', false, 1, null, null, true, 0, false, true, 0, 'B');
+
+        $this->SetXY(25 + 45 + 35 + 15 + 40, -15, true);
+        $this->MultiCell(35, 0, "www.jingga.app\ninfo@jingga.app\n+49 0152 ???????", 0, 'L', false, 1, null, null, true, 0, false, true, 0, 'B');
+    }
 }
 
-$html .= '
-        <tr>
-            <td class="blanktotal" colspan="3" rowspan="6"></td>
-            <td class="totals">Subtotal:</td>
-            <td class="totals cost">' . $bill->netSales->getCurrency(null) . '</td>
-        </tr>
-        <tr>
-            <td class="totals">Tax:</td>
-            <td class="totals cost">&pound;18.25</td>
-        </tr>
-        <tr>
-            <td class="totals">Shipping:</td>
-            <td class="totals cost">&pound;42.56</td>
-        </tr>
-        <tr>
-            <td class="totals"><strong>TOTAL:</strong></td>
-            <td class="totals cost"><strong>' . $bill->grossSales->getCurrency(null) . '</strong></td>
-        </tr>
-        <tr>
-            <td class="totals">Deposit:</td>
-            <td class="totals cost">&pound;100.00</td>
-        </tr>
-        <tr>
-            <td class="totals"><strong>Balance due:</strong></td>
-            <td class="totals cost"><strong>&pound;1782.56</strong></td>
-        </tr>
-    </tbody>
-</table>
+$pdf = new MYPDF('P', 'mm', 'A4', true, 'UTF-8', false);
 
-<div style="text-align: center; font-style: italic;">Payment terms: payment due in 30 days</div>
-</body>
-</html>
-';
+// set document information
+$pdf->SetCreator("Jingga");
+$pdf->SetAuthor('Jingga');
+$pdf->SetTitle('Invoice');
+$pdf->SetSubject('Sub title');
+$pdf->SetKeywords('Invoice, 2022');
 
-$mpdf->AddPage();
-$mpdf->WriteHTML($html);
+// set default header data
+$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, 'Jingga', 'Business solutions made simple.');
 
-$mpdf->Output($this->getData('path'), \Mpdf\Output\Destination::FILE);
+// set header and footer fonts
+$pdf->SetHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
+$pdf->SetFooterFont([PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA]);
+
+// set default monospaced font
+$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+// set margins
+$pdf->SetMargins(15, 30, 15);
+
+// set auto page breaks
+$pdf->SetAutoPageBreak(true, 25);
+
+// set image scale factor
+$pdf->SetImageScale(PDF_IMAGE_SCALE_RATIO);
+
+// add a page
+$pdf->AddPage();
+
+$topPos = $pdf->getY();
+
+// Address
+$pdf->SetY(55); // @todo: depending on amount of lines
+$pdf->SetFont('helvetica', '', 8);
+
+$lineHeight = $pdf->getY();
+$pdf->Write(0, "Dennis Eichhorn\nGartenstr. 26\n61206 Woellstadt", '', 0, 'L', false, 0, false, false, 0);
+$lineHeight = ($lineHeight - $pdf->getY()) / 3;
+
+// Document head
+$pdf->SetFont('helvetica', 'B', 20);
+$title = 'INVOICE';
+$titleWidth = $pdf->GetStringWidth($title, 'helvetica', 'B', 20);
+
+$pdf->SetXY(
+    $rightPos = ($pdf->getPageWidth() - $titleWidth - ($titleWidth < 55 ? 55 : 35) + 15),
+    $topPos + 50 + $lineHeight * 3 - 38,
+    true
+);
+
+$pdf->SetTextColor(255, 255, 255);
+$pdf->SetFillColor(255, 162, 7);
+$pdf->Cell($pdf->getPageWidth() - $rightPos - 15, 0, $title, 0, 0, 'L', true);
+
+$pdf->SetFont('helvetica', '', 8);
+$pdf->SetTextColor(255, 162, 7);
+
+$pdf->SetXY($rightPos, $tempY = $pdf->getY() + 10, true);
+$pdf->MultiCell(23, 30, "Invoice No\nInvoice Date\nService Date\nCustomer No\nPO\nDue Date", 0, 'L');
+
+$pdf->SetFont('helvetica', '', 8);
+$pdf->SetTextColor(0, 0, 0);
+
+$pdf->SetXY($rightPos + 23 + 2, $tempY, true);
+$pdf->MultiCell(25, 30, "2022-123456\nYYYY-MM-DD\nYYYY-MM-DD\n123-456-789\n2022-123456\nYYYY-MM-DD", 0, 'L');
+$pdf->Ln();
+
+$pdf->SetY($pdf->GetY() - 30);
+$pdf->writeHTMLCell(
+    $pdf->getPageWidth() - 15 * 2, 0, null, null,
+    "<strong>Lorem ipsum dolor sit amet,</strong><br \><br \>Consectetur adipiscing elit. Vivamus ac massa sit amet eros posuere accumsan feugiat vel est. Maecenas ultricies enim eu eros rhoncus, volutpat cursus enim imperdiet. Aliquam et odio ipsum. Quisque dapibus scelerisque tempor. Phasellus purus lorem, venenatis eget pretium ac, convallis et ante. Aenean pulvinar justo consectetur mi tincidunt venenatis. Suspendisse ultricies enim id nulla facilisis lacinia. <br /><br />Nam congue nunc nunc, eu pellentesque eros aliquam ac. Nunc placerat elementum turpis, quis facilisis diam volutpat at. Suspendisse enim leo, convallis nec ornare eu, auctor nec purus. Nunc neque metus, feugiat quis justo nec, mollis dignissim risus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. In at ornare sem. Cras placerat, sapien sed ornare lacinia, mauris nulla volutpat nisl, eget dapibus nisl ipsum non est. Suspendisse ut nisl a ipsum rhoncus sodales.",
+    0, 0, false, true, 'J'
+);
+$pdf->Ln();
+
+$pdf->SetY($pdf->GetY() + 5);
+
+$header = ['Item', 'Quantity', 'Rate', 'Total'];
+$data = [
+    ['ASDF', 2.0, 199.90, 399.80],
+    ["123-456-789<br><strong>This is a item name</strong><br><span style=\"color: #444;\">This is the item description in more detail for the customer so he knows what this content actually contains.</span>", 2.0, 199.90, 399.80],
+    ["123-456-789<br><strong>This is a item name</strong><br><span style=\"color: #444;\">This is the item description in more detail for the customer.</span>", 2.0, "199.90\n-10 %", "150.399.80\n-15.039"],
+    ["123-456-789<br><strong>This is a item name</strong><br><span style=\"color: #444;\">This is the item description in more detail for the customer so he knows what this content actually contains.</span>", 2.0, 199.90, 399.80],
+    ["123-456-789<br><strong>This is a item name</strong><br><span style=\"color: #444;\">This is the item description in more detail for the customer so he knows what this content actually contains. Here we are testing how it looks like if a very long text is posted in the description without any additional line breaks. It should auto-break!</span>", 2.0, 199.90, 399.80],
+    ["123-456-789<br><strong>This is a item name</strong><br><span style=\"color: #444;\">This is the item description in more detail for the customer so he knows what this content actually contains.</span>", 2.0, 199.90, 399.80],
+    ["123-456-789<br><strong>This is a item name</strong><br><span style=\"color: #444;\">This is the item description in more detail for the customer so he knows what this content actually contains.</span>", 2.0, 199.90, 399.80],
+    ["123-456-789<br><strong>This is a item name</strong><br><span style=\"color: #444;\">This is the item description in more detail for the customer so he knows what this content actually contains.</span>", 2.0, 199.90, 399.80],
+    ["123-456-789<br><strong>This is a item name</strong><br><span style=\"color: #444;\">This is the item description in more detail for the customer so he knows what this content actually contains.</span>", 2.0, 199.90, 399.80],
+    ["123-456-789<br><strong>This is a item name</strong><br><span style=\"color: #444;\">This is the item description in more detail for the customer so he knows what this content actually contains.</span>", 2.0, 199.90, 399.80],
+    ["123-456-789<br><strong>This is a item name</strong><br><span style=\"color: #444;\">This is the item description in more detail for the customer so he knows what this content actually contains.</span>", 2.0, 199.90, 399.80],
+    ["123-456-789<br><strong>This is a item name</strong><br><span style=\"color: #444;\">This is the item description in more detail for the customer so he knows what this content actually contains.</span>", 2.0, 199.90, 399.80],
+    ["123-456-789<br><strong>This is a item name</strong><br><span style=\"color: #444;\">This is the item description in more detail for the customer so he knows what this content actually contains.</span>", 2.0, 199.90, 399.80],
+    ["123-456-789<br><strong>This is a item name</strong><br><span style=\"color: #444;\">This is the item description in more detail for the customer so he knows what this content actually contains.</span>", 2.0, 199.90, 399.80],
+    ["123-456-789<br><strong>This is a item name</strong><br><span style=\"color: #444;\">This is the item description in more detail for the customer so he knows what this content actually contains.</span>", 2.0, 199.90, 399.80],
+    ['ASDF', 2.0, 199.90, 399.80],
+];
+
+// Header
+$w = array($pdf->getPageWidth() - 20 - 20 - 20 - 2*15, 20, 20, 20);
+$num_headers = count($header);
+
+$pdf->setCellPadding(1, 1, 1, 1);
+
+$first = true;
+
+// Data
+$fill = false;
+foreach($data as $row) {
+    if ($row === null || $first || $pdf->getY() > $pdf->getPageHeight() - 40) {
+        $pdf->SetFillColor(255, 162, 7);
+        $pdf->SetTextColor(255);
+        $pdf->SetDrawColor(255, 162, 7);
+        //$pdf->SetLineWidth(0.3);
+        $pdf->SetFont('helvetica', 'B', 8);
+
+        if (!$first || $row === null) {
+            $pdf->AddPage();
+            $pdf->Ln();
+        }
+
+        for($i = 0; $i < $num_headers; ++$i) {
+            $pdf->Cell($w[$i], 7, $header[$i], 1, 0, 'L', true);
+        }
+
+        $pdf->Ln();
+        $pdf->SetFillColor(245, 245, 245);
+        $pdf->SetTextColor(0);
+        $pdf->SetFont('helvetica', '', 8);
+
+        $first = false;
+    }
+
+    $tempY = $pdf->getY();
+    $pdf->writeHTMLCell($w[0], 10, null, null, $row[0], 0, 2, $fill);
+    $height = $pdf->getY() - $tempY;
+
+    /*
+    $pdf->writeHTMLCell($w[1], $height, 15 + $w[0], $tempY, $row[1], 0, 0, $fill);
+    $pdf->writeHTMLCell($w[2], $height, 15 + $w[0] + $w[1], $tempY, $row[2], 0, 0, $fill);
+    $pdf->writeHTMLCell($w[3], $height, 15 + $w[0] + $w[1] + $w[2], $tempY, $row[3], 0, 1, $fill);
+    */
+
+    $pdf->MultiCell($w[1], $height, $row[1], 0, 'L', $fill, 0, 15 + $w[0], $tempY, true, 0, false, true, 0, 'M', true);
+    $pdf->MultiCell($w[2], $height, $row[2], 0, 'L', $fill, 0, 15 + $w[0] + $w[1], $tempY, true, 0, false, true, 0, 'M', true);
+    $pdf->MultiCell($w[3], $height, $row[3], 0, 'L', $fill, 1, 15 + $w[0] + $w[1] + $w[2], $tempY, true, 0, false, true, 0, 'M', true);
+
+    $fill = !$fill;
+}
+
+$pdf->Cell(\array_sum($w), 0, '', 'T');
+$pdf->Ln();
+
+if ($pdf->getY() > $pdf->getPageHeight() - 40) {
+    $pdf->AddPage();
+}
+
+$pdf->SetFillColor(240, 240, 240);
+$pdf->SetTextColor(0);
+$pdf->SetDrawColor(240, 240, 240);
+$pdf->SetFont('helvetica', 'B', 8);
+
+$tempY = $pdf->GetY();
+
+$pdf->SetX($w[0] + $w[1] + 15);
+$pdf->Cell($w[2], 7, 'Subtotal', 0, 0, 'L', false);
+$pdf->Cell($w[3], 7, '40.000', 0, 0, 'L', false);
+$pdf->Ln();
+$pdf->SetX($w[0] + $w[1] + 15);
+$pdf->Cell($w[2], 7, 'Taxes (0%)', 0, 0, 'L', false);
+$pdf->Cell($w[3], 7, '40.000', 0, 0, 'L', false);
+$pdf->Ln();
+$pdf->SetX($w[0] + $w[1] + 15);
+$pdf->Cell($w[2], 7, 'Taxes (16%)', 0, 0, 'L', false);
+$pdf->Cell($w[3], 7, '40.000', 0, 0, 'L', false);
+$pdf->Ln();
+$pdf->SetX($w[0] + $w[1] + 15);
+$pdf->Cell($w[2], 7, 'Taxes (19%)', 0, 0, 'L', false);
+$pdf->Cell($w[3], 7, '40.000', 0, 0, 'L', false);
+$pdf->Ln();
+
+$pdf->SetFillColor(255, 162, 7);
+$pdf->SetTextColor(255);
+$pdf->SetDrawColor(255, 162, 7);
+$pdf->SetFont('helvetica', 'B', 8);
+
+$pdf->SetX($w[0] + $w[1] + 15);
+$pdf->Cell($w[2], 7, 'TOTAL', 1, 0, 'L', true);
+$pdf->Cell($w[3], 7, '40.000', 1, 0, 'L', true);
+$pdf->Ln();
+
+$tempY2 = $pdf->getY();
+
+$pdf->SetTextColor(0);
+$pdf->SetFont('helvetica', 'B', 8);
+$pdf->SetY($tempY);
+$pdf->Write(0, 'Payment Terms: ', '', 0, 'L', false, 0, false, false, 0);
+
+$pdf->SetFont('helvetica', '', 8);
+$pdf->Write(0, 'Payment within 30 business days', '', 0, 'L', false, 0, false, false, 0);
+$pdf->Ln();
+
+$pdf->SetFont('helvetica', 'B', 8);
+$pdf->Write(0, 'Terms: ', '', 0, 'L', false, 0, false, false, 0);
+
+$pdf->SetFont('helvetica', '', 8);
+$pdf->Write(0, 'https://jingga.app/terms', '', 0, 'L', false, 0, false, false, 0);
+$pdf->Ln();
+
+$pdf->SetY($tempY2);
+$pdf->Ln();
+
+// $pdf->SetY($pdf->GetY() - 30);
+$pdf->writeHTMLCell(
+    $pdf->getPageWidth() - 15 * 2, 0, null, null,
+    "Consectetur adipiscing elit. Vivamus ac massa sit amet eros posuere accumsan feugiat vel est. Maecenas ultricies enim eu eros rhoncus, volutpat cursus enim imperdiet. Aliquam et odio ipsum. Quisque dapibus scelerisque tempor. Phasellus purus lorem, venenatis eget pretium ac, convallis et ante. Aenean pulvinar justo consectetur mi tincidunt venenatis. Suspendisse ultricies enim id nulla facilisis lacinia. Nam congue nunc nunc, eu pellentesque eros aliquam ac.<br /><br />Nunc placerat elementum turpis, quis facilisis diam volutpat at. Suspendisse enim leo, convallis nec ornare eu, auctor nec purus. Nunc neque metus, feugiat quis justo nec, mollis dignissim risus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. In at ornare sem. Cras placerat, sapien sed ornare lacinia, mauris nulla volutpat nisl, eget dapibus nisl ipsum non est. Suspendisse ut nisl a ipsum rhoncus sodales.",
+    0, 0, false, true, 'J'
+);
+$pdf->Ln();
+
+//Close and output PDF document
+$pdf->Output('example_048.pdf', 'I');

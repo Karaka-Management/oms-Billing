@@ -17,6 +17,7 @@ namespace Modules\Billing\Models;
 use Modules\Media\Models\Collection;
 use Modules\Media\Models\NullCollection;
 use phpOMS\Localization\ISO639x1Enum;
+use phpOMS\Localization\BaseStringL11n;
 
 /**
  * Bill type enum.
@@ -36,6 +37,8 @@ class BillType implements \JsonSerializable
      */
     protected int $id = 0;
 
+    public string $name = '';
+
     public Collection $template;
 
     public string $numberFormat = '';
@@ -47,9 +50,9 @@ class BillType implements \JsonSerializable
     /**
      * Localization
      *
-     * @var string|BillTypeL11n
+     * @var string|BaseStringL11n
      */
-    protected string | BillTypeL11n $l11n;
+    protected string | BaseStringL11n $l11n;
 
     /**
      * Constructor.
@@ -60,8 +63,8 @@ class BillType implements \JsonSerializable
      */
     public function __construct(string $name = '')
     {
+        $this->name     = $name;
         $this->template = new NullCollection();
-        $this->setL11n($name);
     }
 
     /**
@@ -79,22 +82,23 @@ class BillType implements \JsonSerializable
     /**
      * Set l11n
      *
-     * @param string|BillTypeL11n $l11n Tag article l11n
+     * @param string|BaseStringL11n $l11n Tag article l11n
      * @param string              $lang Language
      *
      * @return void
      *
      * @since 1.0.0
      */
-    public function setL11n($l11n, string $lang = ISO639x1Enum::_EN) : void
+    public function setL11n(string | BaseStringL11n $l11n, string $lang = ISO639x1Enum::_EN) : void
     {
-        if ($l11n instanceof BillTypeL11n) {
+        if ($l11n instanceof BaseStringL11n) {
             $this->l11n = $l11n;
-        } elseif (isset($this->l11n) && $this->l11n instanceof BillTypeL11n) {
-            $this->l11n->name = $l11n;
+        } elseif (isset($this->l11n) && $this->l11n instanceof BaseStringL11n) {
+            $this->l11n->content = $l11n;
         } else {
-            $this->l11n       = new BillTypeL11n();
-            $this->l11n->name = $l11n;
+            $this->l11n        = new BaseStringL11n();
+            $this->l11n->content = $l11n;
+            $this->l11n->ref = $this->id;
             $this->l11n->setLanguage($lang);
         }
     }
@@ -106,7 +110,7 @@ class BillType implements \JsonSerializable
      */
     public function getL11n() : string
     {
-        return $this->l11n instanceof BillTypeL11n ? $this->l11n->name : $this->l11n;
+        return $this->l11n instanceof BaseStringL11n ? $this->l11n->content : $this->l11n;
     }
 
     /**

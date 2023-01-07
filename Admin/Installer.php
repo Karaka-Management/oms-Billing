@@ -15,16 +15,15 @@ declare(strict_types=1);
 namespace Modules\Billing\Admin;
 
 use Modules\Billing\Models\BillTransferType;
-use Modules\Billing\Models\BillType;
-use Modules\Billing\Models\BillTypeL11n;
-use Modules\Billing\Models\BillTypeL11nMapper;
-use Modules\Billing\Models\BillTypeMapper;
 use Modules\Media\Models\NullCollection;
 use phpOMS\Application\ApplicationAbstract;
 use phpOMS\Config\SettingsInterface;
 use phpOMS\Localization\ISO639x1Enum;
 use phpOMS\Module\InstallerAbstract;
 use phpOMS\Module\ModuleInfo;
+use phpOMS\Message\Http\HttpRequest;
+use phpOMS\Message\Http\HttpResponse;
+use phpOMS\Uri\HttpUri;
 
 /**
  * Installer class.
@@ -57,206 +56,82 @@ final class Installer extends InstallerAbstract
         /** @var int $defaultTemplate */
         $defaultTemplate = (int) \reset($media['upload'][0]);
 
-        self::createOutgoingBillTypes($defaultTemplate);
-        self::createIncomingBillTypes($defaultTemplate);
-        self::createTransferBillTypes($defaultTemplate);
-        self::createTemplateBillTypes($defaultTemplate);
+        /* Bill types */
+        $fileContent = \file_get_contents(__DIR__ . '/Install/types.json');
+        if ($fileContent === false) {
+            return;
+        }
+
+        $types = \json_decode($fileContent, true);
+        self::createBillTypes($app, $types, $defaultTemplate);
     }
 
     /**
-     * Install default outgoing bill types
+     * Install default bill types
      *
-     * @return BillType[]
+     * @param ApplicationAbstract $app      Application
+     * @param array               $types    Bill types
+     * @param int                 $template Default template
+     *
+     * @return array
      *
      * @since 1.0.0
      */
-    private static function createOutgoingBillTypes(int $template) : array
+    private static function createBillTypes(ApplicationAbstract $app, array $types, int $template) : array
     {
-        $billType = [];
+        $billTypes = [];
+
+        /** @var \Modules\Billing\Controller\ApiController $module */
+        $module = $app->moduleManager->getModuleInstance('Billing');
 
         // @todo: allow multiple alternative bill templates
         // @todo: implement ordering of templates
 
-        $billType['offer']                = new BillType('Offer');
-        $billType['offer']->numberFormat  = '{y}-{id}';
-        $billType['offer']->template      = new NullCollection($template);
-        $billType['offer']->transferType  = BillTransferType::SALES;
-        $billType['offer']->transferStock = false;
-        BillTypeMapper::create()->execute($billType['offer']);
-        BillTypeL11nMapper::create()->execute(new BillTypeL11n($billType['offer']->getId(), 'Angebot', ISO639x1Enum::_DE));
+        foreach ($types as $type) {
+            $response = new HttpResponse();
+            $request  = new HttpRequest(new HttpUri(''));
 
-        $billType['order_confirmation']                = new BillType('Order Confirmation');
-        $billType['order_confirmation']->numberFormat  = '{y}-{id}';
-        $billType['order_confirmation']->template      = new NullCollection($template);
-        $billType['order_confirmation']->transferType  = BillTransferType::SALES;
-        $billType['order_confirmation']->transferStock = false;
-        BillTypeMapper::create()->execute($billType['order_confirmation']);
-        BillTypeL11nMapper::create()->execute(new BillTypeL11n($billType['order_confirmation']->getId(), 'Auftragsbestaetigung', ISO639x1Enum::_DE));
+            $request->header->account = 1;
+            $request->setData('name', $type['name'] ?? '');
+            $request->setData('title', \reset($type['l11n']));
+            $request->setData('language', \array_keys($type['l11n'])[0] ?? 'en');
+            $request->setData('number_format', $type['numberFormat'] ?? '{id}');
+            $request->setData('transfer_stock', $type['transferStock'] ?? false);
+            $request->setData('transfer_type', $type['transferType'] ?? BillTransferType::SALES);
+            $request->setData('template', $template);
 
-        $billType['delivery_note']                = new BillType('Delivery Note');
-        $billType['delivery_note']->numberFormat  = '{y}-{id}';
-        $billType['delivery_note']->template      = new NullCollection($template);
-        $billType['delivery_note']->transferType  = BillTransferType::SALES;
-        $billType['delivery_note']->transferStock = true;
-        BillTypeMapper::create()->execute($billType['delivery_note']);
-        BillTypeL11nMapper::create()->execute(new BillTypeL11n($billType['delivery_note']->getId(), 'Lieferschein', ISO639x1Enum::_DE));
+            $module->apiBillTypeCreate($request, $response);
 
-        $billType['invoice']                = new BillType('Invoice');
-        $billType['invoice']->numberFormat  = '{y}-{id}';
-        $billType['invoice']->template      = new NullCollection($template);
-        $billType['invoice']->transferType  = BillTransferType::SALES;
-        $billType['invoice']->transferStock = false;
-        BillTypeMapper::create()->execute($billType['invoice']);
-        BillTypeL11nMapper::create()->execute(new BillTypeL11n($billType['invoice']->getId(), 'Rechnung', ISO639x1Enum::_DE));
+            $responseData = $response->get('');
+            if (!\is_array($responseData)) {
+                continue;
+            }
 
-        $billType['proforma_invoice']                = new BillType('Proforma Invoice');
-        $billType['proforma_invoice']->numberFormat  = '{y}-{id}';
-        $billType['proforma_invoice']->template      = new NullCollection($template);
-        $billType['proforma_invoice']->transferType  = BillTransferType::SALES;
-        $billType['proforma_invoice']->transferStock = false;
-        BillTypeMapper::create()->execute($billType['proforma_invoice']);
-        BillTypeL11nMapper::create()->execute(new BillTypeL11n($billType['proforma_invoice']->getId(), 'Proforma Rechnung', ISO639x1Enum::_DE));
+            $billType = !\is_array($responseData['response'])
+                ? $responseData['response']->toArray()
+                : $responseData['response'];
 
-        $billType['credit_note']                = new BillType('Credit Note');
-        $billType['credit_note']->numberFormat  = '{y}-{id}';
-        $billType['credit_note']->template      = new NullCollection($template);
-        $billType['credit_note']->transferType  = BillTransferType::SALES;
-        $billType['credit_note']->transferStock = false;
-        BillTypeMapper::create()->execute($billType['credit_note']);
-        BillTypeL11nMapper::create()->execute(new BillTypeL11n($billType['credit_note']->getId(), 'Rechnungskorrektur', ISO639x1Enum::_DE));
+            $billTypes[] = $billType;
 
-        $billType['reverse_invoice']                = new BillType('Credit Note');
-        $billType['reverse_invoice']->numberFormat  = '{y}-{id}';
-        $billType['reverse_invoice']->template      = new NullCollection($template);
-        $billType['reverse_invoice']->transferType  = BillTransferType::SALES;
-        $billType['reverse_invoice']->transferStock = false;
-        BillTypeMapper::create()->execute($billType['reverse_invoice']);
-        BillTypeL11nMapper::create()->execute(new BillTypeL11n($billType['reverse_invoice']->getId(), 'Gutschrift', ISO639x1Enum::_DE));
+            $isFirst = true;
+            foreach ($type['l11n'] as $language => $l11n) {
+                if ($isFirst) {
+                    $isFirst = false;
+                    continue;
+                }
 
-        return $billType;
-    }
+                $response = new HttpResponse();
+                $request  = new HttpRequest(new HttpUri(''));
 
-    /**
-     * Install default incoming bill types
-     *
-     * @return BillType[]
-     *
-     * @since 1.0.0
-     */
-    private static function createIncomingBillTypes(int $template) : array
-    {
-        $billType = [];
+                $request->header->account = 1;
+                $request->setData('title', $l11n);
+                $request->setData('language', $language);
+                $request->setData('type', $billType['id']);
 
-        $billType['offer']                = new BillType('Offer');
-        $billType['offer']->numberFormat  = '{y}-{id}';
-        $billType['offer']->template      = new NullCollection($template);
-        $billType['offer']->transferType  = BillTransferType::PURCHASE;
-        $billType['offer']->transferStock = false;
-        BillTypeMapper::create()->execute($billType['offer']);
-        BillTypeL11nMapper::create()->execute(new BillTypeL11n($billType['offer']->getId(), 'Angebot', ISO639x1Enum::_DE));
+                $module->apiBillTypeL11nCreate($request, $response);
+            }
+        }
 
-        $billType['order_confirmation']                = new BillType('Order Confirmation');
-        $billType['order_confirmation']->numberFormat  = '{y}-{id}';
-        $billType['order_confirmation']->template      = new NullCollection($template);
-        $billType['order_confirmation']->transferType  = BillTransferType::PURCHASE;
-        $billType['order_confirmation']->transferStock = false;
-        BillTypeMapper::create()->execute($billType['order_confirmation']);
-        BillTypeL11nMapper::create()->execute(new BillTypeL11n($billType['order_confirmation']->getId(), 'Auftragsbestaetigung', ISO639x1Enum::_DE));
-
-        $billType['delivery_note']                = new BillType('Delivery Note');
-        $billType['delivery_note']->numberFormat  = '{y}-{id}';
-        $billType['delivery_note']->template      = new NullCollection($template);
-        $billType['delivery_note']->transferType  = BillTransferType::PURCHASE;
-        $billType['delivery_note']->transferStock = true;
-        BillTypeMapper::create()->execute($billType['delivery_note']);
-        BillTypeL11nMapper::create()->execute(new BillTypeL11n($billType['delivery_note']->getId(), 'Lieferschein', ISO639x1Enum::_DE));
-
-        $billType['invoice']                = new BillType('Invoice');
-        $billType['invoice']->numberFormat  = '{y}-{id}';
-        $billType['invoice']->template      = new NullCollection($template);
-        $billType['invoice']->transferType  = BillTransferType::PURCHASE;
-        $billType['invoice']->transferStock = false;
-        BillTypeMapper::create()->execute($billType['invoice']);
-        BillTypeL11nMapper::create()->execute(new BillTypeL11n($billType['invoice']->getId(), 'Rechnung', ISO639x1Enum::_DE));
-
-        $billType['credit_note']                = new BillType('Credit Note');
-        $billType['credit_note']->numberFormat  = '{y}-{id}';
-        $billType['credit_note']->template      = new NullCollection($template);
-        $billType['credit_note']->transferType  = BillTransferType::PURCHASE;
-        $billType['credit_note']->transferStock = false;
-        BillTypeMapper::create()->execute($billType['credit_note']);
-        BillTypeL11nMapper::create()->execute(new BillTypeL11n($billType['credit_note']->getId(), 'Rechnungskorrektur', ISO639x1Enum::_DE));
-
-        $billType['reverse_invoice']                = new BillType('Credit Note');
-        $billType['reverse_invoice']->numberFormat  = '{y}-{id}';
-        $billType['reverse_invoice']->template      = new NullCollection($template);
-        $billType['reverse_invoice']->transferType  = BillTransferType::PURCHASE;
-        $billType['reverse_invoice']->transferStock = false;
-        BillTypeMapper::create()->execute($billType['reverse_invoice']);
-        BillTypeL11nMapper::create()->execute(new BillTypeL11n($billType['reverse_invoice']->getId(), 'Gutschrift', ISO639x1Enum::_DE));
-
-        return $billType;
-    }
-
-    /**
-     * Install default transfer bill types
-     *
-     * @return BillType[]
-     *
-     * @since 1.0.0
-     */
-    private static function createTransferBillTypes(int $template) : array
-    {
-        $billType = [];
-
-        $billType['stock_movement']                = new BillType('Stock Movement');
-        $billType['stock_movement']->numberFormat  = '{y}-{id}';
-        $billType['stock_movement']->template      = new NullCollection($template);
-        $billType['stock_movement']->transferType  = BillTransferType::PURCHASE;
-        $billType['stock_movement']->transferStock = false;
-        BillTypeMapper::create()->execute($billType['stock_movement']);
-        BillTypeL11nMapper::create()->execute(new BillTypeL11n($billType['stock_movement']->getId(), 'Lagerumbuchung', ISO639x1Enum::_DE));
-
-        $billType['scrapping']                = new BillType('Scrapping');
-        $billType['scrapping']->numberFormat  = '{y}-{id}';
-        $billType['scrapping']->template      = new NullCollection($template);
-        $billType['scrapping']->transferType  = BillTransferType::PURCHASE;
-        $billType['scrapping']->transferStock = false;
-        BillTypeMapper::create()->execute($billType['scrapping']);
-        BillTypeL11nMapper::create()->execute(new BillTypeL11n($billType['scrapping']->getId(), 'Verschrottung', ISO639x1Enum::_DE));
-
-        return $billType;
-    }
-
-    /**
-     * Install default template bill types
-     *
-     * These bill types don't have any effect on anything, they can simply be used as templates when creating new bills.
-     *
-     * @return BillType[]
-     *
-     * @since 1.0.0
-     */
-    private static function createTemplateBillTypes(int $template) : array
-    {
-        $billType = [];
-
-        $billType['subscritpion']                = new BillType('Subscription');
-        $billType['subscritpion']->numberFormat  = '{y}-{id}';
-        $billType['subscritpion']->template      = new NullCollection($template);
-        $billType['subscritpion']->transferType  = BillTransferType::SALES;
-        $billType['subscritpion']->transferStock = false;
-        BillTypeMapper::create()->execute($billType['subscritpion']);
-        BillTypeL11nMapper::create()->execute(new BillTypeL11n($billType['subscritpion']->getId(), 'Abonnement', ISO639x1Enum::_DE));
-
-        $billType['template']                = new BillType('Template');
-        $billType['template']->numberFormat  = '{y}-{id}';
-        $billType['template']->template      = new NullCollection($template);
-        $billType['template']->transferType  = BillTransferType::SALES;
-        $billType['template']->transferStock = false;
-        BillTypeMapper::create()->execute($billType['template']);
-        BillTypeL11nMapper::create()->execute(new BillTypeL11n($billType['template']->getId(), 'Vorlage', ISO639x1Enum::_DE));
-
-        return $billType;
+        return $billTypes;
     }
 }

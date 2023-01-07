@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace Modules\Billing\Models;
 
 use phpOMS\DataStorage\Database\Mapper\DataMapperFactory;
+use phpOMS\Localization\BaseStringL11n;
 
 /**
  * Bill type mapper class.
@@ -34,8 +35,8 @@ final class BillTypeL11nMapper extends DataMapperFactory
      */
     public const COLUMNS = [
         'billing_type_l11n_id'        => ['name' => 'billing_type_l11n_id',       'type' => 'int',    'internal' => 'id'],
-        'billing_type_l11n_name'      => ['name' => 'billing_type_l11n_name',    'type' => 'string', 'internal' => 'name', 'autocomplete' => true],
-        'billing_type_l11n_type'      => ['name' => 'billing_type_l11n_type',      'type' => 'int',    'internal' => 'type'],
+        'billing_type_l11n_name'      => ['name' => 'billing_type_l11n_name',    'type' => 'string', 'internal' => 'content', 'autocomplete' => true],
+        'billing_type_l11n_type'      => ['name' => 'billing_type_l11n_type',      'type' => 'int',    'internal' => 'ref'],
         'billing_type_l11n_language'  => ['name' => 'billing_type_l11n_language', 'type' => 'string', 'internal' => 'language'],
     ];
 
@@ -54,4 +55,12 @@ final class BillTypeL11nMapper extends DataMapperFactory
      * @since 1.0.0
      */
     public const PRIMARYFIELD ='billing_type_l11n_id';
+
+    /**
+     * Model to use by the mapper.
+     *
+     * @var string
+     * @since 1.0.0
+     */
+    public const MODEL = BaseStringL11n::class;
 }

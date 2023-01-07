@@ -15,7 +15,7 @@ declare(strict_types=1);
 namespace Modules\Billing\tests\Models;
 
 use Modules\Billing\Models\BillType;
-use Modules\Billing\Models\BillTypeL11n;
+use phpOMS\Localization\BaseStringL11n;
 
 /**
  * @internal
@@ -51,7 +51,7 @@ final class BillTypeTest extends \PHPUnit\Framework\TestCase
         $this->type->setL11n('Test1');
         self::assertEquals('Test1', $this->type->getL11n());
 
-        $this->type->setL11n(new BillTypeL11n(0, 'Test2'));
+        $this->type->setL11n(new BaseStringL11n('Test2'));
         self::assertEquals('Test2', $this->type->getL11n());
     }
 }

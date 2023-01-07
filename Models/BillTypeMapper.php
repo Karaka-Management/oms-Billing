@@ -35,6 +35,7 @@ final class BillTypeMapper extends DataMapperFactory
      */
     public const COLUMNS = [
         'billing_type_id'                  => ['name' => 'billing_type_id',             'type' => 'int',    'internal' => 'id'],
+        'billing_type_name'       => ['name' => 'billing_type_name',       'type' => 'string',    'internal' => 'name'],
         'billing_type_number_format'       => ['name' => 'billing_type_number_format',       'type' => 'string',    'internal' => 'numberFormat'],
         'billing_type_template'            => ['name' => 'billing_type_template',       'type' => 'int',    'internal' => 'template'],
         'billing_type_transfer_type'       => ['name' => 'billing_type_transfer_type',  'type' => 'int',    'internal' => 'transferType'],
@@ -65,7 +66,7 @@ final class BillTypeMapper extends DataMapperFactory
             'mapper'            => BillTypeL11nMapper::class,
             'table'             => 'billing_type_l11n',
             'self'              => 'billing_type_l11n_type',
-            'column'            => 'name',
+            'column'            => 'content',
             'external'          => null,
         ],
     ];

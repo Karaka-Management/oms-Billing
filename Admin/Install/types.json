@@ -1,0 +1,202 @@
+[
+	{
+		"name": "sales_offer",
+		"numberFormat": "{y}-{id}",
+		"transferType": 1,
+		"transferStock": false,
+		"l11n": {
+			"de": "Offer",
+			"en": "Angebot"
+		}
+	},
+	{
+		"name": "sales_order_confirmation",
+		"numberFormat": "{y}-{id}",
+		"transferType": 1,
+		"transferStock": false,
+		"l11n": {
+			"de": "Order Confirmation",
+			"en": "Auftragsbestaetigung"
+		}
+	},
+	{
+		"name": "sales_delivery_note",
+		"numberFormat": "{y}-{id}",
+		"transferType": 1,
+		"transferStock": true,
+		"l11n": {
+			"de": "Delivery Note",
+			"en": "Lieferschein"
+		}
+	},
+	{
+		"name": "sales_invoice",
+		"numberFormat": "{y}-{id}",
+		"transferType": 1,
+		"transferStock": false,
+		"l11n": {
+			"de": "Invoice",
+			"en": "Rechnung"
+		}
+	},
+	{
+		"name": "sales_proforma_invoice",
+		"numberFormat": "{y}-{id}",
+		"transferType": 1,
+		"transferStock": false,
+		"l11n": {
+			"de": "Proforma Invoice",
+			"en": "Proforma Rechnung"
+		}
+	},
+	{
+		"name": "sales_credit_note",
+		"numberFormat": "{y}-{id}",
+		"transferType": 1,
+		"transferStock": false,
+		"l11n": {
+			"de": "Credit Note",
+			"en": "Rechnungskorrektur"
+		}
+	},
+	{
+		"name": "sales_reverse_invoice",
+		"numberFormat": "{y}-{id}",
+		"transferType": 1,
+		"transferStock": false,
+		"l11n": {
+			"de": "Reverse Invoice",
+			"en": "Gutschrift"
+		}
+	},
+	{
+		"name": "purchase_offer",
+		"numberFormat": "{y}-{id}",
+		"transferType": 2,
+		"transferStock": false,
+		"l11n": {
+			"de": "Offer",
+			"en": "Angebot"
+		}
+	},
+	{
+		"name": "purchase_order_confirmation",
+		"numberFormat": "{y}-{id}",
+		"transferType": 2,
+		"transferStock": false,
+		"l11n": {
+			"de": "Order Confirmation",
+			"en": "Auftragsbestaetigung"
+		}
+	},
+	{
+		"name": "purchase_delivery_note",
+		"numberFormat": "{y}-{id}",
+		"transferType": 2,
+		"transferStock": true,
+		"l11n": {
+			"de": "Delivery Note",
+			"en": "Lieferschein"
+		}
+	},
+	{
+		"name": "purchase_invoice",
+		"numberFormat": "{y}-{id}",
+		"transferType": 2,
+		"transferStock": false,
+		"l11n": {
+			"de": "Invoice",
+			"en": "Rechnung"
+		}
+	},
+	{
+		"name": "purchase_proforma_invoice",
+		"numberFormat": "{y}-{id}",
+		"transferType": 2,
+		"transferStock": false,
+		"l11n": {
+			"de": "Proforma Invoice",
+			"en": "Proforma Rechnung"
+		}
+	},
+	{
+		"name": "purchase_credit_note",
+		"numberFormat": "{y}-{id}",
+		"transferType": 2,
+		"transferStock": false,
+		"l11n": {
+			"de": "Credit Note",
+			"en": "Rechnungskorrektur"
+		}
+	},
+	{
+		"name": "purchase_reverse_invoice",
+		"numberFormat": "{y}-{id}",
+		"transferType": 2,
+		"transferStock": false,
+		"l11n": {
+			"de": "Reverse Invoice",
+			"en": "Gutschrift"
+		}
+	},
+	{
+		"name": "stock_movement",
+		"numberFormat": "{y}-{id}",
+		"transferType": 4,
+		"transferStock": false,
+		"l11n": {
+			"de": "Stock Movement",
+			"en": "Lagerumbuchung"
+		}
+	},
+	{
+		"name": "stock_scrapping",
+		"numberFormat": "{y}-{id}",
+		"transferType": 4,
+		"transferStock": false,
+		"l11n": {
+			"de": "Scrapping",
+			"en": "Verschrottung"
+		}
+	},
+	{
+		"name": "sales_subscritpion",
+		"numberFormat": "{y}-{id}",
+		"transferType": 1,
+		"transferStock": false,
+		"l11n": {
+			"de": "Subscription",
+			"en": "Abonnement"
+		}
+	},
+	{
+		"name": "sales_template",
+		"numberFormat": "{y}-{id}",
+		"transferType": 1,
+		"transferStock": false,
+		"l11n": {
+			"de": "Template",
+			"en": "Vorlage"
+		}
+	},
+	{
+		"name": "purchase_subscritpion",
+		"numberFormat": "{y}-{id}",
+		"transferType": 1,
+		"transferStock": false,
+		"l11n": {
+			"de": "Subscription",
+			"en": "Abonnement"
+		}
+	},
+	{
+		"name": "purchase_template",
+		"numberFormat": "{y}-{id}",
+		"transferType": 1,
+		"transferStock": false,
+		"l11n": {
+			"de": "Template",
+			"en": "Vorlage"
+		}
+	}
+]

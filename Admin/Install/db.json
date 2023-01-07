@@ -9,9 +9,14 @@
                 "primary": true,
                 "autoincrement": true
             },
+            "billing_type_name": {
+                "name": "billing_type_name",
+                "type": "VARCHAR(50)",
+                "null": false
+            },
             "billing_type_number_format": {
                 "name": "billing_type_number_format",
-                "type": "VARCHAR(254)",
+                "type": "VARCHAR(255)",
                 "null": false
             },
             "billing_type_template": {
@@ -608,6 +613,7 @@
         }
     },
     "billing_bill_subscription": {
+        "description": "https://learn.microsoft.com/en-us/graph/outlook-schedule-recurring-events",
         "name": "billing_bill_subscription",
         "fields": {
             "billing_bill_subscription_id": {
@@ -676,11 +682,6 @@
             },
             "billing_bill_subscription_pattern_month": {
                 "name": "billing_bill_subscription_pattern_month",
-                "type": "TINYINT(1)",
-                "null": false
-            },
-            "billing_bill_subscription_pattern_numberofoccurrences": {
-                "name": "billing_bill_subscription_pattern_numberofoccurrences",
                 "type": "TINYINT(1)",
                 "null": false
             }

@@ -23,7 +23,10 @@ use Modules\Billing\Models\BillElementMapper;
 use Modules\Billing\Models\BillMapper;
 use Modules\Billing\Models\BillStatus;
 use Modules\Billing\Models\BillTransferType;
+use Modules\Billing\Models\BillType;
+use phpOMS\Localization\BaseStringL11n;
 use Modules\Billing\Models\BillTypeMapper;
+use Modules\Billing\Models\BillTypeL11nMapper;
 use Modules\Billing\Models\SettingsEnum;
 use Modules\ClientManagement\Models\ClientMapper;
 use Modules\ItemManagement\Models\ItemMapper;
@@ -277,9 +280,10 @@ final class ApiController extends Controller
                 $request->header->account,
                 __DIR__ . '/../../../Modules/Media/Files' . $path,
                 $path,
-                type: $request->getData('type') ?? null,
+                type: $request->getData('type', 'int'),
                 pathSettings: PathSettings::FILE_PATH,
-                hasAccountRelation: false
+                hasAccountRelation: false,
+                readContent: (bool) ($request->getData('parse_content') ?? false)
             );
 
             $collection = null;
@@ -543,6 +547,8 @@ final class ApiController extends Controller
             // @codeCoverageIgnoreEnd
         }
 
+        require_once __DIR__ . '/../../../Resources/tcpdf/tcpdf.php';
+
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/' . \substr($template->getSourceByName('bill.pdf.php')->getPath(), 0, -8), 'pdf.php');
         $view->setData('bill', $bill);
@@ -709,6 +715,7 @@ final class ApiController extends Controller
 
             $mediaRequest->setData('bill', $billId);
             $mediaRequest->setData('type', $originalType);
+            $mediaRequest->setData('parse_content', true, true);
             $this->apiMediaAddToBill($mediaRequest, $mediaResponse, $data);
 
             $uploaded = $mediaResponse->get('')['response']['upload'];
@@ -719,19 +726,6 @@ final class ApiController extends Controller
             }
 
             // @todo: Parse text and analyze text structure
-
-            // Update bill with parsed text
-            $billRequest                  = new HttpRequest();
-            $billRequest->header->account = $request->header->account;
-            $billRequest->header->l11n    = $request->header->l11n;
-
-            $billRequest->setData('bill', $billId);
-            $billRequest->setData('supplier', 1);
-
-            $billResponse               = new HttpResponse();
-            $billResponse->header->l11n = $response->header->l11n;
-
-            $this->apiBillUpdate($billRequest, $billResponse, $data);
 
             // Create internal document
             $billResponse = new HttpResponse();
@@ -744,5 +738,144 @@ final class ApiController extends Controller
 
             // @todo: Start workflow for bill, if a workflow is defined for bill uploading
         }
+    }
+
+    /**
+     * Api method to create item bill type
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
+     *
+     * @return void
+     *
+     * @api
+     *
+     * @since 1.0.0
+     */
+    public function apiBillTypeCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    {
+        if (!empty($val = $this->validateBillTypeCreate($request))) {
+            $response->set('bill_type_create', new FormValidation($val));
+            $response->header->status = RequestStatusCode::R_400;
+
+            return;
+        }
+
+        $billType = $this->createBillTypeFromRequest($request);
+        $this->createModel($request->header->account, $billType, BillTypeMapper::class, 'bill_type', $request->getOrigin());
+
+        $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Bill type', 'Bill type successfully created', $billType);
+    }
+
+    /**
+     * Method to create item attribute from request.
+     *
+     * @param RequestAbstract $request Request
+     *
+     * @return BillType
+     *
+     * @since 1.0.0
+     */
+    private function createBillTypeFromRequest(RequestAbstract $request) : BillType
+    {
+        $billType = new BillType($request->getData('name') ?? '');
+        $billType->setL11n((string) ($request->getData('title') ?? ''), $request->getData('language') ?? ISO639x1Enum::_EN);
+        $billType->template = new NullCollection((int) ($request->getData('template') ?? 0));
+        $billType->numberFormat = (string) ($request->getData('number_format') ?? '{id}');
+        $billType->transferStock = (bool) ($request->getData('transfer_stock') ?? false);
+        $billType->transferType = (int) ($request->getData('transfer_type') ?? BillTransferType::SALES);
+
+        return $billType;
+    }
+
+    /**
+     * Validate item attribute create request
+     *
+     * @param RequestAbstract $request Request
+     *
+     * @return array<string, bool>
+     *
+     * @since 1.0.0
+     */
+    private function validateBillTypeCreate(RequestAbstract $request) : array
+    {
+        $val = [];
+        if (($val['title'] = empty($request->getData('title')))
+            || ($val['name'] = empty($request->getData('name')))
+        ) {
+            return $val;
+        }
+
+        return [];
+    }
+
+    /**
+     * Api method to create item attribute l11n
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
+     *
+     * @return void
+     *
+     * @api
+     *
+     * @since 1.0.0
+     */
+    public function apiBillTypeL11nCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    {
+        if (!empty($val = $this->validateBillTypeL11nCreate($request))) {
+            $response->set('bill_type_l11n_create', new FormValidation($val));
+            $response->header->status = RequestStatusCode::R_400;
+
+            return;
+        }
+
+        $billTypeL11n = $this->createBillTypeL11nFromRequest($request);
+        $this->createModel($request->header->account, $billTypeL11n, BillTypeL11nMapper::class, 'bill_type_l11n', $request->getOrigin());
+        $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Bill type localization', 'Bill type localization successfully created', $billTypeL11n);
+    }
+
+    /**
+     * Method to create item attribute l11n from request.
+     *
+     * @param RequestAbstract $request Request
+     *
+     * @return BaseStringL11n
+     *
+     * @since 1.0.0
+     */
+    private function createBillTypeL11nFromRequest(RequestAbstract $request) : BaseStringL11n
+    {
+        $billTypeL11n      = new BaseStringL11n();
+        $billTypeL11n->ref = (int) ($request->getData('type') ?? 0);
+        $billTypeL11n->setLanguage((string) (
+            $request->getData('language') ?? $request->getLanguage()
+        ));
+        $billTypeL11n->content = (string) ($request->getData('title') ?? '');
+
+        return $billTypeL11n;
+    }
+
+    /**
+     * Validate item attribute l11n create request
+     *
+     * @param RequestAbstract $request Request
+     *
+     * @return array<string, bool>
+     *
+     * @since 1.0.0
+     */
+    private function validateBillTypeL11nCreate(RequestAbstract $request) : array
+    {
+        $val = [];
+        if (($val['title'] = empty($request->getData('title')))
+            || ($val['type'] = empty($request->getData('type')))
+        ) {
+            return $val;
+        }
+
+        return [];
     }
 }
