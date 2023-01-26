@@ -42,6 +42,8 @@ class BillMapper extends DataMapperFactory
         'billing_bill_number'                            => ['name' => 'billing_bill_number',      'type' => 'string',    'internal' => 'number'],
         'billing_bill_numberformat'                      => ['name' => 'billing_bill_numberformat',      'type' => 'string',    'internal' => 'numberFormat'],
         'billing_bill_type'                              => ['name' => 'billing_bill_type',      'type' => 'int',    'internal' => 'type'],
+        'billing_bill_header'                              => ['name' => 'billing_bill_header',      'type' => 'string',    'internal' => 'header'],
+        'billing_bill_footer'                              => ['name' => 'billing_bill_footer',      'type' => 'string',    'internal' => 'footer'],
         'billing_bill_info'                              => ['name' => 'billing_bill_info',      'type' => 'string',    'internal' => 'info'],
         'billing_bill_status'                            => ['name' => 'billing_bill_status',      'type' => 'int',    'internal' => 'status'],
         'billing_bill_shipTo'                            => ['name' => 'billing_bill_shipTo',      'type' => 'string',    'internal' => 'shipTo'],

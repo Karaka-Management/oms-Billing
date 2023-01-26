@@ -53,8 +53,7 @@ class Media
                 SettingsEnum::PREVIEW_MEDIA_TYPE,
                 (string) $preivewType,
                 '\\d+',
-                null,
-                'Billing'
+                module: 'Billing'
             )
         );
 
@@ -65,8 +64,7 @@ class Media
                 SettingsEnum::ORIGINAL_MEDIA_TYPE,
                 (string) $originalType,
                 '\\d+',
-                null,
-                'Billing'
+                module: 'Billing'
             )
         );
     }

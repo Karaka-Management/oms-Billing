@@ -26,7 +26,8 @@
     },
     "providing": {
         "Navigation": "*",
-        "Media": "*"
+        "Media": "*",
+        "Workflow": "*"
     },
     "load": [
         {

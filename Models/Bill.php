@@ -318,6 +318,22 @@ class Bill implements \JsonSerializable
      * @var string
      * @since 1.0.0
      */
+    public string $header = '';
+
+    /**
+     * Info text.
+     *
+     * @var string
+     * @since 1.0.0
+     */
+    public string $footer = '';
+
+    /**
+     * Info text.
+     *
+     * @var string
+     * @since 1.0.0
+     */
     public string $info = '';
 
     /**

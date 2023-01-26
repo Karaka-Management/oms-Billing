@@ -38,6 +38,7 @@ use Modules\Media\Models\UploadStatus;
 use Modules\SupplierManagement\Models\NullSupplier;
 use Modules\SupplierManagement\Models\SupplierMapper;
 use phpOMS\Autoloader;
+use phpOMS\Localization\ISO639x1Enum;
 use phpOMS\Localization\Money;
 use phpOMS\Message\Http\HttpRequest;
 use phpOMS\Message\Http\HttpResponse;
@@ -293,7 +294,7 @@ final class ApiController extends Controller
                     $bill->getId(),
                     $media->getId(),
                     BillMapper::class,
-                    'media',
+                    'bill_media',
                     '',
                     $request->getOrigin()
                 );
@@ -321,7 +322,7 @@ final class ApiController extends Controller
                     $bill->getId(),
                     $media,
                     BillMapper::class,
-                    'media',
+                    'bill_media',
                     '',
                     $request->getOrigin()
                 );
@@ -581,7 +582,7 @@ final class ApiController extends Controller
             $bill->getId(),
             $media->getId(),
             BillMapper::class,
-            'media',
+            'bill_media',
             '',
             $request->getOrigin()
         );
@@ -639,7 +640,7 @@ final class ApiController extends Controller
         }
 
         $model = $response->get($request->uri->__toString())['response'];
-        $this->createModelRelation($request->header->account, $request->getData('id'), $model->getId(), BillMapper::class, 'notes', '', $request->getOrigin());
+        $this->createModelRelation($request->header->account, $request->getData('id'), $model->getId(), BillMapper::class, 'bill_note', '', $request->getOrigin());
     }
 
     /**

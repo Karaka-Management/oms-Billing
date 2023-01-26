@@ -1,0 +1,151 @@
+{
+    "triggers": [
+        "PRE:Module:Billing:bill-create",
+        "POST:Module:Billing:bill-create",
+        "PRE:Module:Billing:bill-update",
+        "POST:Module:Billing:bill-update",
+        "PRE:Module:Billing:bill-delete",
+        "POST:Module:Billing:bill-delete",
+
+        "PRE:Module:Billing:bill_element-create",
+        "POST:Module:Billing:bill_element-create",
+        "PRE:Module:Billing:bill_element-update",
+        "POST:Module:Billing:bill_element-update",
+        "PRE:Module:Billing:bill_element-delete",
+        "POST:Module:Billing:bill_element-delete",
+
+        "PRE:Module:Billing:bill_media-create",
+        "POST:Module:Billing:bill_media-create",
+        "PRE:Module:Billing:bill_media-update",
+        "POST:Module:Billing:bill_media-update",
+        "PRE:Module:Billing:bill_media-delete",
+        "POST:Module:Billing:bill_media-delete",
+
+        "PRE:Module:Billing:bill_note-create",
+        "POST:Module:Billing:bill_note-create",
+        "PRE:Module:Billing:bill_note-update",
+        "POST:Module:Billing:bill_note-update",
+        "PRE:Module:Billing:bill_note-delete",
+        "POST:Module:Billing:bill_note-delete"
+    ],
+    "actions": {
+        "1005100001": {
+            "name": "Find Subscripctions",
+            "description": {
+                "en": "Finds subscriptions",
+                "de": "Findet Abonnements"
+            },
+            "function_type": "API",
+            "function": "apiSubscriptionFind",
+            "inputs": [
+                "date_start",
+                "date_end",
+                "client[]",
+                "payment_type",
+                "{*}"
+            ],
+            "outputs": [
+                "subscription[]",
+                "{*}"
+            ],
+            "settings": {
+                "date_start": {
+                    "type": "input",
+                    "subtype": "datetime",
+                    "default": "now",
+                    "required": true,
+                    "title": {
+                        "en": "Start",
+                        "de": "Start"
+                    }
+                },
+                "date_end": {
+                    "type": "input",
+                    "subtype": "datetime",
+                    "default": null,
+                    "required": false,
+                    "title": {
+                        "en": "End",
+                        "de": "End"
+                    }
+                },
+                "client": {
+                    "type": "input",
+                    "subtype": "text",
+                    "default": "*",
+                    "pattern": "/(^\\*$)|(^(\\d+)(,\\s*\\d+)*$)/",
+                    "examples": [
+                        "*",
+                        "12,654,789"
+                    ],
+                    "required": true,
+                    "title": {
+                        "en": "Client ID",
+                        "de": "Kundennummer"
+                    },
+                    "description": {
+                        "en": "The client IDs of the clients. Use * to get all clients or a comma separated list to specify specific clients.",
+                        "de": "Die Kundennummern. Benutzen Sie * um alle Kunden auszuwählen oder eine durch Kommas getrennte Liste von mehreren Kundennummern."
+                    }
+                },
+                "payment_type": {
+                    "type": "select",
+                    "subtype": null,
+                    "default": "cc",
+                    "required": true,
+                    "title": {
+                        "en": "Payment type",
+                        "de": "Zahlungsart"
+                    },
+                    "options": [
+                        {
+                            "value": "cc",
+                            "text": {
+                                "en": "Credit Card",
+                                "de": "Kreditkarte"
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "1005100002": {
+            "name": "Invoice for Subscription",
+            "description": {
+                "en": "Creates invoices for subscriptions",
+                "de": "Erstellt Rechnungen für Abonnements"
+            },
+            "function_type": "API",
+            "function": "apiInvoiceFromSubscriptionCreate",
+            "inputs": [
+                "subscription[]",
+                "{*}"
+            ],
+            "outputs": [
+                "invoice[]",
+                "{*}"
+            ],
+            "settings": {
+                "subscription": {
+                    "type": "input",
+                    "subtype": "text",
+                    "default": "*",
+                    "pattern": "/(^\\*$)|(^(\\d+)(,\\s*\\d+)*$)/",
+                    "examples": [
+                        "*",
+                        "12,654,789"
+                    ],
+                    "required": true,
+                    "title": {
+                        "en": "Subscription ID",
+                        "de": "Abonnement ID"
+                    },
+                    "description": {
+                        "en": "The subscription IDs of the subscriptions. Use * to get all subscriptions or a comma separated list to specify specific subscriptions.",
+                        "de": "Die Abonnement ID. Benutzen Sie * um alle Abonnements auszuwählen oder eine durch Kommas getrennte Liste von mehreren Abonnement IDs."
+                    }
+                }
+            }
+        }
+    }
+}

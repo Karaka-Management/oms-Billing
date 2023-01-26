@@ -37,6 +37,12 @@
                 "name": "billing_type_transfer_stock",
                 "type": "TINYINT(1)",
                 "null": false
+            },
+            "billing_type_is_template": {
+                "description": "What kind of bill is it?",
+                "name": "billing_type_is_template",
+                "type": "TINYINT",
+                "null": false
             }
         }
     },
@@ -95,8 +101,7 @@
             "billing_bill_info": {
                 "name": "billing_bill_info",
                 "type": "TEXT",
-                "default": null,
-                "null": true
+                "null": false
             },
             "billing_bill_status": {
                 "name": "billing_bill_status",
@@ -125,6 +130,16 @@
                 "default": null,
                 "foreignTable": "clientmgmt_client",
                 "foreignKey": "clientmgmt_client_id"
+            },
+            "billing_bill_header": {
+                "name": "billing_bill_header",
+                "type": "TEXT",
+                "null": false
+            },
+            "billing_bill_footer": {
+                "name": "billing_bill_footer",
+                "type": "TEXT",
+                "null": false
             },
             "billing_bill_stock_from": {
                 "name": "billing_bill_stock_from",
@@ -635,55 +650,20 @@
                 "foreignTable": "billing_bill",
                 "foreignKey": "billing_bill_id"
             },
-            "billing_bill_subscription_start": {
-                "name": "billing_bill_subscription_start",
-                "type": "DATETIME",
-                "null": false
+            "billing_bill_subscription_schedule": {
+                "name": "billing_bill_subscription_schedule",
+                "type": "INT",
+                "null": false,
+                "foreignTable": "schedule",
+                "foreignKey": "schedule_id"
             },
-            "billing_bill_subscription_end": {
-                "name": "billing_bill_subscription_end",
-                "type": "DATETIME",
-                "null": false
-            },
-            "billing_bill_subscription_numberofoccurrences": {
-                "name": "billing_bill_subscription_numberofoccurrences",
+            "billing_bill_subscription_account": {
+                "name": "billing_bill_subscription_account",
                 "type": "TINYINT(1)",
-                "null": false
-            },
-            "billing_bill_subscription_pattern_numberofoccurrences": {
-                "name": "billing_bill_subscription_pattern_numberofoccurrences",
-                "type": "TINYINT(1)",
-                "null": false
-            },
-            "billing_bill_subscription_pattern_type": {
-                "name": "billing_bill_subscription_pattern_type",
-                "type": "TINYINT(1)",
-                "null": false
-            },
-            "billing_bill_subscription_pattern_pattern_interval": {
-                "name": "billing_bill_subscription_pattern_pattern_interval",
-                "type": "TINYINT(1)",
-                "null": false
-            },
-            "billing_bill_subscription_pattern_dayofmonth": {
-                "name": "billing_bill_subscription_pattern_dayofmonth",
-                "type": "TINYINT(1)",
-                "null": false
-            },
-            "billing_bill_subscription_pattern_daysofweek": {
-                "name": "billing_bill_subscription_pattern_daysofweek",
-                "type": "TINYINT(1)",
-                "null": false
-            },
-            "billing_bill_subscription_pattern_index": {
-                "name": "billing_bill_subscription_pattern_index",
-                "type": "TINYINT(1)",
-                "null": false
-            },
-            "billing_bill_subscription_pattern_month": {
-                "name": "billing_bill_subscription_pattern_month",
-                "type": "TINYINT(1)",
-                "null": false
+                "null": true,
+                "default": null,
+                "foreignTable": "account",
+                "foreignKey": "account_id"
             }
         }
     },
