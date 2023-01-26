@@ -16,8 +16,8 @@ namespace Modules\Billing\Models;
 
 use Modules\Media\Models\Collection;
 use Modules\Media\Models\NullCollection;
-use phpOMS\Localization\ISO639x1Enum;
 use phpOMS\Localization\BaseStringL11n;
+use phpOMS\Localization\ISO639x1Enum;
 
 /**
  * Bill type enum.
@@ -83,7 +83,7 @@ class BillType implements \JsonSerializable
      * Set l11n
      *
      * @param string|BaseStringL11n $l11n Tag article l11n
-     * @param string              $lang Language
+     * @param string                $lang Language
      *
      * @return void
      *
@@ -96,9 +96,9 @@ class BillType implements \JsonSerializable
         } elseif (isset($this->l11n) && $this->l11n instanceof BaseStringL11n) {
             $this->l11n->content = $l11n;
         } else {
-            $this->l11n        = new BaseStringL11n();
+            $this->l11n          = new BaseStringL11n();
             $this->l11n->content = $l11n;
-            $this->l11n->ref = $this->id;
+            $this->l11n->ref     = $this->id;
             $this->l11n->setLanguage($lang);
         }
     }

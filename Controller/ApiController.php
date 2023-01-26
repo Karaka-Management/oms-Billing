@@ -24,9 +24,8 @@ use Modules\Billing\Models\BillMapper;
 use Modules\Billing\Models\BillStatus;
 use Modules\Billing\Models\BillTransferType;
 use Modules\Billing\Models\BillType;
-use phpOMS\Localization\BaseStringL11n;
-use Modules\Billing\Models\BillTypeMapper;
 use Modules\Billing\Models\BillTypeL11nMapper;
+use Modules\Billing\Models\BillTypeMapper;
 use Modules\Billing\Models\SettingsEnum;
 use Modules\ClientManagement\Models\ClientMapper;
 use Modules\ItemManagement\Models\ItemMapper;
@@ -782,10 +781,10 @@ final class ApiController extends Controller
     {
         $billType = new BillType($request->getData('name') ?? '');
         $billType->setL11n((string) ($request->getData('title') ?? ''), $request->getData('language') ?? ISO639x1Enum::_EN);
-        $billType->template = new NullCollection((int) ($request->getData('template') ?? 0));
-        $billType->numberFormat = (string) ($request->getData('number_format') ?? '{id}');
+        $billType->template      = new NullCollection((int) ($request->getData('template') ?? 0));
+        $billType->numberFormat  = (string) ($request->getData('number_format') ?? '{id}');
         $billType->transferStock = (bool) ($request->getData('transfer_stock') ?? false);
-        $billType->transferType = (int) ($request->getData('transfer_type') ?? BillTransferType::SALES);
+        $billType->transferType  = (int) ($request->getData('transfer_type') ?? BillTransferType::SALES);
 
         return $billType;
     }

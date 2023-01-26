@@ -5,11 +5,13 @@ declare(strict_types=1);
 class MYPDF extends TCPDF
 {
     public string $fontName = '';
+
     public int $fontSize = 8;
+
     public int $sideMargin = 15;
 
     //Page header
-    public function Header() {
+    public function Header() : void {
         if ($this->header_xobjid === false) {
             $this->header_xobjid = $this->startTemplate($this->w, 0);
 
@@ -32,7 +34,7 @@ class MYPDF extends TCPDF
         $x  = 0;
         $dx = 0;
 
-        if (!$this->header_xobj_autoreset AND $this->booklet AND (($this->page % 2) == 0)) {
+        if (!$this->header_xobj_autoreset && $this->booklet && (($this->page % 2) == 0)) {
             // adjust margins for booklet mode
             $dx = ($this->original_lMargin - $this->original_rMargin);
         }
@@ -51,7 +53,7 @@ class MYPDF extends TCPDF
     }
 
     // Page footer
-    public function Footer() {
+    public function Footer() : void {
         $this->SetY(-25);
 
         $this->SetFont('helvetica', 'I', 7);
@@ -121,7 +123,7 @@ $lineHeight = ($lineHeight - $pdf->getY()) / 3;
 
 // Document head
 $pdf->SetFont('helvetica', 'B', 20);
-$title = 'INVOICE';
+$title      = 'INVOICE';
 $titleWidth = $pdf->GetStringWidth($title, 'helvetica', 'B', 20);
 
 $pdf->SetXY(
@@ -158,7 +160,7 @@ $pdf->Ln();
 $pdf->SetY($pdf->GetY() + 5);
 
 $header = ['Item', 'Quantity', 'Rate', 'Total'];
-$data = [
+$data   = [
     ['ASDF', 2.0, 199.90, 399.80],
     ["123-456-789<br><strong>This is a item name</strong><br><span style=\"color: #444;\">This is the item description in more detail for the customer so he knows what this content actually contains.</span>", 2.0, 199.90, 399.80],
     ["123-456-789<br><strong>This is a item name</strong><br><span style=\"color: #444;\">This is the item description in more detail for the customer.</span>", 2.0, "199.90\n-10 %", "150.399.80\n-15.039"],
@@ -178,8 +180,8 @@ $data = [
 ];
 
 // Header
-$w = array($pdf->getPageWidth() - 20 - 20 - 20 - 2*15, 20, 20, 20);
-$num_headers = count($header);
+$w           = [$pdf->getPageWidth() - 20 - 20 - 20 - 2 * 15, 20, 20, 20];
+$num_headers = \count($header);
 
 $pdf->setCellPadding(1, 1, 1, 1);
 
