@@ -622,13 +622,13 @@ class Bill implements \JsonSerializable
     /**
      * Add Bill element.
      *
-     * @param mixed $element Bill element
+     * @param BillElement $element Bill element
      *
      * @return void
      *
      * @since 1.0.0
      */
-    public function addElement($element) : void
+    public function addElement(BillElement $element) : void
     {
         $this->elements[] = $element;
     }
@@ -713,13 +713,13 @@ class Bill implements \JsonSerializable
     /**
      * Get media file by type
      *
-     * @param null|int $type Media type
+     * @param int $type Media type
      *
      * @return Media
      *
      * @since 1.0.0
      */
-    public function getFileByType(int $type = null) : Media
+    public function getFileByType(int $type) : Media
     {
         foreach ($this->media as $file) {
             if ($file->type->getId() === $type) {

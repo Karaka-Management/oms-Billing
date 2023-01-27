@@ -41,7 +41,7 @@
             "billing_type_is_template": {
                 "description": "What kind of bill is it?",
                 "name": "billing_type_is_template",
-                "type": "TINYINT",
+                "type": "TINYINT(1)",
                 "null": false
             }
         }
@@ -659,7 +659,7 @@
             },
             "billing_bill_subscription_account": {
                 "name": "billing_bill_subscription_account",
-                "type": "TINYINT(1)",
+                "type": "INT",
                 "null": true,
                 "default": null,
                 "foreignTable": "account",

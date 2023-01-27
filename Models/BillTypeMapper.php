@@ -40,12 +40,13 @@ final class BillTypeMapper extends DataMapperFactory
         'billing_type_template'            => ['name' => 'billing_type_template',       'type' => 'int',    'internal' => 'template'],
         'billing_type_transfer_type'       => ['name' => 'billing_type_transfer_type',  'type' => 'int',    'internal' => 'transferType'],
         'billing_type_transfer_stock'      => ['name' => 'billing_type_transfer_stock', 'type' => 'bool',   'internal' => 'transferStock'],
+        'billing_type_is_template'      => ['name' => 'billing_type_is_template', 'type' => 'bool',   'internal' => 'isTemplate'],
     ];
 
     /**
      * Belongs to.
      *
-     * @var array<string, array{mapper:string, external:string, by?:string, column?:string, conditional?:bool}>
+     * @var array<string, array{mapper:class-string, external:string, by?:string, column?:string, conditional?:bool}>
      * @since 1.0.0
      */
     public const OWNS_ONE = [
@@ -58,7 +59,7 @@ final class BillTypeMapper extends DataMapperFactory
     /**
      * Has many relation.
      *
-     * @var array<string, array{mapper:string, table:string, self?:?string, external?:?string, column?:string}>
+     * @var array<string, array{mapper:class-string, table:string, self?:?string, external?:?string, column?:string}>
      * @since 1.0.0
      */
     public const HAS_MANY = [
@@ -74,7 +75,7 @@ final class BillTypeMapper extends DataMapperFactory
     /**
      * Belongs to.
      *
-     * @var array<string, array{mapper:string, self:string}>
+     * @var array<string, array{mapper:class-string, self:string}>
      * @since 1.0.0
      */
     /*
@@ -89,7 +90,7 @@ final class BillTypeMapper extends DataMapperFactory
     /**
      * Model to use by the mapper.
      *
-     * @var string
+     * @var class-string
      * @since 1.0.0
      */
     public const MODEL = BillType::class;

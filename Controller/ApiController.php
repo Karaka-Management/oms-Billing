@@ -37,6 +37,7 @@ use Modules\Media\Models\UploadStatus;
 use Modules\SupplierManagement\Models\NullSupplier;
 use Modules\SupplierManagement\Models\SupplierMapper;
 use phpOMS\Autoloader;
+use phpOMS\Localization\BaseStringL11n;
 use phpOMS\Localization\ISO639x1Enum;
 use phpOMS\Localization\Money;
 use phpOMS\Message\Http\HttpRequest;
