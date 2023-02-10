@@ -39,7 +39,9 @@ class BillType implements \JsonSerializable
 
     public string $name = '';
 
-    public Collection $template;
+    public array $templates = [];
+
+    public ?Collection $defaultTemplate = null;
 
     public string $numberFormat = '';
 
@@ -66,7 +68,6 @@ class BillType implements \JsonSerializable
     public function __construct(string $name = '')
     {
         $this->name     = $name;
-        $this->template = new NullCollection();
     }
 
     /**
@@ -118,6 +119,16 @@ class BillType implements \JsonSerializable
         }
 
         return $this->l11n instanceof BaseStringL11n ? $this->l11n->content : $this->l11n;
+    }
+
+    public function addTemplate(Collection $template) : void
+    {
+        $this->templates[] = $template;
+    }
+
+    public function getTemplates() : array
+    {
+        return $this->templates;
     }
 
     /**

@@ -14,8 +14,12 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Controller;
 
+use Modules\Auditor\Models\AuditMapper;
+use Modules\Billing\Models\BillElementMapper;
+use Modules\Billing\Models\BillMapper;
 use Modules\Billing\Models\BillStatus;
 use Modules\Billing\Models\BillTransferType;
+use Modules\Billing\Models\BillTypeMapper;
 use Modules\Billing\Models\PurchaseBillMapper;
 use Modules\Billing\Models\SalesBillMapper;
 use Modules\Billing\Models\SettingsEnum;
@@ -27,6 +31,7 @@ use phpOMS\Localization\ISO3166CharEnum;
 use phpOMS\Localization\ISO3166NameEnum;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
+use phpOMS\Utils\StringUtils;
 use phpOMS\Views\View;
 
 /**
@@ -108,7 +113,7 @@ final class BackendController extends Controller
     public function viewBillingSalesInvoice(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
     {
         $view = new View($this->app->l11nManager, $request, $response);
-        $view->setTemplate('/Modules/Billing/Theme/Backend/sales-bill');
+        $view->setTemplate('/Modules/Billing/Theme/Backend/bill-create');
         $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response));
 
         $bill = SalesBillMapper::get()
@@ -120,13 +125,23 @@ final class BackendController extends Controller
 
         $view->setData('bill', $bill);
 
-        /** @var \Model\Setting $previewType */
-        $previewType = $this->app->appSettings->get(
-            names: SettingsEnum::PREVIEW_MEDIA_TYPE,
-            module: self::NAME
-        );
+        $logsBill = AuditMapper::getAll()
+            ->with('createdBy')
+            ->where('module', 'Billing')
+            ->where('type', StringUtils::intHash(BillMapper::class))
+            ->where('ref', $bill->getId())
+            ->execute();
 
-        $view->setData('previewType', (int) $previewType->content);
+        $logsElements = AuditMapper::getAll()
+            ->with('createdBy')
+            ->where('module', 'Billing')
+            ->where('type', StringUtils::intHash(BillElementMapper::class))
+            ->where('ref', \array_keys($bill->getElements()), 'IN')
+            ->execute();
+
+        $logs = \array_merge($logsBill, $logsElements);
+
+        $view->setData('logs', $logs);
 
         return $view;
     }
@@ -146,8 +161,21 @@ final class BackendController extends Controller
     public function viewBillingSalesInvoiceCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
     {
         $view = new View($this->app->l11nManager, $request, $response);
-        $view->setTemplate('/Modules/Billing/Theme/Backend/invoice-create');
+        $view->setTemplate('/Modules/Billing/Theme/Backend/bill-create');
         $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response));
+
+        $billTypes = BillTypeMapper::getAll()
+            ->with('l11n')
+            ->where('isTemplate', false)
+            ->where('transferType', BillTransferType::SALES)
+            ->where('l11n/language', $request->getLanguage())
+            ->execute();
+
+        $view->setData('billtypes', $billTypes);
+
+        $mediaListView = new \Modules\Media\Theme\Backend\Components\Media\ListView($this->app->l11nManager, $request, $response);
+        $mediaListView->setTemplate('/Modules/Media/Theme/Backend/Components/Media/list');
+        $view->addData('medialist', $mediaListView);
 
         return $view;
     }
@@ -167,7 +195,7 @@ final class BackendController extends Controller
     public function viewBillingPurchaseInvoiceCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
     {
         $view = new View($this->app->l11nManager, $request, $response);
-        $view->setTemplate('/Modules/Billing/Theme/Backend/invoice-create');
+        $view->setTemplate('/Modules/Billing/Theme/Backend/bill-create');
         $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response));
 
         return $view;
@@ -188,7 +216,7 @@ final class BackendController extends Controller
     public function viewBillingStockInvoiceCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
     {
         $view = new View($this->app->l11nManager, $request, $response);
-        $view->setTemplate('/Modules/Billing/Theme/Backend/invoice-create');
+        $view->setTemplate('/Modules/Billing/Theme/Backend/bill-create');
         $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response));
 
         return $view;

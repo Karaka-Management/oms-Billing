@@ -95,6 +95,7 @@ final class Installer extends InstallerAbstract
             $request->setData('language', \array_keys($type['l11n'])[0] ?? 'en');
             $request->setData('number_format', $type['numberFormat'] ?? '{id}');
             $request->setData('transfer_stock', $type['transferStock'] ?? false);
+            $request->setData('is_template', $type['isTemplate'] ?? false);
             $request->setData('transfer_type', $type['transferType'] ?? BillTransferType::SALES);
             $request->setData('template', $template);
 

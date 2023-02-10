@@ -26,6 +26,8 @@ use Modules\Billing\Models\BillTransferType;
 use Modules\Billing\Models\BillType;
 use Modules\Billing\Models\BillTypeL11nMapper;
 use Modules\Billing\Models\BillTypeMapper;
+use Modules\Billing\Models\PricingMapper;
+use Modules\Billing\Models\PricingType;
 use Modules\Billing\Models\SettingsEnum;
 use Modules\ClientManagement\Models\ClientMapper;
 use Modules\ItemManagement\Models\ItemMapper;
@@ -47,6 +49,7 @@ use phpOMS\Message\NotificationLevel;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
 use phpOMS\Model\Message\FormValidation;
+use phpOMS\System\MimeType;
 use phpOMS\Uri\HttpUri;
 use phpOMS\Views\View;
 
@@ -60,6 +63,73 @@ use phpOMS\Views\View;
  */
 final class ApiController extends Controller
 {
+    /**
+     * Api method to find items
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
+     *
+     * @return void
+     *
+     * @api
+     *
+     * @since 1.0.0
+     */
+    public function apiPricingFind(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    {
+        // tax based on customer location + item tax definition = matrix
+        // price based on
+            // item quantity
+            // customer price for item / item group
+            // customer location
+
+        $queryMapper = PricingMapper::getAll();
+
+        if ($request->hasData('price_name')) {
+            $queryMapper->where('name', $request->getData('price_name'));
+        }
+
+        $queryMapper->where('promocode', \array_unique([$request->getData('price_promocode'), null]), 'IN');
+        $queryMapper->where('item', \array_unique([$request->getData('price_item'), null]), 'IN');
+        $queryMapper->where('itemgroup', \array_unique([$request->getData('price_itemgroup'), null]), 'IN');
+        $queryMapper->where('itemsegment', \array_unique([$request->getData('price_itemsegment'), null]), 'IN');
+        $queryMapper->where('itemsection', \array_unique([$request->getData('price_itemsection'), null]), 'IN');
+        $queryMapper->where('itemtype', \array_unique([$request->getData('price_itemtype'), null]), 'IN');
+        $queryMapper->where('client', \array_unique([$request->getData('price_client'), null]), 'IN');
+        $queryMapper->where('clientgroup', \array_unique([$request->getData('price_clientgroup'), null]), 'IN');
+        $queryMapper->where('clientsegment', \array_unique([$request->getData('price_clientsegment'), null]), 'IN');
+        $queryMapper->where('clientsection', \array_unique([$request->getData('price_clientsection'), null]), 'IN');
+        $queryMapper->where('clienttype', \array_unique([$request->getData('price_clienttype'), null]), 'IN');
+        $queryMapper->where('clientcountry', \array_unique([$request->getData('price_clientcountry'), null]), 'IN');
+        $queryMapper->where('supplier', \array_unique([$request->getData('price_supplier'), null]), 'IN');
+        $queryMapper->where('unit', \array_unique([$request->getData('price_unit'), null]), 'IN');
+        $queryMapper->where('type', $request->getData('price_type', 'int') ?? PricingType::SALES);
+        $queryMapper->where('currency', array_unique([$request->getData('price_currency'), null]), 'IN');
+
+        /*
+        if ($request->hasData('price_quantity')) {
+            $whereQuery = new Where();
+            $whereQuery->where('quantity', (int) $request->getData('price_quantity'), '<=')
+                ->where('quantity', null, '=', 'OR')
+
+            $queryMapper->where('quantity', $whereQuery);
+        }
+        */
+
+        $result = $queryMapper->execute();
+
+        $response->header->set('Content-Type', MimeType::M_JSON, true);
+        $response->set(
+            $request->uri->__toString(),
+            \array_values(
+                ItemMapper::getAll()
+                    ->where('name', '%' . ($request->getData('search') ?? '') . '%', 'LIKE')
+                    ->execute()
+            )
+        );
+    }
+
     /**
      * Api method to update a bill
      *
@@ -281,7 +351,6 @@ final class ApiController extends Controller
                 $request->header->account,
                 __DIR__ . '/../../../Modules/Media/Files' . $path,
                 $path,
-                type: $request->getData('type', 'int'),
                 pathSettings: PathSettings::FILE_PATH,
                 hasAccountRelation: false,
                 readContent: (bool) ($request->getData('parse_content') ?? false)
@@ -294,10 +363,22 @@ final class ApiController extends Controller
                     $bill->getId(),
                     $media->getId(),
                     BillMapper::class,
-                    'bill_media',
+                    'media',
                     '',
                     $request->getOrigin()
                 );
+
+                if ($request->hasData('type')) {
+                    $this->createModelRelation(
+                        $request->header->account,
+                        $media->getId(),
+                        $request->getData('type', 'int'),
+                        MediaMapper::class,
+                        'types',
+                        '',
+                        $request->getOrigin()
+                    );
+                }
 
                 if ($collection === null) {
                     $collection = MediaMapper::getParentCollection($path)->limit(1)->execute();
@@ -311,7 +392,15 @@ final class ApiController extends Controller
                     }
                 }
 
-                CollectionMapper::writer()->createRelationTable('sources', [$media->getId()], $collection->getId());
+                $this->createModelRelation(
+                    $request->header->account,
+                    $collection->getId(),
+                    $media->getId(),
+                    CollectionMapper::class,
+                    'sources',
+                    '',
+                    $request->getOrigin()
+                );
             }
         }
 
@@ -320,9 +409,9 @@ final class ApiController extends Controller
                 $this->createModelRelation(
                     $request->header->account,
                     $bill->getId(),
-                    $media,
+                    (int) $media,
                     BillMapper::class,
-                    'bill_media',
+                    'media',
                     '',
                     $request->getOrigin()
                 );
@@ -432,7 +521,9 @@ final class ApiController extends Controller
         /** @var \Modules\ItemManagement\Models\Item $item */
         $item = ItemMapper::get()
             ->with('l11n')
+            ->with('l11n/type')
             ->where('id', $element->item)
+            ->where('l11n/type/title', ['name1', 'name2', 'name3'], 'IN')
             ->where('l11n/language', $response->getLanguage())
             ->execute();
 
@@ -502,6 +593,80 @@ final class ApiController extends Controller
         return [];
     }
 
+    public function apiPreviewRender(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    {
+        Autoloader::addPath(__DIR__ . '/../../../Resources/');
+
+        $templateId = $request->getData('bill_template', 'int');
+        if ($templateId === null) {
+            $billTypeId = $request->getData('bill_type', 'int');
+            $billType = BillTypeMapper::get()
+                ->where('id', $billTypeId)
+                ->execute();
+
+            $templateId = $billType->defaultTemplate->getId();
+        }
+
+        $template = CollectionMapper::get()
+            ->with('sources')
+            ->where('id', $templateId)
+            ->execute();
+
+        require_once __DIR__ . '/../../../Resources/tcpdf/tcpdf.php';
+
+        $response->header->set('Content-Type', MimeType::M_PDF, true);
+
+        $view = new View($this->app->l11nManager, $request, $response);
+        $view->setTemplate('/' . \substr($template->getSourceByName('bill.pdf.php')->getPath(), 0, -8), 'pdf.php');
+        $view->setData('bill', $bill);
+        $view->setData('path', $pdfDir . '/' . $request->getData('bill') . '.pdf');
+
+        $view->setData('bill_creator', $request->getData('bill_creator'));
+        $view->setData('bill_title', $request->getData('bill_title'));
+        $view->setData('bill_subtitle', $request->getData('bill_subtitle'));
+        $view->setData('keywords', $request->getData('keywords'));
+        $view->setData('bill_logo_name', $request->getData('bill_logo_name'));
+        $view->setData('bill_slogan', $request->getData('bill_slogan'));
+
+        $view->setData('legal_company_name', $request->getData('legal_company_name'));
+        $view->setData('bill_company_address', $request->getData('bill_company_address'));
+        $view->setData('bill_company_city', $request->getData('bill_company_city'));
+        $view->setData('bill_company_ceo', $request->getData('bill_company_ceo'));
+        $view->setData('bill_company_website', $request->getData('bill_company_website'));
+        $view->setData('bill_company_email', $request->getData('bill_company_email'));
+        $view->setData('bill_company_phone', $request->getData('bill_company_phone'));
+
+        $view->setData('bill_company_tax_office', $request->getData('bill_company_tax_office'));
+        $view->setData('bill_company_tax_id', $request->getData('bill_company_tax_id'));
+        $view->setData('bill_company_vat_id', $request->getData('bill_company_vat_id'));
+
+        $view->setData('bill_company_bank_name', $request->getData('bill_company_bank_name'));
+        $view->setData('bill_company_bic', $request->getData('bill_company_bic'));
+        $view->setData('bill_company_iban', $request->getData('bill_company_iban'));
+
+        $view->setData('bill_type_name', $request->getData('bill_type_name'));
+
+        $view->setData('bill_invoice_no', $request->getData('bill_invoice_no'));
+        $view->setData('bill_invoice_date', $request->getData('bill_invoice_date'));
+        $view->setData('bill_service_date', $request->getData('bill_service_date'));
+        $view->setData('bill_customer_no', $request->getData('bill_customer_no'));
+        $view->setData('bill_po', $request->getData('bill_po'));
+        $view->setData('bill_due_date', $request->getData('bill_due_date'));
+
+        $view->setData('bill_start_text', $request->getData('bill_start_text'));
+        $view->setData('bill_lines', $request->getData('bill_lines'));
+        $view->setData('bill_end_text', $request->getData('bill_end_text'));
+
+        $view->setData('bill_payment_terms', $request->getData('bill_payment_terms'));
+        $view->setData('bill_terms', $request->getData('bill_terms'));
+        $view->setData('bill_taxes', $request->getData('bill_taxes'));
+        $view->setData('bill_currency', $request->getData('bill_currency'));
+
+        $pdf = $view->render();
+
+        $response->set('', $pdf);
+    }
+
     /**
      * Api method to create and archive a bill
      *
@@ -517,23 +682,39 @@ final class ApiController extends Controller
      */
     public function apiBillPdfArchiveCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
-        Autoloader::addPath(__DIR__ . '/../../../Resources/');
-
         /** @var \Modules\Billing\Models\Bill $bill */
         $bill = BillMapper::get()
-            ->with('type')
-            ->with('type/template')
-            ->with('type/template/sources')
+            ->with('elements')
             ->where('id', $request->getData('bill') ?? 0)
             ->execute();
 
-        /** @var \Model\Setting $previewType */
-        $previewType = $this->app->appSettings->get(
-            names: SettingsEnum::PREVIEW_MEDIA_TYPE,
-            module: self::NAME
-        );
+        Autoloader::addPath(__DIR__ . '/../../../Resources/');
 
-        $template = $bill->type->template;
+        $templateId = $request->getData('bill_template', 'int');
+        if ($templateId === null) {
+            $billTypeId = $bill->type->getId();
+            $billType = BillTypeMapper::get()
+                ->where('id', $billTypeId)
+                ->execute();
+
+            $templateId = $billType->defaultTemplate->getId();
+        }
+
+        $template = CollectionMapper::get()
+            ->with('sources')
+            ->where('id', $templateId)
+            ->execute();
+
+        require_once __DIR__ . '/../../../Resources/tcpdf/tcpdf.php';
+
+        $view = new View($this->app->l11nManager, $request, $response);
+        $view->setTemplate('/' . \substr($template->getSourceByName('bill.pdf.php')->getPath(), 0, -8), 'pdf.php');
+
+        /**
+            @todo: pass data to bill
+        */
+
+        $pdf = $view->render();
 
         $path   = $this->createBillDir($bill);
         $pdfDir = __DIR__ . '/../../../Modules/Media/Files' . $path;
@@ -548,15 +729,7 @@ final class ApiController extends Controller
             // @codeCoverageIgnoreEnd
         }
 
-        require_once __DIR__ . '/../../../Resources/tcpdf/tcpdf.php';
-
-        $view = new View($this->app->l11nManager, $request, $response);
-        $view->setTemplate('/' . \substr($template->getSourceByName('bill.pdf.php')->getPath(), 0, -8), 'pdf.php');
-        $view->setData('bill', $bill);
-        $view->setData('path', $pdfDir . '/' . $request->getData('bill') . '.pdf');
-
-        $pdf = $view->build();
-
+        \file_put_contents($pdfDir . '/' . $request->getData('bill') . '.pdf', $pdf);
         if (!\is_file($pdfDir . '/' . $request->getData('bill') . '.pdf')) {
             $response->header->status = RequestStatusCode::R_400;
 
@@ -564,7 +737,7 @@ final class ApiController extends Controller
         }
 
         $media = $this->app->moduleManager->get('Media')->createDbEntry(
-            [
+            status: [
                 'status'    => UploadStatus::OK,
                 'name'      => $request->getData('bill') . '.pdf',
                 'path'      => $pdfDir,
@@ -572,9 +745,12 @@ final class ApiController extends Controller
                 'size'      => \filesize($pdfDir . '/' . $request->getData('bill') . '.pdf'),
                 'extension' => 'pdf',
             ],
-            $request->header->account,
-            $path,
-            (int) $previewType->content
+            account: $request->header->account,
+            virtualPath: $path,
+            ip: $request->getOrigin(),
+            app: $this->app,
+            readContent: true,
+            unit: $this->app->unitId
         );
 
         $this->createModelRelation(
@@ -582,7 +758,7 @@ final class ApiController extends Controller
             $bill->getId(),
             $media->getId(),
             BillMapper::class,
-            'bill_media',
+            'media',
             '',
             $request->getOrigin()
         );
@@ -782,10 +958,17 @@ final class ApiController extends Controller
     {
         $billType = new BillType($request->getData('name') ?? '');
         $billType->setL11n((string) ($request->getData('title') ?? ''), $request->getData('language') ?? ISO639x1Enum::_EN);
-        $billType->template      = new NullCollection((int) ($request->getData('template') ?? 0));
         $billType->numberFormat  = (string) ($request->getData('number_format') ?? '{id}');
         $billType->transferStock = (bool) ($request->getData('transfer_stock') ?? false);
+        $billType->isTemplate    = (bool) ($request->getData('is_template') ?? false);
         $billType->transferType  = (int) ($request->getData('transfer_type') ?? BillTransferType::SALES);
+        $billType->defaultTemplate = $request->hasData('template')
+            ? new NullCollection((int) $request->getData('template'))
+            : null;
+
+        if ($request->hasData('template')) {
+            $billType->addTemplate(new NullCollection((int) $request->getData('template')));
+        }
 
         return $billType;
     }

@@ -18,10 +18,13 @@ use Modules\Admin\Models\Account;
 use Modules\Admin\Models\NullAccount;
 use Modules\ClientManagement\Models\Client;
 use Modules\Editor\Models\EditorDoc;
+use Modules\Media\Models\Collection;
 use Modules\Media\Models\Media;
 use Modules\Media\Models\NullMedia;
 use Modules\SupplierManagement\Models\Supplier;
+use phpOMS\Localization\ISO3166TwoEnum;
 use phpOMS\Localization\ISO4217CharEnum;
+use phpOMS\Localization\ISO639x1Enum;
 use phpOMS\Localization\Money;
 
 /**
@@ -41,6 +44,8 @@ class Bill implements \JsonSerializable
      * @since 1.0.0
      */
     protected int $id = 0;
+
+    public int $source = 0;
 
     /**
      * Number ID.
@@ -65,6 +70,8 @@ class Bill implements \JsonSerializable
      * @since 1.0.0
      */
     public BillType $type;
+
+    public ?Collection $template = null;
 
     /**
      * Bill status.
@@ -117,6 +124,8 @@ class Bill implements \JsonSerializable
     public ?Client $client = null;
 
     public ?Supplier $supplier = null;
+
+    public string $language = ISO639x1Enum::_EN;
 
     /**
      * Receiver.
@@ -213,6 +222,8 @@ class Bill implements \JsonSerializable
      * @since 1.0.0
      */
     public string $billCountry = '';
+
+    public string $billEmail = '';
 
     /**
      * Person refering for this order.
@@ -553,6 +564,32 @@ class Bill implements \JsonSerializable
     public function getCurrency() : string
     {
         return $this->currency;
+    }
+
+    /**
+     * Set language.
+     *
+     * @param string $language Language
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
+    public function setLanguage(string $language) : void
+    {
+        $this->language = $language;
+    }
+
+    /**
+     * Get language.
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
+    public function getLanguage() : string
+    {
+        return $this->language;
     }
 
     /**

@@ -1,4 +1,185 @@
 {
+    "billing_prices": {
+        "name": "billing_prices",
+        "fields": {
+            "billing_prices_id": {
+                "name": "billing_prices_id",
+                "type": "INT",
+                "null": false,
+                "primary": true,
+                "autoincrement": true
+            },
+            "billing_prices_name": {
+                "name": "billing_prices_name",
+                "type": "VARCHAR(255)",
+                "null": false
+            },
+            "billing_prices_promocode": {
+                "name": "billing_prices_promocode",
+                "type": "INT",
+                "null": false
+            },
+            "billing_prices_item": {
+                "name": "billing_prices_item",
+                "type": "INT",
+                "null": true,
+                "default": null,
+                "foreignTable": "itemmgmt_item",
+                "foreignKey": "itemmgmt_item_id"
+            },
+            "billing_prices_itemgroup": {
+                "name": "billing_prices_itemgroup",
+                "type": "INT",
+                "null": true,
+                "default": null,
+                "foreignTable": "itemmgmt_attr_value",
+                "foreignKey": "itemmgmt_attr_value_id"
+            },
+            "billing_prices_itemsegment": {
+                "name": "billing_prices_itemsegment",
+                "type": "INT",
+                "null": true,
+                "default": null,
+                "foreignTable": "itemmgmt_attr_value",
+                "foreignKey": "itemmgmt_attr_value_id"
+            },
+            "billing_prices_itemsection": {
+                "name": "billing_prices_itemsection",
+                "type": "INT",
+                "null": true,
+                "default": null,
+                "foreignTable": "itemmgmt_attr_value",
+                "foreignKey": "itemmgmt_attr_value_id"
+            },
+            "billing_prices_itemtype": {
+                "name": "billing_prices_itemtype",
+                "type": "INT",
+                "null": true,
+                "default": null,
+                "foreignTable": "itemmgmt_attr_value",
+                "foreignKey": "itemmgmt_attr_value_id"
+            },
+            "billing_prices_client": {
+                "name": "billing_prices_client",
+                "type": "INT",
+                "null": true,
+                "default": null,
+                "foreignTable": "clientmgmt_client",
+                "foreignKey": "clientmgmt_client_id"
+            },
+            "billing_prices_clientgroup": {
+                "name": "billing_prices_clientgroup",
+                "type": "INT",
+                "null": true,
+                "default": null,
+                "foreignTable": "clientmgmt_attr_value",
+                "foreignKey": "clientmgmt_attr_value_id"
+            },
+            "billing_prices_clientsegment": {
+                "name": "billing_prices_clientsegment",
+                "type": "INT",
+                "null": true,
+                "default": null,
+                "foreignTable": "clientmgmt_attr_value",
+                "foreignKey": "clientmgmt_attr_value_id"
+            },
+            "billing_prices_clientsection": {
+                "name": "billing_prices_clientsection",
+                "type": "INT",
+                "null": true,
+                "default": null,
+                "foreignTable": "clientmgmt_attr_value",
+                "foreignKey": "clientmgmt_attr_value_id"
+            },
+            "billing_prices_clienttype": {
+                "name": "billing_prices_clienttype",
+                "type": "INT",
+                "null": true,
+                "default": null,
+                "foreignTable": "clientmgmt_attr_value",
+                "foreignKey": "clientmgmt_attr_value_id"
+            },
+            "billing_prices_clientcountry": {
+                "name": "billing_prices_clientcountry",
+                "type": "VARCHAR(2)",
+                "null": true,
+                "default": null,
+                "foreignTable": "country",
+                "foreignKey": "country_code2"
+            },
+            "billing_prices_supplier": {
+                "name": "billing_prices_supplier",
+                "type": "INT",
+                "null": true,
+                "default": null,
+                "foreignTable": "suppliermgmt_supplier",
+                "foreignKey": "suppliermgmt_supplier_id"
+            },
+            "billing_prices_unit": {
+                "name": "billing_prices_unit",
+                "type": "INT",
+                "null": true,
+                "default": null,
+                "foreignTable": "unit",
+                "foreignKey": "unit_id"
+            },
+            "billing_prices_type": {
+                "name": "billing_prices_type",
+                "type": "TINYINT(1)",
+                "null": false
+            },
+            "billing_prices_quantity": {
+                "name": "billing_prices_quantity",
+                "type": "BIGINT",
+                "null": false
+            },
+            "billing_prices_price": {
+                "name": "billing_prices_price",
+                "type": "BIGINT",
+                "null": false
+            },
+            "billing_prices_discount": {
+                "name": "billing_prices_discount",
+                "type": "BIGINT",
+                "null": false
+            },
+            "billing_prices_discountp": {
+                "name": "billing_prices_discountp",
+                "type": "BIGINT",
+                "null": false
+            },
+            "billing_prices_bonus": {
+                "name": "billing_prices_bonus",
+                "type": "BIGINT",
+                "null": false
+            },
+            "billing_prices_multiply": {
+                "name": "billing_prices_multiply",
+                "type": "TINYINT(1)",
+                "null": false
+            },
+            "billing_prices_currency": {
+                "name": "billing_prices_currency",
+                "type": "VARCHAR(3)",
+                "null": true,
+                "default": null,
+                "foreignTable": "currency",
+                "foreignKey": "currency_code"
+            },
+            "billing_prices_start": {
+                "name": "billing_prices_start",
+                "type": "DATETIME",
+                "null": true,
+                "default": null
+            },
+            "billing_prices_end": {
+                "name": "billing_prices_end",
+                "type": "DATETIME",
+                "null": true,
+                "default": null
+            }
+        }
+    },
     "billing_type": {
         "name": "billing_type",
         "fields": {
@@ -19,18 +200,19 @@
                 "type": "VARCHAR(255)",
                 "null": false
             },
-            "billing_type_template": {
-                "name": "billing_type_template",
-                "type": "INT",
-                "null": false,
-                "foreignTable": "media",
-                "foreignKey": "media_id"
-            },
             "billing_type_transfer_type": {
                 "description": "What kind of bill is it?",
                 "name": "billing_type_transfer_type",
                 "type": "TINYINT",
                 "null": false
+            },
+            "billing_type_default_template": {
+                "name": "billing_type_default_template",
+                "type": "INT",
+                "null": true,
+                "default": null,
+                "foreignTable": "media",
+                "foreignKey": "media_id"
             },
             "billing_type_transfer_stock": {
                 "description": "Does this bill type move stock?",
@@ -43,6 +225,32 @@
                 "name": "billing_type_is_template",
                 "type": "TINYINT(1)",
                 "null": false
+            }
+        }
+    },
+    "billing_bill_type_media_rel": {
+        "name": "billing_bill_type_media_rel",
+        "fields": {
+            "billing_bill_type_media_rel_id": {
+                "name": "billing_bill_type_media_rel_id",
+                "type": "INT",
+                "null": false,
+                "primary": true,
+                "autoincrement": true
+            },
+            "billing_bill_type_media_rel_src": {
+                "name": "billing_bill_type_media_rel_src",
+                "type": "INT",
+                "null": false,
+                "foreignTable": "billing_type",
+                "foreignKey": "billing_type_id"
+            },
+            "billing_bill_type_media_rel_dst": {
+                "name": "billing_bill_type_media_rel_dst",
+                "type": "INT",
+                "null": false,
+                "foreignTable": "media",
+                "foreignKey": "media_id"
             }
         }
     },
@@ -114,6 +322,14 @@
                 "null": false,
                 "foreignTable": "billing_type",
                 "foreignKey": "billing_type_id"
+            },
+            "billing_bill_template": {
+                "name": "billing_bill_template",
+                "type": "INT",
+                "null": true,
+                "default": null,
+                "foreignTable": "media",
+                "foreignKey": "media_id"
             },
             "billing_bill_supplier": {
                 "name": "billing_bill_supplier",
@@ -284,6 +500,14 @@
                 "name": "billing_bill_currency",
                 "type": "VARCHAR(3)",
                 "null": false
+            },
+            "billing_bill_language": {
+                "name": "billing_bill_language",
+                "type": "VARCHAR(3)",
+                "null": true,
+                "default": null,
+                "foreignTable": "language",
+                "foreignKey": "language_639_1"
             },
             "billing_bill_referral": {
                 "name": "billing_bill_referral",

@@ -17,6 +17,7 @@ namespace Modules\Billing\Models;
 use Modules\Admin\Models\AccountMapper;
 use Modules\ClientManagement\Models\ClientMapper;
 use Modules\Editor\Models\EditorDocMapper;
+use Modules\Media\Models\CollectionMapper;
 use Modules\Media\Models\MediaMapper;
 use Modules\SupplierManagement\Models\SupplierMapper;
 use phpOMS\DataStorage\Database\Mapper\DataMapperFactory;
@@ -42,6 +43,7 @@ class BillMapper extends DataMapperFactory
         'billing_bill_number'                            => ['name' => 'billing_bill_number',      'type' => 'string',    'internal' => 'number'],
         'billing_bill_numberformat'                      => ['name' => 'billing_bill_numberformat',      'type' => 'string',    'internal' => 'numberFormat'],
         'billing_bill_type'                              => ['name' => 'billing_bill_type',      'type' => 'int',    'internal' => 'type'],
+        'billing_bill_template'                              => ['name' => 'billing_bill_template',      'type' => 'int',    'internal' => 'template'],
         'billing_bill_header'                              => ['name' => 'billing_bill_header',      'type' => 'string',    'internal' => 'header'],
         'billing_bill_footer'                              => ['name' => 'billing_bill_footer',      'type' => 'string',    'internal' => 'footer'],
         'billing_bill_info'                              => ['name' => 'billing_bill_info',      'type' => 'string',    'internal' => 'info'],
@@ -67,6 +69,7 @@ class BillMapper extends DataMapperFactory
         'billing_bill_netdiscount'                       => ['name' => 'billing_bill_netdiscount',      'type' => 'Serializable',    'internal' => 'netDiscount'],
         'billing_bill_grossdiscount'                     => ['name' => 'billing_bill_grossdiscount',      'type' => 'Serializable',    'internal' => 'grossDiscount'],
         'billing_bill_currency'                          => ['name' => 'billing_bill_currency',      'type' => 'string',    'internal' => 'currency'],
+        'billing_bill_language'                          => ['name' => 'billing_bill_language',      'type' => 'string',    'internal' => 'language'],
         'billing_bill_referral'                          => ['name' => 'billing_bill_referral',      'type' => 'int',    'internal' => 'referral'],
         'billing_bill_referral_name'                     => ['name' => 'billing_bill_referral_name',      'type' => 'string',    'internal' => 'referralName'],
         'billing_bill_reference'                         => ['name' => 'billing_bill_reference',      'type' => 'int',    'internal' => 'reference'],
@@ -124,6 +127,10 @@ class BillMapper extends DataMapperFactory
         'referral'  => [
             'mapper'     => AccountMapper::class,
             'external'   => 'billing_bill_referral',
+        ],
+        'template'  => [
+            'mapper'     => CollectionMapper::class,
+            'external'   => 'billing_bill_template',
         ],
     ];
 

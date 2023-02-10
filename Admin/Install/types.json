@@ -4,9 +4,10 @@
 		"numberFormat": "{y}-{id}",
 		"transferType": 1,
 		"transferStock": false,
+		"isTemplate": false,
 		"l11n": {
-			"de": "Offer",
-			"en": "Angebot"
+			"en": "Offer",
+			"de": "Angebot"
 		}
 	},
 	{
@@ -14,9 +15,10 @@
 		"numberFormat": "{y}-{id}",
 		"transferType": 1,
 		"transferStock": false,
+		"isTemplate": false,
 		"l11n": {
-			"de": "Order Confirmation",
-			"en": "Auftragsbestaetigung"
+			"en": "Order Confirmation",
+			"de": "Auftragsbestaetigung"
 		}
 	},
 	{
@@ -24,9 +26,10 @@
 		"numberFormat": "{y}-{id}",
 		"transferType": 1,
 		"transferStock": true,
+		"isTemplate": false,
 		"l11n": {
-			"de": "Delivery Note",
-			"en": "Lieferschein"
+			"en": "Delivery Note",
+			"de": "Lieferschein"
 		}
 	},
 	{
@@ -34,9 +37,10 @@
 		"numberFormat": "{y}-{id}",
 		"transferType": 1,
 		"transferStock": false,
+		"isTemplate": false,
 		"l11n": {
-			"de": "Invoice",
-			"en": "Rechnung"
+			"en": "Invoice",
+			"de": "Rechnung"
 		}
 	},
 	{
@@ -44,9 +48,10 @@
 		"numberFormat": "{y}-{id}",
 		"transferType": 1,
 		"transferStock": false,
+		"isTemplate": false,
 		"l11n": {
-			"de": "Proforma Invoice",
-			"en": "Proforma Rechnung"
+			"en": "Proforma Invoice",
+			"de": "Proforma Rechnung"
 		}
 	},
 	{
@@ -54,9 +59,10 @@
 		"numberFormat": "{y}-{id}",
 		"transferType": 1,
 		"transferStock": false,
+		"isTemplate": false,
 		"l11n": {
-			"de": "Credit Note",
-			"en": "Rechnungskorrektur"
+			"en": "Credit Note",
+			"de": "Rechnungskorrektur"
 		}
 	},
 	{
@@ -64,9 +70,10 @@
 		"numberFormat": "{y}-{id}",
 		"transferType": 1,
 		"transferStock": false,
+		"isTemplate": false,
 		"l11n": {
-			"de": "Reverse Invoice",
-			"en": "Gutschrift"
+			"en": "Reverse Invoice",
+			"de": "Gutschrift"
 		}
 	},
 	{
@@ -74,9 +81,10 @@
 		"numberFormat": "{y}-{id}",
 		"transferType": 2,
 		"transferStock": false,
+		"isTemplate": false,
 		"l11n": {
-			"de": "Offer",
-			"en": "Angebot"
+			"en": "Offer",
+			"de": "Angebot"
 		}
 	},
 	{
@@ -84,9 +92,10 @@
 		"numberFormat": "{y}-{id}",
 		"transferType": 2,
 		"transferStock": false,
+		"isTemplate": false,
 		"l11n": {
-			"de": "Order Confirmation",
-			"en": "Auftragsbestaetigung"
+			"en": "Order Confirmation",
+			"de": "Auftragsbestaetigung"
 		}
 	},
 	{
@@ -94,9 +103,10 @@
 		"numberFormat": "{y}-{id}",
 		"transferType": 2,
 		"transferStock": true,
+		"isTemplate": false,
 		"l11n": {
-			"de": "Delivery Note",
-			"en": "Lieferschein"
+			"en": "Delivery Note",
+			"de": "Lieferschein"
 		}
 	},
 	{
@@ -104,9 +114,10 @@
 		"numberFormat": "{y}-{id}",
 		"transferType": 2,
 		"transferStock": false,
+		"isTemplate": false,
 		"l11n": {
-			"de": "Invoice",
-			"en": "Rechnung"
+			"en": "Invoice",
+			"de": "Rechnung"
 		}
 	},
 	{
@@ -114,9 +125,10 @@
 		"numberFormat": "{y}-{id}",
 		"transferType": 2,
 		"transferStock": false,
+		"isTemplate": false,
 		"l11n": {
-			"de": "Proforma Invoice",
-			"en": "Proforma Rechnung"
+			"en": "Proforma Invoice",
+			"de": "Proforma Rechnung"
 		}
 	},
 	{
@@ -124,9 +136,10 @@
 		"numberFormat": "{y}-{id}",
 		"transferType": 2,
 		"transferStock": false,
+		"isTemplate": false,
 		"l11n": {
-			"de": "Credit Note",
-			"en": "Rechnungskorrektur"
+			"en": "Credit Note",
+			"de": "Rechnungskorrektur"
 		}
 	},
 	{
@@ -134,9 +147,10 @@
 		"numberFormat": "{y}-{id}",
 		"transferType": 2,
 		"transferStock": false,
+		"isTemplate": false,
 		"l11n": {
-			"de": "Reverse Invoice",
-			"en": "Gutschrift"
+			"en": "Reverse Invoice",
+			"de": "Gutschrift"
 		}
 	},
 	{
@@ -144,9 +158,10 @@
 		"numberFormat": "{y}-{id}",
 		"transferType": 4,
 		"transferStock": false,
+		"isTemplate": false,
 		"l11n": {
-			"de": "Stock Movement",
-			"en": "Lagerumbuchung"
+			"en": "Stock Movement",
+			"de": "Lagerumbuchung"
 		}
 	},
 	{
@@ -154,9 +169,10 @@
 		"numberFormat": "{y}-{id}",
 		"transferType": 4,
 		"transferStock": false,
+		"isTemplate": false,
 		"l11n": {
-			"de": "Scrapping",
-			"en": "Verschrottung"
+			"en": "Scrapping",
+			"de": "Verschrottung"
 		}
 	},
 	{
@@ -164,9 +180,10 @@
 		"numberFormat": "{y}-{id}",
 		"transferType": 1,
 		"transferStock": false,
+		"isTemplate": false,
 		"l11n": {
-			"de": "Subscription",
-			"en": "Abonnement"
+			"en": "Subscription",
+			"de": "Abonnement"
 		}
 	},
 	{
@@ -174,9 +191,10 @@
 		"numberFormat": "{y}-{id}",
 		"transferType": 1,
 		"transferStock": false,
+		"isTemplate": true,
 		"l11n": {
-			"de": "Template",
-			"en": "Vorlage"
+			"en": "Template",
+			"de": "Vorlage"
 		}
 	},
 	{
@@ -184,9 +202,10 @@
 		"numberFormat": "{y}-{id}",
 		"transferType": 1,
 		"transferStock": false,
+		"isTemplate": false,
 		"l11n": {
-			"de": "Subscription",
-			"en": "Abonnement"
+			"en": "Subscription",
+			"de": "Abonnement"
 		}
 	},
 	{
@@ -194,9 +213,10 @@
 		"numberFormat": "{y}-{id}",
 		"transferType": 1,
 		"transferStock": false,
+		"isTemplate": true,
 		"l11n": {
-			"de": "Template",
-			"en": "Vorlage"
+			"en": "Template",
+			"de": "Vorlage"
 		}
 	}
 ]
