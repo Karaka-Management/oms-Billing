@@ -1,0 +1,106 @@
+{
+    "type": {
+        "purchase_invoice": {
+            "en": [
+                "Invoice"
+            ],
+            "de": [
+                "Rechnung"
+            ]
+        },
+        "purchase_credit_note": {
+            "en": [
+                "Credit Note"
+            ],
+            "de": [
+                "Rechnungskorrektur",
+                "Gutschrift"
+            ]
+        },
+        "purchase_delivery_note": {
+            "en": [
+                "Delivery Note"
+            ],
+            "de": [
+                "Lieferschein"
+            ]
+        },
+        "purchase_order_confirmation": {
+            "en": [
+                "Order Confirmation"
+            ],
+            "de": [
+                "Auftragsbestätigung"
+            ]
+        },
+        "purchase_reverse_invoice": {
+            "en": [
+                "Credit Note"
+            ],
+            "de": [
+                "Gutschrift"
+            ]
+        }
+    },
+    "date_format": [
+        "Y-m-d",
+        "Y.m.d",
+        "Y/m/d",
+        "d-m-Y",
+        "d.m.Y",
+        "d/m/Y",
+        "m-d-Y",
+        "m.d.Y",
+        "m/d/Y",
+        "M. d.Y",
+        "M. d. Y",
+        "M. d Y",
+        "M. d,Y",
+        "M. d, Y",
+        "M d.Y",
+        "M d. Y",
+        "M d Y",
+        "M d,Y",
+        "M d, Y",
+        "M, d.Y",
+        "M, d. Y",
+        "M, d Y",
+        "M, d,Y",
+        "M, d, Y"
+    ],
+    "bill_no": {
+        "en": [
+            "/(inv.*?)(no|\\s|,|:|\\.|#)+(?<bill_no>.*?)(  |$)/i",
+            "/(#)(?<bill_no>.*?)(  |$)/i"
+        ],
+        "de": [
+            "/(rechnungsn.*?|beleg.*?)(?<bill_no>.*?)(  |$)/i"
+        ]
+    },
+    "bill_date": {
+        "en": [
+            "/(inv.*?)(date.*?)(\\s|,|:|\\.)+(?<bill_date>.*?)( |$)/i",
+            "/(date.*?)(\\s|,|:|\\.)+(?<bill_date>.*?)(  |$)/i"
+        ],
+        "de": [
+            "/(rechnungsdat.*?|belegdat.*?)(\\s|,|:|\\.)+(?<bill_date>.*?)( |$)/i"
+        ]
+    },
+    "bill_due": {
+        "en": [
+            "/(due date.*?)(\\s|,|:|\\.)+(?<bill_due>.*?)( |$)/i",
+            "/(due.*?)(\\s|,|:|\\.)+(?<bill_due>.*?)( |$)/i"
+        ],
+        "de": [
+            "/(fällig.*?)(\\s|,|:|\\.)+(?<bill_due>.*?)( |$)/i"
+        ]
+    },
+    "total_gross": {
+        "en": [
+            "/(total.*?|gross.*?)(?<total_gross>([0-9]+,*\\.*)+)/i"
+        ],
+        "de": [
+            "/(betrag.*?|gesamt.*?|brutto.*?)(?<total_gross>([0-9]+,*\\.*)+)/i"
+        ]
+    }
+}

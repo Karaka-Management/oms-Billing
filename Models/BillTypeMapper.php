@@ -116,5 +116,5 @@ final class BillTypeMapper extends DataMapperFactory
      * @var string
      * @since 1.0.0
      */
-    public const PRIMARYFIELD ='billing_type_id';
+    public const PRIMARYFIELD = 'billing_type_id';
 }

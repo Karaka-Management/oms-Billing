@@ -12,6 +12,8 @@
  */
 declare(strict_types=1);
 
+use phpOMS\Localization\ISO3166NameEnum;
+use phpOMS\Localization\ISO3166TwoEnum;
 use phpOMS\Uri\UriFactory;
 
 $bills = $this->getData('bills') ?? [];
@@ -126,7 +128,7 @@ echo $this->getData('nav')->render(); ?>
                         <label>
                             <i class="filter fa fa-filter"></i>
                         </label>
-                    <td><?= $this->getHtml('Net'); ?>
+                    <td><?= $this->getHtml('Gross'); ?>
                         <label for="billList-sort-7">
                             <input type="radio" name="billList-sort" id="billList-sort-7">
                             <i class="sort-asc fa fa-chevron-up"></i>
@@ -138,7 +140,7 @@ echo $this->getData('nav')->render(); ?>
                         <label>
                             <i class="filter fa fa-filter"></i>
                         </label>
-                    <td><?= $this->getHtml('Created'); ?>
+                    <td><?= $this->getHtml('Date'); ?>
                         <label for="billList-sort-23">
                             <input type="radio" name="billList-sort" id="billList-sort-23">
                             <i class="sort-asc fa fa-chevron-up"></i>
@@ -169,9 +171,13 @@ echo $this->getData('nav')->render(); ?>
                          ?>"><?= $value->billAddress; ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->billZip; ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->billCity; ?></a>
-                        <td><a href="<?= $url; ?>"><?= $value->billCountry; ?></a>
-                        <td><a href="<?= $url; ?>"><?= $value->netSales->getCurrency(); ?></a>
-                        <td><a href="<?= $url; ?>"><?= $value->createdAt->format('Y-m-d'); ?></a>
+                        <td><a href="<?= $url; ?>"><?= !empty($value->billCountry)
+                            ? ISO3166NameEnum::getByName(
+                                    ISO3166TwoEnum::getName($value->billCountry)
+                                )
+                            : ''; ?></a>
+                        <td><a href="<?= $url; ?>"><?= $value->grossCosts->getAmount(); ?></a>
+                        <td><a href="<?= $url; ?>"><?= $value->billDate?->format('Y-m-d'); ?></a>
                 <?php endforeach; ?>
                 <?php if ($count === 0) : ?>
                     <tr><td colspan="12" class="empty"><?= $this->getHtml('Empty', '0', '0'); ?>

@@ -1,0 +1,15 @@
+[
+    {
+        "name": "external_payment_id",
+        "l11n": {
+            "en": "External payment Id",
+            "de": "Externe Zahlungsid"
+        },
+        "value_type": 2,
+        "is_custom_allowed": true,
+        "validation_pattern": "",
+        "is_required": false,
+        "default_value": "",
+        "values": []
+    }
+]

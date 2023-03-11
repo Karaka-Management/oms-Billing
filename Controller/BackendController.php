@@ -296,6 +296,7 @@ final class BackendController extends Controller
         $bill = PurchaseBillMapper::get()
             ->with('elements')
             ->with('media')
+            ->with('media/types')
             ->with('notes')
             ->where('id', (int) $request->getData('id'))
             ->execute();
@@ -803,6 +804,7 @@ final class BackendController extends Controller
         $bill = PurchaseBillMapper::get()
             ->with('elements')
             ->with('media')
+            ->with('media/types')
             ->with('notes')
             ->where('id', (int) $request->getData('id'))
             ->execute();

@@ -200,7 +200,7 @@
 	{
 		"name": "purchase_subscritpion",
 		"numberFormat": "{y}-{id}",
-		"transferType": 1,
+		"transferType": 2,
 		"transferStock": false,
 		"isTemplate": false,
 		"l11n": {
@@ -211,7 +211,7 @@
 	{
 		"name": "purchase_template",
 		"numberFormat": "{y}-{id}",
-		"transferType": 1,
+		"transferType": 2,
 		"transferStock": false,
 		"isTemplate": true,
 		"l11n": {

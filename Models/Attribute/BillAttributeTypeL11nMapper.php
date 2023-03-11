@@ -4,7 +4,7 @@
  *
  * PHP Version 8.1
  *
- * @package   Modules\Billing\Models
+ * @package   Modules\Billing\Models\Attribute
  * @copyright Dennis Eichhorn
  * @license   OMS License 1.0
  * @version   1.0.0
@@ -12,20 +12,20 @@
  */
 declare(strict_types=1);
 
-namespace Modules\Billing\Models;
+namespace Modules\Billing\Models\Attribute;
 
 use phpOMS\DataStorage\Database\Mapper\DataMapperFactory;
 use phpOMS\Localization\BaseStringL11n;
 
 /**
- * Bill type mapper class.
+ * Bill mapper class.
  *
- * @package Modules\Billing\Models
+ * @package Modules\Billing\Models\Attribute
  * @license OMS License 1.0
  * @link    https://jingga.app
  * @since   1.0.0
  */
-final class BillTypeL11nMapper extends DataMapperFactory
+final class BillAttributeTypeL11nMapper extends DataMapperFactory
 {
     /**
      * Columns.
@@ -34,10 +34,10 @@ final class BillTypeL11nMapper extends DataMapperFactory
      * @since 1.0.0
      */
     public const COLUMNS = [
-        'billing_type_l11n_id'        => ['name' => 'billing_type_l11n_id',       'type' => 'int',    'internal' => 'id'],
-        'billing_type_l11n_name'      => ['name' => 'billing_type_l11n_name',    'type' => 'string', 'internal' => 'content', 'autocomplete' => true],
-        'billing_type_l11n_type'      => ['name' => 'billing_type_l11n_type',      'type' => 'int',    'internal' => 'ref'],
-        'billing_type_l11n_language'  => ['name' => 'billing_type_l11n_language', 'type' => 'string', 'internal' => 'language'],
+        'billing_attr_type_l11n_id'    => ['name' => 'billing_attr_type_l11n_id',    'type' => 'int',    'internal' => 'id'],
+        'billing_attr_type_l11n_title' => ['name' => 'billing_attr_type_l11n_title', 'type' => 'string', 'internal' => 'content', 'autocomplete' => true],
+        'billing_attr_type_l11n_type'  => ['name' => 'billing_attr_type_l11n_type',  'type' => 'int',    'internal' => 'ref'],
+        'billing_attr_type_l11n_lang'  => ['name' => 'billing_attr_type_l11n_lang',  'type' => 'string', 'internal' => 'language'],
     ];
 
     /**
@@ -46,7 +46,7 @@ final class BillTypeL11nMapper extends DataMapperFactory
      * @var string
      * @since 1.0.0
      */
-    public const TABLE = 'billing_type_l11n';
+    public const TABLE = 'billing_attr_type_l11n';
 
     /**
      * Primary field name.
@@ -54,7 +54,7 @@ final class BillTypeL11nMapper extends DataMapperFactory
      * @var string
      * @since 1.0.0
      */
-    public const PRIMARYFIELD = 'billing_type_l11n_id';
+    public const PRIMARYFIELD = 'billing_attr_type_l11n_id';
 
     /**
      * Model to use by the mapper.

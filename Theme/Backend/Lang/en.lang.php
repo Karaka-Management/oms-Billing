@@ -89,6 +89,7 @@ return ['Billing' => [
     'Type'            => 'Type',
     'Types'            => 'Types',
     'Upload'          => 'Upload',
+    'Original'          => 'Original',
     'Value'           => 'Value',
     'Variation'       => 'Variation',
     'Zip'             => 'Zip',

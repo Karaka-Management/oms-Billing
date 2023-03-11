@@ -4,7 +4,7 @@
  *
  * PHP Version 8.1
  *
- * @package   Modules\Billing\Models
+ * @package   Modules\Billing\Models\Price
  * @copyright Dennis Eichhorn
  * @license   OMS License 1.0
  * @version   1.0.0
@@ -12,17 +12,17 @@
  */
 declare(strict_types=1);
 
-namespace Modules\Billing\Models;
+namespace Modules\Billing\Models\Price;
 
 /**
- * Null bill class.
+ * Null bill type class.
  *
- * @package Modules\Billing\Models
+ * @package Modules\Billing\Models\Price
  * @license OMS License 1.0
  * @link    https://jingga.app
  * @since   1.0.0
  */
-final class NullBill extends Bill
+final class NullPrice extends Price
 {
     /**
      * Constructor

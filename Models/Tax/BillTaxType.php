@@ -4,7 +4,7 @@
  *
  * PHP Version 8.1
  *
- * @package   Modules\Billing\Models
+ * @package   Modules\Billing\Models\Tax
  * @copyright Dennis Eichhorn
  * @license   OMS License 1.0
  * @version   1.0.0
@@ -12,19 +12,19 @@
  */
 declare(strict_types=1);
 
-namespace Modules\Billing\Models;
+namespace Modules\Billing\Models\Tax;
 
 use phpOMS\Stdlib\Base\Enum;
 
 /**
- * Module settings enum.
+ * Bill transfer type enum.
  *
- * @package  Modules\Billing\Models
+ * @package Modules\Billing\Models\Tax
  * @license OMS License 1.0
  * @link    https://jingga.app
  * @since   1.0.0
  */
-abstract class PricingType extends Enum
+abstract class BillTaxType extends Enum
 {
     public const SALES = 1;
 

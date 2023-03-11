@@ -4,7 +4,7 @@
  *
  * PHP Version 8.1
  *
- * @package   Modules\Billing\Models
+ * @package   Modules\Billing\Models\Attribute
  * @copyright Dennis Eichhorn
  * @license   OMS License 1.0
  * @version   1.0.0
@@ -12,17 +12,17 @@
  */
 declare(strict_types=1);
 
-namespace Modules\Billing\Models;
+namespace Modules\Billing\Models\Attribute;
 
 /**
- * Null bill class.
+ * Null model
  *
- * @package Modules\Billing\Models
+ * @package Modules\Billing\Models\Attribute
  * @license OMS License 1.0
  * @link    https://jingga.app
  * @since   1.0.0
  */
-final class NullBill extends Bill
+final class NullBillAttribute extends BillAttribute
 {
     /**
      * Constructor
@@ -33,8 +33,8 @@ final class NullBill extends Bill
      */
     public function __construct(int $id = 0)
     {
-        $this->id = $id;
         parent::__construct();
+        $this->id = $id;
     }
 
     /**

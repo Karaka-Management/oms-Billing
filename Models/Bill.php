@@ -16,13 +16,13 @@ namespace Modules\Billing\Models;
 
 use Modules\Admin\Models\Account;
 use Modules\Admin\Models\NullAccount;
+use Modules\Billing\Models\Attribute\BillAttribute;
 use Modules\ClientManagement\Models\Client;
 use Modules\Editor\Models\EditorDoc;
 use Modules\Media\Models\Collection;
 use Modules\Media\Models\Media;
 use Modules\Media\Models\NullMedia;
 use Modules\SupplierManagement\Models\Supplier;
-use phpOMS\Localization\ISO3166TwoEnum;
 use phpOMS\Localization\ISO4217CharEnum;
 use phpOMS\Localization\ISO639x1Enum;
 use phpOMS\Localization\Money;
@@ -92,10 +92,18 @@ class Bill implements \JsonSerializable
     /**
      * Bill created at.
      *
+     * @var null|\DateTime
+     * @since 1.0.0
+     */
+    public ?\DateTime $billDate = null;
+
+    /**
+     * Bill created at.
+     *
      * @var \DateTime
      * @since 1.0.0
      */
-    public \DateTime $performanceDate;
+    public ?\DateTime $performanceDate = null;
 
     /**
      * Bill send at.
@@ -436,6 +444,14 @@ class Bill implements \JsonSerializable
     protected array $media = [];
 
     /**
+     * Attributes.
+     *
+     * @var BillAttribute[]
+     * @since 1.0.0
+     */
+    private array $attributes = [];
+
+    /**
      * Constructor.
      *
      * @since 1.0.0
@@ -452,7 +468,6 @@ class Bill implements \JsonSerializable
         $this->grossDiscount = new Money(0);
 
         $this->createdAt       = new \DateTimeImmutable();
-        $this->performanceDate = new \DateTime();
         $this->createdBy       = new NullAccount();
         $this->referral        = new NullAccount();
         $this->type            = new NullBillType();
@@ -512,6 +527,52 @@ class Bill implements \JsonSerializable
         }
 
         return $this->number;
+    }
+
+    /**
+     * Add attribute to client
+     *
+     * @param BillAttribute $attribute Attribute
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
+    public function addAttribute(BillAttribute $attribute) : void
+    {
+        $this->attributes[] = $attribute;
+    }
+
+    /**
+     * Get attributes
+     *
+     * @return BillAttribute[]
+     *
+     * @since 1.0.0
+     */
+    public function getAttributes() : array
+    {
+        return $this->attributes;
+    }
+
+    /**
+     * Get attribute
+     *
+     * @param string $attrName Attribute name
+     *
+     * @return null|BillAttribute
+     *
+     * @since 1.0.0
+     */
+    public function getAttribute(string $attrName) : ?BillAttribute
+    {
+        foreach ($this->attributes as $attribute) {
+            if ($attribute->type->name === $attrName) {
+                return $attribute->value;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -759,7 +820,7 @@ class Bill implements \JsonSerializable
     public function getFileByType(int $type) : Media
     {
         foreach ($this->media as $file) {
-            if ($file->type->getId() === $type) {
+            if ($file->hasMediaTypeId($type)) {
                 return $file;
             }
         }

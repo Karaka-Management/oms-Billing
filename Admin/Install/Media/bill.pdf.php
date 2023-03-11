@@ -2,83 +2,11 @@
 
 declare(strict_types=1);
 
-class MYPDF extends TCPDF
-{
-    public string $fontName = '';
-    public int $fontSize = 8;
-    public int $sideMargin = 15;
+require_once $this->getData('defaultTemplates')
+	->findFile('.pdf.php')
+	->getAbsolutePath();
 
-    //Page header
-    public function Header() {
-    	if ($this->header_xobjid === false) {
-    		$this->header_xobjid = $this->startTemplate($this->w, 0);
-
-	        // Set Logo
-	        $image_file = __DIR__ . '/logo.png';
-	        $this->Image($image_file, 15, 15, 15, 15, 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
-
-	        // Set Title
-	        $this->SetFont('helvetica', 'B', 20);
-	        $this->setX(15 + 15 + 3);
-	        $this->Cell(0, 14, $this->header_title, 0, false, 'L', 0, '', 0, false, 'T', 'M');
-
-	        $this->SetFont('helvetica', '', 10);
-	        $this->setX(15 + 15 + 3);
-	        $this->Cell(0, 26, $this->header_string, 0, false, 'L', 0, '', 0, false, 'T', 'M');
-
-	        $this->endTemplate();
-	    }
-
-	    $x  = 0;
-		$dx = 0;
-
-		if (!$this->header_xobj_autoreset AND $this->booklet AND (($this->page % 2) == 0)) {
-			// adjust margins for booklet mode
-			$dx = ($this->original_lMargin - $this->original_rMargin);
-		}
-
-		if ($this->rtl) {
-			$x = $this->w + $dx;
-		} else {
-			$x = 0 + $dx;
-		}
-
-	    $this->printTemplate($this->header_xobjid, $x, 0, 0, 0, '', '', false);
-		if ($this->header_xobj_autoreset) {
-			// reset header xobject template at each page
-			$this->header_xobjid = false;
-		}
-    }
-
-    // Page footer
-    public function Footer() {
-        $this->SetY(-25);
-
-        $this->SetFont('helvetica', 'I', 7);
-        $this->Cell($this->getPageWidth() - 22, 0, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
-        $this->Ln();
-        $this->Ln();
-
-        $this->SetFillColor(245, 245, 245);
-        $this->SetX(0);
-        $this->Cell($this->getPageWidth(), 25, '', 0, 0, 'L', true, '', 0, false, 'T', 'T');
-
-        $this->SetFont('helvetica', '', 7);
-        $this->SetXY(15 + 10, -15, true);
-        $this->MultiCell(30, 0, "Jingga e.K.\nGartenstr. 26\n61206 Woellstadt", 0, 'L', false, 1, null, null, true, 0, false, true, 0, 'B');
-
-        $this->SetXY(25 + 15 + 20, -15, true);
-        $this->MultiCell(40, 0, "Geschäftsführer: Dennis Eichhorn\nFinanzamt: HRB ???\nUSt Id: DE ??????????", 0, 'L', false, 1, null, null, true, 0, false, true, 0, 'B');
-
-        $this->SetXY(25 + 45 + 15 + 30, -15, true);
-        $this->MultiCell(35, 0, "Volksbank Mittelhessen\nBIC: ??????????\nIBAN: ???????????", 0, 'L', false, 1, null, null, true, 0, false, true, 0, 'B');
-
-        $this->SetXY(25 + 45 + 35 + 15 + 40, -15, true);
-        $this->MultiCell(35, 0, "www.jingga.app\ninfo@jingga.app\n+49 0152 ???????", 0, 'L', false, 1, null, null, true, 0, false, true, 0, 'B');
-    }
-}
-
-$pdf = new MYPDF('P', 'mm', 'A4', true, 'UTF-8', false);
+$pdf = new DefaultPdf('P', 'mm', 'A4', true, 'UTF-8', false);
 
 $creator = $this->getData('bill_creator') ?? 'Jingga';
 $author  = 'Jingga';
@@ -120,7 +48,6 @@ $terms = $this->getData('bill_terms') ?? 'https://jingga.app/terms';
 $taxes = $this->getData('bill_taxes') ?? ['19%' => '0.00'];
 $currency = $this->getData('bill_currency') ?? 'EUR';
 
-
 // set document information
 $pdf->SetCreator($creator);
 $pdf->SetAuthor($author);
@@ -128,27 +55,8 @@ $pdf->SetTitle($title);
 $pdf->SetSubject($subtitle);
 $pdf->SetKeywords(\implode(', ', $keywords));
 
-// set default header data
-$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, $logoName, $slogan);
-
-// set header and footer fonts
-$pdf->SetHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
-$pdf->SetFooterFont([PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA]);
-
-// set default monospaced font
-$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-
-// set margins
-$pdf->SetMargins(15, 30, 15);
-
-// set auto page breaks
-$pdf->SetAutoPageBreak(true, 25);
-
 // set image scale factor
 $pdf->SetImageScale(PDF_IMAGE_SCALE_RATIO);
-
-// add a page
-$pdf->AddPage();
 
 $topPos = $pdf->getY();
 

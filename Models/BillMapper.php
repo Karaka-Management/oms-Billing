@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace Modules\Billing\Models;
 
 use Modules\Admin\Models\AccountMapper;
+use Modules\Billing\Models\Attribute\BillAttributeMapper;
 use Modules\ClientManagement\Models\ClientMapper;
 use Modules\Editor\Models\EditorDocMapper;
 use Modules\Media\Models\CollectionMapper;
@@ -82,6 +83,7 @@ class BillMapper extends DataMapperFactory
         'billing_bill_client'                            => ['name' => 'billing_bill_client', 'type' => 'int',      'internal' => 'client'],
         'billing_bill_supplier'                          => ['name' => 'billing_bill_supplier', 'type' => 'int',      'internal' => 'supplier'],
         'billing_bill_created_by'                        => ['name' => 'billing_bill_created_by', 'type' => 'int',      'internal' => 'createdBy', 'readonly' => true],
+        'billing_bill_date'                  => ['name' => 'billing_bill_date', 'type' => 'DateTime', 'internal' => 'billDate'],
         'billing_bill_performance_date'                  => ['name' => 'billing_bill_performance_date', 'type' => 'DateTime', 'internal' => 'performanceDate', 'readonly' => true],
         'billing_bill_created_at'                        => ['name' => 'billing_bill_created_at', 'type' => 'DateTimeImmutable', 'internal' => 'createdAt', 'readonly' => true],
     ];
@@ -153,6 +155,13 @@ class BillMapper extends DataMapperFactory
             'mapper'     => SupplierMapper::class,
             'external'   => 'billing_bill_supplier',
         ],
+        'attributes' => [
+            'mapper'      => BillAttributeMapper::class,
+            'table'       => 'billing_bill_attr',
+            'self'        => 'billing_bill_attr_bill',
+            'conditional' => true,
+            'external'    => null,
+        ],
     ];
 
     /**
@@ -161,7 +170,7 @@ class BillMapper extends DataMapperFactory
      * @var string
      * @since 1.0.0
      */
-    public const PRIMARYFIELD ='billing_bill_id';
+    public const PRIMARYFIELD = 'billing_bill_id';
 
     /**
      * Primary table.
