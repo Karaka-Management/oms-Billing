@@ -7,7 +7,7 @@
  *
  * @package   Modules\Billing
  * @copyright Dennis Eichhorn
- * @license   OMS License 1.0
+ * @license   OMS License 2.0
  * @version   1.0.0
  * @link      https://jingga.app
  */
@@ -36,7 +36,7 @@ use phpOMS\Model\Message\FormValidation;
  * Billing class.
  *
  * @package Modules\Billing
- * @license OMS License 1.0
+ * @license OMS License 2.0
  * @link    https://jingga.app
  * @since   1.0.0
  */
@@ -68,9 +68,9 @@ final class ApiTaxController extends Controller
      */
     private function createTaxCombinationFromRequest(RequestAbstract $request) : TaxCombination
     {
-        $tax = new TaxCombination();
-        $tax->taxType = (int) $request->getData('tax_type') ?? 1;
-        $tax->taxCode = (string) $request->getData('tax_code');
+        $tax           = new TaxCombination();
+        $tax->taxType  = $request->getDataInt('tax_type') ?? 1;
+        $tax->taxCode  = (string) $request->getData('tax_code');
         $tax->itemCode = new NullItemAttributeValue((int) $request->getData('item_code'));
 
         if ($tax->taxType === 1) {
@@ -107,6 +107,7 @@ final class ApiTaxController extends Controller
 
     public function getClientTaxCode(Client $client, Address $taxOfficeAddress) : ClientAttributeValue
     {
+        /** @var \Modules\ClientManagement\Models\ClientAttributeType $codes */
         $codes = ClientAttributeTypeMapper::get()
             ->with('defaults')
             ->where('name', 'sales_tax_code')

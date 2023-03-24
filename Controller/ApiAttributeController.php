@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Karaka
  *
@@ -7,11 +6,10 @@
  *
  * @package   Modules\Billing
  * @copyright Dennis Eichhorn
- * @license   OMS License 1.0
+ * @license   OMS License 2.0
  * @version   1.0.0
  * @link      https://jingga.app
  */
-
 declare(strict_types=1);
 
 namespace Modules\Billing\Controller;
@@ -38,7 +36,7 @@ use phpOMS\Model\Message\FormValidation;
  * Billing class.
  *
  * @package Modules\Billing
- * @license OMS License 1.0
+ * @license OMS License 2.0
  * @link    https://jingga.app
  * @since   1.0.0
  */
@@ -87,7 +85,7 @@ final class ApiAttributeController extends Controller
         $attribute->bill = (int) $request->getData('bill');
         $attribute->type = new NullBillAttributeType((int) $request->getData('type'));
 
-        if ($request->getData('value') !== null) {
+        if ($request->hasData('value')) {
             $attribute->value = new NullBillAttributeValue((int) $request->getData('value'));
         } else {
             $newRequest = clone $request;
@@ -162,11 +160,11 @@ final class ApiAttributeController extends Controller
     private function createBillAttributeTypeL11nFromRequest(RequestAbstract $request) : BaseStringL11n
     {
         $attrL11n      = new BaseStringL11n();
-        $attrL11n->ref = (int) ($request->getData('type') ?? 0);
-        $attrL11n->setLanguage((string) (
-            $request->getData('language') ?? $request->getLanguage()
-        ));
-        $attrL11n->content = (string) ($request->getData('title') ?? '');
+        $attrL11n->ref = $request->getDataInt('type') ?? 0;
+        $attrL11n->setLanguage(
+            $request->getDataString('language') ?? $request->getLanguage()
+        );
+        $attrL11n->content = $request->getDataString('title') ?? '';
 
         return $attrL11n;
     }
@@ -231,13 +229,13 @@ final class ApiAttributeController extends Controller
      */
     private function createBillAttributeTypeFromRequest(RequestAbstract $request) : BillAttributeType
     {
-        $attrType                    = new BillAttributeType($request->getData('name') ?? '');
-        $attrType->datatype          = (int) ($request->getData('datatype') ?? 0);
-        $attrType->custom            = (bool) ($request->getData('custom') ?? false);
+        $attrType                    = new BillAttributeType($request->getDataString('name') ?? '');
+        $attrType->datatype          = $request->getDataInt('datatype') ?? 0;
+        $attrType->custom            = $request->getDataBool('custom') ?? false;
         $attrType->isRequired        = (bool) ($request->getData('is_required') ?? false);
-        $attrType->validationPattern = (string) ($request->getData('validation_pattern') ?? '');
-        $attrType->setL11n((string) ($request->getData('title') ?? ''), $request->getData('language') ?? ISO639x1Enum::_EN);
-        $attrType->setFields((int) ($request->getData('fields') ?? 0));
+        $attrType->validationPattern = $request->getDataString('validation_pattern') ?? '';
+        $attrType->setL11n($request->getDataString('title') ?? '', $request->getDataString('language') ?? ISO639x1Enum::_EN);
+        $attrType->setFields($request->getDataInt('fields') ?? 0);
 
         return $attrType;
     }
@@ -313,15 +311,15 @@ final class ApiAttributeController extends Controller
     {
         /** @var BillAttributeType $type */
         $type = BillAttributeTypeMapper::get()
-            ->where('id', (int) ($request->getData('type') ?? 0))
+            ->where('id', $request->getDataInt('type') ?? 0)
             ->execute();
 
         $attrValue            = new BillAttributeValue();
-        $attrValue->isDefault = (bool) ($request->getData('default') ?? false);
+        $attrValue->isDefault = $request->getDataBool('default') ?? false;
         $attrValue->setValue($request->getData('value'), $type->datatype);
 
-        if ($request->getData('title') !== null) {
-            $attrValue->setL11n($request->getData('title'), $request->getData('language') ?? ISO639x1Enum::_EN);
+        if ($request->hasData('title')) {
+            $attrValue->setL11n($request->getDataString('title') ?? '', $request->getDataString('language') ?? ISO639x1Enum::_EN);
         }
 
         return $attrValue;
@@ -387,11 +385,11 @@ final class ApiAttributeController extends Controller
     private function createBillAttributeValueL11nFromRequest(RequestAbstract $request) : BaseStringL11n
     {
         $attrL11n      = new BaseStringL11n();
-        $attrL11n->ref = (int) ($request->getData('value') ?? 0);
-        $attrL11n->setLanguage((string) (
-            $request->getData('language') ?? $request->getLanguage()
-        ));
-        $attrL11n->content = (string) ($request->getData('title') ?? '');
+        $attrL11n->ref = $request->getDataInt('value') ?? 0;
+        $attrL11n->setLanguage(
+            $request->getDataString('language') ?? $request->getLanguage()
+        );
+        $attrL11n->content = $request->getDataString('title') ?? '';
 
         return $attrL11n;
     }

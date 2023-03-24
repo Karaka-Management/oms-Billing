@@ -6,7 +6,7 @@
  *
  * @package   Modules\Billing\Admin
  * @copyright Dennis Eichhorn
- * @license   OMS License 1.0
+ * @license   OMS License 2.0
  * @version   1.0.0
  * @link      https://jingga.app
  */
@@ -30,7 +30,7 @@ use phpOMS\Uri\HttpUri;
  * Installer class.
  *
  * @package Modules\Billing\Admin
- * @license OMS License 1.0
+ * @license OMS License 2.0
  * @link    https://jingga.app
  * @since   1.0.0
  */
@@ -226,6 +226,16 @@ final class Installer extends InstallerAbstract
         return $billAttrValue;
     }
 
+    /**
+     * Create tax combinations (item & client/supplier)
+     *
+     * @param ApplicationAbstract $app   Application
+     * @param array               $taxes Tax data
+     *
+     * @return array<string, array>
+     *
+     * @since 1.0.0
+     */
     private static function createTaxCombination(ApplicationAbstract $app, array $taxes) : array
     {
         $result = [];
@@ -233,12 +243,26 @@ final class Installer extends InstallerAbstract
         /** @var \Modules\Billing\Controller\ApiController $module */
         $module = $app->moduleManager->getModuleInstance('Billing');
 
-        $itemAttributeSales = ItemAttributeTypeMapper::get()->with('defaults')->where('name', 'sales_tax_code')->execute();
-        $clientAttributeSales = ClientAttributeTypeMapper::get()->with('defaults')->where('name', 'sales_tax_code')->execute();
-        $supplierAttributeSales = SupplierAttributeTypeMapper::get()->with('defaults')->where('name', 'purchase_tax_code')->execute();
+        /** @var \Modules\ItemManagement\Models\ItemAttributeType $itemAttributeSales */
+        $itemAttributeSales = ItemAttributeTypeMapper::get()
+            ->with('defaults')
+            ->where('name', 'sales_tax_code')
+            ->execute();
+
+        /** @var \Modules\ClientManagement\Models\ClientAttributeType $clientAttributeSales */
+        $clientAttributeSales = ClientAttributeTypeMapper::get()
+            ->with('defaults')
+            ->where('name', 'sales_tax_code')
+            ->execute();
+
+        /** @var \Modules\SupplierManagement\Models\SupplierAttributeType $supplierAttributeSales */
+        $supplierAttributeSales = SupplierAttributeTypeMapper::get()
+            ->with('defaults')
+            ->where('name', 'purchase_tax_code')
+            ->execute();
 
         foreach ($taxes as $tax) {
-            $itemValue = $itemAttributeSales->getDefaultByValue($tax['item_code']);
+            $itemValue    = $itemAttributeSales->getDefaultByValue($tax['item_code']);
             $accountValue = $tax['type'] === 1
                 ? $clientAttributeSales->getDefaultByValue($tax['account_code'])
                 : $supplierAttributeSales->getDefaultByValue($tax['account_code']);

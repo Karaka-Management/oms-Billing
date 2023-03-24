@@ -7,7 +7,7 @@
  *
  * @package   Modules\Billing
  * @copyright Dennis Eichhorn
- * @license   OMS License 1.0
+ * @license   OMS License 2.0
  * @version   1.0.0
  * @link      https://jingga.app
  */
@@ -33,7 +33,7 @@ use phpOMS\Model\Message\FormValidation;
  * Billing class.
  *
  * @package Modules\Billing
- * @license OMS License 1.0
+ * @license OMS License 2.0
  * @link    https://jingga.app
  * @since   1.0.0
  */
@@ -78,12 +78,12 @@ final class ApiBillTypeController extends Controller
      */
     private function createBillTypeFromRequest(RequestAbstract $request) : BillType
     {
-        $billType = new BillType($request->getData('name') ?? '');
-        $billType->setL11n((string) ($request->getData('title') ?? ''), $request->getData('language') ?? ISO639x1Enum::_EN);
-        $billType->numberFormat  = (string) ($request->getData('number_format') ?? '{id}');
-        $billType->transferStock = (bool) ($request->getData('transfer_stock') ?? false);
-        $billType->isTemplate    = (bool) ($request->getData('is_template') ?? false);
-        $billType->transferType  = (int) ($request->getData('transfer_type') ?? BillTransferType::SALES);
+        $billType = new BillType($request->getDataString('name') ?? '');
+        $billType->setL11n($request->getDataString('title') ?? '', $request->getDataString('language') ?? ISO639x1Enum::_EN);
+        $billType->numberFormat    = (string) ($request->getData('number_format') ?? '{id}');
+        $billType->transferStock   = (bool) ($request->getData('transfer_stock') ?? false);
+        $billType->isTemplate      = (bool) ($request->getData('is_template') ?? false);
+        $billType->transferType    = $request->getDataInt('transfer_type') ?? BillTransferType::SALES;
         $billType->defaultTemplate = $request->hasData('template')
             ? new NullCollection((int) $request->getData('template'))
             : null;
@@ -155,11 +155,11 @@ final class ApiBillTypeController extends Controller
     private function createBillTypeL11nFromRequest(RequestAbstract $request) : BaseStringL11n
     {
         $billTypeL11n      = new BaseStringL11n();
-        $billTypeL11n->ref = (int) ($request->getData('type') ?? 0);
-        $billTypeL11n->setLanguage((string) (
-            $request->getData('language') ?? $request->getLanguage()
-        ));
-        $billTypeL11n->content = (string) ($request->getData('title') ?? '');
+        $billTypeL11n->ref = $request->getDataInt('type') ?? 0;
+        $billTypeL11n->setLanguage(
+            $request->getDataString('language') ?? $request->getLanguage()
+        );
+        $billTypeL11n->content = $request->getDataString('title') ?? '';
 
         return $billTypeL11n;
     }

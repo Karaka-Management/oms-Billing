@@ -1,6 +1,18 @@
 <?php
-
+/**
+ * Karaka
+ *
+ * PHP Version 8.1
+ *
+ * @package   Modules\Media
+ * @copyright Dennis Eichhorn
+ * @license   OMS License 2.0
+ * @version   1.0.0
+ * @link      https://jingga.app
+ */
 declare(strict_types=1);
+
+/** @var \phpOMS\Views\View $this */
 
 require_once $this->getData('defaultTemplates')
 	->findFile('.pdf.php')
@@ -8,45 +20,45 @@ require_once $this->getData('defaultTemplates')
 
 $pdf = new DefaultPdf('P', 'mm', 'A4', true, 'UTF-8', false);
 
-$creator = $this->getData('bill_creator') ?? 'Jingga';
-$author  = 'Jingga';
-$title   = $this->getData('bill_title') ?? 'Invoice';
+$creator  = $this->getData('bill_creator') ?? 'Jingga';
+$author   = 'Jingga';
+$title    = $this->getData('bill_title') ?? 'Invoice';
 $subtitle = $this->getData('bill_subtitle') ?? 'Sub title';
 $keywords = $this->getData('keywords') ?? [];
 $logoName = $this->getData('bill_logo_name') ?? 'Jingga';
 $slogan   = $this->getData('bill_slogan') ?? 'Business solutions made simple.';
 
 $legalCompanyName = $this->getData('legal_company_name') ?? 'Jingga e.K.';
-$companyAddress = $this->getData('bill_company_address') ?? 'Gartenstr. 26';
-$companyCity = $this->getData('bill_company_city') ?? '61206 Woellstadt';
-$companyCEO = $this->getData('bill_company_ceo') ?? 'Dennis Eichhorn';
-$companyWebsite = $this->getData('bill_company_website') ?? 'www.jingga.app';
-$companyEmail = $this->getData('bill_company_email') ?? 'info@jingga.app';
-$companyPhone = $this->getData('bill_company_phone') ?? '+49 0152 ????';
+$companyAddress   = $this->getData('bill_company_address') ?? 'Gartenstr. 26';
+$companyCity      = $this->getData('bill_company_city') ?? '61206 Woellstadt';
+$companyCEO       = $this->getData('bill_company_ceo') ?? 'Dennis Eichhorn';
+$companyWebsite   = $this->getData('bill_company_website') ?? 'www.jingga.app';
+$companyEmail     = $this->getData('bill_company_email') ?? 'info@jingga.app';
+$companyPhone     = $this->getData('bill_company_phone') ?? '+49 0152 ????';
 
 $taxOffice = $this->getData('bill_company_tax_office') ?? 'HRB';
-$taxId = $this->getData('bill_company_tax_id') ?? 'DE ?????????';
-$vatId = $this->getData('bill_company_vat_id') ?? 'DE ??????';
+$taxId     = $this->getData('bill_company_tax_id') ?? 'DE ?????????';
+$vatId     = $this->getData('bill_company_vat_id') ?? 'DE ??????';
 
 $bankName = $this->getData('bill_company_bank_name') ?? 'Volksbank Mittelhessen';
-$bic = $this->getData('bill_company_bic') ?? '';
-$iban = $this->getData('bill_company_iban') ?? '';
+$bic      = $this->getData('bill_company_bic') ?? '';
+$iban     = $this->getData('bill_company_iban') ?? '';
 
 $billTypeName = $this->getData('bill_type_name') ?? 'INVOICE';
 
 $billInvoiceNumber = $this->getData('bill_invoice_no') ?? '';
-$billInvoiceDate = $this->getData('bill_invoice_date') ?? '';
-$billServiceDate = $this->getData('bill_service_date') ?? '';
-$billCustomerNo = $this->getData('bill_customer_no') ?? '';
-$billPO = $this->getData('bill_po') ?? '';
-$billDueDate = $this->getData('bill_due_date') ?? '';
+$billInvoiceDate   = $this->getData('bill_invoice_date') ?? '';
+$billServiceDate   = $this->getData('bill_service_date') ?? '';
+$billCustomerNo    = $this->getData('bill_customer_no') ?? '';
+$billPO            = $this->getData('bill_po') ?? '';
+$billDueDate       = $this->getData('bill_due_date') ?? '';
 
 $invoiceLines = $this->getData('bill_lines') ?? [];
 
 $paymentTerms = $this->getData('bill_payment_terms') ?? '';
-$terms = $this->getData('bill_terms') ?? 'https://jingga.app/terms';
-$taxes = $this->getData('bill_taxes') ?? ['19%' => '0.00'];
-$currency = $this->getData('bill_currency') ?? 'EUR';
+$terms        = $this->getData('bill_terms') ?? 'https://jingga.app/terms';
+$taxes        = $this->getData('bill_taxes') ?? ['19%' => '0.00'];
+$currency     = $this->getData('bill_currency') ?? 'EUR';
 
 // set document information
 $pdf->SetCreator($creator);
@@ -61,7 +73,7 @@ $pdf->SetImageScale(PDF_IMAGE_SCALE_RATIO);
 $topPos = $pdf->getY();
 
 // Address
-$pdf->SetY(55); // @todo: depending on amount of lines
+$pdf->SetY(55); // @todo: depending on amount of lines, there is a solution (html, or use backtracking of tcpdf)
 $pdf->SetFont('helvetica', '', 8);
 
 $lineHeight = $pdf->getY();
@@ -126,8 +138,8 @@ $data = [
 ];
 
 // Header
-$w = array($pdf->getPageWidth() - 20 - 20 - 20 - 2*15, 20, 20, 20);
-$num_headers = count($header);
+$w           = array($pdf->getPageWidth() - 20 - 20 - 20 - 2*15, 20, 20, 20);
+$num_headers = \count($header);
 
 $pdf->setCellPadding(1, 1, 1, 1);
 

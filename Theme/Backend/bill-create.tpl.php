@@ -6,7 +6,7 @@
  *
  * @package   Modules\Billing
  * @copyright Dennis Eichhorn
- * @license   OMS License 1.0
+ * @license   OMS License 2.0
  * @version   1.0.0
  * @link      https://jingga.app
  */
@@ -38,8 +38,7 @@ $billTypes = $this->getData('billtypes') ?? [];
 /** @var \Modules\Auditor\Models\Audit */
 $logs = $this->getData('logs') ?? [];
 
-// @todo: false needs to be replaced with status->NOT_FINALIZED (check which status it actually is)
-$editable = $bill instanceof NullBill || false;
+$editable = $bill instanceof NullBill || \in_array($bill->getStatus(), [BillStatus::DRAFT, BillStatus::UNPARSED]);
 $disabled = !$editable  ? ' disabled' : '';
 
 echo $this->getData('nav')->render(); ?>
@@ -512,7 +511,7 @@ echo $this->getData('nav')->render(); ?>
                             <tbody>
                             <?php
                             foreach ($logs as $audit) :
-                                $url = UriFactory::build('{/lang}/{/app}/admin/audit/single?id=' . $audit->getId());
+                                $url = UriFactory::build('{/base}/admin/audit/single?id=' . $audit->getId());
                             ?>
                             <tr data-href="<?= $url; ?>">
                                 <td><a href="<?= $url; ?>"><?= $audit->getId(); ?></a>
@@ -523,7 +522,7 @@ echo $this->getData('nav')->render(); ?>
                                     <?php else : echo $this->getHtml('UNKNOWN', 'Auditor', 'Backend'); ?>
                                     <?php endif; ?>
                                 <td><a class="content"
-                                    href="<?= UriFactory::build('{/lang}/{/app}/admin/account/settings?id=' . $audit->createdBy->getId()); ?>"><?= $this->printHtml(
+                                    href="<?= UriFactory::build('{/base}/admin/account/settings?id=' . $audit->createdBy->getId()); ?>"><?= $this->printHtml(
                                     $this->renderUserName('%3$s %2$s %1$s', [$audit->createdBy->name1, $audit->createdBy->name2, $audit->createdBy->name3, $audit->createdBy->login])
                                 ); ?></a>
                                 <td><a href="<?= $url; ?>"><?= $audit->createdAt->format('Y-m-d'); ?></a>

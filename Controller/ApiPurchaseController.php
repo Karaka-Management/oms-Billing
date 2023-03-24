@@ -7,7 +7,7 @@
  *
  * @package   Modules\Billing
  * @copyright Dennis Eichhorn
- * @license   OMS License 1.0
+ * @license   OMS License 2.0
  * @version   1.0.0
  * @link      https://jingga.app
  */
@@ -33,7 +33,7 @@ use phpOMS\Uri\HttpUri;
  * Billing class.
  *
  * @package Modules\Billing
- * @license OMS License 1.0
+ * @license OMS License 2.0
  * @link    https://jingga.app
  * @since   1.0.0
  */
@@ -54,10 +54,10 @@ final class ApiPurchaseController extends Controller
      */
     public function apiSupplierBillUpload(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
-        $originalType = (int) ($request->getData('type') ?? $this->app->appSettings->get(
+        $originalType = $request->getDataInt('type') ?? (int) $this->app->appSettings->get(
             names: SettingsEnum::ORIGINAL_MEDIA_TYPE,
             module: self::NAME
-        )->content);
+        )->content;
 
         /** @var \Modules\Billing\Models\BillType $purchaseTransferType */
         $purchaseTransferType = BillTypeMapper::get()
@@ -102,8 +102,6 @@ final class ApiPurchaseController extends Controller
             if (!\is_file($in)) {
                 throw new \Exception();
             }
-
-            // @todo: Parse text and analyze text structure
 
             // Create internal document
             $billResponse = new HttpResponse();

@@ -7,7 +7,7 @@
  *
  * @package   Modules\Billing
  * @copyright Dennis Eichhorn
- * @license   OMS License 1.0
+ * @license   OMS License 2.0
  * @version   1.0.0
  * @link      https://jingga.app
  */
@@ -48,7 +48,7 @@ use phpOMS\Views\View;
  * Billing class.
  *
  * @package Modules\Billing
- * @license OMS License 1.0
+ * @license OMS License 2.0
  * @link    https://jingga.app
  * @since   1.0.0
  */
@@ -169,17 +169,17 @@ final class ApiBillController extends Controller
     {
         /** @var \Modules\ClientManagement\Models\Client|\Modules\SupplierManagement\Models\Supplier $account */
         $account = null;
-        if ($request->getData('client') !== null) {
+        if ($request->hasData('client')) {
             /** @var \Modules\ClientManagement\Models\Client $account */
             $account = ClientMapper::get()
                 ->with('account')
                 ->with('mainAddress')
                 ->where('id', (int) $request->getData('client'))
                 ->execute();
-        } elseif (((int) ($request->getData('supplier') ?? -1)) === 0) {
+        } elseif (($request->getDataInt('supplier') ?? -1) === 0) {
             /** @var \Modules\SupplierManagement\Models\Supplier $account */
             $account = new NullSupplier();
-        } elseif ($request->getData('supplier') !== null) {
+        } elseif ($request->hasData('supplier')) {
             /** @var \Modules\SupplierManagement\Models\Supplier $account */
             $account = SupplierMapper::get()
                 ->with('account')
@@ -190,7 +190,7 @@ final class ApiBillController extends Controller
 
         /** @var \Modules\Billing\Models\BillType $billType */
         $billType = BillTypeMapper::get()
-            ->where('id', (int) ($request->getData('type') ?? 1))
+            ->where('id', $request->getDataInt('type') ?? 1)
             ->execute();
 
         /* @var \Modules\Account\Models\Account $account */
@@ -214,7 +214,7 @@ final class ApiBillController extends Controller
         $bill->client          = !$request->hasData('client') ? null : $account;
         $bill->supplier        = !$request->hasData('supplier') ? null : $account;
         $bill->performanceDate = new \DateTime($request->getData('performancedate') ?? 'now');
-        $bill->setStatus((int) ($request->getData('status') ?? BillStatus::ACTIVE));
+        $bill->setStatus($request->getDataInt('status') ?? BillStatus::ACTIVE);
 
         return $bill;
     }
@@ -233,8 +233,8 @@ final class ApiBillController extends Controller
         $val = [];
         if (($val['client/supplier'] = (empty($request->getData('client'))
                 && (empty($request->getData('supplier'))
-                    && ((int) ($request->getData('supplier') ?? -1) !== 0)
-                )))
+                    && ($request->getDataInt('supplier') ?? -1) !== 0)
+                ))
             || ($val['type'] = (empty($request->getData('type'))))
         ) {
             return $val;
@@ -299,7 +299,7 @@ final class ApiBillController extends Controller
                     $this->createModelRelation(
                         $request->header->account,
                         $media->getId(),
-                        $request->getData('type', 'int'),
+                        $request->getDataInt('type'),
                         MediaMapper::class,
                         'types',
                         '',
@@ -440,7 +440,7 @@ final class ApiBillController extends Controller
     {
         $element       = new BillElement();
         $element->bill = (int) $request->getData('bill');
-        $element->item = (int) ($request->getData('item') ?? 0);
+        $element->item = $request->getDataInt('item') ?? 0;
 
         if ($element->item === null) {
             return $element;
@@ -457,9 +457,9 @@ final class ApiBillController extends Controller
 
         $element->itemNumber = $item->number;
         $element->itemName   = $item->getL11n('name1')->description;
-        $element->quantity   = (int) ($request->getData('quantity') ?? 0);
+        $element->quantity   = $request->getDataInt('quantity') ?? 0;
 
-        $element->singleSalesPriceNet = new Money($request->getData('singlesalespricenet', 'int') ?? $item->salesPrice->getInt());
+        $element->singleSalesPriceNet = new Money($request->getDataInt('singlesalespricenet') ?? $item->salesPrice->getInt());
         $element->totalSalesPriceNet  = clone $element->singleSalesPriceNet;
         $element->totalSalesPriceNet->mult($element->quantity);
 
@@ -528,6 +528,8 @@ final class ApiBillController extends Controller
         $templateId = $request->getData('bill_template', 'int');
         if ($templateId === null) {
             $billTypeId = $request->getData('bill_type', 'int');
+
+            /** @var \Modules\Billing\Models\BillType $billType */
             $billType = BillTypeMapper::get()
                 ->where('id', $billTypeId)
                 ->execute();
@@ -535,6 +537,7 @@ final class ApiBillController extends Controller
             $templateId = $billType->defaultTemplate->getId();
         }
 
+        /** @var \Modules\Media\Models\Collection $template */
         $template = CollectionMapper::get()
             ->with('sources')
             ->where('id', $templateId)
@@ -547,6 +550,7 @@ final class ApiBillController extends Controller
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/' . \substr($template->getSourceByName('bill.pdf.php')->getPath(), 0, -8), 'pdf.php');
 
+        /** @var \Model\Setting[] $settings */
         $settings = $this->app->appSettings->get(null,
             [
                 AdminSettingsEnum::DEFAULT_TEMPLATES,
@@ -556,9 +560,8 @@ final class ApiBillController extends Controller
             module: 'Admin'
         );
 
-        $postKey = '::' . $this->app->unitId . ':Admin';
-
         if ($settings === false) {
+            /** @var \Model\Setting[] $settings */
             $settings = $this->app->appSettings->get(null,
                 [
                     AdminSettingsEnum::DEFAULT_TEMPLATES,
@@ -567,18 +570,18 @@ final class ApiBillController extends Controller
                 unit: null,
                 module: 'Admin'
             );
-
-            $postKey = ':::Admin';
         }
 
+        /** @var \Modules\Media\Models\Collection $defaultTemplates */
         $defaultTemplates = CollectionMapper::get()
             ->with('sources')
-            ->where('id', (int) $settings[AdminSettingsEnum::DEFAULT_TEMPLATES . $postKey]->content)
+            ->where('id', (int) $settings[AdminSettingsEnum::DEFAULT_TEMPLATES]->content)
             ->execute();
 
+        /** @var \Modules\Media\Models\Collection $defaultAssets */
         $defaultAssets = CollectionMapper::get()
             ->with('sources')
-            ->where('id', (int) $settings[AdminSettingsEnum::DEFAULT_ASSETS . $postKey]->content)
+            ->where('id', (int) $settings[AdminSettingsEnum::DEFAULT_ASSETS]->content)
             ->execute();
 
         $view->setData('defaultTemplates', $defaultTemplates);
@@ -653,12 +656,14 @@ final class ApiBillController extends Controller
         /** @var \Modules\Billing\Models\Bill $bill */
         $bill = BillMapper::get()
             ->with('elements')
-            ->where('id', $request->getData('bill') ?? 0)
+            ->where('id', $request->getDataInt('bill') ?? 0)
             ->execute();
 
-        $templateId = $request->getData('bill_template', 'int');
+        $templateId = $request->getDataInt('bill_template');
         if ($templateId === null) {
             $billTypeId = $bill->type->getId();
+
+            /** @var \Modules\Billing\Models\BillType $billType */
             $billType = BillTypeMapper::get()
                 ->where('id', $billTypeId)
                 ->execute();
@@ -666,6 +671,7 @@ final class ApiBillController extends Controller
             $templateId = $billType->defaultTemplate->getId();
         }
 
+        /** @var \Modules\Media\Models\Collection $template */
         $template = CollectionMapper::get()
             ->with('sources')
             ->where('id', $templateId)
@@ -676,6 +682,7 @@ final class ApiBillController extends Controller
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/' . \substr($template->getSourceByName('bill.pdf.php')->getPath(), 0, -8), 'pdf.php');
 
+        /** @var \Model\Setting[] $settings */
         $settings = $this->app->appSettings->get(null,
             [
                 AdminSettingsEnum::DEFAULT_TEMPLATES,
@@ -685,9 +692,8 @@ final class ApiBillController extends Controller
             module: 'Admin'
         );
 
-        $postKey = '::' . $this->app->unitId . ':Admin';
-
         if ($settings === false) {
+            /** @var \Model\Setting[] $settings */
             $settings = $this->app->appSettings->get(null,
                 [
                     AdminSettingsEnum::DEFAULT_TEMPLATES,
@@ -696,18 +702,18 @@ final class ApiBillController extends Controller
                 unit: null,
                 module: 'Admin'
             );
-
-            $postKey = ':::Admin';
         }
 
+        /** @var \Modules\Media\Models\Collection $defaultTemplates */
         $defaultTemplates = CollectionMapper::get()
             ->with('sources')
-            ->where('id', (int) $settings[AdminSettingsEnum::DEFAULT_TEMPLATES . $postKey]->content)
+            ->where('id', (int) $settings[AdminSettingsEnum::DEFAULT_TEMPLATES]->content)
             ->execute();
 
+        /** @var \Modules\Media\Models\Collection $defaultAssets */
         $defaultAssets = CollectionMapper::get()
             ->with('sources')
-            ->where('id', (int) $settings[AdminSettingsEnum::DEFAULT_ASSETS . $postKey]->content)
+            ->where('id', (int) $settings[AdminSettingsEnum::DEFAULT_ASSETS]->content)
             ->execute();
 
         $view->setData('defaultTemplates', $defaultTemplates);

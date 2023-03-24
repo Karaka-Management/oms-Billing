@@ -6,7 +6,7 @@
  *
  * @package   Modules\Billing
  * @copyright Dennis Eichhorn
- * @license   OMS License 1.0
+ * @license   OMS License 2.0
  * @version   1.0.0
  * @link      https://jingga.app
  */
@@ -38,7 +38,7 @@ use phpOMS\Views\View;
  * Billing class.
  *
  * @package Modules\Billing
- * @license OMS License 1.0
+ * @license OMS License 2.0
  * @link    https://jingga.app
  * @since   1.0.0
  * @codeCoverageIgnore
@@ -74,14 +74,14 @@ final class BackendController extends Controller
         if ($request->getData('ptype') === 'p') {
             $view->setData('bills',
                 $mapperQuery
-                    ->where('id', (int) ($request->getData('id') ?? 0), '<')
+                    ->where('id', $request->getDataInt('id') ?? 0, '<')
                     ->where('client', null, '!=')
                     ->where('type/l11n/language', $response->getLanguage())
                     ->execute()
             );
         } elseif ($request->getData('ptype') === 'n') {
             $view->setData('bills',
-                $mapperQuery->where('id', (int) ($request->getData('id') ?? 0), '>')
+                $mapperQuery->where('id', $request->getDataInt('id') ?? 0, '>')
                     ->where('client', null, '!=')
                     ->where('type/l11n/language', $response->getLanguage())
                     ->execute()
@@ -116,6 +116,7 @@ final class BackendController extends Controller
         $view->setTemplate('/Modules/Billing/Theme/Backend/bill-create');
         $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response));
 
+        /** @var \Modules\Billing\Models\Bill $bill */
         $bill = SalesBillMapper::get()
             ->with('elements')
             ->with('media')
@@ -251,14 +252,14 @@ final class BackendController extends Controller
         if ($request->getData('ptype') === 'p') {
             $view->setData('bills',
                 $mapperQuery
-                    ->where('id', (int) ($request->getData('id') ?? 0), '<')
+                    ->where('id', $request->getDataInt('id') ?? 0, '<')
                     ->where('supplier', null, '!=')
                     ->where('type/l11n/language', $response->getLanguage())
                     ->execute()
             );
         } elseif ($request->getData('ptype') === 'n') {
             $view->setData('bills',
-                $mapperQuery->where('id', (int) ($request->getData('id') ?? 0), '>')
+                $mapperQuery->where('id', $request->getDataInt('id') ?? 0, '>')
                     ->where('supplier', null, '!=')
                     ->where('type/l11n/language', $response->getLanguage())
                     ->execute()
@@ -342,11 +343,11 @@ final class BackendController extends Controller
 
         if ($request->getData('ptype') === 'p') {
             $view->setData('bills',
-                StockBillMapper::getAll()->where('id', (int) ($request->getData('id') ?? 0), '<')->limit(25)->execute()
+                StockBillMapper::getAll()->where('id', $request->getDataInt('id') ?? 0, '<')->limit(25)->execute()
             );
         } elseif ($request->getData('ptype') === 'n') {
             $view->setData('bills',
-                StockBillMapper::getAll()->where('id', (int) ($request->getData('id') ?? 0), '>')->limit(25)->execute()
+                StockBillMapper::getAll()->where('id', $request->getDataInt('id') ?? 0, '>')->limit(25)->execute()
             );
         } else {
             $view->setData('bills',
@@ -762,13 +763,13 @@ final class BackendController extends Controller
         if ($request->getData('ptype') === 'p') {
             $view->setData('bills',
                 $mapperQuery
-                    ->where('id', (int) ($request->getData('id') ?? 0), '<')
+                    ->where('id', $request->getDataInt('id') ?? 0, '<')
                     ->where('type/l11n/language', $response->getLanguage())
                     ->execute()
             );
         } elseif ($request->getData('ptype') === 'n') {
             $view->setData('bills',
-                $mapperQuery->where('id', (int) ($request->getData('id') ?? 0), '>')
+                $mapperQuery->where('id', $request->getDataInt('id') ?? 0, '>')
                     ->where('type/l11n/language', $response->getLanguage())
                     ->execute()
             );

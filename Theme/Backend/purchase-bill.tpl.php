@@ -6,7 +6,7 @@
  *
  * @package   Modules\Billing
  * @copyright Dennis Eichhorn
- * @license   OMS License 1.0
+ * @license   OMS License 2.0
  * @version   1.0.0
  * @link      https://jingga.app
  */
@@ -300,8 +300,8 @@ echo $this->getData('nav')->render(); ?>
                             <tbody>
                             <?php foreach ($media as $file) :
                                 $url = $file->extension === 'collection'
-                                ? UriFactory::build('{/lang}/{/app}/media/list?path=' . \rtrim($file->getVirtualPath(), '/') . '/' . $file->name)
-                                : UriFactory::build('{/lang}/{/app}/media/single?id=' . $file->getId()
+                                ? UriFactory::build('{/base}/media/list?path=' . \rtrim($file->getVirtualPath(), '/') . '/' . $file->name)
+                                : UriFactory::build('{/base}/media/single?id=' . $file->getId()
                                     . '&path={?path}' . (
                                             $file->getId() === 0
                                                 ? '/' . $file->name
