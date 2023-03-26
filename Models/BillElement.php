@@ -14,6 +14,8 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Models;
 
+use Modules\Finance\Models\TaxCode;
+use Modules\ItemManagement\Models\Item;
 use phpOMS\Localization\Money;
 use phpOMS\Stdlib\Base\FloatInt;
 
@@ -87,9 +89,23 @@ class BillElement implements \JsonSerializable
 
     public Money $totalProfitGross;
 
+    /**
+     * Tax amount
+     * 
+     * @var null|FloatInt
+     * @since 1.0.0
+     */
     public ?FloatInt $taxP = null;
 
+    /**
+     * Tax percentage
+     * 
+     * @var null|FloatInt
+     * @since 1.0.0
+     */
     public ?FloatInt $taxR = null;
+
+    public string $taxCode = '';
 
     /**
      * Event assigned to this element.
@@ -165,6 +181,44 @@ class BillElement implements \JsonSerializable
     public function setItem(int $item) : void
     {
         $this->item = $item;
+    }
+
+    public static function fromItem(Item $item, TaxCode $code) : self
+    {
+        $element = new self();
+        $element->item = $item->getId();
+        $element->itemNumber = $item->number;
+        $element->itemName = $item->getL11n('name1')->description;
+        $element->itemDescription = $item->getL11n('description_short')->description;
+        $element->quantity = 0;
+
+        // @todo: Use pricing instead of the default sales price
+        // @todo: discounts might be in quantities
+        $element->singleListPriceNet->setInt($item->salesPrice->getInt());
+        $element->totalListPriceNet->setInt($element->quantity * $item->salesPrice->getInt());
+        $element->singleSalesPriceNet->setInt($item->salesPrice->getInt());
+        $element->totalSalesPriceNet->setInt($element->quantity * $item->salesPrice->getInt());
+        $element->singlePurchasePriceNet->setInt($item->purchasePrice->getInt());
+        $element->totalPurchasePriceNet->setInt($element->quantity * $item->purchasePrice->getInt());
+
+        $element->singleProfitNet->setInt($element->singleSalesPriceNet->getInt() - $element->singlePurchasePriceNet->getInt()); 
+        $element->totalProfitNet->setInt($element->quantity * ($element->totalSalesPriceNet->getInt() - $element->totalPurchasePriceNet->getInt()));
+    
+        $element->taxP    = new FloatInt((int) (($code->percentageInvoice * $element->totalSalesPriceNet->getInt()) / 1000));
+        $element->taxR    = new FloatInt($code->percentageInvoice);
+        $element->taxCode = $code->abbr;
+        
+        $element->singleListPriceGross->setInt((int) ($element->singleListPriceNet->getInt() + $element->singleListPriceNet->getInt() * $element->taxR->getInt() / 1000));
+        $element->totalListPriceGross->setInt((int) ($element->totalListPriceNet->getInt() + $element->totalListPriceNet->getInt() * $element->taxR->getInt() / 1000));
+        $element->singleSalesPriceGross->setInt((int) ($element->singleSalesPriceNet->getInt() + $element->singleSalesPriceNet->getInt() * $element->taxR->getInt() / 1000));
+        $element->totalSalesPriceGross->setInt((int) ($element->totalSalesPriceNet->getInt() + $element->totalSalesPriceNet->getInt() * $element->taxR->getInt() / 1000));
+        $element->singlePurchasePriceGross->setInt((int) ($element->singlePurchasePriceNet->getInt() + $element->singlePurchasePriceNet->getInt() * $element->taxR->getInt() / 1000));
+        $element->totalPurchasePriceGross->setInt((int) ($element->totalPurchasePriceNet->getInt() + $element->totalPurchasePriceNet->getInt() * $element->taxR->getInt() / 1000));
+
+        $element->singleProfitGross->setInt($element->singleSalesPriceGross->getInt() - $element->singlePurchasePriceGross->getInt());
+        $element->totalProfitGross->setInt($element->quantity * ($element->totalSalesPriceGross->getInt() - $element->totalPurchasePriceGross->getInt()));
+
+        return $element;
     }
 
     /**

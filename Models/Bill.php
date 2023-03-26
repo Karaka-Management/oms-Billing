@@ -19,6 +19,7 @@ use Modules\Admin\Models\NullAccount;
 use Modules\Billing\Models\Attribute\BillAttribute;
 use Modules\ClientManagement\Models\Client;
 use Modules\Editor\Models\EditorDoc;
+use Modules\ItemManagement\Models\Item;
 use Modules\Media\Models\Collection;
 use Modules\Media\Models\Media;
 use Modules\Media\Models\NullMedia;
@@ -729,6 +730,17 @@ class Bill implements \JsonSerializable
     public function addElement(BillElement $element) : void
     {
         $this->elements[] = $element;
+
+        $this->netProfit->add($element->totalProfitNet->getInt());
+        $this->grossProfit->add($element->totalProfitGross->getInt());
+        $this->netCosts->add($element->totalPurchasePriceNet->getInt());
+        $this->grossCosts->add($element->totalPurchasePriceGross->getInt());
+        $this->netSales->add($element->totalSalesPriceNet->getInt());
+        $this->grossSales->add($element->totalSalesPriceGross->getInt());
+        $this->netDiscount->add($element->totalDiscountP->getInt());
+
+        // @todo: Discount might be in quantities
+        $this->grossDiscount->add((int) ($element->taxR * $element->totalDiscountP->getInt() / 1000));
     }
 
     /**

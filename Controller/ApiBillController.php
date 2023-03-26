@@ -24,6 +24,7 @@ use Modules\Billing\Models\BillElementMapper;
 use Modules\Billing\Models\BillMapper;
 use Modules\Billing\Models\BillStatus;
 use Modules\Billing\Models\BillTypeMapper;
+use Modules\ClientManagement\Models\Client;
 use Modules\ClientManagement\Models\ClientMapper;
 use Modules\ItemManagement\Models\ItemMapper;
 use Modules\Media\Models\CollectionMapper;
@@ -35,6 +36,8 @@ use Modules\SupplierManagement\Models\NullSupplier;
 use Modules\SupplierManagement\Models\SupplierMapper;
 use phpOMS\Autoloader;
 use phpOMS\Localization\ISO3166TwoEnum;
+use phpOMS\Localization\ISO4217CharEnum;
+use phpOMS\Localization\ISO639x1Enum;
 use phpOMS\Localization\Money;
 use phpOMS\Message\Http\RequestStatusCode;
 use phpOMS\Message\NotificationLevel;
@@ -144,14 +147,59 @@ final class ApiBillController extends Controller
             return;
         }
 
+        // @todo: validate vat before creation
         $bill = $this->createBillFromRequest($request, $response, $data);
+        $this->createBillDatabaseEntry($bill, $request);
+
+        $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Bill', 'Bill successfully created.', $bill);
+    }
+
+    public function createBillDatabaseEntry(Bill $bill, RequestAbstract $request) : void
+    {
         $this->createModel($request->header->account, $bill, BillMapper::class, 'bill', $request->getOrigin());
 
         $new = clone $bill;
         $new->buildNumber(); // The bill id is part of the number
         $this->updateModel($request->header->account, $bill, $new, BillMapper::class, 'bill', $request->getOrigin());
+    }
 
-        $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Bill', 'Bill successfully created.', $bill);
+    public function createBaseBill(Client $client, RequestAbstract $request) : Bill
+    {
+        // @todo: validate vat before creation
+        $bill = new Bill();
+        $bill->setStatus(BillStatus::DRAFT);
+        $bill->createdBy = new NullAccount($request->header->account);
+        $bill->billDate  = new \DateTime('now'); // @todo: Date of payment
+        $bill->performanceDate  = new \DateTime('now'); // @todo: Date of payment
+
+        $bill->shipping = 0;
+        $bill->shippingText = '';
+
+        $bill->payment = 0;
+        $bill->paymentText = '';
+        
+        // @todo: use bill and shipping address instead of main address if available
+        $bill->client      = $client;
+        $bill->billTo      = $client->account->name1;
+        $bill->billAddress = $client->mainAddress->address;
+        $bill->billCity    = $client->mainAddress->city;
+        $bill->billZip     = $client->mainAddress->postal;
+        $bill->billCountry = $client->mainAddress->getCountry();
+
+        $bill->setCurrency(ISO4217CharEnum::_EUR);
+
+        // @todo implement allowed invoice languages and a default invoice language if none match
+        // @todo implement client invoice langage (this would allow invoice langauges which are different from the invoice address)
+        $bill->setLanguage(
+            !\in_array(
+                $client->mainAddress->getCountry(), 
+                [ISO3166TwoEnum::_DEU, ISO3166TwoEnum::_AUT]
+            )
+            ? ISO639x1Enum::_EN
+            : ISO639x1Enum::_DE
+        );
+
+        return $bill;
     }
 
     /**

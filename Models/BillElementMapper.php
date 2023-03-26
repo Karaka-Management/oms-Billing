@@ -61,6 +61,10 @@ final class BillElementMapper extends DataMapperFactory
         'billing_bill_element_total_netpurchaseprice'    => ['name' => 'billing_bill_element_total_netpurchaseprice',      'type' => 'Serializable',    'internal' => 'totalPurchasePriceNet'],
         'billing_bill_element_total_grosspurchaseprice'  => ['name' => 'billing_bill_element_total_grosspurchaseprice',      'type' => 'Serializable',    'internal' => 'totalPurchasePriceGross'],
         'billing_bill_element_bill'                      => ['name' => 'billing_bill_element_bill',      'type' => 'int',    'internal' => 'bill'],
+
+        'billing_bill_element_tax_type'                      => ['name' => 'billing_bill_element_tax_type',      'type' => 'string',    'internal' => 'taxCode'],
+        'billing_bill_element_tax_price'                      => ['name' => 'billing_bill_element_tax_price',      'type' => 'Serializable',    'internal' => 'taxP'],
+        'billing_bill_element_tax_percentage'                      => ['name' => 'billing_bill_element_tax_percentage',      'type' => 'Serializable',    'internal' => 'taxR'],
     ];
 
     /**

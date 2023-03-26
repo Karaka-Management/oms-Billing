@@ -855,7 +855,7 @@
             },
             "billing_bill_element_tax_type": {
                 "name": "billing_bill_element_tax_type",
-                "type": "INT",
+                "type": "VARCHAR(10)",
                 "null": true,
                 "default": null
             },

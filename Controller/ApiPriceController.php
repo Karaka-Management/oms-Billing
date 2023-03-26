@@ -87,6 +87,7 @@ final class ApiPriceController extends Controller
         if ($request->hasData('price_client')) {
             /** @var null|\Modules\ClientManagement\Models\Client $client */
             $client = ClientMapper::get()
+                ->with('attributes')
                 ->with('attributes/type')
                 ->with('attributes/value')
                 ->where('id', (int) $request->getData('price_client'))
@@ -97,6 +98,7 @@ final class ApiPriceController extends Controller
         } else {
             /** @var null|\Modules\SupplierManagement\Models\Supplier $supplier */
             $supplier = SupplierMapper::get()
+                ->with('attributes')
                 ->with('attributes/type')
                 ->with('attributes/value')
                 ->where('id', (int) $request->getData('price_supplier'))
