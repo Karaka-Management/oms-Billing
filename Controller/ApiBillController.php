@@ -154,6 +154,16 @@ final class ApiBillController extends Controller
         $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Bill', 'Bill successfully created.', $bill);
     }
 
+    /**
+     * Create a new database entry for a Bill object and update its bill number
+     *
+     * @param Bill            $bill    The Bill object to create a database entry for and update its bill number
+     * @param RequestAbstract $request The request object that contains the header account and origin
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function createBillDatabaseEntry(Bill $bill, RequestAbstract $request) : void
     {
         $this->createModel($request->header->account, $bill, BillMapper::class, 'bill', $request->getOrigin());
@@ -163,6 +173,22 @@ final class ApiBillController extends Controller
         $this->updateModel($request->header->account, $bill, $new, BillMapper::class, 'bill', $request->getOrigin());
     }
 
+    /**
+     * Create a base Bill object with default values
+     *
+     * @param Client           $client  The client object for whom the bill is being created
+     * @param RequestAbstract  $request The request object that contains the header account
+     *
+     * @return Bill                     The new Bill object with default values
+     *
+     * @todo Validate VAT before creation
+     * @todo Set the correct date of payment
+     * @todo Use bill and shipping address instead of main address if available
+     * @todo Implement allowed invoice languages and a default invoice language if none match
+     * @todo Implement client invoice language (allowing for different invoice languages than invoice address)
+     *
+     * @since 1.0.0
+     */
     public function createBaseBill(Client $client, RequestAbstract $request) : Bill
     {
         // @todo: validate vat before creation
@@ -177,7 +203,7 @@ final class ApiBillController extends Controller
 
         $bill->payment = 0;
         $bill->paymentText = '';
-        
+
         // @todo: use bill and shipping address instead of main address if available
         $bill->client      = $client;
         $bill->billTo      = $client->account->name1;
@@ -192,7 +218,7 @@ final class ApiBillController extends Controller
         // @todo implement client invoice langage (this would allow invoice langauges which are different from the invoice address)
         $bill->setLanguage(
             !\in_array(
-                $client->mainAddress->getCountry(), 
+                $client->mainAddress->getCountry(),
                 [ISO3166TwoEnum::_DEU, ISO3166TwoEnum::_AUT]
             )
             ? ISO639x1Enum::_EN

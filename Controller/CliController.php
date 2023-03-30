@@ -18,6 +18,7 @@ use Modules\Billing\Models\BillMapper;
 use Modules\Billing\Models\BillTypeMapper;
 use Modules\Billing\Models\NullBillType;
 use Modules\Billing\Models\SettingsEnum;
+use Modules\Payment\Models\PaymentType;
 use Modules\SupplierManagement\Models\NullSupplier;
 use Modules\SupplierManagement\Models\Supplier;
 use Modules\SupplierManagement\Models\SupplierMapper;

@@ -105,6 +105,16 @@ final class ApiTaxController extends Controller
         return [];
     }
 
+    /**
+     * Get the client's tax code based on their country and tax office address
+     *
+     * @param Client  $client           The client to get the tax code for
+     * @param Address $taxOfficeAddress The tax office address used to determine the tax code
+     *
+     * @return ClientAttributeValue   The client's tax code
+     *
+     * @since 1.0.0
+     */
     public function getClientTaxCode(Client $client, Address $taxOfficeAddress) : ClientAttributeValue
     {
         /** @var \Modules\ClientManagement\Models\ClientAttributeType $codes */
