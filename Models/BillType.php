@@ -15,7 +15,6 @@ declare(strict_types=1);
 namespace Modules\Billing\Models;
 
 use Modules\Media\Models\Collection;
-use Modules\Media\Models\NullCollection;
 use phpOMS\Localization\BaseStringL11n;
 use phpOMS\Localization\ISO639x1Enum;
 

@@ -97,17 +97,17 @@ class Price implements \JsonSerializable
 
     public function __construct()
     {
-        $this->item = new NullItem();
-        $this->itemgroup = new NullItemAttributeValue();
+        $this->item        = new NullItem();
+        $this->itemgroup   = new NullItemAttributeValue();
         $this->itemsegment = new NullItemAttributeValue();
         $this->itemsection = new NullItemAttributeValue();
-        $this->itemtype = new NullItemAttributeValue();
+        $this->itemtype    = new NullItemAttributeValue();
 
-        $this->client = new NullClient();
-        $this->clientgroup = new NullClientAttributeValue();
+        $this->client        = new NullClient();
+        $this->clientgroup   = new NullClientAttributeValue();
         $this->clientsegment = new NullClientAttributeValue();
         $this->clientsection = new NullClientAttributeValue();
-        $this->clienttype = new NullClientAttributeValue();
+        $this->clienttype    = new NullClientAttributeValue();
 
         $this->supplier = new NullSupplier();
     }

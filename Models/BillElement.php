@@ -39,6 +39,7 @@ class BillElement implements \JsonSerializable
 
     public int $order = 0;
 
+    /** @todo: consider to reference the model instead of the int, this would make it much easier in other places like the shop */
     public ?int $item = null;
 
     public string $itemNumber = '';
@@ -47,7 +48,7 @@ class BillElement implements \JsonSerializable
 
     public string $itemDescription = '';
 
-    public int $quantity = 0;
+    protected int $quantity = 0;
 
     public Money $singleSalesPriceNet;
 
@@ -57,9 +58,9 @@ class BillElement implements \JsonSerializable
 
     public Money $totalSalesPriceGross;
 
-    public ?FloatInt $singleDiscountP = null;
+    public Money $singleDiscountP;
 
-    public ?FloatInt $totalDiscountP = null;
+    public Money $totalDiscountP;
 
     public ?FloatInt $singleDiscountR = null;
 
@@ -91,19 +92,19 @@ class BillElement implements \JsonSerializable
 
     /**
      * Tax amount
-     * 
-     * @var null|FloatInt
+     *
+     * @var Money
      * @since 1.0.0
      */
-    public ?FloatInt $taxP = null;
+    public Money $taxP;
 
     /**
      * Tax percentage
-     * 
+     *
      * @var null|FloatInt
      * @since 1.0.0
      */
-    public ?FloatInt $taxR = null;
+    public FloatInt $taxR;
 
     public string $taxCode = '';
 
@@ -155,6 +156,12 @@ class BillElement implements \JsonSerializable
 
         $this->totalProfitNet   = new Money();
         $this->totalProfitGross = new Money();
+
+        $this->singleDiscountP = new Money();
+        $this->totalDiscountP  = new Money();
+
+        $this->taxP = new Money();
+        $this->taxR = new FloatInt();
     }
 
     /**
@@ -167,6 +174,21 @@ class BillElement implements \JsonSerializable
     public function getId() : int
     {
         return $this->id;
+    }
+
+    public function setQuantity(int $quantity) : void
+    {
+        if ($this->quantity === $quantity) {
+            return;
+        }
+
+        $this->quantity = $quantity;
+        // @todo: recalculate all the prices!!!
+    }
+
+    public function getQuantity() : int
+    {
+        return $this->quantity;
     }
 
     /**
@@ -183,14 +205,14 @@ class BillElement implements \JsonSerializable
         $this->item = $item;
     }
 
-    public static function fromItem(Item $item, TaxCode $code) : self
+    public static function fromItem(Item $item, TaxCode $code, int $quantity = 1) : self
     {
         $element = new self();
         $element->item = $item->getId();
         $element->itemNumber = $item->number;
         $element->itemName = $item->getL11n('name1')->description;
         $element->itemDescription = $item->getL11n('description_short')->description;
-        $element->quantity = 0;
+        $element->quantity = $quantity;
 
         // @todo: Use pricing instead of the default sales price
         // @todo: discounts might be in quantities
@@ -201,19 +223,19 @@ class BillElement implements \JsonSerializable
         $element->singlePurchasePriceNet->setInt($item->purchasePrice->getInt());
         $element->totalPurchasePriceNet->setInt($element->quantity * $item->purchasePrice->getInt());
 
-        $element->singleProfitNet->setInt($element->singleSalesPriceNet->getInt() - $element->singlePurchasePriceNet->getInt()); 
+        $element->singleProfitNet->setInt($element->singleSalesPriceNet->getInt() - $element->singlePurchasePriceNet->getInt());
         $element->totalProfitNet->setInt($element->quantity * ($element->totalSalesPriceNet->getInt() - $element->totalPurchasePriceNet->getInt()));
-    
-        $element->taxP    = new FloatInt((int) (($code->percentageInvoice * $element->totalSalesPriceNet->getInt()) / 1000));
+
+        $element->taxP    = new FloatInt((int) (($code->percentageInvoice * $element->totalSalesPriceNet->getInt()) / 10000));
         $element->taxR    = new FloatInt($code->percentageInvoice);
         $element->taxCode = $code->abbr;
-        
-        $element->singleListPriceGross->setInt((int) ($element->singleListPriceNet->getInt() + $element->singleListPriceNet->getInt() * $element->taxR->getInt() / 1000));
-        $element->totalListPriceGross->setInt((int) ($element->totalListPriceNet->getInt() + $element->totalListPriceNet->getInt() * $element->taxR->getInt() / 1000));
-        $element->singleSalesPriceGross->setInt((int) ($element->singleSalesPriceNet->getInt() + $element->singleSalesPriceNet->getInt() * $element->taxR->getInt() / 1000));
-        $element->totalSalesPriceGross->setInt((int) ($element->totalSalesPriceNet->getInt() + $element->totalSalesPriceNet->getInt() * $element->taxR->getInt() / 1000));
-        $element->singlePurchasePriceGross->setInt((int) ($element->singlePurchasePriceNet->getInt() + $element->singlePurchasePriceNet->getInt() * $element->taxR->getInt() / 1000));
-        $element->totalPurchasePriceGross->setInt((int) ($element->totalPurchasePriceNet->getInt() + $element->totalPurchasePriceNet->getInt() * $element->taxR->getInt() / 1000));
+
+        $element->singleListPriceGross->setInt((int) ($element->singleListPriceNet->getInt() + $element->singleListPriceNet->getInt() * $element->taxR->getInt() / 10000));
+        $element->totalListPriceGross->setInt((int) ($element->totalListPriceNet->getInt() + $element->totalListPriceNet->getInt() * $element->taxR->getInt() / 10000));
+        $element->singleSalesPriceGross->setInt((int) ($element->singleSalesPriceNet->getInt() + $element->singleSalesPriceNet->getInt() * $element->taxR->getInt() / 10000));
+        $element->totalSalesPriceGross->setInt((int) ($element->totalSalesPriceNet->getInt() + $element->totalSalesPriceNet->getInt() * $element->taxR->getInt() / 10000));
+        $element->singlePurchasePriceGross->setInt((int) ($element->singlePurchasePriceNet->getInt() + $element->singlePurchasePriceNet->getInt() * $element->taxR->getInt() / 10000));
+        $element->totalPurchasePriceGross->setInt((int) ($element->totalPurchasePriceNet->getInt() + $element->totalPurchasePriceNet->getInt() * $element->taxR->getInt() / 10000));
 
         $element->singleProfitGross->setInt($element->singleSalesPriceGross->getInt() - $element->singlePurchasePriceGross->getInt());
         $element->totalProfitGross->setInt($element->quantity * ($element->totalSalesPriceGross->getInt() - $element->totalPurchasePriceGross->getInt()));

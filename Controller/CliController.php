@@ -105,7 +105,7 @@ final class CliController extends Controller
         /* Type */
         $type = $this->findSupplierInvoiceType($content, $identifiers['type'], $language);
 
-        /** @var \Modules\Billing\Models\BillType $billTye */
+        /** @var \Modules\Billing\Models\BillType $billType */
         $billType = BillTypeMapper::get()
             ->where('name', $type)
             ->execute();
@@ -274,7 +274,7 @@ final class CliController extends Controller
             foreach ($lines as $row => $line) {
                 if (\preg_match($match, $line, $found) === 1) {
                     if ($row < $bestPos) {
-                        $bestPos = $row;
+                        $bestPos   = $row;
                         $bestMatch = \trim($found['bill_date']);
                     }
 
@@ -292,7 +292,7 @@ final class CliController extends Controller
      * @param string[] $lines   Bill lines
      * @param array    $matches Gross match patterns
      *
-     * @return string
+     * @return int
      *
      * @since 1.0.0
      */
@@ -416,7 +416,7 @@ final class CliController extends Controller
 
         foreach ($formats as $format) {
             if (($obj = \DateTime::createFromFormat($format, $date)) !== false) {
-                return $obj;
+                return $obj === false ? null : $obj;
             }
         }
 

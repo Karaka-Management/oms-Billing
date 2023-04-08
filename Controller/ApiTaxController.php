@@ -23,7 +23,12 @@ use Modules\ClientManagement\Models\Client;
 use Modules\ClientManagement\Models\ClientAttributeTypeMapper;
 use Modules\ClientManagement\Models\ClientAttributeValue;
 use Modules\ClientManagement\Models\NullClientAttributeValue;
+use Modules\Finance\Models\NullTaxCode;
+use Modules\Finance\Models\TaxCode;
+use Modules\Finance\Models\TaxCodeMapper;
+use Modules\ItemManagement\Models\Item;
 use Modules\ItemManagement\Models\NullItemAttributeValue;
+use Modules\Organization\Models\UnitMapper;
 use Modules\SupplierManagement\Models\NullSupplierAttributeValue;
 use phpOMS\Localization\ISO3166CharEnum;
 use phpOMS\Message\Http\RequestStatusCode;
@@ -42,6 +47,55 @@ use phpOMS\Model\Message\FormValidation;
  */
 final class ApiTaxController extends Controller
 {
+    public function getTaxCodeFromClientItem(Client $client, Item $item, string $defaultCountry = '') : TaxCode
+    {
+        // @todo: define default sales tax code if none available?!
+        // @todo: consider to actually use a ownsOne reference instead of only a string, this way the next line with the TaxCodeMapper can be removed
+        /** @var \Modules\Billing\Models\Tax\TaxCombination $taxCombination */
+        $taxCombination = TaxCombinationMapper::get()
+                ->where('itemCode', $item->getAttribute('sales_tax_code')?->value->getId())
+                ->where('clientCode', $client->getAttribute('sales_tax_code')?->value->getId())
+                ->execute();
+
+        /** @var \Modules\Finance\Models\TaxCode $taxCode */
+        $taxCode = TaxCodeMapper::get()
+            ->where('abbr', $taxCombination->taxCode)
+            ->execute();
+
+        // If now tax code could be found, the local tax code should be used.
+        if ($taxCode instanceof NullTaxCode) {
+            /** @var \Modules\Organization\Models\Unit $unit */
+            $unit = UnitMapper::get()
+                ->with('mainAddress')
+                ->where('id', $this->app->unitId)
+                ->execute();
+
+            // Create dummy client
+            $client = new Client();
+            $client->mainAddress =  $unit->mainAddress;
+
+            if (!empty($defaultCountry)) {
+                $client->mainAddress->setCountry($defaultCountry);
+            }
+
+            $taxCodeAttribute = $this->getClientTaxCode($client,  $unit->mainAddress);
+
+            /** @var \Modules\Billing\Models\Tax\TaxCombination $taxCombination */
+            $t = $item->getAttribute('sales_tax_code');
+            $taxCombination = TaxCombinationMapper::get()
+                ->where('itemCode', $item->getAttribute('sales_tax_code')?->value->getId())
+                ->where('clientCode', $taxCodeAttribute->getId())
+                ->execute();
+
+            /** @var \Modules\Finance\Models\TaxCode $taxCode */
+            $taxCode = TaxCodeMapper::get()
+                ->where('abbr', $taxCombination->taxCode)
+                ->execute();
+        }
+
+        return $taxCode;
+    }
+
     public function apiTaxCombinationCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateTaxCombinationCreate($request))) {
@@ -94,10 +148,10 @@ final class ApiTaxController extends Controller
     private function validateTaxCombinationCreate(RequestAbstract $request) : array
     {
         $val = [];
-        if (($val['tax_type'] = empty($request->getData('tax_type')))
-            || ($val['tax_code'] = empty($request->getData('tax_code')))
-            || ($val['item_code'] = empty($request->getData('item_code')))
-            || ($val['account_code'] = empty($request->getData('account_code')))
+        if (($val['tax_type'] = !$request->hasData('tax_type'))
+            || ($val['tax_code'] = !$request->hasData('tax_code'))
+            || ($val['item_code'] = !$request->hasData('item_code'))
+            || ($val['account_code'] = !$request->hasData('account_code'))
         ) {
             return $val;
         }

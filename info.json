@@ -26,6 +26,7 @@
         "SupplierManagement": "1.0.0"
     },
     "providing": {
+        "Admin": "*",
         "Navigation": "*",
         "Media": "*",
         "Workflow": "*"

@@ -19,7 +19,6 @@ use Modules\Admin\Models\NullAccount;
 use Modules\Billing\Models\Attribute\BillAttribute;
 use Modules\ClientManagement\Models\Client;
 use Modules\Editor\Models\EditorDoc;
-use Modules\ItemManagement\Models\Item;
 use Modules\Media\Models\Collection;
 use Modules\Media\Models\Media;
 use Modules\Media\Models\NullMedia;
@@ -57,14 +56,6 @@ class Bill implements \JsonSerializable
     public string $number = '';
 
     /**
-     * Number format ID.
-     *
-     * @var string
-     * @since 1.0.0
-     */
-    public string $numberFormat = '';
-
-    /**
      * Bill type.
      *
      * @var BillType
@@ -81,6 +72,8 @@ class Bill implements \JsonSerializable
      * @since 1.0.0
      */
     private int $status = BillStatus::DRAFT;
+
+    private int $paymentStatus = BillPaymentStatus::UNPAID;
 
     /**
      * Bill created at.
@@ -135,6 +128,8 @@ class Bill implements \JsonSerializable
     public ?Supplier $supplier = null;
 
     public string $language = ISO639x1Enum::_EN;
+
+    public string $accountNumber = '';
 
     /**
      * Receiver.
@@ -468,10 +463,10 @@ class Bill implements \JsonSerializable
         $this->netDiscount   = new Money(0);
         $this->grossDiscount = new Money(0);
 
-        $this->createdAt       = new \DateTimeImmutable();
-        $this->createdBy       = new NullAccount();
-        $this->referral        = new NullAccount();
-        $this->type            = new NullBillType();
+        $this->createdAt = new \DateTimeImmutable();
+        $this->createdBy = new NullAccount();
+        $this->referral  = new NullAccount();
+        $this->type      = new NullBillType();
     }
 
     /**
@@ -510,7 +505,7 @@ class Bill implements \JsonSerializable
                 $this->id,
                 $this->type->getId(),
             ],
-            $this->numberFormat
+            $this->type->numberFormat
         );
     }
 
@@ -569,7 +564,7 @@ class Bill implements \JsonSerializable
     {
         foreach ($this->attributes as $attribute) {
             if ($attribute->type->name === $attrName) {
-                return $attribute->value;
+                return $attribute;
             }
         }
 
@@ -600,6 +595,32 @@ class Bill implements \JsonSerializable
     public function setStatus(int $status) : void
     {
         $this->status = $status;
+    }
+
+    /**
+     * Get paymentStatus
+     *
+     * @return int
+     *
+     * @since 1.0.0
+     */
+    public function getPaymentStatus() : int
+    {
+        return $this->paymentStatus;
+    }
+
+    /**
+     * Set paymentStatus
+     *
+     * @param int $paymentStatus Status
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
+    public function setPaymentStatus(int $paymentStatus) : void
+    {
+        $this->paymentStatus = $paymentStatus;
     }
 
     /**
@@ -709,7 +730,7 @@ class Bill implements \JsonSerializable
     /**
      * Get Bill elements.
      *
-     * @return array
+     * @return BillElement[]
      *
      * @since 1.0.0
      */
@@ -740,7 +761,7 @@ class Bill implements \JsonSerializable
         $this->netDiscount->add($element->totalDiscountP->getInt());
 
         // @todo: Discount might be in quantities
-        $this->grossDiscount->add((int) ($element->taxR * $element->totalDiscountP->getInt() / 1000));
+        $this->grossDiscount->add((int) ($element->taxR->getInt() * $element->totalDiscountP->getInt() / 10000));
     }
 
     /**
@@ -848,7 +869,6 @@ class Bill implements \JsonSerializable
         return [
             'id'           => $this->id,
             'number'       => $this->number,
-            'numberFormat' => $this->numberFormat,
             'type'         => $this->type,
             'shipTo'       => $this->shipTo,
             'shipFAO'      => $this->shipFAO,

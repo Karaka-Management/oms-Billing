@@ -24,8 +24,14 @@ use Modules\Billing\Models\BillElementMapper;
 use Modules\Billing\Models\BillMapper;
 use Modules\Billing\Models\BillStatus;
 use Modules\Billing\Models\BillTypeMapper;
+use Modules\Billing\Models\SettingsEnum;
+use Modules\Billing\Models\Tax\TaxCombinationMapper;
 use Modules\ClientManagement\Models\Client;
 use Modules\ClientManagement\Models\ClientMapper;
+use Modules\Finance\Models\TaxCode;
+use Modules\Finance\Models\TaxCodeMapper;
+use Modules\ItemManagement\Models\Item;
+use Modules\ItemManagement\Models\ItemL11nMapper;
 use Modules\ItemManagement\Models\ItemMapper;
 use Modules\Media\Models\CollectionMapper;
 use Modules\Media\Models\MediaMapper;
@@ -99,7 +105,7 @@ final class ApiBillController extends Controller
     private function validateBillUpdate(RequestAbstract $request) : array
     {
         $val = [];
-        if (($val['bill'] = empty($request->getData('bill')))) {
+        if (($val['bill'] = !$request->hasData('bill'))) {
             return $val;
         }
 
@@ -147,7 +153,6 @@ final class ApiBillController extends Controller
             return;
         }
 
-        // @todo: validate vat before creation
         $bill = $this->createBillFromRequest($request, $response, $data);
         $this->createBillDatabaseEntry($bill, $request);
 
@@ -168,9 +173,9 @@ final class ApiBillController extends Controller
     {
         $this->createModel($request->header->account, $bill, BillMapper::class, 'bill', $request->getOrigin());
 
-        $new = clone $bill;
-        $new->buildNumber(); // The bill id is part of the number
-        $this->updateModel($request->header->account, $bill, $new, BillMapper::class, 'bill', $request->getOrigin());
+        $old = clone $bill;
+        $bill->buildNumber(); // The bill id is part of the number
+        $this->updateModel($request->header->account, $old, $bill, BillMapper::class, 'bill', $request->getOrigin());
     }
 
     /**
@@ -181,7 +186,7 @@ final class ApiBillController extends Controller
      *
      * @return Bill                     The new Bill object with default values
      *
-     * @todo Validate VAT before creation
+     * @todo Validate VAT before creation (maybe need to add a status when last validated, we don't want to validate every time)
      * @todo Set the correct date of payment
      * @todo Use bill and shipping address instead of main address if available
      * @todo Implement allowed invoice languages and a default invoice language if none match
@@ -197,12 +202,17 @@ final class ApiBillController extends Controller
         $bill->createdBy = new NullAccount($request->header->account);
         $bill->billDate  = new \DateTime('now'); // @todo: Date of payment
         $bill->performanceDate  = new \DateTime('now'); // @todo: Date of payment
+        $bill->accountNumber = $client->number;
 
         $bill->shipping = 0;
         $bill->shippingText = '';
 
         $bill->payment = 0;
         $bill->paymentText = '';
+
+        $bill->type = BillTypeMapper::get()
+            ->where('name', 'sales_invoice')
+            ->execute();
 
         // @todo: use bill and shipping address instead of main address if available
         $bill->client      = $client;
@@ -214,18 +224,58 @@ final class ApiBillController extends Controller
 
         $bill->setCurrency(ISO4217CharEnum::_EUR);
 
-        // @todo implement allowed invoice languages and a default invoice language if none match
-        // @todo implement client invoice langage (this would allow invoice langauges which are different from the invoice address)
-        $bill->setLanguage(
-            !\in_array(
-                $client->mainAddress->getCountry(),
-                [ISO3166TwoEnum::_DEU, ISO3166TwoEnum::_AUT]
-            )
-            ? ISO639x1Enum::_EN
-            : ISO639x1Enum::_DE
+        /** @var \Model\Setting $settings */
+        $settings = $this->app->appSettings->get(null,
+            SettingsEnum::VALID_BILL_LANGUAGES,
+            unit: $this->app->unitId,
+            module: 'Admin'
         );
 
+        if (empty($settings)) {
+            /** @var \Model\Setting $settings */
+            $settings = $this->app->appSettings->get(null,
+            SettingsEnum::VALID_BILL_LANGUAGES,
+                unit: null,
+                module: 'Admin'
+            );
+        }
+
+        $validLanguages = [];
+        if (!empty($settings)) {
+            $validLanguages = \json_decode($settings->content, true);
+        } else {
+            $validLanguages = [
+                ISO639x1Enum::_EN,
+            ];
+        }
+
+        $billLanguage = $validLanguages[0];
+
+        $clientBillLanguage = $client->getAttribute('bill_language')?->value->getValue();
+        if (!empty($clientBillLanguage) && \in_array($clientBillLanguage, $validLanguages)) {
+            $billLanguage = $clientBillLanguage;
+        } else {
+            $clientLanguages = ISO639x1Enum::languageFromCountry($client->mainAddress->getCountry());
+            $clientLanguage  = !empty($clientLanguages) ? $clientLanguages[0] : '';
+
+            if (\in_array($clientLanguage, $validLanguages)) {
+                $billLanguage = $clientLanguage;
+            }
+        }
+
+        $bill->setLanguage($billLanguage);
+
         return $bill;
+    }
+
+    public function createBaseBillElement(Client $client, Item $item, Bill $bill, RequestAbstract $request) : BillElement
+    {
+        $taxCode = $this->app->moduleManager->get('Billing', 'ApiTax')->getTaxCodeFromClientItem($client, $item, $request->getCountry());
+
+        $element       = BillElement::fromItem($item, $taxCode, $request->getDataInt('quantity') ?? 1);
+        $element->bill = $request->getDataInt('bill') ?? 0;
+
+        return $element;
     }
 
     /**
@@ -271,23 +321,22 @@ final class ApiBillController extends Controller
         $bill               = new Bill();
         $bill->createdBy    = new NullAccount($request->header->account);
         $bill->type         = $billType;
-        $bill->numberFormat = $billType->numberFormat;
         // @todo: use defaultInvoiceAddress or mainAddress. also consider to use billto1, billto2, billto3 (for multiple lines e.g. name2, fao etc.)
-        $bill->billTo          = (string) ($request->getData('billto')
+        $bill->billTo          = (string) ($request->getDataString('billto')
             ?? ($account->account->name1 . (!empty($account->account->name2)
                 ? ', ' . $account->account->name2
                 : ''
             )));
-        $bill->billAddress     = (string) ($request->getData('billaddress') ?? $account->mainAddress->address);
-        $bill->billZip         = (string) ($request->getData('billtopostal') ?? $account->mainAddress->postal);
-        $bill->billCity        = (string) ($request->getData('billtocity') ?? $account->mainAddress->city);
+        $bill->billAddress     = (string) ($request->getDataString('billaddress') ?? $account->mainAddress->address);
+        $bill->billZip         = (string) ($request->getDataString('billtopostal') ?? $account->mainAddress->postal);
+        $bill->billCity        = (string) ($request->getDataString('billtocity') ?? $account->mainAddress->city);
         $bill->billCountry     = (string) (
-            $request->getData('billtocountry') ?? (
+            $request->getDataString('billtocountry') ?? (
                 ($country = $account->mainAddress->getCountry()) ===  ISO3166TwoEnum::_XXX ? '' : $country)
             );
         $bill->client          = !$request->hasData('client') ? null : $account;
         $bill->supplier        = !$request->hasData('supplier') ? null : $account;
-        $bill->performanceDate = new \DateTime($request->getData('performancedate') ?? 'now');
+        $bill->performanceDate = new \DateTime($request->getDataString('performancedate') ?? 'now');
         $bill->setStatus($request->getDataInt('status') ?? BillStatus::ACTIVE);
 
         return $bill;
@@ -305,11 +354,11 @@ final class ApiBillController extends Controller
     private function validateBillCreate(RequestAbstract $request) : array
     {
         $val = [];
-        if (($val['client/supplier'] = (empty($request->getData('client'))
-                && (empty($request->getData('supplier'))
+        if (($val['client/supplier'] = (!$request->hasData('client')
+                && (!$request->hasData('supplier')
                     && ($request->getDataInt('supplier') ?? -1) !== 0)
                 ))
-            || ($val['type'] = (empty($request->getData('type'))))
+            || ($val['type'] = (!$request->hasData('type')))
         ) {
             return $val;
         }
@@ -456,8 +505,8 @@ final class ApiBillController extends Controller
     private function validateMediaAddToBill(RequestAbstract $request) : array
     {
         $val = [];
-        if (($val['media'] = (empty($request->getData('media')) && empty($request->getFiles())))
-            || ($val['bill'] = empty($request->getData('bill')))
+        if (($val['media'] = (!$request->hasData('media') && empty($request->getFiles())))
+            || ($val['bill'] = !$request->hasData('bill'))
         ) {
             return $val;
         }
@@ -487,12 +536,20 @@ final class ApiBillController extends Controller
             return;
         }
 
-        $element = $this->createBillElementFromRequest($request, $response, $data);
+        /** @var \Modules\Billing\Models\Bill $old */
+        $old = BillMapper::get()
+            ->with('client')
+            ->with('client/attributes')
+            ->with('client/attributes/type')
+            ->with('client/attributes/value')
+            ->where('id', $request->getDataInt('bill') ?? 0)
+            ->execute();
+
+        $element = $this->createBillElementFromRequest($request, $response, $old, $data);
         $this->createModel($request->header->account, $element, BillElementMapper::class, 'bill_element', $request->getOrigin());
 
-        /** @var \Modules\Billing\Models\Bill $old */
-        $old = BillMapper::get()->where('id', $element->bill)->execute();
-        $new = $this->updateBillWithBillElement(clone $old, $element, 1);
+        $new = clone $old;
+        $new->addElement($element);
         $this->updateModel($request->header->account, $old, $new, BillMapper::class, 'bill_element', $request->getOrigin());
 
         $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Bill element', 'Bill element successfully created.', $element);
@@ -508,72 +565,30 @@ final class ApiBillController extends Controller
      * @return BillElement
      *
      * @since 1.0.0
-     * @todo in the database the customer localized version should be stored because this is the version which went out
      */
-    public function createBillElementFromRequest(RequestAbstract $request, ResponseAbstract $response, $data = null) : BillElement
+    private function createBillElementFromRequest(RequestAbstract $request, ResponseAbstract $response, Bill $bill, $data = null) : BillElement
     {
-        $element       = new BillElement();
-        $element->bill = (int) $request->getData('bill');
-        $element->item = $request->getDataInt('item') ?? 0;
-
-        if ($element->item === null) {
-            return $element;
-        }
-
         /** @var \Modules\ItemManagement\Models\Item $item */
         $item = ItemMapper::get()
+            ->with('attributes')
+            ->with('attributes/type')
+            ->with('attributes/value')
             ->with('l11n')
             ->with('l11n/type')
-            ->where('id', $element->item)
+            ->where('id', $request->getDataInt('item') ?? 0)
             ->where('l11n/type/title', ['name1', 'name2', 'name3'], 'IN')
-            ->where('l11n/language', $response->getLanguage())
+            ->where('l11n/language', $bill->getLanguage())
             ->execute();
 
-        $element->itemNumber = $item->number;
-        $element->itemName   = $item->getL11n('name1')->description;
-        $element->quantity   = $request->getDataInt('quantity') ?? 0;
-
-        $element->singleSalesPriceNet = new Money($request->getDataInt('singlesalespricenet') ?? $item->salesPrice->getInt());
-        $element->totalSalesPriceNet  = clone $element->singleSalesPriceNet;
-        $element->totalSalesPriceNet->mult($element->quantity);
+        $element       = $this->createBaseBillElement($bill->client, $item, $bill, $request);
+        $element->bill = $bill->getId();
 
         // discounts
         if ($request->getData('discount_percentage') !== null) {
-            $discount = (int) $request->getData('discount_percentage');
-
-            $element->singleSalesPriceNet
-                ->sub((int) ($element->singleSalesPriceNet->getInt() / 100 * $discount));
-
-            $element->totalSalesPriceNet
-                ->sub((int) ($element->totalSalesPriceNet->getInt() / 100 * $discount));
+            // @todo: implement a addDiscount function
         }
-
-        $element->singlePurchasePriceNet = new Money($item->purchasePrice->getInt());
-        $element->totalPurchasePriceNet  = clone $element->singlePurchasePriceNet;
-        $element->totalPurchasePriceNet->mult($element->quantity);
 
         return $element;
-    }
-
-    /**
-     * Method to update a bill because of a changed bill element (add, remove, change) from request.
-     *
-     * @param Bill        $bill    Bill
-     * @param BillElement $element Bill element
-     * @param int         $type    Change type (0 = update, -1 = remove, +1 = add)
-     *
-     * @return Bill
-     *
-     * @since 1.0.0
-     */
-    public function updateBillWithBillElement(Bill $bill, BillElement $element, int $type = 1) : Bill
-    {
-        if ($type === 1) {
-            $bill->netSales->add($element->totalSalesPriceNet);
-            $bill->netCosts->add($element->totalPurchasePriceNet);
-        }
-
-        return $bill;
     }
 
     /**
@@ -588,7 +603,7 @@ final class ApiBillController extends Controller
     private function validateBillElementCreate(RequestAbstract $request) : array
     {
         $val = [];
-        if (($val['bill'] = empty($request->getData('bill')))) {
+        if (($val['bill'] = !$request->hasData('bill'))) {
             return $val;
         }
 
@@ -597,6 +612,14 @@ final class ApiBillController extends Controller
 
     public function apiPreviewRender(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
+        /** @var \Modules\Billing\Models\Bill $bill */
+        $bill = BillMapper::get()
+            ->with('type')
+            ->with('type/l11n')
+            ->with('elements')
+            ->where('id', $request->getDataInt('bill') ?? 0)
+            ->execute();
+
         Autoloader::addPath(__DIR__ . '/../../../Resources/');
 
         $templateId = $request->getData('bill_template', 'int');
@@ -634,7 +657,7 @@ final class ApiBillController extends Controller
             module: 'Admin'
         );
 
-        if ($settings === false) {
+        if (empty($settings)) {
             /** @var \Model\Setting[] $settings */
             $settings = $this->app->appSettings->get(null,
                 [
@@ -661,49 +684,45 @@ final class ApiBillController extends Controller
         $view->setData('defaultTemplates', $defaultTemplates);
         $view->setData('defaultAssets', $defaultAssets);
 
+        $path   = $this->createBillDir($bill);
+        $pdfDir = __DIR__ . '/../../../Modules/Media/Files' . $path;
+
         $view->setData('bill', $bill);
-        $view->setData('path', $pdfDir . '/' . $request->getData('bill') . '.pdf');
+        $view->setData('path', $pdfDir . '/' .$bill->billDate->format('Y-m-d') . '_' . $bill->number . '.pdf');
 
-        $view->setData('bill_creator', $request->getData('bill_creator'));
-        $view->setData('bill_title', $request->getData('bill_title'));
-        $view->setData('bill_subtitle', $request->getData('bill_subtitle'));
-        $view->setData('keywords', $request->getData('keywords'));
-        $view->setData('bill_logo_name', $request->getData('bill_logo_name'));
-        $view->setData('bill_slogan', $request->getData('bill_slogan'));
+        $view->setData('bill_creator', $request->getDataString('bill_creator'));
+        $view->setData('bill_title', $request->getDataString('bill_title'));
+        $view->setData('bill_subtitle', $request->getDataString('bill_subtitle'));
+        $view->setData('keywords', $request->getDataString('keywords'));
+        $view->setData('bill_logo_name', $request->getDataString('bill_logo_name'));
+        $view->setData('bill_slogan', $request->getDataString('bill_slogan'));
 
-        $view->setData('legal_company_name', $request->getData('legal_company_name'));
-        $view->setData('bill_company_address', $request->getData('bill_company_address'));
-        $view->setData('bill_company_city', $request->getData('bill_company_city'));
-        $view->setData('bill_company_ceo', $request->getData('bill_company_ceo'));
-        $view->setData('bill_company_website', $request->getData('bill_company_website'));
-        $view->setData('bill_company_email', $request->getData('bill_company_email'));
-        $view->setData('bill_company_phone', $request->getData('bill_company_phone'));
+        $view->setData('legal_company_name', $request->getDataString('legal_company_name'));
+        $view->setData('bill_company_address', $request->getDataString('bill_company_address'));
+        $view->setData('bill_company_city', $request->getDataString('bill_company_city'));
+        $view->setData('bill_company_ceo', $request->getDataString('bill_company_ceo'));
+        $view->setData('bill_company_website', $request->getDataString('bill_company_website'));
+        $view->setData('bill_company_email', $request->getDataString('bill_company_email'));
+        $view->setData('bill_company_phone', $request->getDataString('bill_company_phone'));
 
-        $view->setData('bill_company_tax_office', $request->getData('bill_company_tax_office'));
-        $view->setData('bill_company_tax_id', $request->getData('bill_company_tax_id'));
-        $view->setData('bill_company_vat_id', $request->getData('bill_company_vat_id'));
+        $view->setData('bill_company_tax_office', $request->getDataString('bill_company_tax_office'));
+        $view->setData('bill_company_tax_id', $request->getDataString('bill_company_tax_id'));
+        $view->setData('bill_company_vat_id', $request->getDataString('bill_company_vat_id'));
 
-        $view->setData('bill_company_bank_name', $request->getData('bill_company_bank_name'));
-        $view->setData('bill_company_bic', $request->getData('bill_company_bic'));
-        $view->setData('bill_company_iban', $request->getData('bill_company_iban'));
+        $view->setData('bill_company_bank_name', $request->getDataString('bill_company_bank_name'));
+        $view->setData('bill_company_bic', $request->getDataString('bill_company_bic'));
+        $view->setData('bill_company_iban', $request->getDataString('bill_company_iban'));
 
-        $view->setData('bill_type_name', $request->getData('bill_type_name'));
+        $view->setData('bill_type_name', $request->getDataString('bill_type_name'));
 
-        $view->setData('bill_invoice_no', $request->getData('bill_invoice_no'));
-        $view->setData('bill_invoice_date', $request->getData('bill_invoice_date'));
-        $view->setData('bill_service_date', $request->getData('bill_service_date'));
-        $view->setData('bill_customer_no', $request->getData('bill_customer_no'));
-        $view->setData('bill_po', $request->getData('bill_po'));
-        $view->setData('bill_due_date', $request->getData('bill_due_date'));
+        $view->setData('bill_start_text', $request->getDataString('bill_start_text'));
+        $view->setData('bill_lines', $request->getDataString('bill_lines'));
+        $view->setData('bill_end_text', $request->getDataString('bill_end_text'));
 
-        $view->setData('bill_start_text', $request->getData('bill_start_text'));
-        $view->setData('bill_lines', $request->getData('bill_lines'));
-        $view->setData('bill_end_text', $request->getData('bill_end_text'));
-
-        $view->setData('bill_payment_terms', $request->getData('bill_payment_terms'));
-        $view->setData('bill_terms', $request->getData('bill_terms'));
-        $view->setData('bill_taxes', $request->getData('bill_taxes'));
-        $view->setData('bill_currency', $request->getData('bill_currency'));
+        $view->setData('bill_payment_terms', $request->getDataString('bill_payment_terms'));
+        $view->setData('bill_terms', $request->getDataString('bill_terms'));
+        $view->setData('bill_taxes', $request->getDataString('bill_taxes'));
+        $view->setData('bill_currency', $request->getDataString('bill_currency'));
 
         $pdf = $view->render();
 
@@ -729,6 +748,8 @@ final class ApiBillController extends Controller
 
         /** @var \Modules\Billing\Models\Bill $bill */
         $bill = BillMapper::get()
+            ->with('type')
+            ->with('type/l11n')
             ->with('elements')
             ->where('id', $request->getDataInt('bill') ?? 0)
             ->execute();
@@ -766,7 +787,7 @@ final class ApiBillController extends Controller
             module: 'Admin'
         );
 
-        if ($settings === false) {
+        if (empty($settings)) {
             /** @var \Model\Setting[] $settings */
             $settings = $this->app->appSettings->get(null,
                 [
@@ -792,10 +813,9 @@ final class ApiBillController extends Controller
 
         $view->setData('defaultTemplates', $defaultTemplates);
         $view->setData('defaultAssets', $defaultAssets);
+        $view->setData('bill', $bill);
 
-        /**
-            @todo: pass data to bill
-        */
+        // @todo: add bill data such as company name bank information, ..., etc.
 
         $pdf = $view->render();
 
@@ -812,20 +832,22 @@ final class ApiBillController extends Controller
             // @codeCoverageIgnoreEnd
         }
 
-        \file_put_contents($pdfDir . '/' . $request->getData('bill') . '.pdf', $pdf);
-        if (!\is_file($pdfDir . '/' . $request->getData('bill') . '.pdf')) {
+        $billFileName = $bill->billDate->format('Y-m-d') . '_' . $bill->number . '.pdf';
+
+        \file_put_contents($pdfDir . '/' . $billFileName, $pdf);
+        if (!\is_file($pdfDir . '/' . $billFileName)) {
             $response->header->status = RequestStatusCode::R_400;
 
             return;
         }
 
-        $media = $this->app->moduleManager->get('Media')->createDbEntry(
+        $media = $this->app->moduleManager->get('Media', 'Api')->createDbEntry(
             status: [
                 'status'    => UploadStatus::OK,
-                'name'      => $request->getData('bill') . '.pdf',
+                'name'      => $billFileName,
                 'path'      => $pdfDir,
-                'filename'  => $request->getData('bill') . '.pdf',
-                'size'      => \filesize($pdfDir . '/' . $request->getData('bill') . '.pdf'),
+                'filename'  => $billFileName,
+                'size'      => \filesize($pdfDir . '/' . $billFileName),
                 'extension' => 'pdf',
             ],
             account: $request->header->account,
@@ -846,7 +868,14 @@ final class ApiBillController extends Controller
             $request->getOrigin()
         );
 
-        $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'PDF', 'Bill Pdf successfully created.', $media);
+        $this->fillJsonResponse(
+            $request,
+            $response,
+            NotificationLevel::OK,
+            'PDF',
+            'Bill Pdf successfully created.',
+            $media
+        );
     }
 
     /**
@@ -897,7 +926,7 @@ final class ApiBillController extends Controller
     private function validateNoteCreate(RequestAbstract $request) : array
     {
         $val = [];
-        if (($val['id'] = empty($request->getData('id')))) {
+        if (($val['id'] = !$request->hasData('id'))) {
             return $val;
         }
 

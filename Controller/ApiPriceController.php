@@ -205,13 +205,14 @@ final class ApiPriceController extends Controller
         }
 
         // Get tax definition
-        $tax = ($request->getData('price_type', 'int') ?? PriceType::SALES)
+        /** @var \Modules\Billing\Models\Tax\TaxCombination $tax */
+        $tax = ($request->getDataInt('price_type') ?? PriceType::SALES) === PriceType::SALES
             ? TaxCombinationMapper::get()
-                ->where('itemCode', $request->getData('price_item'))
+                ->where('itemCode', $request->getDataInt('price_item'))
                 ->where('clientCode', $account->getAttribute('client_code')->getId())
                 ->execute()
             : TaxCombinationMapper::get()
-                ->where('itemCode', $request->getData('price_item'))
+                ->where('itemCode', $request->getDataInt('price_item'))
                 ->where('supplierCode', $account->getAttribute('supplier_code')->getId())
                 ->execute();
 
@@ -287,9 +288,9 @@ final class ApiPriceController extends Controller
         $price->discountPercentage = (int) $request->getData('discountPercentage');
         $price->bonus              = (int) $request->getData('bonus');
         $price->multiply           = $request->getDataBool('multiply') ?? false;
-        $price->currency           = $request->getData('currency') ?? ISO4217CharEnum::_EUR;
-        $price->start              = $request->hasData('start') ? new \DateTime($request->getData('start')) : null;
-        $price->end                = $request->hasData('end') ? new \DateTime($request->getData('end')) : null;
+        $price->currency           = $request->getDataString('currency') ?? ISO4217CharEnum::_EUR;
+        $price->start              = $request->hasData('start') ? new \DateTime($request->getDataString('start')) : null;
+        $price->end                = $request->hasData('end') ? new \DateTime($request->getDataString('end')) : null;
 
         return $price;
     }

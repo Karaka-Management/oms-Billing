@@ -59,7 +59,7 @@ final class BillTypeMapper extends DataMapperFactory
             'external'          => null,
         ],
         'templates'        => [
-            'mapper'   => MediaMapper::class,
+            'mapper'   => CollectionMapper::class,
             'table'    => 'billing_bill_type_media_rel',
             'external' => 'billing_bill_type_media_rel_dst',
             'self'     => 'billing_bill_type_media_rel_src',
