@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Models\Attribute;
 
+use Modules\Attribute\Models\Attribute;
 use phpOMS\DataStorage\Database\Mapper\DataMapperFactory;
 
 /**
@@ -34,7 +35,7 @@ final class BillAttributeMapper extends DataMapperFactory
      */
     public const COLUMNS = [
         'billing_bill_attr_id'    => ['name' => 'billing_bill_attr_id',    'type' => 'int', 'internal' => 'id'],
-        'billing_bill_attr_bill'  => ['name' => 'billing_bill_attr_bill',  'type' => 'int', 'internal' => 'bill'],
+        'billing_bill_attr_bill'  => ['name' => 'billing_bill_attr_bill',  'type' => 'int', 'internal' => 'ref'],
         'billing_bill_attr_type'  => ['name' => 'billing_bill_attr_type',  'type' => 'int', 'internal' => 'type'],
         'billing_bill_attr_value' => ['name' => 'billing_bill_attr_value', 'type' => 'int', 'internal' => 'value'],
     ];
@@ -55,6 +56,14 @@ final class BillAttributeMapper extends DataMapperFactory
             'external' => 'billing_bill_attr_value',
         ],
     ];
+
+    /**
+     * Model to use by the mapper.
+     *
+     * @var class-string
+     * @since 1.0.0
+     */
+    public const MODEL = Attribute::class;
 
     /**
      * Primary table.

@@ -25,7 +25,7 @@ $bill = $this->getData('bill') ?? new NullBill();
 
 // Set up default pdf template
 /** @phpstan-import-type DefaultPdf from ../../../../Admin/Install/Media/PdfDefaultTemplate/pdfTemplate.pdf.php */
-$pdf = new DefaultPdf('P', 'mm', 'A4', true, 'UTF-8', false);
+$pdf = new DefaultPdf();
 
 $lang = include __DIR__ . '/lang.php';
 

@@ -14,12 +14,8 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Models\Tax;
 
-use Modules\ClientManagement\Models\ClientAttributeValue;
-use Modules\ClientManagement\Models\NullClientAttributeValue;
-use Modules\ItemManagement\Models\ItemAttributeValue;
-use Modules\ItemManagement\Models\NullItemAttributeValue;
-use Modules\SupplierManagement\Models\NullSupplierAttributeValue;
-use Modules\SupplierManagement\Models\SupplierAttributeValue;
+use Modules\Attribute\Models\AttributeValue;
+use Modules\Attribute\Models\NullAttributeValue;
 
 /**
  * Billing class.
@@ -39,11 +35,11 @@ class TaxCombination implements \JsonSerializable
      */
     protected int $id = 0;
 
-    public ?ClientAttributeValue $clientCode = null;
+    public ?AttributeValue $clientCode = null;
 
-    public ?SupplierAttributeValue $supplierCode = null;
+    public ?AttributeValue $supplierCode = null;
 
-    public ItemAttributeValue $itemCode;
+    public AttributeValue $itemCode;
 
     public string $taxCode = '';
 
@@ -72,7 +68,7 @@ class TaxCombination implements \JsonSerializable
      */
     public function __construct()
     {
-        $this->itemCode = new NullItemAttributeValue();
+        $this->itemCode = new NullAttributeValue();
     }
 
     /**

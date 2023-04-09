@@ -101,7 +101,7 @@ class BillElement implements \JsonSerializable
     /**
      * Tax percentage
      *
-     * @var null|FloatInt
+     * @var FloatInt
      * @since 1.0.0
      */
     public FloatInt $taxR;
@@ -176,6 +176,15 @@ class BillElement implements \JsonSerializable
         return $this->id;
     }
 
+    /**
+     * Set the element quantity.
+     *
+     * @param int $quantity Quantity
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function setQuantity(int $quantity) : void
     {
         if ($this->quantity === $quantity) {
@@ -186,6 +195,13 @@ class BillElement implements \JsonSerializable
         // @todo: recalculate all the prices!!!
     }
 
+    /**
+     * Get quantity.
+     *
+     * @return int
+     *
+     * @since 1.0.0
+     */
     public function getQuantity() : int
     {
         return $this->quantity;
@@ -205,14 +221,25 @@ class BillElement implements \JsonSerializable
         $this->item = $item;
     }
 
+    /**
+     * Create element from item
+     *
+     * @param Item    $item     Item
+     * @param TaxCode $code     Tax code used for gross amount calculation
+     * @param int     $quantity Quantity
+     *
+     * @return self
+     *
+     * @since 1.0.0
+     */
     public static function fromItem(Item $item, TaxCode $code, int $quantity = 1) : self
     {
-        $element = new self();
-        $element->item = $item->getId();
-        $element->itemNumber = $item->number;
-        $element->itemName = $item->getL11n('name1')->description;
+        $element                  = new self();
+        $element->item            = $item->getId();
+        $element->itemNumber      = $item->number;
+        $element->itemName        = $item->getL11n('name1')->description;
         $element->itemDescription = $item->getL11n('description_short')->description;
-        $element->quantity = $quantity;
+        $element->quantity        = $quantity;
 
         // @todo: Use pricing instead of the default sales price
         // @todo: discounts might be in quantities
@@ -226,7 +253,7 @@ class BillElement implements \JsonSerializable
         $element->singleProfitNet->setInt($element->singleSalesPriceNet->getInt() - $element->singlePurchasePriceNet->getInt());
         $element->totalProfitNet->setInt($element->quantity * ($element->totalSalesPriceNet->getInt() - $element->totalPurchasePriceNet->getInt()));
 
-        $element->taxP    = new FloatInt((int) (($code->percentageInvoice * $element->totalSalesPriceNet->getInt()) / 10000));
+        $element->taxP    = new Money((int) (($code->percentageInvoice * $element->totalSalesPriceNet->getInt()) / 10000));
         $element->taxR    = new FloatInt($code->percentageInvoice);
         $element->taxCode = $code->abbr;
 

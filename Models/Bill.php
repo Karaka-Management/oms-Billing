@@ -442,7 +442,7 @@ class Bill implements \JsonSerializable
     /**
      * Attributes.
      *
-     * @var BillAttribute[]
+     * @var \Modules\Attribute\Models\Attribute[]
      * @since 1.0.0
      */
     private array $attributes = [];
@@ -523,52 +523,6 @@ class Bill implements \JsonSerializable
         }
 
         return $this->number;
-    }
-
-    /**
-     * Add attribute to client
-     *
-     * @param BillAttribute $attribute Attribute
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function addAttribute(BillAttribute $attribute) : void
-    {
-        $this->attributes[] = $attribute;
-    }
-
-    /**
-     * Get attributes
-     *
-     * @return BillAttribute[]
-     *
-     * @since 1.0.0
-     */
-    public function getAttributes() : array
-    {
-        return $this->attributes;
-    }
-
-    /**
-     * Get attribute
-     *
-     * @param string $attrName Attribute name
-     *
-     * @return null|BillAttribute
-     *
-     * @since 1.0.0
-     */
-    public function getAttribute(string $attrName) : ?BillAttribute
-    {
-        foreach ($this->attributes as $attribute) {
-            if ($attribute->type->name === $attrName) {
-                return $attribute;
-            }
-        }
-
-        return null;
     }
 
     /**
@@ -892,4 +846,6 @@ class Bill implements \JsonSerializable
     {
         return $this->toArray();
     }
+
+    use \Modules\Attribute\Models\AttributeHolderTrait;
 }

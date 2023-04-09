@@ -14,9 +14,9 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Admin;
 
+use Modules\Attribute\Models\AttributeTypeMapper;
 use Modules\Billing\Models\BillTransferType;
 use Modules\ClientManagement\Models\ClientAttributeTypeMapper;
-use Modules\ItemManagement\Models\ItemAttributeTypeMapper;
 use Modules\SupplierManagement\Models\SupplierAttributeTypeMapper;
 use phpOMS\Application\ApplicationAbstract;
 use phpOMS\Config\SettingsInterface;
@@ -243,26 +243,26 @@ final class Installer extends InstallerAbstract
         /** @var \Modules\Billing\Controller\ApiController $module */
         $module = $app->moduleManager->getModuleInstance('Billing');
 
-        /** @var \Modules\ItemManagement\Models\ItemAttributeType $itemAttributeSales */
-        $itemAttributeSales = ItemAttributeTypeMapper::get()
+        /** @var \Modules\Attribute\Models\AttributeType $AttributeSales */
+        $AttributeSales = AttributeTypeMapper::get()
             ->with('defaults')
             ->where('name', 'sales_tax_code')
             ->execute();
 
-        /** @var \Modules\ClientManagement\Models\ClientAttributeType $clientAttributeSales */
+        /** @var \Modules\Attribute\Models\AttributeType $clientAttributeSales */
         $clientAttributeSales = ClientAttributeTypeMapper::get()
             ->with('defaults')
             ->where('name', 'sales_tax_code')
             ->execute();
 
-        /** @var \Modules\SupplierManagement\Models\SupplierAttributeType $supplierAttributeSales */
+        /** @var \Modules\Attribute\Models\AttributeType $supplierAttributeSales */
         $supplierAttributeSales = SupplierAttributeTypeMapper::get()
             ->with('defaults')
             ->where('name', 'purchase_tax_code')
             ->execute();
 
         foreach ($taxes as $tax) {
-            $itemValue    = $itemAttributeSales->getDefaultByValue($tax['item_code']);
+            $itemValue    = $AttributeSales->getDefaultByValue($tax['item_code']);
             $accountValue = $tax['type'] === 1
                 ? $clientAttributeSales->getDefaultByValue($tax['account_code'])
                 : $supplierAttributeSales->getDefaultByValue($tax['account_code']);

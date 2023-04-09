@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Models\Attribute;
 
+use Modules\Attribute\Models\AttributeType;
 use phpOMS\DataStorage\Database\Mapper\DataMapperFactory;
 
 /**
@@ -63,6 +64,14 @@ final class BillAttributeTypeMapper extends DataMapperFactory
             'external' => 'billing_bill_attr_default_value',
         ],
     ];
+
+    /**
+     * Model to use by the mapper.
+     *
+     * @var class-string
+     * @since 1.0.0
+     */
+    public const MODEL = AttributeType::class;
 
     /**
      * Primary table.

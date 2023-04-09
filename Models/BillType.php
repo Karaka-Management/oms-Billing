@@ -66,7 +66,7 @@ class BillType implements \JsonSerializable
      */
     public function __construct(string $name = '')
     {
-        $this->name     = $name;
+        $this->name = $name;
     }
 
     /**
@@ -96,7 +96,7 @@ class BillType implements \JsonSerializable
         if ($l11n instanceof BaseStringL11n) {
             $this->l11n = $l11n;
         } elseif (isset($this->l11n) && $this->l11n instanceof BaseStringL11n) {
-            $this->l11n->content  = $l11n;
+            $this->l11n->content = $l11n;
             $this->l11n->setLanguage($lang);
         } else {
             $this->l11n          = new BaseStringL11n();
@@ -120,11 +120,27 @@ class BillType implements \JsonSerializable
         return $this->l11n instanceof BaseStringL11n ? $this->l11n->content : $this->l11n;
     }
 
+    /**
+     * Add rendering template
+     *
+     * @param Collection $template Template
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function addTemplate(Collection $template) : void
     {
         $this->templates[] = $template;
     }
 
+    /**
+     * Get templates
+     *
+     * @return Collection[]
+     *
+     * @since 1.0.0
+     */
     public function getTemplates() : array
     {
         return $this->templates;

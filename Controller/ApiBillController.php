@@ -25,13 +25,9 @@ use Modules\Billing\Models\BillMapper;
 use Modules\Billing\Models\BillStatus;
 use Modules\Billing\Models\BillTypeMapper;
 use Modules\Billing\Models\SettingsEnum;
-use Modules\Billing\Models\Tax\TaxCombinationMapper;
 use Modules\ClientManagement\Models\Client;
 use Modules\ClientManagement\Models\ClientMapper;
-use Modules\Finance\Models\TaxCode;
-use Modules\Finance\Models\TaxCodeMapper;
 use Modules\ItemManagement\Models\Item;
-use Modules\ItemManagement\Models\ItemL11nMapper;
 use Modules\ItemManagement\Models\ItemMapper;
 use Modules\Media\Models\CollectionMapper;
 use Modules\Media\Models\MediaMapper;
@@ -44,7 +40,6 @@ use phpOMS\Autoloader;
 use phpOMS\Localization\ISO3166TwoEnum;
 use phpOMS\Localization\ISO4217CharEnum;
 use phpOMS\Localization\ISO639x1Enum;
-use phpOMS\Localization\Money;
 use phpOMS\Message\Http\RequestStatusCode;
 use phpOMS\Message\NotificationLevel;
 use phpOMS\Message\RequestAbstract;
@@ -181,8 +176,8 @@ final class ApiBillController extends Controller
     /**
      * Create a base Bill object with default values
      *
-     * @param Client           $client  The client object for whom the bill is being created
-     * @param RequestAbstract  $request The request object that contains the header account
+     * @param Client          $client  The client object for whom the bill is being created
+     * @param RequestAbstract $request The request object that contains the header account
      *
      * @return Bill                     The new Bill object with default values
      *
@@ -197,19 +192,20 @@ final class ApiBillController extends Controller
     public function createBaseBill(Client $client, RequestAbstract $request) : Bill
     {
         // @todo: validate vat before creation
-        $bill = new Bill();
+        $bill                  = new Bill();
+        $bill->createdBy       = new NullAccount($request->header->account);
+        $bill->billDate        = new \DateTime('now'); // @todo: Date of payment
+        $bill->performanceDate = new \DateTime('now'); // @todo: Date of payment
+        $bill->accountNumber   = $client->number;
         $bill->setStatus(BillStatus::DRAFT);
-        $bill->createdBy = new NullAccount($request->header->account);
-        $bill->billDate  = new \DateTime('now'); // @todo: Date of payment
-        $bill->performanceDate  = new \DateTime('now'); // @todo: Date of payment
-        $bill->accountNumber = $client->number;
 
-        $bill->shipping = 0;
+        $bill->shipping     = 0;
         $bill->shippingText = '';
 
-        $bill->payment = 0;
+        $bill->payment     = 0;
         $bill->paymentText = '';
 
+        /** @var \Modules\Billing\Modles\BillType */
         $bill->type = BillTypeMapper::get()
             ->where('name', 'sales_invoice')
             ->execute();
@@ -268,6 +264,18 @@ final class ApiBillController extends Controller
         return $bill;
     }
 
+    /**
+     * Create a base BillElement object with default values
+     *
+     * @param Client          $client  The client object for whom the bill is being created
+     * @param Item            $item    The item object for which the bill element is being created
+     * @param Bill            $bill    The bill object for which the bill element is being created
+     * @param RequestAbstract $request The request object that contains the header account
+     *
+     * @return BillElement
+     *
+     * @since 1.0.0
+     */
     public function createBaseBillElement(Client $client, Item $item, Bill $bill, RequestAbstract $request) : BillElement
     {
         $taxCode = $this->app->moduleManager->get('Billing', 'ApiTax')->getTaxCodeFromClientItem($client, $item, $request->getCountry());
@@ -317,26 +325,26 @@ final class ApiBillController extends Controller
             ->where('id', $request->getDataInt('type') ?? 1)
             ->execute();
 
-        /* @var \Modules\Account\Models\Account $account */
-        $bill               = new Bill();
-        $bill->createdBy    = new NullAccount($request->header->account);
-        $bill->type         = $billType;
         // @todo: use defaultInvoiceAddress or mainAddress. also consider to use billto1, billto2, billto3 (for multiple lines e.g. name2, fao etc.)
-        $bill->billTo          = (string) ($request->getDataString('billto')
+        /** @var \Modules\SupplierManagement\Models\Supplier|\Modules\ClientManagement\Models\Client $account */
+        $bill              = new Bill();
+        $bill->createdBy   = new NullAccount($request->header->account);
+        $bill->type        = $billType;
+        $bill->billTo      = (string) ($request->getDataString('billto')
             ?? ($account->account->name1 . (!empty($account->account->name2)
                 ? ', ' . $account->account->name2
                 : ''
             )));
-        $bill->billAddress     = (string) ($request->getDataString('billaddress') ?? $account->mainAddress->address);
-        $bill->billZip         = (string) ($request->getDataString('billtopostal') ?? $account->mainAddress->postal);
-        $bill->billCity        = (string) ($request->getDataString('billtocity') ?? $account->mainAddress->city);
-        $bill->billCountry     = (string) (
+        $bill->billAddress = (string) ($request->getDataString('billaddress') ?? $account->mainAddress->address);
+        $bill->billZip     = (string) ($request->getDataString('billtopostal') ?? $account->mainAddress->postal);
+        $bill->billCity    = (string) ($request->getDataString('billtocity') ?? $account->mainAddress->city);
+        $bill->billCountry = (string) (
             $request->getDataString('billtocountry') ?? (
                 ($country = $account->mainAddress->getCountry()) ===  ISO3166TwoEnum::_XXX ? '' : $country)
             );
         $bill->client          = !$request->hasData('client') ? null : $account;
         $bill->supplier        = !$request->hasData('supplier') ? null : $account;
-        $bill->performanceDate = new \DateTime($request->getDataString('performancedate') ?? 'now');
+        $bill->performanceDate = $request->getDataDateTime('performancedate') ?? new \DateTime('now');
         $bill->setStatus($request->getDataInt('status') ?? BillStatus::ACTIVE);
 
         return $bill;
@@ -560,6 +568,7 @@ final class ApiBillController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
+     * @param Bill             $bill     Bill to create element for
      * @param mixed            $data     Generic data
      *
      * @return BillElement
@@ -610,6 +619,19 @@ final class ApiBillController extends Controller
         return [];
     }
 
+    /**
+     * Api method  to create a bill preview
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
+     *
+     * @return void
+     *
+     * @api
+     *
+     * @since 1.0.0
+     */
     public function apiPreviewRender(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         /** @var \Modules\Billing\Models\Bill $bill */

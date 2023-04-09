@@ -81,6 +81,7 @@ final class CliController extends Controller
             $identifierContent = '{}';
         }
 
+        /** @var array $identifiers */
         $identifiers = \json_decode($identifierContent, true);
 
         /* Supplier */
@@ -341,8 +342,6 @@ final class CliController extends Controller
      *
      * @return int
      *
-     * @todo: This can be optimized by a lot!!!
-     *
      * @since 1.0.0
      */
     private function matchSupplier(string $content, array $suppliers) : int
@@ -352,8 +351,8 @@ final class CliController extends Controller
         // bill_match_pattern
         foreach ($suppliers as $supplier) {
             // @todo: consider to support regex?
-            if ((!empty($supplier->getAttributeByTypeName('bill_match_pattern')->value->valueStr)
-                    && \stripos($content, $supplier->getAttributeByTypeName('bill_match_pattern')->value->valueStr) !== false)
+            if ((!empty($supplier->getAttribute('bill_match_pattern')->value->valueStr)
+                    && \stripos($content, $supplier->getAttribute('bill_match_pattern')->value->valueStr) !== false)
             ) {
                 return $supplier->getId();
             }
@@ -407,9 +406,9 @@ final class CliController extends Controller
      */
     private function parseDate(string $date, Supplier $supplier, array $formats) : ?\DateTime
     {
-        if ((!empty($supplier->getAttributeByTypeName('bill_date_format')->value->valueStr))) {
+        if ((!empty($supplier->getAttribute('bill_date_format')->value->valueStr))) {
             return \DateTime::createFromFormat(
-                $supplier->getAttributeByTypeName('bill_date_format')->value->valueStr,
+                $supplier->getAttribute('bill_date_format')?->value->valueStr ?? '',
                 $date
             );
         }

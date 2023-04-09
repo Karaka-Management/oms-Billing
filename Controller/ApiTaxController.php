@@ -17,19 +17,17 @@ declare(strict_types=1);
 namespace Modules\Billing\Controller;
 
 use Modules\Admin\Models\Address;
+use Modules\Attribute\Models\AttributeValue;
+use Modules\Attribute\Models\NullAttributeValue;
 use Modules\Billing\Models\Tax\TaxCombination;
 use Modules\Billing\Models\Tax\TaxCombinationMapper;
 use Modules\ClientManagement\Models\Client;
 use Modules\ClientManagement\Models\ClientAttributeTypeMapper;
-use Modules\ClientManagement\Models\ClientAttributeValue;
-use Modules\ClientManagement\Models\NullClientAttributeValue;
 use Modules\Finance\Models\NullTaxCode;
 use Modules\Finance\Models\TaxCode;
 use Modules\Finance\Models\TaxCodeMapper;
 use Modules\ItemManagement\Models\Item;
-use Modules\ItemManagement\Models\NullItemAttributeValue;
 use Modules\Organization\Models\UnitMapper;
-use Modules\SupplierManagement\Models\NullSupplierAttributeValue;
 use phpOMS\Localization\ISO3166CharEnum;
 use phpOMS\Message\Http\RequestStatusCode;
 use phpOMS\Message\NotificationLevel;
@@ -47,6 +45,17 @@ use phpOMS\Model\Message\FormValidation;
  */
 final class ApiTaxController extends Controller
 {
+    /**
+     * Get tax code from client and item.
+     *
+     * @param Client $client         Client to get tax code from
+     * @param Item   $item           Item toget tax code from
+     * @param string $defaultCountry Default country to use if no valid tax code could be found and if the unit country code shouldn't be used.
+     *
+     * @return TaxCode
+     *
+     * @since 1.0.0
+     */
     public function getTaxCodeFromClientItem(Client $client, Item $item, string $defaultCountry = '') : TaxCode
     {
         // @todo: define default sales tax code if none available?!
@@ -71,7 +80,7 @@ final class ApiTaxController extends Controller
                 ->execute();
 
             // Create dummy client
-            $client = new Client();
+            $client              = new Client();
             $client->mainAddress =  $unit->mainAddress;
 
             if (!empty($defaultCountry)) {
@@ -81,7 +90,6 @@ final class ApiTaxController extends Controller
             $taxCodeAttribute = $this->getClientTaxCode($client,  $unit->mainAddress);
 
             /** @var \Modules\Billing\Models\Tax\TaxCombination $taxCombination */
-            $t = $item->getAttribute('sales_tax_code');
             $taxCombination = TaxCombinationMapper::get()
                 ->where('itemCode', $item->getAttribute('sales_tax_code')?->value->getId())
                 ->where('clientCode', $taxCodeAttribute->getId())
@@ -96,6 +104,17 @@ final class ApiTaxController extends Controller
         return $taxCode;
     }
 
+    /**
+     * Create a tax combination for a client and item
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Data
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function apiTaxCombinationCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateTaxCombinationCreate($request))) {
@@ -125,12 +144,12 @@ final class ApiTaxController extends Controller
         $tax           = new TaxCombination();
         $tax->taxType  = $request->getDataInt('tax_type') ?? 1;
         $tax->taxCode  = (string) $request->getData('tax_code');
-        $tax->itemCode = new NullItemAttributeValue((int) $request->getData('item_code'));
+        $tax->itemCode = new NullAttributeValue((int) $request->getData('item_code'));
 
         if ($tax->taxType === 1) {
-            $tax->clientCode = new NullClientAttributeValue((int) $request->getData('account_code'));
+            $tax->clientCode = new NullAttributeValue((int) $request->getData('account_code'));
         } else {
-            $tax->supplierCode = new NullSupplierAttributeValue((int) $request->getData('account_code'));
+            $tax->supplierCode = new NullAttributeValue((int) $request->getData('account_code'));
         }
 
         return $tax;
@@ -165,19 +184,19 @@ final class ApiTaxController extends Controller
      * @param Client  $client           The client to get the tax code for
      * @param Address $taxOfficeAddress The tax office address used to determine the tax code
      *
-     * @return ClientAttributeValue   The client's tax code
+     * @return AttributeValue   The client's tax code
      *
      * @since 1.0.0
      */
-    public function getClientTaxCode(Client $client, Address $taxOfficeAddress) : ClientAttributeValue
+    public function getClientTaxCode(Client $client, Address $taxOfficeAddress) : AttributeValue
     {
-        /** @var \Modules\ClientManagement\Models\ClientAttributeType $codes */
+        /** @var \Modules\Attribute\Models\AttributeType $codes */
         $codes = ClientAttributeTypeMapper::get()
             ->with('defaults')
             ->where('name', 'sales_tax_code')
             ->execute();
 
-        $taxCode = new NullClientAttributeValue();
+        $taxCode = new NullAttributeValue();
 
         if ($taxOfficeAddress->getCountry() === $client->mainAddress->getCountry()) {
             $taxCode = $codes->getDefaultByValue($client->mainAddress->getCountry());

@@ -14,16 +14,16 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Controller;
 
-use Modules\Billing\Models\Attribute\BillAttribute;
+use Modules\Attribute\Models\Attribute;
+use Modules\Attribute\Models\AttributeType;
+use Modules\Attribute\Models\AttributeValue;
+use Modules\Attribute\Models\NullAttributeType;
+use Modules\Attribute\Models\NullAttributeValue;
 use Modules\Billing\Models\Attribute\BillAttributeMapper;
-use Modules\Billing\Models\Attribute\BillAttributeType;
 use Modules\Billing\Models\Attribute\BillAttributeTypeL11nMapper;
 use Modules\Billing\Models\Attribute\BillAttributeTypeMapper;
-use Modules\Billing\Models\Attribute\BillAttributeValue;
 use Modules\Billing\Models\Attribute\BillAttributeValueL11nMapper;
 use Modules\Billing\Models\Attribute\BillAttributeValueMapper;
-use Modules\Billing\Models\Attribute\NullBillAttributeType;
-use Modules\Billing\Models\Attribute\NullBillAttributeValue;
 use phpOMS\Localization\BaseStringL11n;
 use phpOMS\Localization\ISO639x1Enum;
 use phpOMS\Message\Http\RequestStatusCode;
@@ -75,18 +75,18 @@ final class ApiAttributeController extends Controller
      *
      * @param RequestAbstract $request Request
      *
-     * @return BillAttribute
+     * @return Attribute
      *
      * @since 1.0.0
      */
-    private function createBillAttributeFromRequest(RequestAbstract $request) : BillAttribute
+    private function createBillAttributeFromRequest(RequestAbstract $request) : Attribute
     {
-        $attribute       = new BillAttribute();
-        $attribute->bill = (int) $request->getData('bill');
-        $attribute->type = new NullBillAttributeType((int) $request->getData('type'));
+        $attribute       = new Attribute();
+        $attribute->ref  = (int) $request->getData('ref');
+        $attribute->type = new NullAttributeType((int) $request->getData('type'));
 
         if ($request->hasData('value')) {
-            $attribute->value = new NullBillAttributeValue((int) $request->getData('value'));
+            $attribute->value = new NullAttributeValue((int) $request->getData('value'));
         } else {
             $newRequest = clone $request;
             $newRequest->setData('value', $request->getData('custom'), true);
@@ -223,13 +223,13 @@ final class ApiAttributeController extends Controller
      *
      * @param RequestAbstract $request Request
      *
-     * @return BillAttributeType
+     * @return AttributeType
      *
      * @since 1.0.0
      */
-    private function createBillAttributeTypeFromRequest(RequestAbstract $request) : BillAttributeType
+    private function createBillAttributeTypeFromRequest(RequestAbstract $request) : AttributeType
     {
-        $attrType                    = new BillAttributeType($request->getDataString('name') ?? '');
+        $attrType                    = new AttributeType($request->getDataString('name') ?? '');
         $attrType->datatype          = $request->getDataInt('datatype') ?? 0;
         $attrType->custom            = $request->getDataBool('custom') ?? false;
         $attrType->isRequired        = (bool) ($request->getData('is_required') ?? false);
@@ -303,20 +303,20 @@ final class ApiAttributeController extends Controller
      *
      * @param RequestAbstract $request Request
      *
-     * @return BillAttributeValue
+     * @return AttributeValue
      *
      * @since 1.0.0
      */
-    private function createBillAttributeValueFromRequest(RequestAbstract $request) : BillAttributeValue
+    private function createBillAttributeValueFromRequest(RequestAbstract $request) : AttributeValue
     {
-        /** @var BillAttributeType $type */
+        /** @var \Modules\Attribute\Models\AttributeType $type */
         $type = BillAttributeTypeMapper::get()
             ->where('id', $request->getDataInt('type') ?? 0)
             ->execute();
 
-        $attrValue            = new BillAttributeValue();
+        $attrValue            = new AttributeValue();
         $attrValue->isDefault = $request->getDataBool('default') ?? false;
-        $attrValue->setValue($request->getData('value'), $type->datatype);
+        $attrValue->setValue($request->getDataString('value'), $type->datatype);
 
         if ($request->hasData('title')) {
             $attrValue->setL11n($request->getDataString('title') ?? '', $request->getDataString('language') ?? ISO639x1Enum::_EN);

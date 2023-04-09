@@ -14,14 +14,12 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Models\Price;
 
+use Modules\Attribute\Models\AttributeValue;
+use Modules\Attribute\Models\NullAttributeValue;
 use Modules\ClientManagement\Models\Client;
-use Modules\ClientManagement\Models\ClientAttributeValue;
 use Modules\ClientManagement\Models\NullClient;
-use Modules\ClientManagement\Models\NullClientAttributeValue;
 use Modules\ItemManagement\Models\Item;
-use Modules\ItemManagement\Models\ItemAttributeValue;
 use Modules\ItemManagement\Models\NullItem;
-use Modules\ItemManagement\Models\NullItemAttributeValue;
 use Modules\SupplierManagement\Models\NullSupplier;
 use Modules\SupplierManagement\Models\Supplier;
 use phpOMS\Localization\ISO4217CharEnum;
@@ -50,23 +48,23 @@ class Price implements \JsonSerializable
 
     public Item $item;
 
-    public ItemAttributeValue $itemgroup;
+    public AttributeValue $itemgroup;
 
-    public ItemAttributeValue $itemsegment;
+    public AttributeValue $itemsegment;
 
-    public ItemAttributeValue $itemsection;
+    public AttributeValue $itemsection;
 
-    public ItemAttributeValue $itemtype;
+    public AttributeValue $itemtype;
 
     public Client $client;
 
-    public ClientAttributeValue $clientgroup;
+    public AttributeValue $clientgroup;
 
-    public ClientAttributeValue $clientsegment;
+    public AttributeValue $clientsegment;
 
-    public ClientAttributeValue $clientsection;
+    public AttributeValue $clientsection;
 
-    public ClientAttributeValue $clienttype;
+    public AttributeValue $clienttype;
 
     public ?string $clientcountry = null;
 
@@ -93,21 +91,22 @@ class Price implements \JsonSerializable
     public string $currency = ISO4217CharEnum::_EUR;
 
     public ?\DateTime $start = null;
+
     public ?\DateTime $end = null;
 
     public function __construct()
     {
         $this->item        = new NullItem();
-        $this->itemgroup   = new NullItemAttributeValue();
-        $this->itemsegment = new NullItemAttributeValue();
-        $this->itemsection = new NullItemAttributeValue();
-        $this->itemtype    = new NullItemAttributeValue();
+        $this->itemgroup   = new NullAttributeValue();
+        $this->itemsegment = new NullAttributeValue();
+        $this->itemsection = new NullAttributeValue();
+        $this->itemtype    = new NullAttributeValue();
 
         $this->client        = new NullClient();
-        $this->clientgroup   = new NullClientAttributeValue();
-        $this->clientsegment = new NullClientAttributeValue();
-        $this->clientsection = new NullClientAttributeValue();
-        $this->clienttype    = new NullClientAttributeValue();
+        $this->clientgroup   = new NullAttributeValue();
+        $this->clientsegment = new NullAttributeValue();
+        $this->clientsection = new NullAttributeValue();
+        $this->clienttype    = new NullAttributeValue();
 
         $this->supplier = new NullSupplier();
     }

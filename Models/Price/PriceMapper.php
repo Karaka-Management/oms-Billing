@@ -16,7 +16,7 @@ namespace Modules\Billing\Models\Price;
 
 use Modules\ClientManagement\Models\ClientAttributeValueMapper;
 use Modules\ClientManagement\Models\ClientMapper;
-use Modules\ItemManagement\Models\ItemAttributeValueMapper;
+use Modules\Attribute\Models\AttributeValueMapper;
 use Modules\ItemManagement\Models\ItemMapper;
 use Modules\SupplierManagement\Models\SupplierMapper;
 use phpOMS\DataStorage\Database\Mapper\DataMapperFactory;
@@ -80,19 +80,19 @@ final class PriceMapper extends DataMapperFactory
             'external' => 'billing_price_item',
         ],
         'itemgroup' => [
-            'mapper'   => ItemAttributeValueMapper::class,
+            'mapper'   => AttributeValueMapper::class,
             'external' => 'billing_price_itemgroup',
         ],
         'itemsegment' => [
-            'mapper'   => ItemAttributeValueMapper::class,
+            'mapper'   => AttributeValueMapper::class,
             'external' => 'billing_price_itemsegment',
         ],
         'itemsection' => [
-            'mapper'   => ItemAttributeValueMapper::class,
+            'mapper'   => AttributeValueMapper::class,
             'external' => 'billing_price_itemsection',
         ],
         'itemtype' => [
-            'mapper'   => ItemAttributeValueMapper::class,
+            'mapper'   => AttributeValueMapper::class,
             'external' => 'billing_price_itemtype',
         ],
         'client' => [

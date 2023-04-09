@@ -16,16 +16,15 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Controller;
 
+use Modules\Attribute\Models\NullAttributeValue;
 use Modules\Billing\Models\Price\Price;
 use Modules\Billing\Models\Price\PriceMapper;
 use Modules\Billing\Models\Price\PriceType;
 use Modules\Billing\Models\Tax\TaxCombinationMapper;
 use Modules\ClientManagement\Models\ClientMapper;
 use Modules\ClientManagement\Models\NullClient;
-use Modules\ClientManagement\Models\NullClientAttributeValue;
 use Modules\ItemManagement\Models\ItemMapper;
 use Modules\ItemManagement\Models\NullItem;
-use Modules\ItemManagement\Models\NullItemAttributeValue;
 use Modules\SupplierManagement\Models\NullSupplier;
 use Modules\SupplierManagement\Models\SupplierMapper;
 use phpOMS\Localization\ISO4217CharEnum;
@@ -209,11 +208,11 @@ final class ApiPriceController extends Controller
         $tax = ($request->getDataInt('price_type') ?? PriceType::SALES) === PriceType::SALES
             ? TaxCombinationMapper::get()
                 ->where('itemCode', $request->getDataInt('price_item'))
-                ->where('clientCode', $account->getAttribute('client_code')->getId())
+                ->where('clientCode', $account->getAttribute('client_code')?->value->getId())
                 ->execute()
             : TaxCombinationMapper::get()
                 ->where('itemCode', $request->getDataInt('price_item'))
-                ->where('supplierCode', $account->getAttribute('supplier_code')->getId())
+                ->where('supplierCode', $account->getAttribute('supplier_code')?->value->getId())
                 ->execute();
 
         $response->header->set('Content-Type', MimeType::M_JSON, true);
@@ -267,16 +266,16 @@ final class ApiPriceController extends Controller
         $price->promocode = $request->getDataString('promocode') ?? '';
 
         $price->item        = new NullItem((int) $request->getData('item'));
-        $price->itemgroup   = new NullItemAttributeValue((int) $request->getData('itemgroup'));
-        $price->itemsegment = new NullItemAttributeValue((int) $request->getData('itemsegment'));
-        $price->itemsection = new NullItemAttributeValue((int) $request->getData('itemsection'));
-        $price->itemtype    = new NullItemAttributeValue((int) $request->getData('itemtype'));
+        $price->itemgroup   = new NullAttributeValue((int) $request->getData('itemgroup'));
+        $price->itemsegment = new NullAttributeValue((int) $request->getData('itemsegment'));
+        $price->itemsection = new NullAttributeValue((int) $request->getData('itemsection'));
+        $price->itemtype    = new NullAttributeValue((int) $request->getData('itemtype'));
 
         $price->client        = new NullClient((int) $request->getData('client'));
-        $price->clientgroup   = new NullClientAttributeValue((int) $request->getData('clientgroup'));
-        $price->clientsegment = new NullClientAttributeValue((int) $request->getData('clientsegment'));
-        $price->clientsection = new NullClientAttributeValue((int) $request->getData('clientsection'));
-        $price->clienttype    = new NullClientAttributeValue((int) $request->getData('clienttype'));
+        $price->clientgroup   = new NullAttributeValue((int) $request->getData('clientgroup'));
+        $price->clientsegment = new NullAttributeValue((int) $request->getData('clientsegment'));
+        $price->clientsection = new NullAttributeValue((int) $request->getData('clientsection'));
+        $price->clienttype    = new NullAttributeValue((int) $request->getData('clienttype'));
 
         $price->supplier           = new NullSupplier((int) $request->getData('supplier'));
         $price->unit               = (int) $request->getData('unit');
@@ -289,8 +288,8 @@ final class ApiPriceController extends Controller
         $price->bonus              = (int) $request->getData('bonus');
         $price->multiply           = $request->getDataBool('multiply') ?? false;
         $price->currency           = $request->getDataString('currency') ?? ISO4217CharEnum::_EUR;
-        $price->start              = $request->hasData('start') ? new \DateTime($request->getDataString('start')) : null;
-        $price->end                = $request->hasData('end') ? new \DateTime($request->getDataString('end')) : null;
+        $price->start              = $request->getDataDateTime('start') ?? null;
+        $price->end                = $request->getDataDateTime('end') ?? null;
 
         return $price;
     }
