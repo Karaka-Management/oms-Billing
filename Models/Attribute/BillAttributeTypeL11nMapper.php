@@ -24,6 +24,9 @@ use phpOMS\Localization\BaseStringL11n;
  * @license OMS License 2.0
  * @link    https://jingga.app
  * @since   1.0.0
+ *
+ * @template T of BaseStringL11n
+ * @extends DataMapperFactory<T>
  */
 final class BillAttributeTypeL11nMapper extends DataMapperFactory
 {
@@ -59,7 +62,7 @@ final class BillAttributeTypeL11nMapper extends DataMapperFactory
     /**
      * Model to use by the mapper.
      *
-     * @var class-string
+     * @var class-string<T>
      * @since 1.0.0
      */
     public const MODEL = BaseStringL11n::class;

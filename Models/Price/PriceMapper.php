@@ -14,9 +14,9 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Models\Price;
 
+use Modules\Attribute\Models\AttributeValueMapper;
 use Modules\ClientManagement\Models\ClientAttributeValueMapper;
 use Modules\ClientManagement\Models\ClientMapper;
-use Modules\Attribute\Models\AttributeValueMapper;
 use Modules\ItemManagement\Models\ItemMapper;
 use Modules\SupplierManagement\Models\SupplierMapper;
 use phpOMS\DataStorage\Database\Mapper\DataMapperFactory;
@@ -29,6 +29,9 @@ use phpOMS\Localization\Defaults\CountryMapper;
  * @license OMS License 2.0
  * @link    https://jingga.app
  * @since   1.0.0
+ *
+ * @template T of Price
+ * @extends DataMapperFactory<T>
  */
 final class PriceMapper extends DataMapperFactory
 {
@@ -131,7 +134,7 @@ final class PriceMapper extends DataMapperFactory
         /**
      * Model to use by the mapper.
      *
-     * @var class-string
+     * @var class-string<T>
      * @since 1.0.0
      */
     public const MODEL = Price::class;

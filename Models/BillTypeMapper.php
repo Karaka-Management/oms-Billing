@@ -15,7 +15,6 @@ declare(strict_types=1);
 namespace Modules\Billing\Models;
 
 use Modules\Media\Models\CollectionMapper;
-use Modules\Media\Models\MediaMapper;
 use phpOMS\DataStorage\Database\Mapper\DataMapperFactory;
 
 /**
@@ -25,6 +24,9 @@ use phpOMS\DataStorage\Database\Mapper\DataMapperFactory;
  * @license OMS License 2.0
  * @link    https://jingga.app
  * @since   1.0.0
+ *
+ * @template T of BillType
+ * @extends DataMapperFactory<T>
  */
 final class BillTypeMapper extends DataMapperFactory
 {
@@ -97,7 +99,7 @@ final class BillTypeMapper extends DataMapperFactory
     /**
      * Model to use by the mapper.
      *
-     * @var class-string
+     * @var class-string<T>
      * @since 1.0.0
      */
     public const MODEL = BillType::class;

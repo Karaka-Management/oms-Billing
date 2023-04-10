@@ -86,10 +86,10 @@ class Bill implements \JsonSerializable
     /**
      * Bill created at.
      *
-     * @var null|\DateTime
+     * @var \DateTime
      * @since 1.0.0
      */
-    public ?\DateTime $billDate = null;
+    public \DateTime $billDate;
 
     /**
      * Bill created at.
@@ -463,6 +463,7 @@ class Bill implements \JsonSerializable
         $this->netDiscount   = new Money(0);
         $this->grossDiscount = new Money(0);
 
+        $this->billDate  = new \DateTime('now');
         $this->createdAt = new \DateTimeImmutable();
         $this->createdBy = new NullAccount();
         $this->referral  = new NullAccount();

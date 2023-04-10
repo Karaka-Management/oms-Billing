@@ -32,7 +32,7 @@ final class SalesBillMapper extends BillMapper
     /**
      * Model to use by the mapper.
      *
-     * @var class-string
+     * @var class-string<T>
      * @since 1.0.0
      */
     public const MODEL = Bill::class;

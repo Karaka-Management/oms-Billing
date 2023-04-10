@@ -205,7 +205,6 @@ final class ApiBillController extends Controller
         $bill->payment     = 0;
         $bill->paymentText = '';
 
-        /** @var \Modules\Billing\Modles\BillType */
         $bill->type = BillTypeMapper::get()
             ->where('name', 'sales_invoice')
             ->execute();
@@ -245,9 +244,9 @@ final class ApiBillController extends Controller
             ];
         }
 
-        $billLanguage = $validLanguages[0];
+        $billLanguage = $validLanguages[0] ?? ISO639x1Enum::_EN;
 
-        $clientBillLanguage = $client->getAttribute('bill_language')?->value->getValue();
+        $clientBillLanguage = $client->getAttribute('bill_language')?->value->valueStr;
         if (!empty($clientBillLanguage) && \in_array($clientBillLanguage, $validLanguages)) {
             $billLanguage = $clientBillLanguage;
         } else {
@@ -330,18 +329,16 @@ final class ApiBillController extends Controller
         $bill              = new Bill();
         $bill->createdBy   = new NullAccount($request->header->account);
         $bill->type        = $billType;
-        $bill->billTo      = (string) ($request->getDataString('billto')
-            ?? ($account->account->name1 . (!empty($account->account->name2)
+        $bill->billTo      = $request->getDataString('billto') ?? (
+            $account->account->name1 . (!empty($account->account->name2)
                 ? ', ' . $account->account->name2
                 : ''
-            )));
+            ));
         $bill->billAddress = (string) ($request->getDataString('billaddress') ?? $account->mainAddress->address);
         $bill->billZip     = (string) ($request->getDataString('billtopostal') ?? $account->mainAddress->postal);
         $bill->billCity    = (string) ($request->getDataString('billtocity') ?? $account->mainAddress->city);
-        $bill->billCountry = (string) (
-            $request->getDataString('billtocountry') ?? (
-                ($country = $account->mainAddress->getCountry()) ===  ISO3166TwoEnum::_XXX ? '' : $country)
-            );
+        $bill->billCountry =  $request->getDataString('billtocountry') ?? (
+                ($country = $account->mainAddress->getCountry()) ===  ISO3166TwoEnum::_XXX ? '' : $country);
         $bill->client          = !$request->hasData('client') ? null : $account;
         $bill->supplier        = !$request->hasData('supplier') ? null : $account;
         $bill->performanceDate = $request->getDataDateTime('performancedate') ?? new \DateTime('now');
@@ -933,7 +930,7 @@ final class ApiBillController extends Controller
         }
 
         $model = $response->get($request->uri->__toString())['response'];
-        $this->createModelRelation($request->header->account, $request->getData('id'), $model->getId(), BillMapper::class, 'bill_note', '', $request->getOrigin());
+        $this->createModelRelation($request->header->account, $request->getDataInt('id'), $model->getId(), BillMapper::class, 'bill_note', '', $request->getOrigin());
     }
 
     /**

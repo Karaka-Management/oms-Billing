@@ -63,7 +63,12 @@ final class Installer extends InstallerAbstract
             return;
         }
 
+        /** @var array $types */
         $types = \json_decode($fileContent, true);
+        if ($types === false) {
+            return;
+        }
+
         self::createBillTypes($app, $types, $defaultTemplate);
 
         /* Tax types */
@@ -72,7 +77,12 @@ final class Installer extends InstallerAbstract
             return;
         }
 
+        /** @var array $taxes */
         $taxes = \json_decode($fileContent, true);
+        if ($taxes === false) {
+            return;
+        }
+
         self::createTaxCombination($app, $taxes);
 
         /* Attributes */
@@ -81,7 +91,12 @@ final class Installer extends InstallerAbstract
             return;
         }
 
+        /** @var array $attributes */
         $attributes = \json_decode($fileContent, true);
+        if ($attributes === false) {
+            return;
+        }
+
         $attrTypes  = self::createBillAttributeTypes($app, $attributes);
         $attrValues = self::createBillAttributeValues($app, $attrTypes, $attributes);
     }
