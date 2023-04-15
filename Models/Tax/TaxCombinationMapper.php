@@ -14,8 +14,8 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Models\Tax;
 
-use Modules\Attribute\Models\AttributeValueMapper;
 use Modules\ClientManagement\Models\ClientAttributeValueMapper;
+use Modules\ItemManagement\Models\ItemAttributeValueMapper;
 use Modules\SupplierManagement\Models\SupplierAttributeValueMapper;
 use phpOMS\DataStorage\Database\Mapper\DataMapperFactory;
 
@@ -70,7 +70,7 @@ final class TaxCombinationMapper extends DataMapperFactory
             'external' => 'billing_tax_supplier_code',
         ],
         'itemCode' => [
-            'mapper'   => AttributeValueMapper::class,
+            'mapper'   => ItemAttributeValueMapper::class,
             'external' => 'billing_tax_item_code',
         ],
     ];

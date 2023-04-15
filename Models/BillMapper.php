@@ -44,6 +44,7 @@ class BillMapper extends DataMapperFactory
      */
     public const COLUMNS = [
         'billing_bill_id'                                => ['name' => 'billing_bill_id',      'type' => 'int',    'internal' => 'id'],
+        'billing_bill_sequence'                                => ['name' => 'billing_bill_sequence',      'type' => 'int',    'internal' => 'sequence'],
         'billing_bill_number'                            => ['name' => 'billing_bill_number',      'type' => 'string',    'internal' => 'number'],
         'billing_bill_type'                              => ['name' => 'billing_bill_type',      'type' => 'int',    'internal' => 'type'],
         'billing_bill_template'                              => ['name' => 'billing_bill_template',      'type' => 'int',    'internal' => 'template'],
@@ -90,6 +91,7 @@ class BillMapper extends DataMapperFactory
         'billing_bill_date'                  => ['name' => 'billing_bill_date', 'type' => 'DateTime', 'internal' => 'billDate'],
         'billing_bill_performance_date'                  => ['name' => 'billing_bill_performance_date', 'type' => 'DateTime', 'internal' => 'performanceDate', 'readonly' => true],
         'billing_bill_created_at'                        => ['name' => 'billing_bill_created_at', 'type' => 'DateTimeImmutable', 'internal' => 'createdAt', 'readonly' => true],
+        'billing_bill_unit'                        => ['name' => 'billing_bill_unit', 'type' => 'int', 'internal' => 'unit'],
     ];
 
     /**

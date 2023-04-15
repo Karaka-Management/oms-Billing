@@ -50,6 +50,8 @@ class BillElement implements \JsonSerializable
 
     protected int $quantity = 0;
 
+    public ?Subscription $subscription = null;
+
     public Money $singleSalesPriceNet;
 
     public Money $singleSalesPriceGross;
@@ -227,15 +229,17 @@ class BillElement implements \JsonSerializable
      * @param Item    $item     Item
      * @param TaxCode $code     Tax code used for gross amount calculation
      * @param int     $quantity Quantity
+     * @param int     $bill     Bill
      *
      * @return self
      *
      * @since 1.0.0
      */
-    public static function fromItem(Item $item, TaxCode $code, int $quantity = 1) : self
+    public static function fromItem(Item $item, TaxCode $code, int $quantity = 1, int $bill = 0) : self
     {
         $element                  = new self();
-        $element->item            = $item->getId();
+        $element->bill            = $bill;
+        $element->item            = empty($item->getId()) ? null : $item->getId();
         $element->itemNumber      = $item->number;
         $element->itemName        = $item->getL11n('name1')->description;
         $element->itemDescription = $item->getL11n('description_short')->description;
@@ -266,6 +270,20 @@ class BillElement implements \JsonSerializable
 
         $element->singleProfitGross->setInt($element->singleSalesPriceGross->getInt() - $element->singlePurchasePriceGross->getInt());
         $element->totalProfitGross->setInt($element->quantity * ($element->totalSalesPriceGross->getInt() - $element->totalPurchasePriceGross->getInt()));
+
+        if (!empty($element->bill)
+            && $item->getAttribute('subscription')?->value->getValue() === 1
+        ) {
+            $element->subscription = new Subscription();
+            $element->subscription->bill = $element->bill;
+            $element->subscription->item = $element->item;
+            $element->subscription->start = $element->quantity;
+            $element->subscription->end = $element->quantity;
+            $element->subscription->quantity = $element->quantity;
+            $element->subscription->autoRenew = $item->getAttribute('subscription_renewal_type')->value->getValue() === 1
+                ? true
+                : false;
+        }
 
         return $element;
     }

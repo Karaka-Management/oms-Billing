@@ -84,6 +84,19 @@ final class BillElementMapper extends DataMapperFactory
     ];
 
     /**
+     * Has one relation.
+     *
+     * @var array<string, array{mapper:class-string, external:string, by?:string, column?:string, conditional?:bool}>
+     * @since 1.0.0
+     */
+    public const OWNS_ONE = [
+        'subscription' => [
+            'mapper'     => SubscriptionMapper::class,
+            'external'   => 'billing_bill_element_subscription',
+        ],
+    ];
+
+    /**
      * Primary field name.
      *
      * @var string

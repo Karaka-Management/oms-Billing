@@ -45,6 +45,21 @@ class Bill implements \JsonSerializable
      */
     protected int $id = 0;
 
+    /**
+     * Sequence.
+     *
+     * Incrementing value depending on multiple columns e.g.:
+     *      id & unit
+     *      id & unit & type
+     *      id & unit & year
+     *
+     * @var int
+     * @since 1.0.0
+     */
+    public int $sequence = 0;
+
+    public int $unit = 0;
+
     public int $source = 0;
 
     /**
@@ -497,6 +512,7 @@ class Bill implements \JsonSerializable
                 '{m}',
                 '{d}',
                 '{id}',
+                '{sequence}',
                 '{type}',
             ],
             [
@@ -504,6 +520,7 @@ class Bill implements \JsonSerializable
                 $this->createdAt->format('m'),
                 $this->createdAt->format('d'),
                 $this->id,
+                $this->sequence,
                 $this->type->getId(),
             ],
             $this->type->numberFormat

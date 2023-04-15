@@ -168,6 +168,15 @@ final class ApiBillController extends Controller
     {
         $this->createModel($request->header->account, $bill, BillMapper::class, 'bill', $request->getOrigin());
 
+        // We ned to get the bill again since the bill has a trigger which is executed on insert
+        // @todo: consider to remove the trigger and select the latest bill here and add + 1 to the new sequence since we have to tdo an update anyways
+        /** @var Bill $bill */
+        $tmp = BillMapper::get()
+            ->where('id', $bill->getId())
+            ->execute();
+
+        $bill->sequence = $tmp->sequence;
+
         $old = clone $bill;
         $bill->buildNumber(); // The bill id is part of the number
         $this->updateModel($request->header->account, $old, $bill, BillMapper::class, 'bill', $request->getOrigin());
@@ -194,6 +203,7 @@ final class ApiBillController extends Controller
         // @todo: validate vat before creation
         $bill                  = new Bill();
         $bill->createdBy       = new NullAccount($request->header->account);
+        $bill->unit            = $client->unit ?? $this->app->unitId;
         $bill->billDate        = new \DateTime('now'); // @todo: Date of payment
         $bill->performanceDate = new \DateTime('now'); // @todo: Date of payment
         $bill->accountNumber   = $client->number;
@@ -279,8 +289,12 @@ final class ApiBillController extends Controller
     {
         $taxCode = $this->app->moduleManager->get('Billing', 'ApiTax')->getTaxCodeFromClientItem($client, $item, $request->getCountry());
 
-        $element       = BillElement::fromItem($item, $taxCode, $request->getDataInt('quantity') ?? 1);
-        $element->bill = $request->getDataInt('bill') ?? 0;
+        $element = BillElement::fromItem(
+            $item,
+            $taxCode,
+            $request->getDataInt('quantity') ?? 1,
+            $bill->getId()
+        );
 
         return $element;
     }
@@ -327,6 +341,7 @@ final class ApiBillController extends Controller
         // @todo: use defaultInvoiceAddress or mainAddress. also consider to use billto1, billto2, billto3 (for multiple lines e.g. name2, fao etc.)
         /** @var \Modules\SupplierManagement\Models\Supplier|\Modules\ClientManagement\Models\Client $account */
         $bill              = new Bill();
+        $bill->unit        = $account->unit ?? $this->app->unitId;
         $bill->createdBy   = new NullAccount($request->header->account);
         $bill->type        = $billType;
         $bill->billTo      = $request->getDataString('billto') ?? (

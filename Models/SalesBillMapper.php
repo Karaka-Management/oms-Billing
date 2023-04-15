@@ -229,22 +229,34 @@ final class SalesBillMapper extends BillMapper
      */
     public static function getItemTopClients(int $id, \DateTime $start, \DateTime $end, int $limit = 10) : array
     {
-        $query = ClientMapper::getQuery();
-        $query->selectAs('SUM(billing_bill_element_total_netsalesprice)', 'net_sales')
-            ->leftJoin(self::TABLE, self::TABLE . '_d1')
-                ->on(ClientMapper::TABLE . '_d1.clientmgmt_client_id', '=', self::TABLE . '_d1.billing_bill_client')
-            ->leftJoin(BillElementMapper::TABLE, BillElementMapper::TABLE . '_d1')
-                ->on(self::TABLE . '_d1.billing_bill_id', '=', BillElementMapper::TABLE . '_d1.billing_bill_element_bill')
-            ->where(BillElementMapper::TABLE . '_d1.billing_bill_element_item', '=', $id)
-            ->andWhere(self::TABLE . '_d1.billing_bill_performance_date', '>=', $start)
-            ->andWhere(self::TABLE . '_d1.billing_bill_performance_date', '<=', $end)
+        $query = new Builder(self::$db);
+        $query->selectAs(ClientMapper::TABLE . '.clientmgmt_client_id', 'client')
+            ->selectAs('SUM(' . BillElementMapper::TABLE . '.billing_bill_element_total_netsalesprice)', 'net_sales')
+            ->from(ClientMapper::TABLE)
+            ->leftJoin( self::TABLE)
+                ->on(ClientMapper::TABLE . '.clientmgmt_client_id', '=', self::TABLE . '.billing_bill_client')
+            ->leftJoin(BillElementMapper::TABLE)
+                ->on(self::TABLE . '.billing_bill_id', '=', BillElementMapper::TABLE . '.billing_bill_element_bill')
+            ->where(BillElementMapper::TABLE . '.billing_bill_element_item', '=', $id)
+            ->andWhere(self::TABLE . '.billing_bill_performance_date', '>=', $start)
+            ->andWhere(self::TABLE . '.billing_bill_performance_date', '<=', $end)
             ->orderBy('net_sales', 'DESC')
             ->limit($limit)
-            ->groupBy(ClientMapper::TABLE . '_d1.clientmgmt_client_id');
+            ->groupBy('client');
 
-        /** @var \Modules\ClientManagement\Models\Client[] $clients */
-        $clients = ClientMapper::getAll()->execute($query);
-        $data    = ClientMapper::getRaw()->execute();
+        $stmt = $query->execute();
+        $data = $stmt->fetchAll();
+
+        $clientIds = [];
+        foreach ($data as $client) {
+            $clientIds[] = $client['client'];
+        }
+
+        if (!empty($clientIds)) {
+            $clients = ClientMapper::getAll()
+                ->where('id', $clientIds, 'IN')
+                ->execute();
+        }
 
         return [$clients, $data];
     }

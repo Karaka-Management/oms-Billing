@@ -17,6 +17,7 @@ namespace Modules\Billing\Admin;
 use Modules\Attribute\Models\AttributeTypeMapper;
 use Modules\Billing\Models\BillTransferType;
 use Modules\ClientManagement\Models\ClientAttributeTypeMapper;
+use Modules\ItemManagement\Models\ItemAttributeTypeMapper;
 use Modules\SupplierManagement\Models\SupplierAttributeTypeMapper;
 use phpOMS\Application\ApplicationAbstract;
 use phpOMS\Config\SettingsInterface;
@@ -258,8 +259,8 @@ final class Installer extends InstallerAbstract
         /** @var \Modules\Billing\Controller\ApiController $module */
         $module = $app->moduleManager->getModuleInstance('Billing');
 
-        /** @var \Modules\Attribute\Models\AttributeType $AttributeSales */
-        $AttributeSales = AttributeTypeMapper::get()
+        /** @var \Modules\Attribute\Models\ItemAttributeTypeMapper $itemAttributeSales */
+        $itemAttributeSales = ItemAttributeTypeMapper::get()
             ->with('defaults')
             ->where('name', 'sales_tax_code')
             ->execute();
@@ -277,7 +278,7 @@ final class Installer extends InstallerAbstract
             ->execute();
 
         foreach ($taxes as $tax) {
-            $itemValue    = $AttributeSales->getDefaultByValue($tax['item_code']);
+            $itemValue    = $itemAttributeSales->getDefaultByValue($tax['item_code']);
             $accountValue = $tax['type'] === 1
                 ? $clientAttributeSales->getDefaultByValue($tax['account_code'])
                 : $supplierAttributeSales->getDefaultByValue($tax['account_code']);

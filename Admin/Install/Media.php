@@ -14,8 +14,6 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Admin\Install;
 
-use Model\Setting;
-use Model\SettingMapper;
 use Modules\Billing\Models\SettingsEnum;
 use phpOMS\Application\ApplicationAbstract;
 
@@ -43,29 +41,26 @@ class Media
     {
         $media = \Modules\Media\Admin\Installer::installExternal($app, ['path' => __DIR__ . '/Media.install.json']);
 
-        $preivewType  = (int) \reset($media['type'][0]);
-        $originalType = (int) \reset($media['type'][1]);
-
-        $setting = new Setting();
-        SettingMapper::create()->execute(
-            $setting->with(
-                0,
-                SettingsEnum::PREVIEW_MEDIA_TYPE,
-                (string) $preivewType,
-                '\\d+',
-                module: 'Billing'
-            )
-        );
-
-        $setting = new Setting();
-        SettingMapper::create()->execute(
-            $setting->with(
-                0,
-                SettingsEnum::ORIGINAL_MEDIA_TYPE,
-                (string) $originalType,
-                '\\d+',
-                module: 'Billing'
-            )
+        \Modules\Admin\Admin\Installer::installExternal(
+            $app,
+            [
+                'data' => [
+                    [
+                        'type' => 'setting',
+                        'name' => SettingsEnum::PREVIEW_MEDIA_TYPE,
+                        'content' => (string) $media['type'][0]['id'],
+                        'pattern' => '\\d+',
+                        'module' => 'Billing'
+                    ],
+                    [
+                        'type' => 'setting',
+                        'name' => SettingsEnum::ORIGINAL_MEDIA_TYPE,
+                        'content' => (string) $media['type'][1]['id'],
+                        'pattern' => '\\d+',
+                        'module' => 'Billing'
+                    ]
+                ]
+            ]
         );
     }
 }

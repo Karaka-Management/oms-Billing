@@ -40,6 +40,7 @@ return ['Billing' => [
     'Created'         => 'Created',
     'CreditCard'      => 'CreditCard',
     'CreditNote'      => 'Credit Note',
+    'CreateBill'      => 'Create Bill',
     'Customers'       => 'Customers',
     'Date'            => 'Date',
     'Delivery'        => 'Delivery',

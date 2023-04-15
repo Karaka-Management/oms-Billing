@@ -388,6 +388,15 @@
                 "primary": true,
                 "autoincrement": true
             },
+            "billing_bill_sequence": {
+                "name": "billing_bill_sequence",
+                "type": "INT",
+                "null": false,
+                "multi_autoincrement": [
+                    "billing_bill_unit",
+                    "billing_bill_type"
+                ]
+            },
             "billing_bill_number": {
                 "name": "billing_bill_number",
                 "type": "VARCHAR(255)",
@@ -664,6 +673,80 @@
                 "type": "VARCHAR(255)",
                 "default": null,
                 "null": true
+            },
+            "billing_bill_unit": {
+                "name": "billing_bill_unit",
+                "type": "INT",
+                "null": false,
+                "foreignTable": "unit",
+                "foreignKey": "unit_id"
+            }
+        }
+    },
+    "billing_subscription": {
+        "description": "https://learn.microsoft.com/en-us/graph/outlook-schedule-recurring-events",
+        "name": "billing_subscription",
+        "fields": {
+            "billing_subscription_id": {
+                "name": "billing_subscription_id",
+                "type": "INT",
+                "null": false,
+                "primary": true,
+                "autoincrement": true
+            },
+            "billing_subscription_status": {
+                "name": "billing_subscription_status",
+                "type": "TINYINT(1)",
+                "null": false
+            },
+            "billing_subscription_start": {
+                "name": "billing_subscription_start",
+                "type": "DATETIME",
+                "null": false
+            },
+            "billing_subscription_end": {
+                "name": "billing_subscription_end",
+                "type": "DATETIME",
+                "null": true,
+                "default": null
+            },
+            "billing_subscription_price": {
+                "name": "billing_subscription_price",
+                "type": "BIGINT",
+                "null": false
+            },
+            "billing_subscription_quantity": {
+                "name": "billing_subscription_quantity",
+                "type": "BIGINT",
+                "null": false
+            },
+            "billing_subscription_bill": {
+                "name": "billing_subscription_bill",
+                "type": "INT",
+                "null": true,
+                "default": null,
+                "foreignTable": "billing_bill",
+                "foreignKey": "billing_bill_id"
+            },
+            "billing_subscription_item": {
+                "name": "billing_subscription_item",
+                "type": "INT",
+                "null": false,
+                "foreignTable": "itemmgmt_item",
+                "foreignKey": "itemmgmt_item_id"
+            },
+            "billing_subscription_autorenew": {
+                "name": "billing_subscription_autorenew",
+                "type": "TINYINT(1)",
+                "null": false
+            },
+            "billing_subscription_client": {
+                "name": "billing_subscription_client",
+                "type": "INT",
+                "null": true,
+                "default": null,
+                "foreignTable": "clientmgmt_client",
+                "foreignKey": "clientmgmt_client_id"
             }
         }
     },
@@ -686,7 +769,17 @@
                 "name": "billing_bill_element_item",
                 "type": "INT",
                 "null": true,
-                "default": null
+                "default": null,
+                "foreignTable": "itemmgmt_item",
+                "foreignKey": "itemmgmt_item_id"
+            },
+            "billing_bill_element_subscription": {
+                "name": "billing_bill_element_subscription",
+                "type": "INT",
+                "null": true,
+                "default": null,
+                "foreignTable": "billing_subscription",
+                "foreignKey": "billing_subscription_id"
             },
             "billing_bill_element_item_segment": {
                 "name": "billing_bill_element_item_segment",
@@ -1181,46 +1274,6 @@
                 "null": false,
                 "foreignTable": "editor_doc",
                 "foreignKey": "editor_doc_id"
-            }
-        }
-    },
-    "billing_bill_subscription": {
-        "description": "https://learn.microsoft.com/en-us/graph/outlook-schedule-recurring-events",
-        "name": "billing_bill_subscription",
-        "fields": {
-            "billing_bill_subscription_id": {
-                "name": "billing_bill_subscription_id",
-                "type": "INT",
-                "null": false,
-                "primary": true,
-                "autoincrement": true
-            },
-            "billing_bill_subscription_status": {
-                "name": "billing_bill_subscription_status",
-                "type": "TINYINT(1)",
-                "null": false
-            },
-            "billing_bill_subscription_bill": {
-                "name": "billing_bill_subscription_bill",
-                "type": "INT",
-                "null": false,
-                "foreignTable": "billing_bill",
-                "foreignKey": "billing_bill_id"
-            },
-            "billing_bill_subscription_schedule": {
-                "name": "billing_bill_subscription_schedule",
-                "type": "INT",
-                "null": false,
-                "foreignTable": "schedule",
-                "foreignKey": "schedule_id"
-            },
-            "billing_bill_subscription_account": {
-                "name": "billing_bill_subscription_account",
-                "type": "INT",
-                "null": true,
-                "default": null,
-                "foreignTable": "account",
-                "foreignKey": "account_id"
             }
         }
     },

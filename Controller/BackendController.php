@@ -128,11 +128,11 @@ final class BackendController extends Controller
 
         /** @var \Modules\Auditor\Models\Auditor[] $logsBill */
         $logsBill = AuditMapper::getAll()
-        ->with('createdBy')
-        ->where('module', 'Billing')
-        ->where('type', StringUtils::intHash(BillMapper::class))
-        ->where('ref', $bill->getId())
-        ->execute();
+            ->with('createdBy')
+            ->where('module', 'Billing')
+            ->where('type', StringUtils::intHash(BillMapper::class))
+            ->where('ref', $bill->getId())
+            ->execute();
 
         /** @var \Modules\Auditor\Models\Auditor[] $logsElements */
         $logsElements = AuditMapper::getAll()
