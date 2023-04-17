@@ -252,8 +252,11 @@ final class SalesBillMapper extends BillMapper
             $clientIds[] = $client['client'];
         }
 
+        $clients = [];
         if (!empty($clientIds)) {
             $clients = ClientMapper::getAll()
+                ->with('account')
+                ->with('mainAddress')
                 ->where('id', $clientIds, 'IN')
                 ->execute();
         }

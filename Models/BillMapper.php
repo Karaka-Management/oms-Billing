@@ -26,6 +26,8 @@ use phpOMS\DataStorage\Database\Mapper\DataMapperFactory;
 /**
  * Mapper class.
  *
+ * WARNING: This mapper may use a trigger to update the sequence number on insert.
+ *
  * @package Modules\Billing\Models
  * @license OMS License 2.0
  * @link    https://jingga.app

@@ -12,6 +12,7 @@
  */
 declare(strict_types=1);
 
+use Modules\Billing\Models\BillStatus;
 use Modules\Billing\Models\NullBill;
 use phpOMS\Localization\ISO3166NameEnum;
 use phpOMS\Localization\ISO3166TwoEnum;
@@ -304,7 +305,7 @@ echo $this->getData('nav')->render(); ?>
                                         <?php endif; ?>
                                     <td><span class="input"><button type="button" formaction=""><i class="fa fa-book"></i></button><input name="" type="text" value="<?= $element->itemNumber; ?>" required<?= $disabled; ?>></span>
                                     <td><textarea required<?= $disabled; ?>><?= $element->itemName; ?></textarea>
-                                    <td><input name="" type="number" min="0" value="<?= $element->quantity; ?>" required<?= $disabled; ?>>
+                                    <td><input name="" type="number" min="0" value="<?= $element->getQuantity(); ?>" required<?= $disabled; ?>>
                                     <td><input name="" type="text" value="<?= $element->singleSalesPriceNet->getCurrency(symbol: ''); ?>"<?= $disabled; ?>>
                                     <td><input name="" type="number" min="0"<?= $disabled; ?>>
                                     <td><input name="" type="number" min="0" max="100" step="any"<?= $disabled; ?>>

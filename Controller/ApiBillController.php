@@ -660,8 +660,17 @@ final class ApiBillController extends Controller
         if ($templateId === null) {
             $billTypeId = $request->getData('bill_type', 'int');
 
+            if (empty($billTypeId)) {
+                $billTypeId = $bill->type->getId();
+            }
+
+            if (empty($billTypeId)) {
+                return;
+            }
+
             /** @var \Modules\Billing\Models\BillType $billType */
             $billType = BillTypeMapper::get()
+                ->with('defaultTemplate')
                 ->where('id', $billTypeId)
                 ->execute();
 

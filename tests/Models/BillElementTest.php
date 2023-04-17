@@ -65,8 +65,8 @@ final class BillElementTest extends \PHPUnit\Framework\TestCase
         $this->element->itemNumber      = '123456';
         $this->element->itemName        = 'Test';
         $this->element->itemDescription = 'Description';
-        $this->element->quantity        = 4;
         $this->element->bill            = 5;
+        $this->element->setQuantity(4);
 
         self::assertEquals(
             [

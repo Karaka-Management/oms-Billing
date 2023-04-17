@@ -1,7 +1,7 @@
 [
 	{
 		"name": "sales_offer",
-		"numberFormat": "{y}-{id}",
+		"numberFormat": "{y}-{sequence}",
 		"transferType": 1,
 		"transferStock": false,
 		"isTemplate": false,
@@ -12,7 +12,7 @@
 	},
 	{
 		"name": "sales_order_confirmation",
-		"numberFormat": "{y}-{id}",
+		"numberFormat": "{y}-{sequence}",
 		"transferType": 1,
 		"transferStock": false,
 		"isTemplate": false,
@@ -23,7 +23,7 @@
 	},
 	{
 		"name": "sales_delivery_note",
-		"numberFormat": "{y}-{id}",
+		"numberFormat": "{y}-{sequence}",
 		"transferType": 1,
 		"transferStock": true,
 		"isTemplate": false,
@@ -34,7 +34,7 @@
 	},
 	{
 		"name": "sales_invoice",
-		"numberFormat": "{y}-{id}",
+		"numberFormat": "{y}-{sequence}",
 		"transferType": 1,
 		"transferStock": false,
 		"isTemplate": false,
@@ -45,7 +45,7 @@
 	},
 	{
 		"name": "sales_proforma_invoice",
-		"numberFormat": "{y}-{id}",
+		"numberFormat": "{y}-{sequence}",
 		"transferType": 1,
 		"transferStock": false,
 		"isTemplate": false,
@@ -56,7 +56,7 @@
 	},
 	{
 		"name": "sales_credit_note",
-		"numberFormat": "{y}-{id}",
+		"numberFormat": "{y}-{sequence}",
 		"transferType": 1,
 		"transferStock": false,
 		"isTemplate": false,
@@ -67,7 +67,7 @@
 	},
 	{
 		"name": "sales_reverse_invoice",
-		"numberFormat": "{y}-{id}",
+		"numberFormat": "{y}-{sequence}",
 		"transferType": 1,
 		"transferStock": false,
 		"isTemplate": false,
@@ -78,7 +78,7 @@
 	},
 	{
 		"name": "purchase_offer",
-		"numberFormat": "{y}-{id}",
+		"numberFormat": "{y}-{sequence}",
 		"transferType": 2,
 		"transferStock": false,
 		"isTemplate": false,
@@ -89,7 +89,7 @@
 	},
 	{
 		"name": "purchase_order_confirmation",
-		"numberFormat": "{y}-{id}",
+		"numberFormat": "{y}-{sequence}",
 		"transferType": 2,
 		"transferStock": false,
 		"isTemplate": false,
@@ -100,7 +100,7 @@
 	},
 	{
 		"name": "purchase_delivery_note",
-		"numberFormat": "{y}-{id}",
+		"numberFormat": "{y}-{sequence}",
 		"transferType": 2,
 		"transferStock": true,
 		"isTemplate": false,
@@ -111,7 +111,7 @@
 	},
 	{
 		"name": "purchase_invoice",
-		"numberFormat": "{y}-{id}",
+		"numberFormat": "{y}-{sequence}",
 		"transferType": 2,
 		"transferStock": false,
 		"isTemplate": false,
@@ -122,7 +122,7 @@
 	},
 	{
 		"name": "purchase_proforma_invoice",
-		"numberFormat": "{y}-{id}",
+		"numberFormat": "{y}-{sequence}",
 		"transferType": 2,
 		"transferStock": false,
 		"isTemplate": false,
@@ -133,7 +133,7 @@
 	},
 	{
 		"name": "purchase_credit_note",
-		"numberFormat": "{y}-{id}",
+		"numberFormat": "{y}-{sequence}",
 		"transferType": 2,
 		"transferStock": false,
 		"isTemplate": false,
@@ -144,7 +144,7 @@
 	},
 	{
 		"name": "purchase_reverse_invoice",
-		"numberFormat": "{y}-{id}",
+		"numberFormat": "{y}-{sequence}",
 		"transferType": 2,
 		"transferStock": false,
 		"isTemplate": false,
@@ -155,7 +155,7 @@
 	},
 	{
 		"name": "stock_movement",
-		"numberFormat": "{y}-{id}",
+		"numberFormat": "{y}-{sequence}",
 		"transferType": 4,
 		"transferStock": false,
 		"isTemplate": false,
@@ -166,7 +166,7 @@
 	},
 	{
 		"name": "stock_scrapping",
-		"numberFormat": "{y}-{id}",
+		"numberFormat": "{y}-{sequence}",
 		"transferType": 4,
 		"transferStock": false,
 		"isTemplate": false,
@@ -177,7 +177,7 @@
 	},
 	{
 		"name": "sales_subscritpion",
-		"numberFormat": "{y}-{id}",
+		"numberFormat": "{y}-{sequence}",
 		"transferType": 1,
 		"transferStock": false,
 		"isTemplate": false,
@@ -188,7 +188,7 @@
 	},
 	{
 		"name": "sales_template",
-		"numberFormat": "{y}-{id}",
+		"numberFormat": "{y}-{sequence}",
 		"transferType": 1,
 		"transferStock": false,
 		"isTemplate": true,
@@ -199,7 +199,7 @@
 	},
 	{
 		"name": "purchase_subscritpion",
-		"numberFormat": "{y}-{id}",
+		"numberFormat": "{y}-{sequence}",
 		"transferType": 2,
 		"transferStock": false,
 		"isTemplate": false,
@@ -210,7 +210,7 @@
 	},
 	{
 		"name": "purchase_template",
-		"numberFormat": "{y}-{id}",
+		"numberFormat": "{y}-{sequence}",
 		"transferType": 2,
 		"transferStock": false,
 		"isTemplate": true,
