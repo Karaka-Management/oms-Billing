@@ -35,8 +35,9 @@
                 "en": "Finds subscriptions",
                 "de": "Findet Abonnements"
             },
-            "function_type": "API",
+            "function_type": "Api",
             "function": "apiSubscriptionFind",
+            "module": "Billing",
             "inputs": [
                 "date_start",
                 "date_end",
@@ -115,8 +116,9 @@
                 "en": "Creates invoices for subscriptions",
                 "de": "Erstellt Rechnungen für Abonnements"
             },
-            "function_type": "API",
+            "function_type": "Api",
             "function": "apiInvoiceFromSubscriptionCreate",
+            "module": "Billing",
             "inputs": [
                 "subscription[]",
                 "{*}"

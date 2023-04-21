@@ -280,9 +280,7 @@ class BillElement implements \JsonSerializable
             $element->subscription->start = $element->quantity;
             $element->subscription->end = $element->quantity;
             $element->subscription->quantity = $element->quantity;
-            $element->subscription->autoRenew = $item->getAttribute('subscription_renewal_type')->value->getValue() === 1
-                ? true
-                : false;
+            $element->subscription->autoRenew = $item->getAttribute('subscription_renewal_type')->value->getValue() === 1;
         }
 
         return $element;
