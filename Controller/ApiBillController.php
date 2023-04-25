@@ -674,7 +674,7 @@ final class ApiBillController extends Controller
                 ->where('id', $billTypeId)
                 ->execute();
 
-            $templateId = $billType->defaultTemplate->getId();
+            $templateId = $billType->defaultTemplate?->getId();
         }
 
         /** @var \Modules\Media\Models\Collection $template */
@@ -806,7 +806,7 @@ final class ApiBillController extends Controller
                 ->where('id', $billTypeId)
                 ->execute();
 
-            $templateId = $billType->defaultTemplate->getId();
+            $templateId = $billType->defaultTemplate?->getId();
         }
 
         /** @var \Modules\Media\Models\Collection $template */
