@@ -169,12 +169,12 @@ echo $this->getData('nav')->render(); ?>
                                 <td><span class="input"><button type="button" formaction=""><i class="fa fa-book"></i></button><input name="" type="text" value="<?= $element->itemNumber; ?>" required></span>
                                 <td><textarea required><?= $element->itemName; ?></textarea>
                                 <td><input name="" type="number" min="0" value="<?= $element->quantity; ?>" required>
-                                <td><input name="" type="text" value="<?= $element->singleSalesPriceNet->getCurrency(); ?>">
+                                <td><input name="" type="text" value="<?= $this->getCurrency($element->singleSalesPriceNet); ?>">
                                 <td><input name="" type="number" min="0">
                                 <td><input name="" type="number" min="0" max="100" step="any">
                                 <td><input name="" type="number" min="0" step="any">
                                 <td><input name="" type="number" min="0" step="any">
-                                <td><?= $element->totalSalesPriceNet->getCurrency(); ?>
+                                <td><?= $this->getCurrency($element->totalSalesPriceNet); ?>
                             <?php endforeach; ?>
                             <tr>
                                 <td><i class="fa fa-plus"></i> <i class="fa fa-chevron-up order-up"></i> <i class="fa fa-chevron-down order-down"></i>
@@ -191,9 +191,9 @@ echo $this->getData('nav')->render(); ?>
                         </div>
                         <div class="portlet-foot">
                             <?= $this->getHtml('Freightage'); ?>: 0.00 -
-                            <?= $this->getHtml('Net'); ?>: <?= $bill->netSales->getCurrency(); ?> -
+                            <?= $this->getHtml('Net'); ?>: <?= $this->getCurrency($bill->netSales); ?> -
                             <?= $this->getHtml('Tax'); ?>: 0.00 -
-                            <?= $this->getHtml('Total'); ?>: <?= $bill->grossSales->getCurrency(); ?>
+                            <?= $this->getHtml('Total'); ?>: <?= $this->getCurrency($bill->grossSales); ?>
                         </div>
                     </div>
                 </div>
@@ -205,7 +205,7 @@ echo $this->getData('nav')->render(); ?>
                 <div class="col-xs-12">
                     <section id="mediaFile" class="portlet">
                         <div class="portlet-body">
-                            <?php if (!($billPdf instanceof NullMedia)) : ?>
+                            <?php if ($billPdf->id > 0) : ?>
                             <iframe style="min-height: 600px;" data-form="iUiSettings" data-name="iframeHelper" id="iHelperFrame" src="<?= UriFactory::build('{/backend}Resources/mozilla/Pdf/web/viewer.html{?}&file=' . \urlencode(($billPdf->isAbsolute ? '' : '/../../../../') . $billPdf->getPath())); ?>" allowfullscreen></iframe>
                             <?php endif; ?>
                         </div>
@@ -219,7 +219,7 @@ echo $this->getData('nav')->render(); ?>
                 <div class="col-xs-12">
                     <section id="mediaFile" class="portlet">
                         <div class="portlet-body">
-                            <?php if (!($original instanceof NullMedia)) : ?>
+                            <?php if ($original->id > 0) : ?>
                             <iframe style="min-height: 600px;" data-form="iUiSettings" data-name="iframeHelper" id="iHelperFrame" src="<?= UriFactory::build('{/backend}Resources/mozilla/Pdf/web/viewer.html{?}&file=' . \urlencode(($original->isAbsolute ? '' : '/../../../../') . $original->getPath())); ?>" allowfullscreen></iframe>
                             <?php endif; ?>
                         </div>
@@ -301,9 +301,9 @@ echo $this->getData('nav')->render(); ?>
                             <?php foreach ($media as $file) :
                                 $url = $file->extension === 'collection'
                                 ? UriFactory::build('{/base}/media/list?path=' . \rtrim($file->getVirtualPath(), '/') . '/' . $file->name)
-                                : UriFactory::build('{/base}/media/single?id=' . $file->getId()
+                                : UriFactory::build('{/base}/media/single?id=' . $file->id
                                     . '&path={?path}' . (
-                                            $file->getId() === 0
+                                            $file->id === 0
                                                 ? '/' . $file->name
                                                 : ''
                                         )

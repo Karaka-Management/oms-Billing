@@ -38,7 +38,7 @@ final class BillTypeTest extends \PHPUnit\Framework\TestCase
      */
     public function testDefault() : void
     {
-        self::assertEquals(0, $this->type->getId());
+        self::assertEquals(0, $this->type->id);
         self::assertTrue($this->type->transferStock);
     }
 

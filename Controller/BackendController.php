@@ -131,7 +131,7 @@ final class BackendController extends Controller
             ->with('createdBy')
             ->where('module', 'Billing')
             ->where('type', StringUtils::intHash(BillMapper::class))
-            ->where('ref', $bill->getId())
+            ->where('ref', $bill->id)
             ->execute();
 
         /** @var \Modules\Auditor\Models\Auditor[] $logsElements */

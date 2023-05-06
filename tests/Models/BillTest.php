@@ -42,7 +42,7 @@ final class BillTest extends \PHPUnit\Framework\TestCase
      */
     public function testDefault() : void
     {
-        self::assertEquals(0, $this->bill->getId());
+        self::assertEquals(0, $this->bill->id);
         self::assertEquals('', $this->bill->number);
         self::assertEquals('', $this->bill->referralName);
         self::assertEquals('', $this->bill->info);
@@ -93,7 +93,7 @@ final class BillTest extends \PHPUnit\Framework\TestCase
      */
     public function testNumberRendering() : void
     {
-        $this->bill->numberFormat = '{y}{m}{d}-{id}';
+        $this->bill->type->numberFormat = '{y}{m}{d}-{id}';
         self::assertEquals(\date('Y') . \date('m') . \date('d') . '-0', $this->bill->getNumber());
     }
 
@@ -165,7 +165,6 @@ final class BillTest extends \PHPUnit\Framework\TestCase
     public function testSerialize() : void
     {
         $this->bill->number            = '123456';
-        $this->bill->numberFormat      = '{y}';
         $this->bill->type              = new NullBillType(2);
         $this->bill->shipTo            = 'To';
         $this->bill->shipFAO           = 'FAO';
@@ -184,7 +183,6 @@ final class BillTest extends \PHPUnit\Framework\TestCase
             [
                 'id'                => 0,
                 'number'            => '123456',
-                'numberFormat'      => '{y}',
                 'type'              => $this->bill->type,
                 'shipTo'            => 'To',
                 'shipFAO'           => 'FAO',

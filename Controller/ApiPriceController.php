@@ -33,6 +33,7 @@ use phpOMS\Message\NotificationLevel;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
 use phpOMS\Model\Message\FormValidation;
+use phpOMS\Stdlib\Base\FloatInt;
 use phpOMS\System\MimeType;
 
 /**
@@ -118,16 +119,16 @@ final class ApiPriceController extends Controller
         $queryMapper->where('promocode', \array_unique([$request->getData('price_promocode'), null]), 'IN');
 
         $queryMapper->where('item', \array_unique([$request->getData('price_item', 'int'), null]), 'IN');
-        $queryMapper->where('itemgroup', \array_unique([$request->getData('price_itemgroup', 'int'), $item?->getAttribute('itemgroup')?->getId(), null]), 'IN');
-        $queryMapper->where('itemsegment', \array_unique([$request->getData('price_itemsegment', 'int'), $item?->getAttribute('itemsegment')?->getId(), null]), 'IN');
-        $queryMapper->where('itemsection', \array_unique([$request->getData('price_itemsection', 'int'), $item?->getAttribute('itemsection')?->getId(), null]), 'IN');
-        $queryMapper->where('itemtype', \array_unique([$request->getData('price_itemtype', 'int'), $item?->getAttribute('itemtype')?->getId(), null]), 'IN');
+        $queryMapper->where('itemgroup', \array_unique([$request->getData('price_itemgroup', 'int'), $item?->getAttribute('itemgroup')->id, null]), 'IN');
+        $queryMapper->where('itemsegment', \array_unique([$request->getData('price_itemsegment', 'int'), $item?->getAttribute('itemsegment')->id, null]), 'IN');
+        $queryMapper->where('itemsection', \array_unique([$request->getData('price_itemsection', 'int'), $item?->getAttribute('itemsection')->id, null]), 'IN');
+        $queryMapper->where('itemtype', \array_unique([$request->getData('price_itemtype', 'int'), $item?->getAttribute('itemtype')->id, null]), 'IN');
 
         $queryMapper->where('client', \array_unique([$request->getData('price_client', 'int'), null]), 'IN');
-        $queryMapper->where('clientgroup', \array_unique([$request->getData('price_clientgroup', 'int'), $client?->getAttribute('clientgroup')?->getId(), null]), 'IN');
-        $queryMapper->where('clientsegment', \array_unique([$request->getData('price_clientsegment', 'int'), $client?->getAttribute('clientsegment')?->getId(), null]), 'IN');
-        $queryMapper->where('clientsection', \array_unique([$request->getData('price_clientsection', 'int'), $client?->getAttribute('clientsection')?->getId(), null]), 'IN');
-        $queryMapper->where('clienttype', \array_unique([$request->getData('price_clienttype', 'int'), $client?->getAttribute('clienttype')?->getId(), null]), 'IN');
+        $queryMapper->where('clientgroup', \array_unique([$request->getData('price_clientgroup', 'int'), $client?->getAttribute('clientgroup')->id, null]), 'IN');
+        $queryMapper->where('clientsegment', \array_unique([$request->getData('price_clientsegment', 'int'), $client?->getAttribute('clientsegment')->id, null]), 'IN');
+        $queryMapper->where('clientsection', \array_unique([$request->getData('price_clientsection', 'int'), $client?->getAttribute('clientsection')->id, null]), 'IN');
+        $queryMapper->where('clienttype', \array_unique([$request->getData('price_clienttype', 'int'), $client?->getAttribute('clienttype')->id, null]), 'IN');
         $queryMapper->where('clientcountry', \array_unique([$request->getData('price_clientcountry'), $client?->mainAddress->getCountry(), null]), 'IN');
 
         $queryMapper->where('supplier', \array_unique([$request->getData('price_supplier', 'int'), null]), 'IN');
@@ -155,16 +156,16 @@ final class ApiPriceController extends Controller
         $bestBasePrice = null;
         foreach ($prices as $price) {
             if ($price->price !== 0 && $price->priceNew === 0
-                && $price->item->getId() !== 0
-                && $price->itemgroup->getId() === 0
-                && $price->itemsegment->getId() === 0
-                && $price->itemsection->getId() === 0
-                && $price->itemtype->getId() === 0
-                && $price->client->getId() === 0
-                && $price->clientgroup->getId() === 0
-                && $price->clientsegment->getId() === 0
-                && $price->clientsection->getId() === 0
-                && $price->clienttype->getId() === 0
+                && $price->item->id !== 0
+                && $price->itemgroup->id === 0
+                && $price->itemsegment->id === 0
+                && $price->itemsection->id === 0
+                && $price->itemtype->id === 0
+                && $price->client->id === 0
+                && $price->clientgroup->id === 0
+                && $price->clientsegment->id === 0
+                && $price->clientsection->id === 0
+                && $price->clienttype->id === 0
                 && $price->promocode === ''
             ) {
                 if ($price->price < ($bestBasePrice?->price ?? \PHP_INT_MAX)) {
@@ -208,11 +209,11 @@ final class ApiPriceController extends Controller
         $tax = ($request->getDataInt('price_type') ?? PriceType::SALES) === PriceType::SALES
             ? TaxCombinationMapper::get()
                 ->where('itemCode', $request->getDataInt('price_item'))
-                ->where('clientCode', $account->getAttribute('client_code')?->value->getId())
+                ->where('clientCode', $account->getAttribute('client_code')->value->id)
                 ->execute()
             : TaxCombinationMapper::get()
                 ->where('itemCode', $request->getDataInt('price_item'))
-                ->where('supplierCode', $account->getAttribute('supplier_code')?->value->getId())
+                ->where('supplierCode', $account->getAttribute('supplier_code')->value->id)
                 ->execute();
 
         $response->header->set('Content-Type', MimeType::M_JSON, true);
@@ -281,8 +282,8 @@ final class ApiPriceController extends Controller
         $price->unit               = (int) $request->getData('unit');
         $price->type               = $request->getDataInt('type') ?? PriceType::SALES;
         $price->quantity           = (int) $request->getData('quantity');
-        $price->price              = (int) $request->getData('price');
-        $price->priceNew           = (int) $request->getData('price_name');
+        $price->price              = new FloatInt((int) $request->getData('price'));
+        $price->priceNew           = (int) $request->getData('price_new');
         $price->discount           = (int) $request->getData('discount');
         $price->discountPercentage = (int) $request->getData('discountPercentage');
         $price->bonus              = (int) $request->getData('bonus');

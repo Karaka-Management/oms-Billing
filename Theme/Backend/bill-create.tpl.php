@@ -39,7 +39,7 @@ $billTypes = $this->getData('billtypes') ?? [];
 /** @var \Modules\Auditor\Models\Audit */
 $logs = $this->getData('logs') ?? [];
 
-$editable = $bill instanceof NullBill || \in_array($bill->getStatus(), [BillStatus::DRAFT, BillStatus::UNPARSED]);
+$editable = $bill->id === 0 || \in_array($bill->getStatus(), [BillStatus::DRAFT, BillStatus::UNPARSED]);
 $disabled = !$editable  ? ' disabled' : '';
 
 echo $this->getData('nav')->render(); ?>
@@ -96,7 +96,7 @@ echo $this->getData('nav')->render(); ?>
                                     <label for="iBillType"><?= $this->getHtml('Type'); ?></label>
                                     <select id="iBillType" name="bill_type"<?= $disabled; ?>>
                                         <?php foreach ($billTypes as $type) : ?>
-                                        <option value="<?= $type->getId(); ?>"><?= $this->printHtml($type->getL11n()); ?>
+                                        <option value="<?= $type->id; ?>"><?= $this->printHtml($type->getL11n()); ?>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
@@ -306,12 +306,12 @@ echo $this->getData('nav')->render(); ?>
                                     <td><span class="input"><button type="button" formaction=""><i class="fa fa-book"></i></button><input name="" type="text" value="<?= $element->itemNumber; ?>" required<?= $disabled; ?>></span>
                                     <td><textarea required<?= $disabled; ?>><?= $element->itemName; ?></textarea>
                                     <td><input name="" type="number" min="0" value="<?= $element->getQuantity(); ?>" required<?= $disabled; ?>>
-                                    <td><input name="" type="text" value="<?= $element->singleSalesPriceNet->getCurrency(symbol: ''); ?>"<?= $disabled; ?>>
+                                    <td><input name="" type="text" value="<?= $this->getCurrency($element->singleSalesPriceNet, symbol: ''); ?>"<?= $disabled; ?>>
                                     <td><input name="" type="number" min="0"<?= $disabled; ?>>
                                     <td><input name="" type="number" min="0" max="100" step="any"<?= $disabled; ?>>
                                     <td><input name="" type="number" min="0" step="any"<?= $disabled; ?>>
                                     <td><input name="" type="number" min="0" step="any"<?= $disabled; ?>>
-                                    <td><?= $element->totalSalesPriceNet->getCurrency(); ?>
+                                    <td><?= $this->getCurrency($element->totalSalesPriceNet); ?>
                                 <?php endforeach; ?>
                             <?php if ($editable) : ?>
                                 <tr data-id="0">
@@ -345,7 +345,7 @@ echo $this->getData('nav')->render(); ?>
                 <div class="col-xs-12 col-sm-3 box">
                     <select id="iBillPreviewType" name="bill_preview_type">>
                         <?php foreach ($billTypes as $type) : ?>
-                        <option value="<?= $type->getId(); ?>"><?= $this->printHtml($type->getL11n()); ?>
+                        <option value="<?= $type->id; ?>"><?= $this->printHtml($type->getL11n()); ?>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -512,10 +512,10 @@ echo $this->getData('nav')->render(); ?>
                             <tbody>
                             <?php
                             foreach ($logs as $audit) :
-                                $url = UriFactory::build('{/base}/admin/audit/single?id=' . $audit->getId());
+                                $url = UriFactory::build('{/base}/admin/audit/single?id=' . $audit->id);
                             ?>
                             <tr data-href="<?= $url; ?>">
-                                <td><a href="<?= $url; ?>"><?= $audit->getId(); ?></a>
+                                <td><a href="<?= $url; ?>"><?= $audit->id; ?></a>
                                 <td><a href="<?= $url; ?>"><?= $audit->trigger; ?></a>
                                 <td><?php if ($audit->old === null) : echo $this->getHtml('CREATE', 'Auditor', 'Backend'); ?>
                                     <?php elseif ($audit->old !== null && $audit->new !== null) : echo $this->getHtml('UPDATE', 'Auditor', 'Backend'); ?>
@@ -523,7 +523,7 @@ echo $this->getData('nav')->render(); ?>
                                     <?php else : echo $this->getHtml('UNKNOWN', 'Auditor', 'Backend'); ?>
                                     <?php endif; ?>
                                 <td><a class="content"
-                                    href="<?= UriFactory::build('{/base}/admin/account/settings?id=' . $audit->createdBy->getId()); ?>"><?= $this->printHtml(
+                                    href="<?= UriFactory::build('{/base}/admin/account/settings?id=' . $audit->createdBy->id); ?>"><?= $this->printHtml(
                                     $this->renderUserName('%3$s %2$s %1$s', [$audit->createdBy->name1, $audit->createdBy->name2, $audit->createdBy->name3, $audit->createdBy->login])
                                 ); ?></a>
                                 <td><a href="<?= $url; ?>"><?= $audit->createdAt->format('Y-m-d'); ?></a>

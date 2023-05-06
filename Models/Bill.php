@@ -24,7 +24,7 @@ use Modules\Media\Models\NullMedia;
 use Modules\SupplierManagement\Models\Supplier;
 use phpOMS\Localization\ISO4217CharEnum;
 use phpOMS\Localization\ISO639x1Enum;
-use phpOMS\Localization\Money;
+use phpOMS\Stdlib\Base\FloatInt;
 
 /**
  * Bill class.
@@ -42,7 +42,7 @@ class Bill implements \JsonSerializable
      * @var int
      * @since 1.0.0
      */
-    protected int $id = 0;
+    public int $id = 0;
 
     /**
      * Sequence.
@@ -85,7 +85,7 @@ class Bill implements \JsonSerializable
      * @var int
      * @since 1.0.0
      */
-    private int $status = BillStatus::DRAFT;
+    public int $status = BillStatus::DRAFT;
 
     private int $paymentStatus = BillPaymentStatus::UNPAID;
 
@@ -256,82 +256,82 @@ class Bill implements \JsonSerializable
     /**
      * Net amount.
      *
-     * @var Money
+     * @var FloatInt
      * @since 1.0.0
      */
-    public Money $netProfit;
+    public FloatInt $netProfit;
 
     /**
      * Gross amount.
      *
-     * @var Money
+     * @var FloatInt
      * @since 1.0.0
      */
-    public Money $grossProfit;
+    public FloatInt $grossProfit;
 
     /**
      * Costs in net.
      *
-     * @var Money
+     * @var FloatInt
      * @since 1.0.0
      */
-    public Money $netCosts;
+    public FloatInt $netCosts;
 
     /**
      * Profit in net.
      *
-     * @var Money
+     * @var FloatInt
      * @since 1.0.0
      */
-    public Money $grossCosts;
+    public FloatInt $grossCosts;
 
     /**
      * Costs in net.
      *
-     * @var Money
+     * @var FloatInt
      * @since 1.0.0
      */
-    public Money $netSales;
+    public FloatInt $netSales;
 
     /**
      * Profit in net.
      *
-     * @var Money
+     * @var FloatInt
      * @since 1.0.0
      */
-    public Money $grossSales;
+    public FloatInt $grossSales;
 
     /**
      * Costs in net.
      *
-     * @var Money
+     * @var FloatInt
      * @since 1.0.0
      */
-    public Money $netDiscount;
+    public FloatInt $netDiscount;
 
     /**
      * Profit in net.
      *
-     * @var Money
+     * @var FloatInt
      * @since 1.0.0
      */
-    public Money $grossDiscount;
+    public FloatInt $grossDiscount;
 
     /**
      * Insurance fees in net.
      *
-     * @var Money
+     * @var FloatInt
      * @since 1.0.0
      */
-    public Money $insurance;
+    public FloatInt $insurance;
 
     /**
      * Freight in net.
      *
-     * @var Money
+     * @var FloatInt
      * @since 1.0.0
      */
-    public Money $freight;
+    public FloatInt $freight;
 
     /**
      * Currency.
@@ -468,14 +468,14 @@ class Bill implements \JsonSerializable
      */
     public function __construct()
     {
-        $this->netProfit     = new Money(0);
-        $this->grossProfit   = new Money(0);
-        $this->netCosts      = new Money(0);
-        $this->grossCosts    = new Money(0);
-        $this->netSales      = new Money(0);
-        $this->grossSales    = new Money(0);
-        $this->netDiscount   = new Money(0);
-        $this->grossDiscount = new Money(0);
+        $this->netProfit     = new FloatInt(0);
+        $this->grossProfit   = new FloatInt(0);
+        $this->netCosts      = new FloatInt(0);
+        $this->grossCosts    = new FloatInt(0);
+        $this->netSales      = new FloatInt(0);
+        $this->grossSales    = new FloatInt(0);
+        $this->netDiscount   = new FloatInt(0);
+        $this->grossDiscount = new FloatInt(0);
 
         $this->billDate  = new \DateTime('now');
         $this->createdAt = new \DateTimeImmutable();
@@ -520,7 +520,7 @@ class Bill implements \JsonSerializable
                 $this->createdAt->format('d'),
                 $this->id,
                 $this->sequence,
-                $this->type->getId(),
+                $this->type->id,
             ],
             $this->type->numberFormat
         );
@@ -804,7 +804,7 @@ class Bill implements \JsonSerializable
 
         $files = [];
         foreach ($this->media as $file) {
-            if ($file->type !== null && $file->type->getId() === $type) {
+            if ($file->type !== null && $file->type->id === $type) {
                 $files[] = $file;
             }
         }

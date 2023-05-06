@@ -172,7 +172,7 @@ final class ApiBillController extends Controller
         // @todo: consider to remove the trigger and select the latest bill here and add + 1 to the new sequence since we have to tdo an update anyways
         /** @var Bill $bill */
         $tmp = BillMapper::get()
-            ->where('id', $bill->getId())
+            ->where('id', $bill->id)
             ->execute();
 
         $bill->sequence = $tmp->sequence;
@@ -256,7 +256,7 @@ final class ApiBillController extends Controller
 
         $billLanguage = $validLanguages[0] ?? ISO639x1Enum::_EN;
 
-        $clientBillLanguage = $client->getAttribute('bill_language')?->value->valueStr;
+        $clientBillLanguage = $client->getAttribute('bill_language')->value->valueStr;
         if (!empty($clientBillLanguage) && \in_array($clientBillLanguage, $validLanguages)) {
             $billLanguage = $clientBillLanguage;
         } else {
@@ -293,7 +293,7 @@ final class ApiBillController extends Controller
             $item,
             $taxCode,
             $request->getDataInt('quantity') ?? 1,
-            $bill->getId()
+            $bill->id
         );
 
         return $element;
@@ -430,8 +430,8 @@ final class ApiBillController extends Controller
             foreach ($uploaded as $media) {
                 $this->createModelRelation(
                     $request->header->account,
-                    $bill->getId(),
-                    $media->getId(),
+                    $bill->id,
+                    $media->id,
                     BillMapper::class,
                     'media',
                     '',
@@ -441,7 +441,7 @@ final class ApiBillController extends Controller
                 if ($request->hasData('type')) {
                     $this->createModelRelation(
                         $request->header->account,
-                        $media->getId(),
+                        $media->id,
                         $request->getDataInt('type'),
                         MediaMapper::class,
                         'types',
@@ -453,7 +453,7 @@ final class ApiBillController extends Controller
                 if ($collection === null) {
                     $collection = MediaMapper::getParentCollection($path)->limit(1)->execute();
 
-                    if ($collection instanceof NullCollection) {
+                    if ($collection->id === 0) {
                         $collection = $this->app->moduleManager->get('Media')->createRecursiveMediaCollection(
                             $path,
                             $request->header->account,
@@ -464,8 +464,8 @@ final class ApiBillController extends Controller
 
                 $this->createModelRelation(
                     $request->header->account,
-                    $collection->getId(),
-                    $media->getId(),
+                    $collection->id,
+                    $media->id,
                     CollectionMapper::class,
                     'sources',
                     '',
@@ -478,7 +478,7 @@ final class ApiBillController extends Controller
             foreach ($mediaFiles as $media) {
                 $this->createModelRelation(
                     $request->header->account,
-                    $bill->getId(),
+                    $bill->id,
                     (int) $media,
                     BillMapper::class,
                     'media',
@@ -510,7 +510,7 @@ final class ApiBillController extends Controller
             . $bill->createdAt->format('Y') . '/'
             . $bill->createdAt->format('m') . '/'
             . $bill->createdAt->format('d') . '/'
-            . $bill->getId();
+            . $bill->id;
     }
 
     /**
@@ -602,7 +602,7 @@ final class ApiBillController extends Controller
             ->execute();
 
         $element       = $this->createBaseBillElement($bill->client, $item, $bill, $request);
-        $element->bill = $bill->getId();
+        $element->bill = $bill->id;
 
         // discounts
         if ($request->getData('discount_percentage') !== null) {
@@ -661,7 +661,7 @@ final class ApiBillController extends Controller
             $billTypeId = $request->getData('bill_type', 'int');
 
             if (empty($billTypeId)) {
-                $billTypeId = $bill->type->getId();
+                $billTypeId = $bill->type->id;
             }
 
             if (empty($billTypeId)) {
@@ -674,7 +674,7 @@ final class ApiBillController extends Controller
                 ->where('id', $billTypeId)
                 ->execute();
 
-            $templateId = $billType->defaultTemplate?->getId();
+            $templateId = $billType->defaultTemplate?->id;
         }
 
         /** @var \Modules\Media\Models\Collection $template */
@@ -799,14 +799,14 @@ final class ApiBillController extends Controller
 
         $templateId = $request->getDataInt('bill_template');
         if ($templateId === null) {
-            $billTypeId = $bill->type->getId();
+            $billTypeId = $bill->type->id;
 
             /** @var \Modules\Billing\Models\BillType $billType */
             $billType = BillTypeMapper::get()
                 ->where('id', $billTypeId)
                 ->execute();
 
-            $templateId = $billType->defaultTemplate?->getId();
+            $templateId = $billType->defaultTemplate?->id;
         }
 
         /** @var \Modules\Media\Models\Collection $template */
@@ -903,8 +903,8 @@ final class ApiBillController extends Controller
 
         $this->createModelRelation(
             $request->header->account,
-            $bill->getId(),
-            $media->getId(),
+            $bill->id,
+            $media->id,
             BillMapper::class,
             'media',
             '',
@@ -954,7 +954,7 @@ final class ApiBillController extends Controller
         }
 
         $model = $response->get($request->uri->__toString())['response'];
-        $this->createModelRelation($request->header->account, $request->getDataInt('id'), $model->getId(), BillMapper::class, 'bill_note', '', $request->getOrigin());
+        $this->createModelRelation($request->header->account, $request->getDataInt('id'), $model->id, BillMapper::class, 'bill_note', '', $request->getOrigin());
     }
 
     /**

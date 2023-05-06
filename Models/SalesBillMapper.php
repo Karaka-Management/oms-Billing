@@ -17,7 +17,7 @@ namespace Modules\Billing\Models;
 use Modules\ClientManagement\Models\ClientMapper;
 use phpOMS\DataStorage\Database\Query\Builder;
 use phpOMS\Localization\Defaults\CountryMapper;
-use phpOMS\Localization\Money;
+use phpOMS\Stdlib\Base\FloatInt;
 
 /**
  * Mapper class.
@@ -78,7 +78,7 @@ final class SalesBillMapper extends BillMapper
     /**
      * Placeholder
      */
-    public static function getSalesByItemId(int $id, \DateTime $start, \DateTime $end) : Money
+    public static function getSalesByItemId(int $id, \DateTime $start, \DateTime $end) : FloatInt
     {
         $query  = new Builder(self::$db);
         $result = $query->select('SUM(billing_bill_element_total_netsalesprice)')
@@ -91,13 +91,13 @@ final class SalesBillMapper extends BillMapper
             ->execute()
             ?->fetch();
 
-        return new Money((int) $result[0] ?? 0);
+        return new FloatInt((int) $result[0] ?? 0);
     }
 
     /**
      * Placeholder
      */
-    public static function getSalesByClientId(int $id, \DateTime $start, \DateTime $end) : Money
+    public static function getSalesByClientId(int $id, \DateTime $start, \DateTime $end) : FloatInt
     {
         $query  = new Builder(self::$db);
         $result = $query->select('SUM(billing_bill_netsales)')
@@ -108,13 +108,13 @@ final class SalesBillMapper extends BillMapper
             ->execute()
             ?->fetch();
 
-        return new Money((int) $result[0] ?? 0);
+        return new FloatInt((int) $result[0] ?? 0);
     }
 
     /**
      * Placeholder
      */
-    public static function getAvgSalesPriceByItemId(int $id, \DateTime $start, \DateTime $end) : Money
+    public static function getAvgSalesPriceByItemId(int $id, \DateTime $start, \DateTime $end) : FloatInt
     {
         $query  = new Builder(self::$db);
         $result = $query->select('SUM(billing_bill_element_single_netsalesprice)', 'COUNT(billing_bill_element_total_netsalesprice)')
@@ -127,7 +127,7 @@ final class SalesBillMapper extends BillMapper
             ->execute()
             ?->fetch();
 
-        return new Money($result === false || ((int) ($result[1] ?? 0)) === 0 ? 0 : (int) (((int) $result[0] ?? 0) / ((int) $result[1])));
+        return new FloatInt($result === false || ((int) ($result[1] ?? 0)) === 0 ? 0 : (int) (((int) $result[0] ?? 0) / ((int) $result[1])));
     }
 
     /**
@@ -179,9 +179,9 @@ final class SalesBillMapper extends BillMapper
     /**
      * Placeholder
      */
-    public static function getItemLivetimeValue(int $id, \DateTime $start, \DateTime $end) : Money
+    public static function getItemLivetimeValue(int $id, \DateTime $start, \DateTime $end) : FloatInt
     {
-        return new Money();
+        return new FloatInt();
     }
 
     /**

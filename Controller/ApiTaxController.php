@@ -62,8 +62,8 @@ final class ApiTaxController extends Controller
         // @todo: consider to actually use a ownsOne reference instead of only a string, this way the next line with the TaxCodeMapper can be removed
         /** @var \Modules\Billing\Models\Tax\TaxCombination $taxCombination */
         $taxCombination = TaxCombinationMapper::get()
-                ->where('itemCode', $item->getAttribute('sales_tax_code')?->value->getId())
-                ->where('clientCode', $client->getAttribute('sales_tax_code')?->value->getId())
+                ->where('itemCode', $item->getAttribute('sales_tax_code')->value->id)
+                ->where('clientCode', $client->getAttribute('sales_tax_code')->value->id)
                 ->execute();
 
         /** @var \Modules\Finance\Models\TaxCode $taxCode */
@@ -72,7 +72,7 @@ final class ApiTaxController extends Controller
             ->execute();
 
         // If now tax code could be found, the local tax code should be used.
-        if ($taxCode instanceof NullTaxCode) {
+        if ($taxCode->id === 0) {
             /** @var \Modules\Organization\Models\Unit $unit */
             $unit = UnitMapper::get()
                 ->with('mainAddress')
@@ -91,8 +91,8 @@ final class ApiTaxController extends Controller
 
             /** @var \Modules\Billing\Models\Tax\TaxCombination $taxCombination */
             $taxCombination = TaxCombinationMapper::get()
-                ->where('itemCode', $item->getAttribute('sales_tax_code')?->value->getId())
-                ->where('clientCode', $taxCodeAttribute->getId())
+                ->where('itemCode', $item->getAttribute('sales_tax_code')->value->id)
+                ->where('clientCode', $taxCodeAttribute->id)
                 ->execute();
 
             /** @var \Modules\Finance\Models\TaxCode $taxCode */
@@ -203,7 +203,7 @@ final class ApiTaxController extends Controller
         } elseif (\in_array($taxOfficeAddress->getCountry(), ISO3166CharEnum::getRegion('eu'))
             && \in_array($client->mainAddress->getCountry(), ISO3166CharEnum::getRegion('eu'))
         ) {
-            if (!empty($client->getAttribute('vat_id')?->value->getValue())) {
+            if (!empty($client->getAttribute('vat_id')->value->getValue())) {
                 // Is EU company
                 $taxCode = $codes->getDefaultByValue('EU');
             } else {

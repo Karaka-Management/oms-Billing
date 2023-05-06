@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 use Modules\Billing\Models\NullBill;
 use phpOMS\Localization\ISO3166NameEnum;
+use phpOMS\Localization\Money;
 
 /** @var \phpOMS\Views\View $this */
 require_once $this->getData('defaultTemplates')
@@ -202,9 +203,12 @@ foreach($lines as $line) {
     $pdf->writeHTMLCell($w[0], 10, null, null, $line->itemNumber . ' ' . $line->itemName, 0, 2, $fill);
     $height = $pdf->getY() - $tempY;
 
+	$singleSalesPriceNet = Money::fromFloatInt($line->singleSalesPriceNet);
+	$totalSalesPriceNet = Money::fromFloatInt($line->totalSalesPriceNet);
+
     $pdf->MultiCell($w[1], $height, $line->getQuantity(), 0, 'L', $fill, 0, 15 + $w[0], $tempY, true, 0, false, true, 0, 'M', true);
-    $pdf->MultiCell($w[2], $height, $line->singleSalesPriceNet->getCurrency(2, symbol: ''), 0, 'L', $fill, 0, 15 + $w[0] + $w[1], $tempY, true, 0, false, true, 0, 'M', true);
-    $pdf->MultiCell($w[3], $height,  $line->totalSalesPriceNet->getCurrency(2, symbol: ''), 0, 'L', $fill, 1, 15 + $w[0] + $w[1] + $w[2], $tempY, true, 0, false, true, 0, 'M', true);
+    $pdf->MultiCell($w[2], $height, $singleSalesPriceNet->getCurrency(2, symbol: ''), 0, 'L', $fill, 0, 15 + $w[0] + $w[1], $tempY, true, 0, false, true, 0, 'M', true);
+    $pdf->MultiCell($w[3], $height, $totalSalesPriceNet->getCurrency(2, symbol: ''), 0, 'L', $fill, 1, 15 + $w[0] + $w[1] + $w[2], $tempY, true, 0, false, true, 0, 'M', true);
 
     $fill = !$fill;
 
@@ -230,12 +234,16 @@ $pdf->setFont('helvetica', 'B', 8);
 
 $tempY = $pdf->getY();
 
+$netSales = Money::fromFloatInt($bill->netSales);
+
 $pdf->setX($w[0] + $w[1] + 15);
 $pdf->Cell($w[2], 7, $lang[$pdf->language]['Subtotal'], 0, 0, 'L', false);
-$pdf->Cell($w[3], 7, $bill->netSales->getCurrency(2, symbol: ''), 0, 0, 'L', false);
+$pdf->Cell($w[3], 7, $netSales->getCurrency(2, symbol: ''), 0, 0, 'L', false);
 $pdf->Ln();
 
 foreach ($taxes as $rate => $tax) {
+	$tax = Money::fromFloatInt($tax);
+
 	$pdf->setX($w[0] + $w[1] + 15);
 	$pdf->Cell($w[2], 7,  $lang[$pdf->language]['Taxes'] . ' (' . $rate . '%)', 0, 0, 'L', false);
 	$pdf->Cell($w[3], 7, $tax->getCurrency(2, symbol: ''), 0, 0, 'L', false);
@@ -249,9 +257,11 @@ $pdf->setTextColor(255);
 $pdf->setDrawColor(255, 162, 7);
 $pdf->setFont('helvetica', 'B', 8);
 
+$grossSales = Money::fromFloatInt($bill->grossSales);
+
 $pdf->setX($w[0] + $w[1] + 15);
 $pdf->Cell($w[2], 7, \strtoupper($lang[$pdf->language]['Total']), 1, 0, 'L', true);
-$pdf->Cell($w[3], 7,  $bill->grossSales->getCurrency(2, symbol: ''), 1, 0, 'L', true);
+$pdf->Cell($w[3], 7,  $grossSales->getCurrency(2, symbol: ''), 1, 0, 'L', true);
 $pdf->Ln();
 
 $tempY2 = $pdf->getY();

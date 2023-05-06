@@ -73,14 +73,14 @@ final class ApiPurchaseController extends Controller
             $billRequest->header->l11n    = $request->header->l11n;
             $billRequest->setData('supplier', 0);
             $billRequest->setData('status', BillStatus::UNPARSED);
-            $billRequest->setData('type', $purchaseTransferType->getId());
+            $billRequest->setData('type', $purchaseTransferType->id);
 
             $billResponse               = new HttpResponse();
             $billResponse->header->l11n = $response->header->l11n;
 
             $this->app->moduleManager->get('Billing', 'Api')->apiBillCreate($billRequest, $billResponse, $data);
 
-            $billId = $billResponse->get('')['response']->getId();
+            $billId = $billResponse->get('')['response']->id;
 
             // Upload and assign document to bill
             $mediaRequest                  = new HttpRequest();

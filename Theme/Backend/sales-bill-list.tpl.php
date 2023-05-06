@@ -165,7 +165,7 @@ echo $this->getData('nav')->render(); ?>
                 <tbody>
                 <?php $count = 0; foreach ($bills as $key => $value) :
                     ++$count;
-                    $url = UriFactory::build('{/base}/sales/bill?{?}&id=' . $value->getId());
+                    $url = UriFactory::build('{/base}/sales/bill?{?}&id=' . $value->id);
                 ?>
                     <tr data-href="<?= $url; ?>">
                         <td><label class="checkbox" for="iBillSelect-<?= $key; ?>">
@@ -174,15 +174,15 @@ echo $this->getData('nav')->render(); ?>
                                 </label>
                         <td><a href="<?= $url; ?>"><?= $value->getNumber(); ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->type->getL11n(); ?></a>
-                        <td><a class="content" href="<?= $client = UriFactory::build('sales/client/profile?{?}&id=' . $value->client->getId()); ?>"><?= $value->client->number; ?></a>
+                        <td><a class="content" href="<?= $client = UriFactory::build('sales/client/profile?{?}&id=' . $value->client->id); ?>"><?= $value->client->number; ?></a>
                         <td><a class="content" href="<?= $client; ?>"><?= $this->printHtml($value->billTo); ?></a>
                         <td><a href="<?= $url;
                          ?>"><?= $value->billAddress; ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->billZip; ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->billCity; ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->billCountry; ?></a>
-                        <td><a href="<?= $url; ?>"><?= $value->netSales->getCurrency(); ?></a>
-                        <td><a href="<?= $url; ?>"><?= $value->netProfit->getCurrency(); ?></a>
+                        <td><a href="<?= $url; ?>"><?= $this->getCurrency($value->netSales); ?></a>
+                        <td><a href="<?= $url; ?>"><?= $this->getCurrency($value->netProfit); ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->createdAt->format('Y-m-d'); ?></a>
                 <?php endforeach; ?>
                 <?php if ($count === 0) : ?>

@@ -156,7 +156,7 @@ echo $this->getData('nav')->render(); ?>
                 <?php $count = 0;
                 foreach ($bills as $key => $value) :
                     ++$count;
-                    $url = UriFactory::build('{/base}/private/purchase/bill?{?}&id=' . $value->getId());
+                    $url = UriFactory::build('{/base}/private/purchase/bill?{?}&id=' . $value->id);
                 ?>
                     <tr data-href="<?= $url; ?>">
                         <td><label class="checkbox" for="iBillSelect-<?= $key; ?>">
@@ -165,7 +165,7 @@ echo $this->getData('nav')->render(); ?>
                                 </label>
                         <td><a href="<?= $url; ?>"><?= $value->getNumber(); ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->type->getL11n(); ?></a>
-                        <td><a class="content" href="<?= $supplier = UriFactory::build('purchase/supplier/profile?{?}&id=' . $value->supplier->getId()); ?>"><?= $value->supplier->number; ?></a>
+                        <td><a class="content" href="<?= $supplier = UriFactory::build('purchase/supplier/profile?{?}&id=' . $value->supplier->id); ?>"><?= $value->supplier->number; ?></a>
                         <td><a class="content" href="<?= $supplier; ?>"><?= $this->printHtml($value->billTo); ?></a>
                         <td><a href="<?= $url;
                          ?>"><?= $value->billAddress; ?></a>

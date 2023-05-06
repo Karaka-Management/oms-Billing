@@ -23,6 +23,7 @@ use Modules\ItemManagement\Models\NullItem;
 use Modules\SupplierManagement\Models\NullSupplier;
 use Modules\SupplierManagement\Models\Supplier;
 use phpOMS\Localization\ISO4217CharEnum;
+use phpOMS\Stdlib\Base\FloatInt;
 
 /**
  * Bill class.
@@ -40,7 +41,7 @@ class Price implements \JsonSerializable
      * @var int
      * @since 1.0.0
      */
-    protected int $id = 0;
+    public int $id = 0;
 
     public string $name = '';
 
@@ -76,7 +77,7 @@ class Price implements \JsonSerializable
 
     public int $quantity = 0;
 
-    public int $price = 0;
+    public FloatInt $price;
 
     public int $priceNew = 0;
 
@@ -109,6 +110,8 @@ class Price implements \JsonSerializable
         $this->clienttype    = new NullAttributeValue();
 
         $this->supplier = new NullSupplier();
+
+        $this->price = new FloatInt();
     }
 
     /**

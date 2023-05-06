@@ -123,7 +123,7 @@ final class ApiControllerTest extends \PHPUnit\Framework\TestCase
 
         $this->module->apiBillCreate($request, $response);
 
-        $bId = $response->get('')['response']->getId();
+        $bId = $response->get('')['response']->id;
         self::assertGreaterThan(0, $bId);
 
         for ($k = 0; $k < 10; ++$k) {
@@ -151,7 +151,7 @@ final class ApiControllerTest extends \PHPUnit\Framework\TestCase
             }
 
             $this->module->apiBillElementCreate($request, $response);
-            self::assertGreaterThan(0, $response->get('')['response']->getId());
+            self::assertGreaterThan(0, $response->get('')['response']->id);
         }
 
         $response = new HttpResponse();
@@ -163,7 +163,7 @@ final class ApiControllerTest extends \PHPUnit\Framework\TestCase
         $this->module->apiBillPdfArchiveCreate($request, $response);
 
         $result = $response->get('');
-        self::assertGreaterThan(0, $result === null ? -1 : $result['response']?->getId());
+        self::assertGreaterThan(0, $result === null ? -1 : $result['response']?->id);
     }
     */
 
@@ -199,7 +199,7 @@ final class ApiControllerTest extends \PHPUnit\Framework\TestCase
 
         $this->module->apiBillCreate($request, $response);
 
-        $bId = $response->get('')['response']->getId();
+        $bId = $response->get('')['response']->id;
         self::assertGreaterThan(0, $bId);
 
         for ($k = 0; $k < 10; ++$k) {
@@ -227,7 +227,7 @@ final class ApiControllerTest extends \PHPUnit\Framework\TestCase
             }
 
             $this->module->apiBillElementCreate($request, $response);
-            self::assertGreaterThan(0, $response->get('')['response']->getId());
+            self::assertGreaterThan(0, $response->get('')['response']->id);
         }
 
         $response = new HttpResponse();
@@ -239,7 +239,7 @@ final class ApiControllerTest extends \PHPUnit\Framework\TestCase
         $this->module->apiBillPdfArchiveCreate($request, $response);
 
         $result = $response->get('');
-        self::assertGreaterThan(0, $result === null ? -1 : $result['response']?->getId());
+        self::assertGreaterThan(0, $result === null ? -1 : $result['response']?->id);
     }
     */
 

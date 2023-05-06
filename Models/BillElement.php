@@ -16,7 +16,6 @@ namespace Modules\Billing\Models;
 
 use Modules\Finance\Models\TaxCode;
 use Modules\ItemManagement\Models\Item;
-use phpOMS\Localization\Money;
 use phpOMS\Stdlib\Base\FloatInt;
 
 /**
@@ -35,7 +34,7 @@ class BillElement implements \JsonSerializable
      * @var int
      * @since 1.0.0
      */
-    protected int $id = 0;
+    public int $id = 0;
 
     public int $order = 0;
 
@@ -52,53 +51,53 @@ class BillElement implements \JsonSerializable
 
     public ?Subscription $subscription = null;
 
-    public Money $singleSalesPriceNet;
+    public FloatInt $singleSalesPriceNet;
 
-    public Money $singleSalesPriceGross;
+    public FloatInt $singleSalesPriceGross;
 
-    public Money $totalSalesPriceNet;
+    public FloatInt $totalSalesPriceNet;
 
-    public Money $totalSalesPriceGross;
+    public FloatInt $totalSalesPriceGross;
 
-    public Money $singleDiscountP;
+    public FloatInt $singleDiscountP;
 
-    public Money $totalDiscountP;
+    public FloatInt $totalDiscountP;
 
     public ?FloatInt $singleDiscountR = null;
 
     public ?FloatInt $discountQ = null;
 
-    public Money $singleListPriceNet;
+    public FloatInt $singleListPriceNet;
 
-    public Money $singleListPriceGross;
+    public FloatInt $singleListPriceGross;
 
-    public Money $totalListPriceNet;
+    public FloatInt $totalListPriceNet;
 
-    public Money $totalListPriceGross;
+    public FloatInt $totalListPriceGross;
 
-    public Money $singlePurchasePriceNet;
+    public FloatInt $singlePurchasePriceNet;
 
-    public Money $singlePurchasePriceGross;
+    public FloatInt $singlePurchasePriceGross;
 
-    public Money $totalPurchasePriceNet;
+    public FloatInt $totalPurchasePriceNet;
 
-    public Money $totalPurchasePriceGross;
+    public FloatInt $totalPurchasePriceGross;
 
-    public Money $singleProfitNet;
+    public FloatInt $singleProfitNet;
 
-    public Money $singleProfitGross;
+    public FloatInt $singleProfitGross;
 
-    public Money $totalProfitNet;
+    public FloatInt $totalProfitNet;
 
-    public Money $totalProfitGross;
+    public FloatInt $totalProfitGross;
 
     /**
      * Tax amount
      *
-     * @var Money
+     * @var FloatInt
      * @since 1.0.0
      */
-    public Money $taxP;
+    public FloatInt $taxP;
 
     /**
      * Tax percentage
@@ -135,34 +134,34 @@ class BillElement implements \JsonSerializable
      */
     public function __construct()
     {
-        $this->singleListPriceNet   = new Money();
-        $this->singleListPriceGross = new Money();
+        $this->singleListPriceNet   = new FloatInt();
+        $this->singleListPriceGross = new FloatInt();
 
-        $this->totalListPriceNet   = new Money();
-        $this->totalListPriceGross = new Money();
+        $this->totalListPriceNet   = new FloatInt();
+        $this->totalListPriceGross = new FloatInt();
 
-        $this->singleSalesPriceNet   = new Money();
-        $this->singleSalesPriceGross = new Money();
+        $this->singleSalesPriceNet   = new FloatInt();
+        $this->singleSalesPriceGross = new FloatInt();
 
-        $this->totalSalesPriceNet   = new Money();
-        $this->totalSalesPriceGross = new Money();
+        $this->totalSalesPriceNet   = new FloatInt();
+        $this->totalSalesPriceGross = new FloatInt();
 
-        $this->singlePurchasePriceNet   = new Money();
-        $this->singlePurchasePriceGross = new Money();
+        $this->singlePurchasePriceNet   = new FloatInt();
+        $this->singlePurchasePriceGross = new FloatInt();
 
-        $this->totalPurchasePriceNet   = new Money();
-        $this->totalPurchasePriceGross = new Money();
+        $this->totalPurchasePriceNet   = new FloatInt();
+        $this->totalPurchasePriceGross = new FloatInt();
 
-        $this->singleProfitNet   = new Money();
-        $this->singleProfitGross = new Money();
+        $this->singleProfitNet   = new FloatInt();
+        $this->singleProfitGross = new FloatInt();
 
-        $this->totalProfitNet   = new Money();
-        $this->totalProfitGross = new Money();
+        $this->totalProfitNet   = new FloatInt();
+        $this->totalProfitGross = new FloatInt();
 
-        $this->singleDiscountP = new Money();
-        $this->totalDiscountP  = new Money();
+        $this->singleDiscountP = new FloatInt();
+        $this->totalDiscountP  = new FloatInt();
 
-        $this->taxP = new Money();
+        $this->taxP = new FloatInt();
         $this->taxR = new FloatInt();
     }
 
@@ -239,7 +238,7 @@ class BillElement implements \JsonSerializable
     {
         $element                  = new self();
         $element->bill            = $bill;
-        $element->item            = empty($item->getId()) ? null : $item->getId();
+        $element->item            = empty($item->id) ? null : $item->id;
         $element->itemNumber      = $item->number;
         $element->itemName        = $item->getL11n('name1')->description;
         $element->itemDescription = $item->getL11n('description_short')->description;
@@ -257,7 +256,7 @@ class BillElement implements \JsonSerializable
         $element->singleProfitNet->setInt($element->singleSalesPriceNet->getInt() - $element->singlePurchasePriceNet->getInt());
         $element->totalProfitNet->setInt($element->quantity * ($element->totalSalesPriceNet->getInt() - $element->totalPurchasePriceNet->getInt()));
 
-        $element->taxP    = new Money((int) (($code->percentageInvoice * $element->totalSalesPriceNet->getInt()) / 10000));
+        $element->taxP    = new FloatInt((int) (($code->percentageInvoice * $element->totalSalesPriceNet->getInt()) / 10000));
         $element->taxR    = new FloatInt($code->percentageInvoice);
         $element->taxCode = $code->abbr;
 
@@ -272,7 +271,7 @@ class BillElement implements \JsonSerializable
         $element->totalProfitGross->setInt($element->quantity * ($element->totalSalesPriceGross->getInt() - $element->totalPurchasePriceGross->getInt()));
 
         if (!empty($element->bill)
-            && $item->getAttribute('subscription')?->value->getValue() === 1
+            && $item->getAttribute('subscription')->value->getValue() === 1
         ) {
             $element->subscription            = new Subscription();
             $element->subscription->bill      = $element->bill;

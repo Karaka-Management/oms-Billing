@@ -111,7 +111,7 @@ final class CliController extends Controller
             ->where('name', $type)
             ->execute();
 
-        $bill->type = new NullBillType($billType->getId());
+        $bill->type = new NullBillType($billType->id);
 
         /* Number */
         $billNumber   = $this->findBillNumber($lines, $identifiers['bill_no'][$language]);
@@ -125,7 +125,7 @@ final class CliController extends Controller
 
         /* Total Gross */
         $totalGross       = $this->findBillGross($lines, $identifiers['total_gross'][$language]);
-        $bill->grossCosts = new Money($totalGross);
+        $bill->grossCosts = new FloatInt($totalGross);
 
         $this->updateModel($request->header->account, $old, $bill, BillMapper::class, 'bill_parsing', $request->getOrigin());
 
@@ -354,7 +354,7 @@ final class CliController extends Controller
             if ((!empty($supplier->getAttribute('bill_match_pattern')->value->valueStr)
                     && \stripos($content, $supplier->getAttribute('bill_match_pattern')->value->valueStr) !== false)
             ) {
-                return $supplier->getId();
+                return $supplier->id;
             }
         }
 
@@ -364,7 +364,7 @@ final class CliController extends Controller
                 $ibans = $supplier->getPaymentsByType(PaymentType::SWIFT);
                 foreach ($ibans as $iban) {
                     if (\stripos($content, $iban->content2) !== false) {
-                        return $supplier->getId();
+                        return $supplier->id;
                     }
                 }
             }
@@ -378,7 +378,7 @@ final class CliController extends Controller
                     || (!empty( $supplier->mainAddress->address)
                         && \stripos($content, $supplier->mainAddress->address) !== false)
                 ) {
-                    return $supplier->getId();
+                    return $supplier->id;
                 }
             }
         }
@@ -386,7 +386,7 @@ final class CliController extends Controller
         // name1
         foreach ($suppliers as $supplier) {
             if (\stripos($content, $supplier->account->name1) !== false) {
-                return $supplier->getId();
+                return $supplier->id;
             }
         }
 
@@ -408,7 +408,7 @@ final class CliController extends Controller
     {
         if ((!empty($supplier->getAttribute('bill_date_format')->value->valueStr))) {
             return \DateTime::createFromFormat(
-                $supplier->getAttribute('bill_date_format')?->value->valueStr ?? '',
+                $supplier->getAttribute('bill_date_format')->value->valueStr ?? '',
                 $date
             );
         }
