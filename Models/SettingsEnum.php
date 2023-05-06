@@ -31,4 +31,6 @@ abstract class SettingsEnum extends Enum
     public const ORIGINAL_MEDIA_TYPE = '1005100002'; // original document (mostly supplier invoice/delivery note)
 
     public const VALID_BILL_LANGUAGES = '1005100003'; // List of valid languages for bills
+
+    public const BILLING_CUSTOMER_EMAIL_TEMPLATE = '1005100004'; // Email template for customer billing
 }

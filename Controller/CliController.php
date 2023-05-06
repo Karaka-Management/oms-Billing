@@ -28,6 +28,7 @@ use phpOMS\Localization\LanguageDetection\Language;
 use phpOMS\Localization\Money;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
+use phpOMS\Stdlib\Base\FloatInt;
 use phpOMS\Views\View;
 
 /**

@@ -30,7 +30,8 @@
         "Admin": "*",
         "Navigation": "*",
         "Media": "*",
-        "Workflow": "*"
+        "Workflow": "*",
+        "Messages": "*"
     },
     "load": [
         {

@@ -30,10 +30,11 @@ use Modules\ClientManagement\Models\ClientMapper;
 use Modules\ItemManagement\Models\Item;
 use Modules\ItemManagement\Models\ItemMapper;
 use Modules\Media\Models\CollectionMapper;
+use Modules\Media\Models\Media;
 use Modules\Media\Models\MediaMapper;
-use Modules\Media\Models\NullCollection;
 use Modules\Media\Models\PathSettings;
 use Modules\Media\Models\UploadStatus;
+use Modules\Messages\Models\EmailMapper;
 use Modules\SupplierManagement\Models\NullSupplier;
 use Modules\SupplierManagement\Models\SupplierMapper;
 use phpOMS\Autoloader;
@@ -41,6 +42,7 @@ use phpOMS\Localization\ISO3166TwoEnum;
 use phpOMS\Localization\ISO4217CharEnum;
 use phpOMS\Localization\ISO639x1Enum;
 use phpOMS\Message\Http\RequestStatusCode;
+use phpOMS\Message\Mail\Email;
 use phpOMS\Message\NotificationLevel;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
@@ -901,6 +903,25 @@ final class ApiBillController extends Controller
             unit: $this->app->unitId
         );
 
+        // Send bill via email
+        // @todo: maybe not all bill types, and bill status (e.g. deleted should not be sent)
+        $client = ClientMapper::get()
+            ->with('account')
+            ->with('attributes')
+            ->with('attributes/type')
+            ->with('attributes/value')
+            ->where('id', $bill->client->id)
+            ->where('attributes/type/name', ['bill_emails', 'bill_email_address'], 'IN')
+            ->execute();
+
+        if ($client->getAttribute('bill_emails')->value->getValue() === 1) {
+            $email = empty($tmp = $client->getAttribute('bill_email_address')->value->getValue())
+                ? $tmp
+                : $client->account->getEmail();
+
+            $this->sendBillEmail($media, $email, $response->getLanguage());
+        }
+
         $this->createModelRelation(
             $request->header->account,
             $bill->id,
@@ -919,6 +940,36 @@ final class ApiBillController extends Controller
             'Bill Pdf successfully created.',
             $media
         );
+    }
+
+    public function sendBillEmail(Media $media, string $email, string $language = 'en') : void
+    {
+        $handler = $this->app->moduleMaanger->get('Admin', 'Api')->setUpServerMailHandler();
+
+        $emailSettings = $this->app->appSettings->get(
+            names: AdminSettingsEnum::MAIL_SERVER_ADDR,
+            module: 'Admin'
+        );
+
+        $emailSettings = $this->app->appSettings->get(
+            names: SettingsEnum::BILLING_CUSTOMER_EMAIL_TEMPLATE,
+            module: 'Billing'
+        );
+
+        $mail = EmailMapper::get()
+            ->with('l11n')
+            ->where('id', (int) $emailSettings->content)
+            ->where('l11n/language', $language)
+            ->execute();
+
+        $mail = new Email();
+        $mail->setFrom($emailSettings->content);
+        $mail->addTo($email);
+        $mail->addAttachment($media->getAbsolutePath(), $media->name);
+
+        $handler->send($mail);
+
+        $this->app->moduleManager->get('Billing', 'Api')->sendMail($mail);
     }
 
     /**
