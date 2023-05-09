@@ -240,8 +240,8 @@ class BillElement implements \JsonSerializable
         $element->bill            = $bill;
         $element->item            = empty($item->id) ? null : $item->id;
         $element->itemNumber      = $item->number;
-        $element->itemName        = $item->getL11n('name1')->description;
-        $element->itemDescription = $item->getL11n('description_short')->description;
+        $element->itemName        = $item->getL11n('name1')->content;
+        $element->itemDescription = $item->getL11n('description_short')->content;
         $element->quantity        = $quantity;
 
         // @todo: Use pricing instead of the default sales price
