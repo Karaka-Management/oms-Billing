@@ -117,15 +117,6 @@ final class PurchaseBillMapperTest extends \PHPUnit\Framework\TestCase
      * @covers Modules\Billing\Models\PurchaseBillMapper
      * @group module
      */
-    public function testGetItemRegionPurchaseInvalid() : void
-    {
-        self::assertEquals([], PurchaseBillMapper::getItemRegionPurchase(99999, new \DateTime('now'), new \DateTime('now')));
-    }
-
-    /**
-     * @covers Modules\Billing\Models\PurchaseBillMapper
-     * @group module
-     */
     public function testGetItemCountryPurchaseInvalid() : void
     {
         self::assertEquals([], PurchaseBillMapper::getItemCountryPurchase(99999, new \DateTime('now'), new \DateTime('now')));

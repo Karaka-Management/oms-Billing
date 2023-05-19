@@ -509,9 +509,7 @@ final class ApiBillController extends Controller
     {
         return '/Modules/Billing/Bills/'
             . $this->app->unitId . '/'
-            . $bill->createdAt->format('Y') . '/'
-            . $bill->createdAt->format('m') . '/'
-            . $bill->createdAt->format('d') . '/'
+            . $bill->createdAt->format('Y/m/d') . '/'
             . $bill->id;
     }
 

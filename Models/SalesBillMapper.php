@@ -309,29 +309,6 @@ final class SalesBillMapper extends BillMapper
     /**
      * Placeholder
      */
-    public static function getItemRegionSales(int $id, \DateTime $start, \DateTime $end) : array
-    {
-        $query  = new Builder(self::$db);
-        $result = $query->select(CountryMapper::TABLE . '.country_region')
-            ->selectAs('SUM(billing_bill_element_total_netsalesprice)', 'net_sales')
-            ->from(self::TABLE)
-            ->leftJoin(BillElementMapper::TABLE)
-                ->on(self::TABLE . '.billing_bill_id', '=', BillElementMapper::TABLE . '.billing_bill_element_bill')
-            ->leftJoin(CountryMapper::TABLE)
-                ->on(self::TABLE . '.billing_bill_billCountry', '=', CountryMapper::TABLE . '.country_code2')
-            ->where(BillElementMapper::TABLE . '.billing_bill_element_item', '=', $id)
-            ->andWhere(self::TABLE . '.billing_bill_performance_date', '>=', $start)
-            ->andWhere(self::TABLE . '.billing_bill_performance_date', '<=', $end)
-            ->groupBy(CountryMapper::TABLE . '.country_region')
-            ->execute()
-            ?->fetchAll(\PDO::FETCH_KEY_PAIR);
-
-        return $result ?? [];
-    }
-
-    /**
-     * Placeholder
-     */
     public static function getItemCountrySales(int $id, \DateTime $start, \DateTime $end, int $limit = 10) : array
     {
         $query  = new Builder(self::$db);

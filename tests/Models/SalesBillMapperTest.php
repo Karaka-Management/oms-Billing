@@ -135,15 +135,6 @@ final class SalesBillMapperTest extends \PHPUnit\Framework\TestCase
      * @covers Modules\Billing\Models\SalesBillMapper
      * @group module
      */
-    public function testGetItemRegionSalesInvalid() : void
-    {
-        self::assertEquals([], SalesBillMapper::getItemRegionSales(99999, new \DateTime('now'), new \DateTime('now')));
-    }
-
-    /**
-     * @covers Modules\Billing\Models\SalesBillMapper
-     * @group module
-     */
     public function testGetItemCountrySalesInvalid() : void
     {
         self::assertEquals([], SalesBillMapper::getItemCountrySales(99999, new \DateTime('now'), new \DateTime('now')));

@@ -39,7 +39,7 @@ use phpOMS\Uri\HttpUri;
  */
 final class ApiPurchaseController extends Controller
 {
-        /**
+    /**
      * Api method to create bill files
      *
      * @param RequestAbstract  $request  Request
