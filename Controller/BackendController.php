@@ -68,6 +68,7 @@ final class BackendController extends Controller
             ->with('type/l11n')
             ->with('client')
             ->where('type/transferType', BillTransferType::SALES)
+            ->where('type/l11n/language', $response->getLanguage())
             ->sort('id', OrderType::DESC)
             ->limit(25);
 
@@ -76,21 +77,18 @@ final class BackendController extends Controller
                 $mapperQuery
                     ->where('id', $request->getDataInt('id') ?? 0, '<')
                     ->where('client', null, '!=')
-                    ->where('type/l11n/language', $response->getLanguage())
                     ->execute()
             );
         } elseif ($request->getData('ptype') === 'n') {
             $view->setData('bills',
                 $mapperQuery->where('id', $request->getDataInt('id') ?? 0, '>')
                     ->where('client', null, '!=')
-                    ->where('type/l11n/language', $response->getLanguage())
                     ->execute()
             );
         } else {
             $view->setData('bills',
                 $mapperQuery->where('id', 0, '>')
                     ->where('client', null, '!=')
-                    ->where('type/l11n/language', $response->getLanguage())
                     ->execute()
             );
         }
@@ -119,7 +117,8 @@ final class BackendController extends Controller
         /** @var \Modules\Billing\Models\Bill $bill */
         $bill = SalesBillMapper::get()
             ->with('elements')
-            ->with('media')
+            ->with('files')
+            ->with('files/types')
             ->with('notes')
             ->where('id', (int) $request->getData('id'))
             ->execute();
@@ -298,8 +297,8 @@ final class BackendController extends Controller
 
         $bill = PurchaseBillMapper::get()
             ->with('elements')
-            ->with('media')
-            ->with('media/types')
+            ->with('files')
+            ->with('files/types')
             ->with('notes')
             ->where('id', (int) $request->getData('id'))
             ->execute();
@@ -806,8 +805,8 @@ final class BackendController extends Controller
 
         $bill = PurchaseBillMapper::get()
             ->with('elements')
-            ->with('media')
-            ->with('media/types')
+            ->with('files')
+            ->with('files/types')
             ->with('notes')
             ->where('id', (int) $request->getData('id'))
             ->execute();

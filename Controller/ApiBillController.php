@@ -36,6 +36,7 @@ use Modules\Media\Models\PathSettings;
 use Modules\Media\Models\UploadStatus;
 use Modules\Messages\Models\EmailMapper;
 use Modules\SupplierManagement\Models\NullSupplier;
+use Modules\SupplierManagement\Models\Supplier;
 use Modules\SupplierManagement\Models\SupplierMapper;
 use phpOMS\Autoloader;
 use phpOMS\Localization\ISO3166TwoEnum;
@@ -85,9 +86,9 @@ final class ApiBillController extends Controller
         /** @var \Modules\Billing\Models\Bill $old */
         $old = BillMapper::get()->where('id', (int) $request->getData('bill'));
         $new = $this->updateBillFromRequest($request, $response, $data);
-        $this->updateModel($request->header->account, $old, $new, BillMapper::class, 'bill', $request->getOrigin());
 
-        $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Bill', 'Bill successfully created.', $new);
+        $this->updateModel($request->header->account, $old, $new, BillMapper::class, 'bill', $request->getOrigin());
+        $this->createStandardUpdateResponse($request, $response, $new);
     }
 
     /**
@@ -153,7 +154,7 @@ final class ApiBillController extends Controller
         $bill = $this->createBillFromRequest($request, $response, $data);
         $this->createBillDatabaseEntry($bill, $request);
 
-        $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Bill', 'Bill successfully created.', $bill);
+        $this->createStandardCreateResponse($request, $response, $bill);
     }
 
     /**
@@ -200,16 +201,16 @@ final class ApiBillController extends Controller
      *
      * @since 1.0.0
      */
-    public function createBaseBill(Client $client, RequestAbstract $request) : Bill
+    public function createBaseBill(Client | Supplier $account, RequestAbstract $request) : Bill
     {
-        // @todo: validate vat before creation
+        // @todo: validate vat before creation for clients
         $bill                  = new Bill();
         $bill->createdBy       = new NullAccount($request->header->account);
-        $bill->unit            = $client->unit ?? $this->app->unitId;
+        $bill->unit            = $account->unit ?? $this->app->unitId;
         $bill->billDate        = new \DateTime('now'); // @todo: Date of payment
-        $bill->performanceDate = new \DateTime('now'); // @todo: Date of payment
-        $bill->accountNumber   = $client->number;
-        $bill->setStatus(BillStatus::DRAFT);
+        $bill->performanceDate = $request->getDataDateTime('performancedate') ?? new \DateTime('now'); // @todo: Date of payment
+        $bill->accountNumber   = $account->number;
+        $bill->setStatus($request->getDataInt('status') ?? BillStatus::DRAFT);
 
         $bill->shipping     = 0;
         $bill->shippingText = '';
@@ -217,17 +218,18 @@ final class ApiBillController extends Controller
         $bill->payment     = 0;
         $bill->paymentText = '';
 
-        $bill->type = BillTypeMapper::get()
-            ->where('name', 'sales_invoice')
-            ->execute();
+        if ($account instanceof Client) {
+            $bill->client = $account;
+        } else {
+            $bill->supplier = $account;
+        }
 
         // @todo: use bill and shipping address instead of main address if available
-        $bill->client      = $client;
-        $bill->billTo      = $client->account->name1;
-        $bill->billAddress = $client->mainAddress->address;
-        $bill->billCity    = $client->mainAddress->city;
-        $bill->billZip     = $client->mainAddress->postal;
-        $bill->billCountry = $client->mainAddress->getCountry();
+        $bill->billTo      = $request->getDataString('billto') ?? $account->account->name1;
+        $bill->billAddress = $request->getDataString('billaddress') ?? $account->mainAddress->address;
+        $bill->billCity    = $request->getDataString('billtocity') ?? $account->mainAddress->city;
+        $bill->billZip     = $request->getDataString('billtopostal') ?? $account->mainAddress->postal;
+        $bill->billCountry = $request->getDataString('billtocountry') ?? $account->mainAddress->getCountry();
 
         $bill->setCurrency(ISO4217CharEnum::_EUR);
 
@@ -248,7 +250,7 @@ final class ApiBillController extends Controller
         }
 
         $validLanguages = [];
-        if (!empty($settings)) {
+        if (!empty($settings) && !empty($settings->content)) {
             $validLanguages = \json_decode($settings->content, true);
         } else {
             $validLanguages = [
@@ -258,19 +260,32 @@ final class ApiBillController extends Controller
 
         $billLanguage = $validLanguages[0] ?? ISO639x1Enum::_EN;
 
-        $clientBillLanguage = $client->getAttribute('bill_language')->value->valueStr;
-        if (!empty($clientBillLanguage) && \in_array($clientBillLanguage, $validLanguages)) {
-            $billLanguage = $clientBillLanguage;
+        $accountBillLanguage = $account->getAttribute('bill_language')->value->valueStr;
+        if (!empty($accountBillLanguage) && \in_array($accountBillLanguage, $validLanguages)) {
+            $billLanguage = $accountBillLanguage;
         } else {
-            $clientLanguages = ISO639x1Enum::languageFromCountry($client->mainAddress->getCountry());
-            $clientLanguage  = !empty($clientLanguages) ? $clientLanguages[0] : '';
+            $accountLanguages = ISO639x1Enum::languageFromCountry($account->mainAddress->getCountry());
+            $accountLanguage  = !empty($accountLanguages) ? $accountLanguages[0] : '';
 
-            if (\in_array($clientLanguage, $validLanguages)) {
-                $billLanguage = $clientLanguage;
+            if (\in_array($accountLanguage, $validLanguages)) {
+                $billLanguage = $accountLanguage;
             }
         }
 
         $bill->setLanguage($billLanguage);
+
+        $typeMapper = BillTypeMapper::get()
+            ->with('l11n')
+            ->where('l11n/langauge', $billLanguage)
+            ->limit(1);
+
+        if ($request->hasData('type')) {
+            $typeMapper->where('id', $request->getDataInt('type'));
+        } else {
+            $typeMapper->where('name', 'sales_invoice');
+        }
+
+        $bill->type = $typeMapper->execute();
 
         return $bill;
     }
@@ -335,31 +350,7 @@ final class ApiBillController extends Controller
                 ->execute();
         }
 
-        /** @var \Modules\Billing\Models\BillType $billType */
-        $billType = BillTypeMapper::get()
-            ->where('id', $request->getDataInt('type') ?? 1)
-            ->execute();
-
-        // @todo: use defaultInvoiceAddress or mainAddress. also consider to use billto1, billto2, billto3 (for multiple lines e.g. name2, fao etc.)
-        /** @var \Modules\SupplierManagement\Models\Supplier|\Modules\ClientManagement\Models\Client $account */
-        $bill              = new Bill();
-        $bill->unit        = $account->unit ?? $this->app->unitId;
-        $bill->createdBy   = new NullAccount($request->header->account);
-        $bill->type        = $billType;
-        $bill->billTo      = $request->getDataString('billto') ?? (
-            $account->account->name1 . (!empty($account->account->name2)
-                ? ', ' . $account->account->name2
-                : ''
-            ));
-        $bill->billAddress = (string) ($request->getDataString('billaddress') ?? $account->mainAddress->address);
-        $bill->billZip     = (string) ($request->getDataString('billtopostal') ?? $account->mainAddress->postal);
-        $bill->billCity    = (string) ($request->getDataString('billtocity') ?? $account->mainAddress->city);
-        $bill->billCountry =  $request->getDataString('billtocountry') ?? (
-                ($country = $account->mainAddress->getCountry()) ===  ISO3166TwoEnum::_XXX ? '' : $country);
-        $bill->client          = !$request->hasData('client') ? null : $account;
-        $bill->supplier        = !$request->hasData('supplier') ? null : $account;
-        $bill->performanceDate = $request->getDataDateTime('performancedate') ?? new \DateTime('now');
-        $bill->setStatus($request->getDataInt('status') ?? BillStatus::ACTIVE);
+        $bill = $this->createBaseBill($account, $request);
 
         return $bill;
     }
@@ -435,7 +426,7 @@ final class ApiBillController extends Controller
                     $bill->id,
                     $media->id,
                     BillMapper::class,
-                    'media',
+                    'files',
                     '',
                     $request->getOrigin()
                 );
@@ -483,7 +474,7 @@ final class ApiBillController extends Controller
                     $bill->id,
                     (int) $media,
                     BillMapper::class,
-                    'media',
+                    'files',
                     '',
                     $request->getOrigin()
                 );
@@ -570,9 +561,9 @@ final class ApiBillController extends Controller
 
         $new = clone $old;
         $new->addElement($element);
-        $this->updateModel($request->header->account, $old, $new, BillMapper::class, 'bill_element', $request->getOrigin());
 
-        $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Bill element', 'Bill element successfully created.', $element);
+        $this->updateModel($request->header->account, $old, $new, BillMapper::class, 'bill_element', $request->getOrigin());
+        $this->createStandardCreateResponse($request, $response, $element);
     }
 
     /**
@@ -629,6 +620,12 @@ final class ApiBillController extends Controller
         }
 
         return [];
+    }
+
+    public function apiMediaRender(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    {
+        // @todo: check if has permission
+        $this->app->moduleManager->get('Media', 'Api')->apiMediaExport($request, $response, ['ignorePermission' => true]);
     }
 
     /**
@@ -791,22 +788,27 @@ final class ApiBillController extends Controller
 
         /** @var \Modules\Billing\Models\Bill $bill */
         $bill = BillMapper::get()
+            ->where('id', $request->getDataInt('bill') ?? 0)
+            ->execute();
+
+        // @todo: This is stupid to do twice but I need to get the langauge.
+        // For the future it should just be a join on the bill langauge!!!
+        // The problem is the where here is a model where and not a query
+        // builder where meaning it is always considered a value and not a column.
+
+        /** @var \Modules\Billing\Models\Bill $bill */
+        $bill = BillMapper::get()
             ->with('type')
             ->with('type/l11n')
+            ->with('type/defaultTemplate')
             ->with('elements')
             ->where('id', $request->getDataInt('bill') ?? 0)
+            ->where('type/l11n/language', $bill->getLanguage())
             ->execute();
 
         $templateId = $request->getDataInt('bill_template');
         if ($templateId === null) {
-            $billTypeId = $bill->type->id;
-
-            /** @var \Modules\Billing\Models\BillType $billType */
-            $billType = BillTypeMapper::get()
-                ->where('id', $billTypeId)
-                ->execute();
-
-            $templateId = $billType->defaultTemplate?->id;
+            $templateId = $bill->type->defaultTemplate?->id;
         }
 
         /** @var \Modules\Media\Models\Collection $template */
@@ -920,24 +922,34 @@ final class ApiBillController extends Controller
             $this->sendBillEmail($media, $email, $response->getLanguage());
         }
 
+        // Add type to media
+        $originalType = $this->app->appSettings->get(
+            names: SettingsEnum::ORIGINAL_MEDIA_TYPE,
+            module: self::NAME
+        );
+
+        $this->createModelRelation(
+            $request->header->account,
+            $media->id,
+            (int) $originalType->content,
+            MediaMapper::class,
+            'types',
+            '',
+            $request->getOrigin()
+        );
+
+        // Add media to bill
         $this->createModelRelation(
             $request->header->account,
             $bill->id,
             $media->id,
             BillMapper::class,
-            'media',
+            'files',
             '',
             $request->getOrigin()
         );
 
-        $this->fillJsonResponse(
-            $request,
-            $response,
-            NotificationLevel::OK,
-            'PDF',
-            'Bill Pdf successfully created.',
-            $media
-        );
+        $this->createStandardCreateResponse($request, $response, $media);
     }
 
     public function sendBillEmail(Media $media, string $email, string $language = 'en') : void

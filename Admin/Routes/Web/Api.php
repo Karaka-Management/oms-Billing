@@ -20,7 +20,7 @@ use phpOMS\Router\RouteVerb;
 return [
     '^.*/bill/render.*$' => [
         [
-            'dest'       => '\Modules\Billing\Controller\ApiController:apiPreviewRender',
+            'dest'       => '\Modules\Billing\Controller\ApiBillController:apiMediaRender',
             'verb'       => RouteVerb::GET,
             'permission' => [
                 'module' => BackendController::NAME,

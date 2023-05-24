@@ -36,6 +36,8 @@ $elements = $bill->getElements();
 
 $billTypes = $this->getData('billtypes') ?? [];
 
+$archive = $bill->getFileByTypeName('original');
+
 /** @var \Modules\Auditor\Models\Audit */
 $logs = $this->getData('logs') ?? [];
 
@@ -49,10 +51,11 @@ echo $this->getData('nav')->render(); ?>
         <ul class="tab-links">
             <li><label for="c-tab-1"><?= $this->getHtml('Invoice'); ?></label></li>
             <li><label for="c-tab-2"><?= $this->getHtml('Items'); ?></label></li>
-            <li><label for="c-tab-3">Preview</label></li>
-            <li><label for="c-tab-4"><?= $this->getHtml('Payment'); ?></label></li>
-            <li><label for="c-tab-5"><?= $this->getHtml('Media'); ?></label></li>
-            <li><label for="c-tab-6"><?= $this->getHtml('Logs'); ?></label></li>
+            <li><label for="c-tab-3"><?= $this->getHtml('Preview'); ?></label></li>
+            <li><label for="c-tab-4"><?= $this->getHtml('Archive'); ?></label></li>
+            <li><label for="c-tab-5"><?= $this->getHtml('Payment'); ?></label></li>
+            <li><label for="c-tab-6"><?= $this->getHtml('Media'); ?></label></li>
+            <li><label for="c-tab-7"><?= $this->getHtml('Logs'); ?></label></li>
         </ul>
     </div>
     <div class="tab-content col-simple">
@@ -355,13 +358,25 @@ echo $this->getData('nav')->render(); ?>
                 <div class="col-xs-12 col-simple">
                     <section id="mediaFile" class="portlet col-simple">
                         <div class="portlet-body col-simple">
-                            <iframe class="col-simple" id="iHelperFrame" src="Resources/mozilla/Pdf/web/viewer.html?file=<?= \urlencode('http://127.0.0.1/en/api/bill/render?bill_type='); ?>{#iBillPreviewType}" loading="lazy" allowfullscreen></iframe>
+                            <iframe class="col-simple" id="iHelperFrame" src="" loading="lazy" allowfullscreen></iframe>
                         </div>
                     </section>
                 </div>
             </div>
         </div>
         <input type="radio" id="c-tab-4" name="tabular-2">
+        <div class="tab col-simple">
+            <div class="col-simple">
+                <div class="col-xs-12 col-simple">
+                    <section id="mediaFile" class="portlet col-simple">
+                        <div class="portlet-body col-simple">
+                            <iframe class="col-simple" id="iHelperFrame" src="Resources/mozilla/Pdf/web/viewer.html?file=<?= \urlencode(UriFactory::build('{/api}bill/render?id=' . $archive->id)); ?>" loading="lazy" allowfullscreen></iframe>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+        <input type="radio" id="c-tab-5" name="tabular-2">
         <div class="tab">
             <div class="row">
                 <div class="col-xs-12 col-md-6 col-lg-4">
@@ -459,7 +474,7 @@ echo $this->getData('nav')->render(); ?>
                 </div>
             </div>
         </div>
-        <input type="radio" id="c-tab-5" name="tabular-2">
+        <input type="radio" id="c-tab-6" name="tabular-2">
         <div class="tab">
             <div class="row">
                 <div class="col-xs-12 col-md-6 col-lg-4">
@@ -489,7 +504,7 @@ echo $this->getData('nav')->render(); ?>
                 </div>
             </div>
         </div>
-        <input type="radio" id="c-tab-6" name="tabular-2">
+        <input type="radio" id="c-tab-7" name="tabular-2">
         <div class="tab">
             <?php
             $footerView = new \phpOMS\Views\PaginationView($this->l11nManager, $this->request, $this->response);

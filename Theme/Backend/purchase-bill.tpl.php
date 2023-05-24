@@ -34,7 +34,7 @@ $media        = $bill->getMedia();
 
 echo $this->getData('nav')->render(); ?>
 
-<div class="tabview tab-2">
+<div class="tabview tab-2 col-simple">
     <div class="box">
         <ul class="tab-links">
             <li><label for="c-tab-1"><?= $this->getHtml('Invoice'); ?></label></li>
@@ -46,7 +46,7 @@ echo $this->getData('nav')->render(); ?>
             <li><label for="c-tab-7"><?= $this->getHtml('Logs'); ?></label></li>
         </ul>
     </div>
-    <div class="tab-content">
+    <div class="tab-content col-simple">
         <input type="radio" id="c-tab-1" name="tabular-2" checked>
         <div class="tab">
             <div class="row">
@@ -200,13 +200,13 @@ echo $this->getData('nav')->render(); ?>
             </div>
         </div>
         <input type="radio" id="c-tab-3" name="tabular-2">
-        <div class="tab">
-            <div class="row">
-                <div class="col-xs-12">
-                    <section id="mediaFile" class="portlet">
-                        <div class="portlet-body">
+        <div class="tab col-simple">
+            <div class="row col-simple">
+                <div class="col-xs-12 col-simple">
+                    <section id="mediaFile" class="portlet col-simple">
+                        <div class="portlet-body col-simple">
                             <?php if ($billPdf->id > 0) : ?>
-                            <iframe style="min-height: 600px;" data-form="iUiSettings" data-name="iframeHelper" id="iHelperFrame" src="<?= UriFactory::build('{/backend}Resources/mozilla/Pdf/web/viewer.html{?}&file=' . \urlencode(($billPdf->isAbsolute ? '' : '/../../../../') . $billPdf->getPath())); ?>" allowfullscreen></iframe>
+                            <iframe class="col-simple" data-form="iUiSettings" data-name="iframeHelper" id="iHelperFrame" src="<?= UriFactory::build('Resources/mozilla/Pdf/web/viewer.html{?}&file=' . \urlencode(($billPdf->isAbsolute ? '' : '/../../../../') . $billPdf->getPath())); ?>" allowfullscreen></iframe>
                             <?php endif; ?>
                         </div>
                     </section>
@@ -214,13 +214,13 @@ echo $this->getData('nav')->render(); ?>
             </div>
         </div>
         <input type="radio" id="c-tab-4" name="tabular-2">
-        <div class="tab">
-            <div class="row">
-                <div class="col-xs-12">
-                    <section id="mediaFile" class="portlet">
-                        <div class="portlet-body">
+        <div class="tab col-simple">
+            <div class="row col-simple">
+                <div class="col-xs-12 col-simple">
+                    <section id="mediaFile" class="portlet col-simple">
+                        <div class="portlet-body col-simple">
                             <?php if ($original->id > 0) : ?>
-                            <iframe style="min-height: 600px;" data-form="iUiSettings" data-name="iframeHelper" id="iHelperFrame" src="<?= UriFactory::build('{/backend}Resources/mozilla/Pdf/web/viewer.html{?}&file=' . \urlencode(($original->isAbsolute ? '' : '/../../../../') . $original->getPath())); ?>" allowfullscreen></iframe>
+                            <iframe class="col-simple" data-form="iUiSettings" data-name="iframeHelper" id="iHelperFrame" src="<?= UriFactory::build('Resources/mozilla/Pdf/web/viewer.html{?}&file=' . \urlencode(($original->isAbsolute ? '' : '/../../../../') . $original->getPath())); ?>" allowfullscreen></iframe>
                             <?php endif; ?>
                         </div>
                     </section>

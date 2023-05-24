@@ -170,7 +170,7 @@ echo $this->getData('nav')->render(); ?>
                         <td><a href="<?= $url; ?>"><?= $value->billZip; ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->billCity; ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->billCountry; ?></a>
-                        <td><a href="<?= $url; ?>"><?= $value->netSales->getCurrency(); ?></a>
+                        <td><a href="<?= $url; ?>"><?= $this->getCurrency($value->netSales); ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->createdAt->format('Y-m-d'); ?></a>
                 <?php endforeach; ?>
                 <?php if ($count === 0) : ?>

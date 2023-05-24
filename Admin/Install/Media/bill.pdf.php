@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 use Modules\Billing\Models\NullBill;
 use phpOMS\Localization\ISO3166NameEnum;
+use phpOMS\Localization\ISO3166TwoEnum;
 use phpOMS\Localization\Money;
 
 /** @var \phpOMS\Views\View $this */
@@ -70,11 +71,14 @@ $billTypeName = \strtoupper($bill->type->getL11n());
 // @todo: depending on amount of lines, there is a solution (html, or use backtracking of tcpdf)
 
 // Address
-$pdf->setY(55);
-$pdf->setFont('helvetica', '', 8);
+$pdf->setY(50);
+$pdf->setFont('helvetica', '', 10);
 
-$countries = ISO3166NameEnum::getConstants();
-$toCountry = isset($countries[$bill->billCountry]) ? $countries[$bill->billCountry] : '';
+$countries 		 = ISO3166NameEnum::getConstants();
+$countryEnumName = ISO3166TwoEnum::getName($bill->billCountry);
+$toCountry 		 = \is_string($countryEnumName) && ($country = ISO3166NameEnum::getByName($countryEnumName)) !== null
+	? $country
+	: '';
 
 $addressString = \trim(
 	$bill->billTo . "\n"
@@ -96,11 +100,11 @@ $pdf->Write(
 $lineHeight = ($lineHeight - $pdf->getY()) / $addressLineCount;
 
 // Bill head
-$pdf->setFont('helvetica', 'B', 20);
-$titleWidth = $pdf->getStringWidth($billTypeName, 'helvetica', 'B', 20);
+$pdf->setFont('helvetica', 'B', 16);
+$titleWidth = $pdf->getStringWidth($billTypeName, 'helvetica', 'B', 16);
 
 $pdf->setXY(
-	$rightPos = ($pdf->getPageWidth() - $titleWidth - ($titleWidth < 55 ? 55 : 35) + 15),
+	$rightPos = ($pdf->getPageWidth() - $titleWidth - \max(60 - $titleWidth, 0) - 15 - 2),
 	$topPos + 50 + $lineHeight * $addressLineCount - 38,
 	true
 );
@@ -109,12 +113,12 @@ $pdf->setTextColor(255, 255, 255);
 $pdf->setFillColor(255, 162, 7);
 $pdf->Cell($pdf->getPageWidth() - $rightPos - 15, 0, $billTypeName, 0, 0, 'L', true);
 
-$pdf->setFont('helvetica', '', 8);
+$pdf->setFont('helvetica', '', 10);
 $pdf->setTextColor(255, 162, 7);
 
 $pdf->setXY($rightPos, $tempY = $pdf->getY() + 10, true);
 $pdf->MultiCell(
-	23, 30,
+	26, 30,
 	$lang[$pdf->language]['InvoiceNo'] . "\n"
 	. $lang[$pdf->language]['InvoiceDate'] . "\n"
 	. $lang[$pdf->language]['ServiceDate'] . "\n"
@@ -124,10 +128,10 @@ $pdf->MultiCell(
 	0, 'L'
 );
 
-$pdf->setFont('helvetica', '', 8);
+$pdf->setFont('helvetica', '', 10);
 $pdf->setTextColor(0, 0, 0);
 
-$pdf->setXY($rightPos + 23 + 2, $tempY, true);
+$pdf->setXY($rightPos + 26 + 2, $tempY, true);
 $pdf->MultiCell(
 	25, 30,
 	$bill->number . "\n"
@@ -151,7 +155,7 @@ $pdf->writeHTMLCell(
 $pdf->Ln();
 */
 
-$pdf->setY($pdf->getY() + 5);
+$pdf->setY($pdf->getY() + 10);
 
 $header = [
 	$lang[$pdf->language]['Item'],
@@ -180,7 +184,7 @@ foreach($lines as $line) {
 		$pdf->setTextColor(255);
 		$pdf->setDrawColor(255, 162, 7);
 		//$pdf->SetLineWidth(0.3);
-		$pdf->setFont('helvetica', 'B', 8);
+		$pdf->setFont('helvetica', 'B', 10);
 
 		if (!$first/* || $row === null*/) {
 			$pdf->AddPage();
@@ -194,7 +198,7 @@ foreach($lines as $line) {
 		$pdf->Ln();
 		$pdf->setFillColor(245, 245, 245);
 		$pdf->setTextColor(0);
-		$pdf->setFont('helvetica', '', 8);
+		$pdf->setFont('helvetica', '', 10);
 
 		$first = false;
 	}
@@ -230,7 +234,7 @@ if ($pdf->getY() > $pdf->getPageHeight() - 40) {
 $pdf->setFillColor(240, 240, 240);
 $pdf->setTextColor(0);
 $pdf->setDrawColor(240, 240, 240);
-$pdf->setFont('helvetica', 'B', 8);
+$pdf->setFont('helvetica', 'B', 10);
 
 $tempY = $pdf->getY();
 
@@ -255,7 +259,7 @@ foreach ($taxes as $rate => $tax) {
 $pdf->setFillColor(255, 162, 7);
 $pdf->setTextColor(255);
 $pdf->setDrawColor(255, 162, 7);
-$pdf->setFont('helvetica', 'B', 8);
+$pdf->setFont('helvetica', 'B', 10);
 
 $grossSales = Money::fromFloatInt($bill->grossSales);
 
@@ -279,6 +283,11 @@ $pdf->Ln();
 // @todo: fix terms
 $pdf->setFont('helvetica', 'B', 8);
 $pdf->Write(0, $lang[$pdf->language]['Terms'] . ': https://jingga.app/terms', '', 0, 'L', false, 0, false, false, 0);
+$pdf->Ln();
+
+$pdf->setFont('helvetica', 'B', 8);
+$pdf->Write(0, $lang[$pdf->language]['Currency'] . ': ' . $bill->currency, '', 0, 'L', false, 0, false, false, 0);
+$pdf->Ln();
 
 $pdf->setFont('helvetica', '', 8);
 $pdf->Write(0, $bill->termsText, '', 0, 'L', false, 0, false, false, 0);

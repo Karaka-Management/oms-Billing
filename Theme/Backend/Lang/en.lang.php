@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 return ['Billing' => [
     'Amount'         => 'Amount',
+    'Archive'         => 'Archive',
     'Address'         => 'Address',
     'Addresses'       => 'Addresses',
     'Africa'          => 'Africa',

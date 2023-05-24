@@ -28,7 +28,7 @@ abstract class SettingsEnum extends Enum
 {
     public const PREVIEW_MEDIA_TYPE = '1005100001'; // internally generated preview
 
-    public const ORIGINAL_MEDIA_TYPE = '1005100002'; // original document (mostly supplier invoice/delivery note)
+    public const ORIGINAL_MEDIA_TYPE = '1005100002'; // original document (client = invoice sent to client, supplier = invoice from supplier)
 
     public const VALID_BILL_LANGUAGES = '1005100003'; // List of valid languages for bills
 

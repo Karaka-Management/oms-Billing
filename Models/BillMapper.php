@@ -109,7 +109,7 @@ class BillMapper extends DataMapperFactory
             'self'         => 'billing_bill_element_bill',
             'external'     => null,
         ],
-        'media'        => [
+        'files'        => [
             'mapper'   => MediaMapper::class,
             'table'    => 'billing_bill_media',
             'external' => 'billing_bill_media_dst',

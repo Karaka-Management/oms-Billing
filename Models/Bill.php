@@ -339,7 +339,7 @@ class Bill implements \JsonSerializable
      * @var string
      * @since 1.0.0
      */
-    private string $currency = ISO4217CharEnum::_EUR;
+    public string $currency = ISO4217CharEnum::_EUR;
 
     /**
      * Info text.
@@ -444,14 +444,6 @@ class Bill implements \JsonSerializable
      * @since 1.0.0
      */
     public int $reference = 0;
-
-    /**
-     * Media files
-     *
-     * @var array
-     * @since 1.0.0
-     */
-    protected array $media = [];
 
     /**
      * Attributes.
@@ -762,77 +754,6 @@ class Bill implements \JsonSerializable
     }
 
     /**
-     * Get all media
-     *
-     * @return Media[]
-     *
-     * @since 1.0.0
-     */
-    public function getMedia() : array
-    {
-        return $this->media;
-    }
-
-    /**
-     * Add media
-     *
-     * @param Media $media Media to add
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function addMedia(Media $media) : void
-    {
-        $this->media[] = $media;
-    }
-
-    /**
-     * Get media file by type
-     *
-     * @param null|int $type Media type
-     *
-     * @return array
-     *
-     * @since 1.0.0
-     */
-    public function getMediaByType(int $type = null) : array
-    {
-        if ($type === null) {
-            return $this->media;
-        }
-
-        $files = [];
-        foreach ($this->media as $file) {
-            if ($file->type !== null && $file->type->id === $type) {
-                $files[] = $file;
-            }
-        }
-
-        return $files;
-    }
-
-    /**
-     * Get media file by type
-     *
-     * @param int $type Media type
-     *
-     * @return Media
-     *
-     * @since 1.0.0
-     */
-    public function getFileByType(int $type) : Media
-    {
-        foreach ($this->media as $file) {
-            if ($file->hasMediaTypeId($type)) {
-                return $file;
-            }
-        }
-
-        return new NullMedia();
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function toArray() : array
@@ -865,4 +786,5 @@ class Bill implements \JsonSerializable
     }
 
     use \Modules\Attribute\Models\AttributeHolderTrait;
+    use \Modules\Media\Models\MediaListTrait;
 }
