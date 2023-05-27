@@ -167,10 +167,9 @@ final class ApiPriceController extends Controller
                 && $price->clientsection->id === 0
                 && $price->clienttype->id === 0
                 && $price->promocode === ''
+                && $price->price < ($bestBasePrice?->price ?? \PHP_INT_MAX)
             ) {
-                if ($price->price < ($bestBasePrice?->price ?? \PHP_INT_MAX)) {
-                    $bestBasePrice = $price;
-                }
+                $bestBasePrice = $price;
             }
         }
 

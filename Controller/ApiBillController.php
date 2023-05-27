@@ -39,7 +39,6 @@ use Modules\SupplierManagement\Models\NullSupplier;
 use Modules\SupplierManagement\Models\Supplier;
 use Modules\SupplierManagement\Models\SupplierMapper;
 use phpOMS\Autoloader;
-use phpOMS\Localization\ISO3166TwoEnum;
 use phpOMS\Localization\ISO4217CharEnum;
 use phpOMS\Localization\ISO639x1Enum;
 use phpOMS\Message\Http\RequestStatusCode;
@@ -265,7 +264,7 @@ final class ApiBillController extends Controller
             $billLanguage = $accountBillLanguage;
         } else {
             $accountLanguages = ISO639x1Enum::languageFromCountry($account->mainAddress->getCountry());
-            $accountLanguage  = !empty($accountLanguages) ? $accountLanguages[0] : '';
+            $accountLanguage  = empty($accountLanguages) ? '' : $accountLanguages[0];
 
             if (\in_array($accountLanguage, $validLanguages)) {
                 $billLanguage = $accountLanguage;
@@ -350,9 +349,7 @@ final class ApiBillController extends Controller
                 ->execute();
         }
 
-        $bill = $this->createBaseBill($account, $request);
-
-        return $bill;
+        return $this->createBaseBill($account, $request);
     }
 
     /**
@@ -867,8 +864,8 @@ final class ApiBillController extends Controller
         $path   = $this->createBillDir($bill);
         $pdfDir = __DIR__ . '/../../../Modules/Media/Files' . $path;
 
-        $status = !\is_dir($pdfDir) ? \mkdir($pdfDir, 0755, true) : true;
-        if ($status === false) {
+        $status = \is_dir($pdfDir) ? true : \mkdir($pdfDir, 0755, true);
+        if (!$status) {
             // @codeCoverageIgnoreStart
             $response->set($request->uri->__toString(), new FormValidation(['status' => $status]));
             $response->header->status = RequestStatusCode::R_400;

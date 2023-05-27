@@ -113,18 +113,22 @@ final class ApiPurchaseController extends Controller
             $this->app->moduleManager->get('Billing', 'Api')->apiBillPdfArchiveCreate($billRequest, $billResponse);
 
             // Offload bill parsing to cli
-            $cliPath = \realpath(__DIR__ . '/../../../Cli/cli.php');
+            $cliPath = \realpath(__DIR__ . '/../../../cli.php');
             if ($cliPath === false) {
                 return;
             }
 
-            SystemUtils::runProc(
-                OperatingSystem::getSystem() === SystemType::WIN ? 'php.exe' : 'php',
-                \escapeshellarg($cliPath)
-                    . ' /billing/bill/purchase/parse '
-                    . '-i ' . \escapeshellarg((string) $billId),
-                true
-            );
+            try {
+                SystemUtils::runProc(
+                    OperatingSystem::getSystem() === SystemType::WIN ? 'php.exe' : 'php',
+                    \escapeshellarg($cliPath)
+                        . ' /billing/bill/purchase/parse '
+                        . '-i ' . \escapeshellarg((string) $billId),
+                    true
+                );
+            } catch (\Throwable $t) {
+                $this->app->logger->error($t->getMessage());
+            }
         }
     }
 }

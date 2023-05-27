@@ -347,8 +347,6 @@ final class CliController extends Controller
      */
     private function matchSupplier(string $content, array $suppliers) : int
     {
-        $bestMatch = 0;
-
         // bill_match_pattern
         foreach ($suppliers as $supplier) {
             // @todo: consider to support regex?
@@ -373,14 +371,14 @@ final class CliController extends Controller
 
         // name1 + city || address
         foreach ($suppliers as $supplier) {
-            if (\stripos($content, $supplier->account->name1) !== false) {
-                if ((!empty($supplier->mainAddress->city)
+            if (\stripos($content, $supplier->account->name1) !== false
+                && ((!empty($supplier->mainAddress->city)
                         && \stripos($content, $supplier->mainAddress->city) !== false)
                     || (!empty( $supplier->mainAddress->address)
                         && \stripos($content, $supplier->mainAddress->address) !== false)
-                ) {
-                    return $supplier->id;
-                }
+                )
+             ) {
+                return $supplier->id;
             }
         }
 
@@ -391,7 +389,7 @@ final class CliController extends Controller
             }
         }
 
-        return $bestMatch;
+        return 0;
     }
 
     /**
