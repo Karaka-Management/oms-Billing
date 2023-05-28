@@ -100,15 +100,15 @@ class Bill implements \JsonSerializable
     /**
      * Bill created at.
      *
-     * @var \DateTime
+     * @var null|\DateTime
      * @since 1.0.0
      */
-    public \DateTime $billDate;
+    public ?\DateTime $billDate = null;
 
     /**
      * Bill created at.
      *
-     * @var \DateTime
+     * @var null|\DateTime
      * @since 1.0.0
      */
     public ?\DateTime $performanceDate = null;

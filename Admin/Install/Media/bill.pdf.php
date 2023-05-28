@@ -50,6 +50,7 @@ $pdf->attributes['city'] = $this->getData('bill_company_city') ??  '61206 Woells
 $pdf->attributes['ceo'] = $this->getData('bill_company_ceo') ?? 'Dennis Eichhorn';
 $pdf->attributes['tax_office'] = $this->getData('bill_company_tax_office') ?? 'HRB ???';
 $pdf->attributes['tax_number'] = $this->getData('bill_company_tax_id') ?? '123456789';
+$pdf->attributes['terms'] = $this->getData('bill_company_terms') ?? 'https://jingga.app/terms';
 
 $pdf->attributes['bank_name'] = $this->getData('bill_company_bank_name') ?? 'Volksbank Mittelhessen';
 $pdf->attributes['swift'] = $this->getData('bill_company_swift') ?? '.....';
@@ -282,7 +283,7 @@ $pdf->Ln();
 
 // @todo: fix terms
 $pdf->setFont('helvetica', 'B', 8);
-$pdf->Write(0, $lang[$pdf->language]['Terms'] . ': https://jingga.app/terms', '', 0, 'L', false, 0, false, false, 0);
+$pdf->Write(0, $lang[$pdf->language]['Terms'] . ': ' . $pdf->attributes['terms'], '', 0, 'L', false, 0, false, false, 0);
 $pdf->Ln();
 
 $pdf->setFont('helvetica', 'B', 8);

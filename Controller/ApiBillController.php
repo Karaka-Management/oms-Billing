@@ -731,24 +731,6 @@ final class ApiBillController extends Controller
         $view->setData('bill_title', $request->getDataString('bill_title'));
         $view->setData('bill_subtitle', $request->getDataString('bill_subtitle'));
         $view->setData('keywords', $request->getDataString('keywords'));
-        $view->setData('bill_logo_name', $request->getDataString('bill_logo_name'));
-        $view->setData('bill_slogan', $request->getDataString('bill_slogan'));
-
-        $view->setData('legal_company_name', $request->getDataString('legal_company_name'));
-        $view->setData('bill_company_address', $request->getDataString('bill_company_address'));
-        $view->setData('bill_company_city', $request->getDataString('bill_company_city'));
-        $view->setData('bill_company_ceo', $request->getDataString('bill_company_ceo'));
-        $view->setData('bill_company_website', $request->getDataString('bill_company_website'));
-        $view->setData('bill_company_email', $request->getDataString('bill_company_email'));
-        $view->setData('bill_company_phone', $request->getDataString('bill_company_phone'));
-
-        $view->setData('bill_company_tax_office', $request->getDataString('bill_company_tax_office'));
-        $view->setData('bill_company_tax_id', $request->getDataString('bill_company_tax_id'));
-        $view->setData('bill_company_vat_id', $request->getDataString('bill_company_vat_id'));
-
-        $view->setData('bill_company_bank_name', $request->getDataString('bill_company_bank_name'));
-        $view->setData('bill_company_bic', $request->getDataString('bill_company_bic'));
-        $view->setData('bill_company_iban', $request->getDataString('bill_company_iban'));
 
         $view->setData('bill_type_name', $request->getDataString('bill_type_name'));
 
@@ -760,6 +742,26 @@ final class ApiBillController extends Controller
         $view->setData('bill_terms', $request->getDataString('bill_terms'));
         $view->setData('bill_taxes', $request->getDataString('bill_taxes'));
         $view->setData('bill_currency', $request->getDataString('bill_currency'));
+
+        // Unit specifc settings
+        $view->setData('bill_logo_name', $request->getDataString('bill_logo_name'));
+        $view->setData('bill_slogan', $request->getDataString('bill_slogan'));
+        $view->setData('legal_company_name', $request->getDataString('legal_company_name'));
+        $view->setData('bill_company_address', $request->getDataString('bill_company_address'));
+        $view->setData('bill_company_city', $request->getDataString('bill_company_city'));
+        $view->setData('bill_company_ceo', $request->getDataString('bill_company_ceo'));
+        $view->setData('bill_company_website', $request->getDataString('bill_company_website'));
+        $view->setData('bill_company_email', $request->getDataString('bill_company_email'));
+        $view->setData('bill_company_phone', $request->getDataString('bill_company_phone'));
+        $view->setData('bill_company_terms', $request->getDataString('bill_company_terms'));
+
+        $view->setData('bill_company_tax_office', $request->getDataString('bill_company_tax_office'));
+        $view->setData('bill_company_tax_id', $request->getDataString('bill_company_tax_id'));
+        $view->setData('bill_company_vat_id', $request->getDataString('bill_company_vat_id'));
+
+        $view->setData('bill_company_bank_name', $request->getDataString('bill_company_bank_name'));
+        $view->setData('bill_company_swift', $request->getDataString('bill_company_swift'));
+        $view->setData('bill_company_bank_account', $request->getDataString('bill_company_bank_account'));
 
         $pdf = $view->render();
 

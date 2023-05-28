@@ -257,7 +257,7 @@ echo $this->getData('nav')->render(); ?>
             <div class="row">
                 <div class="col-xs-12">
                     <section class="portlet">
-                        <div class="portlet-head"><?= $this->getHtml('Invoice'); ?><i class="fa fa-download floatRight download btn"></i></div>
+                        <div class="portlet-head"><?= $this->getHtml('Invoice'); ?><i class="lni lni-download download btn end-xs"></i></div>
                         <table
                             id="invoiceElements"
                             class="default sticky"
@@ -370,7 +370,7 @@ echo $this->getData('nav')->render(); ?>
                 <div class="col-xs-12 col-simple">
                     <section id="mediaFile" class="portlet col-simple">
                         <div class="portlet-body col-simple">
-                            <iframe class="col-simple" id="iHelperFrame" src="Resources/mozilla/Pdf/web/viewer.html?file=<?= \urlencode(UriFactory::build('{/api}bill/render?id=' . $archive->id)); ?>" loading="lazy" allowfullscreen></iframe>
+                            <iframe class="col-simple" id="iBillArchive" src="Resources/mozilla/Pdf/web/viewer.html?file=<?= \urlencode(UriFactory::build('{/api}bill/render?id=' . $archive->id)); ?>" loading="lazy" allowfullscreen></iframe>
                         </div>
                     </section>
                 </div>
@@ -515,7 +515,7 @@ echo $this->getData('nav')->render(); ?>
             <div class="row">
                 <div class="col-xs-12">
                     <div class="portlet">
-                        <div class="portlet-head"><?= $this->getHtml('Logs'); ?><i class="fa fa-download floatRight download btn"></i></div>
+                        <div class="portlet-head"><?= $this->getHtml('Logs'); ?><i class="lni lni-download download btn end-xs"></i></div>
                         <table class="default">
                             <thead>
                             <tr>

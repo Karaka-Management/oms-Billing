@@ -147,7 +147,7 @@ echo $this->getData('nav')->render(); ?>
             <div class="row">
                 <div class="col-xs-12">
                     <div class="portlet">
-                        <div class="portlet-head"><?= $this->getHtml('Invoice'); ?><i class="fa fa-download floatRight download btn"></i></div>
+                        <div class="portlet-head"><?= $this->getHtml('Invoice'); ?><i class="lni lni-download download btn end-xs"></i></div>
                         <div class="slider">
                         <table class="default" id="invoice-item-list">
                             <thead>
@@ -289,7 +289,7 @@ echo $this->getData('nav')->render(); ?>
 
                 <div class="col-xs-12 col-md-6 col-lg-8">
                     <div class="portlet">
-                        <div class="portlet-head"><?= $this->getHtml('Media'); ?><i class="fa fa-download floatRight download btn"></i></div>
+                        <div class="portlet-head"><?= $this->getHtml('Media'); ?><i class="lni lni-download download btn end-xs"></i></div>
                         <table class="default" id="invoice-item-list">
                             <thead>
                             <tr>
