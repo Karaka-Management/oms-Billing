@@ -233,7 +233,7 @@ final class SalesBillMapper extends BillMapper
         $query->selectAs(ClientMapper::TABLE . '.clientmgmt_client_id', 'client')
             ->selectAs('SUM(' . BillElementMapper::TABLE . '.billing_bill_element_total_netsalesprice)', 'net_sales')
             ->from(ClientMapper::TABLE)
-            ->leftJoin( self::TABLE)
+            ->leftJoin(self::TABLE)
                 ->on(ClientMapper::TABLE . '.clientmgmt_client_id', '=', self::TABLE . '.billing_bill_client')
             ->leftJoin(BillElementMapper::TABLE)
                 ->on(self::TABLE . '.billing_bill_id', '=', BillElementMapper::TABLE . '.billing_bill_element_bill')

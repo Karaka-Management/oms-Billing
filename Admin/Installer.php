@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Admin;
 
-use Modules\Attribute\Models\AttributeTypeMapper;
 use Modules\Billing\Models\BillTransferType;
 use Modules\ClientManagement\Models\ClientAttributeTypeMapper;
 use Modules\ItemManagement\Models\ItemAttributeTypeMapper;

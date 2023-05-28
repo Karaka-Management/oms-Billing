@@ -134,7 +134,7 @@ final class ApiPriceController extends Controller
         $queryMapper->where('supplier', \array_unique([$request->getData('price_supplier', 'int'), null]), 'IN');
         $queryMapper->where('unit', \array_unique([$request->getData('price_unit', 'int'), null]), 'IN');
         $queryMapper->where('type', $request->getData('price_type', 'int') ?? PriceType::SALES);
-        $queryMapper->where('currency', array_unique([$request->getData('price_currency', 'int'), null]), 'IN');
+        $queryMapper->where('currency', \array_unique([$request->getData('price_currency', 'int'), null]), 'IN');
 
         // @todo: implement start and end
 

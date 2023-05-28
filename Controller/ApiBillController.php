@@ -190,7 +190,7 @@ final class ApiBillController extends Controller
      * @param Client          $client  The client object for whom the bill is being created
      * @param RequestAbstract $request The request object that contains the header account
      *
-     * @return Bill                     The new Bill object with default values
+     * @return Bill The new Bill object with default values
      *
      * @todo Validate VAT before creation (maybe need to add a status when last validated, we don't want to validate every time)
      * @todo Set the correct date of payment

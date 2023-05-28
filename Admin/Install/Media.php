@@ -46,20 +46,20 @@ class Media
             [
                 'data' => [
                     [
-                        'type' => 'setting',
-                        'name' => SettingsEnum::PREVIEW_MEDIA_TYPE,
+                        'type'    => 'setting',
+                        'name'    => SettingsEnum::PREVIEW_MEDIA_TYPE,
                         'content' => (string) $media['type'][0]['id'],
                         'pattern' => '\\d+',
-                        'module' => 'Billing'
+                        'module'  => 'Billing',
                     ],
                     [
-                        'type' => 'setting',
-                        'name' => SettingsEnum::ORIGINAL_MEDIA_TYPE,
+                        'type'    => 'setting',
+                        'name'    => SettingsEnum::ORIGINAL_MEDIA_TYPE,
                         'content' => (string) $media['type'][1]['id'],
                         'pattern' => '\\d+',
-                        'module' => 'Billing'
-                    ]
-                ]
+                        'module'  => 'Billing',
+                    ],
+                ],
             ]
         );
     }

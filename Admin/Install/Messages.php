@@ -49,10 +49,10 @@ class Messages
 
         $settings = [
             [
-                'id' => null,
-                'name' => SettingsEnum::BILLING_CUSTOMER_EMAIL_TEMPLATE,
+                'id'      => null,
+                'name'    => SettingsEnum::BILLING_CUSTOMER_EMAIL_TEMPLATE,
                 'content' => (string) $messages['email_template'][0]['id'],
-                'module' => 'Billing',
+                'module'  => 'Billing',
             ],
         ];
 

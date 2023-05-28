@@ -57,14 +57,14 @@ final class ApiControllerTest extends \PHPUnit\Framework\TestCase
             protected string $appName = 'Api';
         };
 
-        $this->app->dbPool         = $GLOBALS['dbpool'];
+        $this->app->dbPool          = $GLOBALS['dbpool'];
         $this->app->unitId          = 1;
-        $this->app->accountManager = new AccountManager($GLOBALS['session']);
-        $this->app->appSettings    = new CoreSettings();
-        $this->app->moduleManager  = new ModuleManager($this->app, __DIR__ . '/../../../../Modules/');
-        $this->app->dispatcher     = new Dispatcher($this->app);
-        $this->app->eventManager   = new EventManager($this->app->dispatcher);
-        $this->app->l11nManager    = new L11nManager();
+        $this->app->accountManager  = new AccountManager($GLOBALS['session']);
+        $this->app->appSettings     = new CoreSettings();
+        $this->app->moduleManager   = new ModuleManager($this->app, __DIR__ . '/../../../../Modules/');
+        $this->app->dispatcher      = new Dispatcher($this->app);
+        $this->app->eventManager    = new EventManager($this->app->dispatcher);
+        $this->app->l11nManager     = new L11nManager();
         $this->app->eventManager->importFromFile(__DIR__ . '/../../../../Web/Api/Hooks.php');
 
         $account = new Account();

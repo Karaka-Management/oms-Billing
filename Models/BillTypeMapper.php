@@ -37,14 +37,14 @@ final class BillTypeMapper extends DataMapperFactory
      * @since 1.0.0
      */
     public const COLUMNS = [
-        'billing_type_id'                  => ['name' => 'billing_type_id',             'type' => 'int',    'internal' => 'id'],
-        'billing_type_name'                => ['name' => 'billing_type_name',       'type' => 'string',    'internal' => 'name'],
-        'billing_type_number_format'       => ['name' => 'billing_type_number_format',       'type' => 'string',    'internal' => 'numberFormat'],
-        'billing_type_account_format'       => ['name' => 'billing_type_account_format',       'type' => 'string',    'internal' => 'accountFormat'],
-        'billing_type_transfer_type'       => ['name' => 'billing_type_transfer_type',  'type' => 'int',    'internal' => 'transferType'],
+        'billing_type_id'                     => ['name' => 'billing_type_id',             'type' => 'int',    'internal' => 'id'],
+        'billing_type_name'                   => ['name' => 'billing_type_name',       'type' => 'string',    'internal' => 'name'],
+        'billing_type_number_format'          => ['name' => 'billing_type_number_format',       'type' => 'string',    'internal' => 'numberFormat'],
+        'billing_type_account_format'         => ['name' => 'billing_type_account_format',       'type' => 'string',    'internal' => 'accountFormat'],
+        'billing_type_transfer_type'          => ['name' => 'billing_type_transfer_type',  'type' => 'int',    'internal' => 'transferType'],
         'billing_type_default_template'       => ['name' => 'billing_type_default_template',  'type' => 'int',    'internal' => 'defaultTemplate'],
-        'billing_type_transfer_stock'      => ['name' => 'billing_type_transfer_stock', 'type' => 'bool',   'internal' => 'transferStock'],
-        'billing_type_is_template'      => ['name' => 'billing_type_is_template', 'type' => 'bool',   'internal' => 'isTemplate'],
+        'billing_type_transfer_stock'         => ['name' => 'billing_type_transfer_stock', 'type' => 'bool',   'internal' => 'transferStock'],
+        'billing_type_is_template'            => ['name' => 'billing_type_is_template', 'type' => 'bool',   'internal' => 'isTemplate'],
     ];
 
     /**

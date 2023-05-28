@@ -169,22 +169,22 @@ echo $this->getData('nav')->render(); ?>
 
                                 <div class="form-group">
                                     <label for="iRecipientBill"><?= $this->getHtml('Recipient'); ?></label>
-                                    <input type="text" id="iRecipientBill" name="bill_recipient_bill" value="<?= $this->printHtml($bill->billTo) ?>"<?= $disabled; ?>>
+                                    <input type="text" id="iRecipientBill" name="bill_recipient_bill" value="<?= $this->printHtml($bill->billTo); ?>"<?= $disabled; ?>>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="iAddressBill"><?= $this->getHtml('Address'); ?></label>
-                                    <input type="text" id="iAddressBill" name="bill_address_bill" value="<?= $this->printHtml($bill->billAddress) ?>"<?= $disabled; ?>>
+                                    <input type="text" id="iAddressBill" name="bill_address_bill" value="<?= $this->printHtml($bill->billAddress); ?>"<?= $disabled; ?>>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="iZipBill"><?= $this->getHtml('Zip'); ?></label>
-                                    <input type="text" id="iZipBill" name="bill_address_bill" value="<?= $this->printHtml($bill->billZip) ?>"<?= $disabled; ?>>
+                                    <input type="text" id="iZipBill" name="bill_address_bill" value="<?= $this->printHtml($bill->billZip); ?>"<?= $disabled; ?>>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="iCityBill"><?= $this->getHtml('City'); ?></label>
-                                    <input type="text" id="iCityBill" name="bill_city_bill" value="<?= $this->printHtml($bill->billCity) ?>"<?= $disabled; ?>>
+                                    <input type="text" id="iCityBill" name="bill_city_bill" value="<?= $this->printHtml($bill->billCity); ?>"<?= $disabled; ?>>
                                 </div>
 
                                 <div class="form-group">
@@ -198,7 +198,7 @@ echo $this->getData('nav')->render(); ?>
 
                                 <div class="form-group">
                                     <label for="iEmailBill"><?= $this->getHtml('Email'); ?></label>
-                                    <input type="text" id="iEmailBill" name="bill_email_bill" value="<?= $this->printHtml($bill->billEmail) ?>"<?= $disabled; ?>>
+                                    <input type="text" id="iEmailBill" name="bill_email_bill" value="<?= $this->printHtml($bill->billEmail); ?>"<?= $disabled; ?>>
                                 </div>
                             </form>
                         </div>
@@ -219,22 +219,22 @@ echo $this->getData('nav')->render(); ?>
 
                                 <div class="form-group">
                                     <label for="iRecipientDelivery"><?= $this->getHtml('Recipient'); ?></label>
-                                    <input type="text" id="iRecipientDelivery" name="bill_recipient_delivery" value="<?= $this->printHtml($bill->shipTo) ?>"<?= $disabled; ?>>
+                                    <input type="text" id="iRecipientDelivery" name="bill_recipient_delivery" value="<?= $this->printHtml($bill->shipTo); ?>"<?= $disabled; ?>>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="iAddressDelivery"><?= $this->getHtml('Address'); ?></label>
-                                    <input type="text" id="iAddressDelivery" name="bill_address_delivery" value="<?= $this->printHtml($bill->shipAddress) ?>"<?= $disabled; ?>>
+                                    <input type="text" id="iAddressDelivery" name="bill_address_delivery" value="<?= $this->printHtml($bill->shipAddress); ?>"<?= $disabled; ?>>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="iZipDelivery"><?= $this->getHtml('Zip'); ?></label>
-                                    <input type="text" id="iZipDelivery" name="bill_zip_delivery" value="<?= $this->printHtml($bill->shipZip) ?>"<?= $disabled; ?>>
+                                    <input type="text" id="iZipDelivery" name="bill_zip_delivery" value="<?= $this->printHtml($bill->shipZip); ?>"<?= $disabled; ?>>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="iCityDelivery"><?= $this->getHtml('City'); ?></label>
-                                    <input type="text" id="iCityDelivery" name="bill_city_delivery" value="<?= $this->printHtml($bill->shipCity) ?>"<?= $disabled; ?>>
+                                    <input type="text" id="iCityDelivery" name="bill_city_delivery" value="<?= $this->printHtml($bill->shipCity); ?>"<?= $disabled; ?>>
                                 </div>
 
                                 <div class="form-group">

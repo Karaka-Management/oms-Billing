@@ -19,8 +19,6 @@ use Modules\Admin\Models\NullAccount;
 use Modules\ClientManagement\Models\Client;
 use Modules\Editor\Models\EditorDoc;
 use Modules\Media\Models\Collection;
-use Modules\Media\Models\Media;
-use Modules\Media\Models\NullMedia;
 use Modules\SupplierManagement\Models\Supplier;
 use phpOMS\Localization\ISO4217CharEnum;
 use phpOMS\Localization\ISO639x1Enum;

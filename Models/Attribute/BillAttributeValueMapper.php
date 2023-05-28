@@ -37,14 +37,14 @@ final class BillAttributeValueMapper extends DataMapperFactory
      * @since 1.0.0
      */
     public const COLUMNS = [
-        'billing_attr_value_id'            => ['name' => 'billing_attr_value_id',       'type' => 'int',      'internal' => 'id'],
-        'billing_attr_value_default'       => ['name' => 'billing_attr_value_default',  'type' => 'bool',     'internal' => 'isDefault'],
-        'billing_attr_value_valueStr'      => ['name' => 'billing_attr_value_valueStr', 'type' => 'string',   'internal' => 'valueStr'],
-        'billing_attr_value_valueInt'      => ['name' => 'billing_attr_value_valueInt', 'type' => 'int',      'internal' => 'valueInt'],
-        'billing_attr_value_valueDec'      => ['name' => 'billing_attr_value_valueDec', 'type' => 'float',    'internal' => 'valueDec'],
-        'billing_attr_value_valueDat'      => ['name' => 'billing_attr_value_valueDat', 'type' => 'DateTime', 'internal' => 'valueDat'],
-        'billing_attr_value_unit'          => ['name' => 'billing_attr_value_unit', 'type' => 'string', 'internal' => 'unit'],
-        'billing_attr_value_deptype'          => ['name' => 'billing_attr_value_deptype', 'type' => 'int', 'internal' => 'dependingAttributeType'],
+        'billing_attr_value_id'                => ['name' => 'billing_attr_value_id',       'type' => 'int',      'internal' => 'id'],
+        'billing_attr_value_default'           => ['name' => 'billing_attr_value_default',  'type' => 'bool',     'internal' => 'isDefault'],
+        'billing_attr_value_valueStr'          => ['name' => 'billing_attr_value_valueStr', 'type' => 'string',   'internal' => 'valueStr'],
+        'billing_attr_value_valueInt'          => ['name' => 'billing_attr_value_valueInt', 'type' => 'int',      'internal' => 'valueInt'],
+        'billing_attr_value_valueDec'          => ['name' => 'billing_attr_value_valueDec', 'type' => 'float',    'internal' => 'valueDec'],
+        'billing_attr_value_valueDat'          => ['name' => 'billing_attr_value_valueDat', 'type' => 'DateTime', 'internal' => 'valueDat'],
+        'billing_attr_value_unit'              => ['name' => 'billing_attr_value_unit', 'type' => 'string', 'internal' => 'unit'],
+        'billing_attr_value_deptype'           => ['name' => 'billing_attr_value_deptype', 'type' => 'int', 'internal' => 'dependingAttributeType'],
         'billing_attr_value_depvalue'          => ['name' => 'billing_attr_value_depvalue', 'type' => 'int', 'internal' => 'dependingAttributeValue'],
     ];
 

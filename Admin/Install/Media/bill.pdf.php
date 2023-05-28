@@ -44,21 +44,21 @@ $pdf->setKeywords(\implode(', ', $this->getData('keywords') ?? []));
 $pdf->language = $bill->getLanguage();
 
 $pdf->attributes['legal_name'] = $this->getData('legal_company_name') ?? 'Jingga e.K.';
-$pdf->attributes['address'] = $this->getData('bill_company_address') ?? 'Gartenstr. 26';
-$pdf->attributes['city'] = $this->getData('bill_company_city') ??  '61206 Woellstadt';
+$pdf->attributes['address']    = $this->getData('bill_company_address') ?? 'Gartenstr. 26';
+$pdf->attributes['city']       = $this->getData('bill_company_city') ?? '61206 Woellstadt';
 
-$pdf->attributes['ceo'] = $this->getData('bill_company_ceo') ?? 'Dennis Eichhorn';
+$pdf->attributes['ceo']        = $this->getData('bill_company_ceo') ?? 'Dennis Eichhorn';
 $pdf->attributes['tax_office'] = $this->getData('bill_company_tax_office') ?? 'HRB ???';
 $pdf->attributes['tax_number'] = $this->getData('bill_company_tax_id') ?? '123456789';
-$pdf->attributes['terms'] = $this->getData('bill_company_terms') ?? 'https://jingga.app/terms';
+$pdf->attributes['terms']      = $this->getData('bill_company_terms') ?? 'https://jingga.app/terms';
 
-$pdf->attributes['bank_name'] = $this->getData('bill_company_bank_name') ?? 'Volksbank Mittelhessen';
-$pdf->attributes['swift'] = $this->getData('bill_company_swift') ?? '.....';
+$pdf->attributes['bank_name']    = $this->getData('bill_company_bank_name') ?? 'Volksbank Mittelhessen';
+$pdf->attributes['swift']        = $this->getData('bill_company_swift') ?? '.....';
 $pdf->attributes['bank_account'] = $this->getData('bill_company_bank_account') ?? '.....';
 
 $pdf->attributes['website'] = $this->getData('bill_company_website') ?? 'www.jingga.app';
-$pdf->attributes['email'] = $this->getData('bill_company_email') ?? 'info@jingga.app';
-$pdf->attributes['phone'] = $this->getData('bill_company_phone') ?? '+49 0152 ????';
+$pdf->attributes['email']   = $this->getData('bill_company_email') ?? 'info@jingga.app';
+$pdf->attributes['phone']   = $this->getData('bill_company_phone') ?? '+49 0152 ????';
 
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
@@ -162,14 +162,14 @@ $header = [
     $lang[$pdf->language]['Item'],
     $lang[$pdf->language]['Quantity'],
     $lang[$pdf->language]['UnitPrice'],
-    $lang[$pdf->language]['Total']
+    $lang[$pdf->language]['Total'],
 ];
 
 $lines = $bill->getElements();
 
 // Header
 $headerCount = \count($header);
-$w           = [$pdf->getPageWidth() - 20 - 20 - 20 - 2*15, 20, 20, 20];
+$w           = [$pdf->getPageWidth() - 20 - 20 - 20 - 2 * 15, 20, 20, 20];
 
 $pdf->setCellPadding(1, 1, 1, 1);
 
@@ -209,7 +209,7 @@ foreach($lines as $line) {
     $height = $pdf->getY() - $tempY;
 
     $singleSalesPriceNet = Money::fromFloatInt($line->singleSalesPriceNet);
-    $totalSalesPriceNet = Money::fromFloatInt($line->totalSalesPriceNet);
+    $totalSalesPriceNet  = Money::fromFloatInt($line->totalSalesPriceNet);
 
     $pdf->MultiCell($w[1], $height, $line->getQuantity(), 0, 'L', $fill, 0, 15 + $w[0], $tempY, true, 0, false, true, 0, 'M', true);
     $pdf->MultiCell($w[2], $height, $singleSalesPriceNet->getCurrency(2, symbol: ''), 0, 'L', $fill, 0, 15 + $w[0] + $w[1], $tempY, true, 0, false, true, 0, 'M', true);

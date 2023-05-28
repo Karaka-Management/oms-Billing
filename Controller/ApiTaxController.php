@@ -23,7 +23,6 @@ use Modules\Billing\Models\Tax\TaxCombination;
 use Modules\Billing\Models\Tax\TaxCombinationMapper;
 use Modules\ClientManagement\Models\Client;
 use Modules\ClientManagement\Models\ClientAttributeTypeMapper;
-use Modules\Finance\Models\NullTaxCode;
 use Modules\Finance\Models\TaxCode;
 use Modules\Finance\Models\TaxCodeMapper;
 use Modules\ItemManagement\Models\Item;
@@ -50,7 +49,7 @@ final class ApiTaxController extends Controller
      *
      * @param Client $client         Client to get tax code from
      * @param Item   $item           Item toget tax code from
-     * @param string $defaultCountry Default country to use if no valid tax code could be found and if the unit country code shouldn't be used.
+     * @param string $defaultCountry default country to use if no valid tax code could be found and if the unit country code shouldn't be used
      *
      * @return TaxCode
      *
@@ -184,7 +183,7 @@ final class ApiTaxController extends Controller
      * @param Client  $client           The client to get the tax code for
      * @param Address $taxOfficeAddress The tax office address used to determine the tax code
      *
-     * @return AttributeValue   The client's tax code
+     * @return AttributeValue The client's tax code
      *
      * @since 1.0.0
      */

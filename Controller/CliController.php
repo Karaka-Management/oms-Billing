@@ -23,9 +23,7 @@ use Modules\SupplierManagement\Models\NullSupplier;
 use Modules\SupplierManagement\Models\Supplier;
 use Modules\SupplierManagement\Models\SupplierMapper;
 use phpOMS\Contract\RenderableInterface;
-use phpOMS\Localization\ISO639x1Enum;
 use phpOMS\Localization\LanguageDetection\Language;
-use phpOMS\Localization\Money;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
 use phpOMS\Stdlib\Base\FloatInt;
@@ -374,7 +372,7 @@ final class CliController extends Controller
             if (\stripos($content, $supplier->account->name1) !== false
                 && ((!empty($supplier->mainAddress->city)
                         && \stripos($content, $supplier->mainAddress->city) !== false)
-                    || (!empty( $supplier->mainAddress->address)
+                    || (!empty($supplier->mainAddress->address)
                         && \stripos($content, $supplier->mainAddress->address) !== false)
                 )
              ) {

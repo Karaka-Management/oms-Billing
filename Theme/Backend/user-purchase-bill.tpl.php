@@ -12,7 +12,6 @@
  */
 declare(strict_types=1);
 
-use Modules\Media\Models\NullMedia;
 use phpOMS\System\File\FileUtils;
 use phpOMS\Uri\UriFactory;
 
