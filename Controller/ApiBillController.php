@@ -76,7 +76,7 @@ final class ApiBillController extends Controller
     public function apiBillUpdate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateBillUpdate($request))) {
-            $response->set($request->uri->__toString(), new FormValidation($val));
+            $response->data[$request->uri->__toString()] = new FormValidation($val);
             $response->header->status = RequestStatusCode::R_400;
 
             return;
@@ -144,7 +144,7 @@ final class ApiBillController extends Controller
     public function apiBillCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateBillCreate($request))) {
-            $response->set($request->uri->__toString(), new FormValidation($val));
+            $response->data[$request->uri->__toString()] = new FormValidation($val);
             $response->header->status = RequestStatusCode::R_400;
 
             return;
@@ -392,7 +392,7 @@ final class ApiBillController extends Controller
     public function apiMediaAddToBill(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateMediaAddToBill($request))) {
-            $response->set($request->uri->__toString(), new FormValidation($val));
+            $response->data[$request->uri->__toString()] = new FormValidation($val);
             $response->header->status = RequestStatusCode::R_400;
 
             return;
@@ -403,7 +403,7 @@ final class ApiBillController extends Controller
         $path = $this->createBillDir($bill);
 
         $uploaded = [];
-        if (!empty($uploadedFiles = $request->getFiles())) {
+        if (!empty($uploadedFiles = $request->files)) {
             $uploaded = $this->app->moduleManager->get('Media')->uploadFiles(
                 names: [],
                 fileNames: [],
@@ -513,7 +513,7 @@ final class ApiBillController extends Controller
     private function validateMediaAddToBill(RequestAbstract $request) : array
     {
         $val = [];
-        if (($val['media'] = (!$request->hasData('media') && empty($request->getFiles())))
+        if (($val['media'] = (!$request->hasData('media') && empty($request->files)))
             || ($val['bill'] = !$request->hasData('bill'))
         ) {
             return $val;
@@ -538,7 +538,7 @@ final class ApiBillController extends Controller
     public function apiBillElementCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateBillElementCreate($request))) {
-            $response->set($request->uri->__toString(), new FormValidation($val));
+            $response->data[$request->uri->__toString()] = new FormValidation($val);
             $response->header->status = RequestStatusCode::R_400;
 
             return;
@@ -997,7 +997,7 @@ final class ApiBillController extends Controller
     public function apiNoteCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateNoteCreate($request))) {
-            $response->set('bill_note_create', new FormValidation($val));
+            $response->data['bill_note_create'] = new FormValidation($val);
             $response->header->status = RequestStatusCode::R_400;
 
             return;

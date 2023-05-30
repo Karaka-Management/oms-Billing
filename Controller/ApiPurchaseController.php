@@ -65,7 +65,7 @@ final class ApiPurchaseController extends Controller
             ->limit(1)
             ->execute();
 
-        $files = $request->getFiles();
+        $files = $request->files;
         foreach ($files as $file) {
             // Create default bill
             $billRequest                  = new HttpRequest(new HttpUri(''));

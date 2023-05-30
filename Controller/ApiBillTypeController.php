@@ -55,7 +55,7 @@ final class ApiBillTypeController extends Controller
     public function apiBillTypeCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateBillTypeCreate($request))) {
-            $response->set('bill_type_create', new FormValidation($val));
+            $response->data['bill_type_create'] = new FormValidation($val);
             $response->header->status = RequestStatusCode::R_400;
 
             return;
@@ -132,7 +132,7 @@ final class ApiBillTypeController extends Controller
     public function apiBillTypeL11nCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateBillTypeL11nCreate($request))) {
-            $response->set('bill_type_l11n_create', new FormValidation($val));
+            $response->data['bill_type_l11n_create'] = new FormValidation($val);
             $response->header->status = RequestStatusCode::R_400;
 
             return;
