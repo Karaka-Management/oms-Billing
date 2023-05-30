@@ -22,16 +22,16 @@ include __DIR__ . '/../../../Media/Theme/Backend/template-functions.php';
  * @var \phpOMS\Views\View $this
  */
 
-$bill     = $this->getData('bill');
+$bill     = $this->data['bill'];
 $elements = $bill->getElements();
 
-$previewType  = $this->getData('previewType');
-$originalType = $this->getData('originalType');
+$previewType  = $this->data['previewType'];
+$originalType = $this->data['originalType'];
 $billPdf      = $bill->getFileByType($previewType);
 $original     = $bill->getFileByType($originalType);
 $media        = $bill->getMedia();
 
-echo $this->getData('nav')->render(); ?>
+echo $this->data['nav']->render(); ?>
 
 <div class="tabview tab-2">
     <div class="box">

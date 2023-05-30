@@ -61,7 +61,7 @@ final class BackendController extends Controller
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/sales-bill-list');
-        $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response));
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response);
 
         $mapperQuery = SalesBillMapper::getAll()
             ->with('type')
@@ -73,24 +73,18 @@ final class BackendController extends Controller
             ->limit(25);
 
         if ($request->getData('ptype') === 'p') {
-            $view->setData('bills',
-                $mapperQuery
+            $view->data['bills'] = $mapperQuery
                     ->where('id', $request->getDataInt('id') ?? 0, '<')
                     ->where('client', null, '!=')
-                    ->execute()
-            );
+                    ->execute();
         } elseif ($request->getData('ptype') === 'n') {
-            $view->setData('bills',
-                $mapperQuery->where('id', $request->getDataInt('id') ?? 0, '>')
+            $view->data['bills'] = $mapperQuery->where('id', $request->getDataInt('id') ?? 0, '>')
                     ->where('client', null, '!=')
-                    ->execute()
-            );
+                    ->execute();
         } else {
-            $view->setData('bills',
-                $mapperQuery->where('id', 0, '>')
+            $view->data['bills'] = $mapperQuery->where('id', 0, '>')
                     ->where('client', null, '!=')
-                    ->execute()
-            );
+                    ->execute();
         }
 
         return $view;
@@ -112,7 +106,7 @@ final class BackendController extends Controller
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/bill-create');
-        $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response));
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response);
 
         /** @var \Modules\Billing\Models\Bill $bill */
         $bill = SalesBillMapper::get()
@@ -123,7 +117,7 @@ final class BackendController extends Controller
             ->where('id', (int) $request->getData('id'))
             ->execute();
 
-        $view->setData('bill', $bill);
+        $view->data['bill'] = $bill;
 
         /** @var \Modules\Auditor\Models\Auditor[] $logsBill */
         $logsBill = AuditMapper::getAll()
@@ -143,7 +137,7 @@ final class BackendController extends Controller
 
         $logs = \array_merge($logsBill, $logsElements);
 
-        $view->setData('logs', $logs);
+        $view->data['logs'] = $logs;
 
         return $view;
     }
@@ -164,7 +158,7 @@ final class BackendController extends Controller
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/bill-create');
-        $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response));
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response);
 
         $billTypes = BillTypeMapper::getAll()
             ->with('l11n')
@@ -173,11 +167,11 @@ final class BackendController extends Controller
             ->where('l11n/language', $request->header->l11n->language)
             ->execute();
 
-        $view->setData('billtypes', $billTypes);
+        $view->data['billtypes'] = $billTypes;
 
         $mediaListView = new \Modules\Media\Theme\Backend\Components\Media\ListView($this->app->l11nManager, $request, $response);
         $mediaListView->setTemplate('/Modules/Media/Theme/Backend/Components/Media/list');
-        $view->addData('medialist', $mediaListView);
+        $view->data['medialist'] = $mediaListView;
 
         return $view;
     }
@@ -198,7 +192,7 @@ final class BackendController extends Controller
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/bill-create');
-        $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response));
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response);
 
         return $view;
     }
@@ -219,7 +213,7 @@ final class BackendController extends Controller
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/bill-create');
-        $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response));
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response);
 
         return $view;
     }
@@ -240,7 +234,7 @@ final class BackendController extends Controller
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/purchase-bill-list');
-        $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005105001, $request, $response));
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005105001, $request, $response);
 
         $mapperQuery = PurchaseBillMapper::getAll()
             ->with('type')
@@ -251,27 +245,21 @@ final class BackendController extends Controller
             ->limit(25);
 
         if ($request->getData('ptype') === 'p') {
-            $view->setData('bills',
-                $mapperQuery
+            $view->data['bills'] = $mapperQuery
                     ->where('id', $request->getDataInt('id') ?? 0, '<')
                     ->where('supplier', null, '!=')
                     ->where('type/l11n/language', $response->header->l11n->language)
-                    ->execute()
-            );
+                    ->execute();
         } elseif ($request->getData('ptype') === 'n') {
-            $view->setData('bills',
-                $mapperQuery->where('id', $request->getDataInt('id') ?? 0, '>')
+            $view->data['bills'] = $mapperQuery->where('id', $request->getDataInt('id') ?? 0, '>')
                     ->where('supplier', null, '!=')
                     ->where('type/l11n/language', $response->header->l11n->language)
-                    ->execute()
-            );
+                    ->execute();
         } else {
-            $view->setData('bills',
-                $mapperQuery->where('id', 0, '>')
+            $view->data['bills'] = $mapperQuery->where('id', 0, '>')
                     ->where('supplier', null, '!=')
                     ->where('type/l11n/language', $response->header->l11n->language)
-                    ->execute()
-            );
+                    ->execute();
         }
 
         return $view;
@@ -293,7 +281,7 @@ final class BackendController extends Controller
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/purchase-bill');
-        $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005105001, $request, $response));
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005105001, $request, $response);
 
         $bill = PurchaseBillMapper::get()
             ->with('elements')
@@ -303,7 +291,7 @@ final class BackendController extends Controller
             ->where('id', (int) $request->getData('id'))
             ->execute();
 
-        $view->setData('bill', $bill);
+        $view->data['bill'] = $bill;
 
         /** @var \Model\Setting $previewType */
         $previewType = $this->app->appSettings->get(
@@ -311,7 +299,7 @@ final class BackendController extends Controller
             module: self::NAME
         );
 
-        $view->setData('previewType', (int) $previewType->content);
+        $view->data['previewType'] = (int) $previewType->content;
 
         /** @var \Model\Setting $originalType */
         $originalType = $this->app->appSettings->get(
@@ -319,7 +307,7 @@ final class BackendController extends Controller
             module: self::NAME
         );
 
-        $view->setData('originalType', (int) $originalType->content);
+        $view->data['originalType'] = (int) $originalType->content;
 
         return $view;
     }
@@ -340,20 +328,14 @@ final class BackendController extends Controller
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/purchase-bill-list');
-        $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005106001, $request, $response));
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005106001, $request, $response);
 
         if ($request->getData('ptype') === 'p') {
-            $view->setData('bills',
-                StockBillMapper::getAll()->where('id', $request->getDataInt('id') ?? 0, '<')->limit(25)->execute()
-            );
+            $view->data['bills'] = StockBillMapper::getAll()->where('id', $request->getDataInt('id') ?? 0, '<')->limit(25)->execute();
         } elseif ($request->getData('ptype') === 'n') {
-            $view->setData('bills',
-                StockBillMapper::getAll()->where('id', $request->getDataInt('id') ?? 0, '>')->limit(25)->execute()
-            );
+            $view->data['bills'] = StockBillMapper::getAll()->where('id', $request->getDataInt('id') ?? 0, '>')->limit(25)->execute();
         } else {
-            $view->setData('bills',
-                StockBillMapper::getAll()->where('id', 0, '>')->limit(25)->execute()
-            );
+            $view->data['bills'] = StockBillMapper::getAll()->where('id', 0, '>')->limit(25)->execute();
         }
 
         return $view;
@@ -375,11 +357,11 @@ final class BackendController extends Controller
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/purchase-bill');
-        $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005106001, $request, $response));
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005106001, $request, $response);
 
         $bill = StockBillMapper::get()->where('id', (int) $request->getData('id'))->execute();
 
-        $view->setData('bill', $bill);
+        $view->data['bill'] = $bill;
 
         return $view;
     }
@@ -398,14 +380,14 @@ final class BackendController extends Controller
      */
     public function viewRegionAnalysis(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
     {
-        $head = $response->get('Content')->getData('head');
+        $head = $response->get('Content')->head;
         $head->addAsset(AssetType::CSS, 'Resources/chartjs/Chartjs/chart.css');
         $head->addAsset(AssetType::JSLATE, 'Resources/chartjs/Chartjs/chart.js');
         $head->addAsset(AssetType::JSLATE, 'Modules/ClientManagement/Controller.js', ['type' => 'module']);
 
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/region-analysis');
-        $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1001602001, $request, $response));
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1001602001, $request, $response);
 
         $monthlySalesCosts = [];
         for ($i = 1; $i < 13; ++$i) {
@@ -417,7 +399,7 @@ final class BackendController extends Controller
             ];
         }
 
-        $view->addData('monthlySalesCosts', $monthlySalesCosts);
+        $view->data['monthlySalesCosts'] = $monthlySalesCosts;
 
         /////
         $currentCustomerRegion = [
@@ -429,7 +411,7 @@ final class BackendController extends Controller
             'Other'   => (int) (\mt_rand(200, 400) / 4),
         ];
 
-        $view->addData('currentCustomerRegion', $currentCustomerRegion);
+        $view->data['currentCustomerRegion'] = $currentCustomerRegion;
 
         $annualCustomerRegion = [];
         for ($i = 1; $i < 11; ++$i) {
@@ -445,7 +427,7 @@ final class BackendController extends Controller
             ];
         }
 
-        $view->addData('annualCustomerRegion', $annualCustomerRegion);
+        $view->data['annualCustomerRegion'] = $annualCustomerRegion;
 
         /////
         $monthlySalesCustomer = [];
@@ -458,7 +440,7 @@ final class BackendController extends Controller
             ];
         }
 
-        $view->addData('monthlySalesCustomer', $monthlySalesCustomer);
+        $view->data['monthlySalesCustomer'] = $monthlySalesCustomer;
 
         $annualSalesCustomer = [];
         for ($i = 1; $i < 11; ++$i) {
@@ -469,7 +451,7 @@ final class BackendController extends Controller
             ];
         }
 
-        $view->addData('annualSalesCustomer', $annualSalesCustomer);
+        $view->data['annualSalesCustomer'] = $annualSalesCustomer;
 
         /////
         $monthlyCustomerRetention = [];
@@ -480,7 +462,7 @@ final class BackendController extends Controller
             ];
         }
 
-        $view->addData('monthlyCustomerRetention', $monthlyCustomerRetention);
+        $view->data['monthlyCustomerRetention'] = $monthlyCustomerRetention;
 
         /////
         $currentCustomerRegion = [
@@ -492,7 +474,7 @@ final class BackendController extends Controller
             'Other'   => (int) (\mt_rand(200, 400) / 4),
         ];
 
-        $view->addData('currentCustomerRegion', $currentCustomerRegion);
+        $view->data['currentCustomerRegion'] = $currentCustomerRegion;
 
         $annualCustomerRegion = [];
         for ($i = 1; $i < 11; ++$i) {
@@ -508,7 +490,7 @@ final class BackendController extends Controller
             ];
         }
 
-        $view->addData('annualCustomerRegion', $annualCustomerRegion);
+        $view->data['annualCustomerRegion'] = $annualCustomerRegion;
 
         /////
         $currentCustomersRep = [];
@@ -522,7 +504,7 @@ final class BackendController extends Controller
             return $b['customers'] <=> $a['customers'];
         });
 
-        $view->addData('currentCustomersRep', $currentCustomersRep);
+        $view->data['currentCustomersRep'] = $currentCustomersRep;
 
         $annualCustomersRep = [];
         for ($i = 1; $i < 13; ++$i) {
@@ -536,7 +518,7 @@ final class BackendController extends Controller
             }
         }
 
-        $view->addData('annualCustomersRep', $annualCustomersRep);
+        $view->data['annualCustomersRep'] = $annualCustomersRep;
 
         /////
         $currentCustomersCountry = [];
@@ -551,7 +533,7 @@ final class BackendController extends Controller
             return $b['customers'] <=> $a['customers'];
         });
 
-        $view->addData('currentCustomersCountry', $currentCustomersCountry);
+        $view->data['currentCustomersCountry'] = $currentCustomersCountry;
 
         $annualCustomersCountry = [];
         for ($i = 1; $i < 51; ++$i) {
@@ -569,7 +551,7 @@ final class BackendController extends Controller
             }
         }
 
-        $view->addData('annualCustomersCountry', $annualCustomersCountry);
+        $view->data['annualCustomersCountry'] = $annualCustomersCountry;
 
         /////
         $customerGroups = [];
@@ -579,7 +561,7 @@ final class BackendController extends Controller
             ];
         }
 
-        $view->addData('customerGroups', $customerGroups);
+        $view->data['customerGroups'] = $customerGroups;
 
         return $view;
     }
@@ -598,14 +580,14 @@ final class BackendController extends Controller
      */
     public function viewBillAnalysis(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
     {
-        $head = $response->get('Content')->getData('head');
+        $head = $response->get('Content')->head;
         $head->addAsset(AssetType::CSS, 'Resources/chartjs/Chartjs/chart.css');
         $head->addAsset(AssetType::JSLATE, 'Resources/chartjs/Chartjs/chart.js');
         $head->addAsset(AssetType::JSLATE, 'Modules/ClientManagement/Controller.js', ['type' => 'module']);
 
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/bill-analysis');
-        $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1001602001, $request, $response));
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1001602001, $request, $response);
 
         return $view;
     }
@@ -624,14 +606,14 @@ final class BackendController extends Controller
      */
     public function viewSalesRepAnalysis(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
     {
-        $head = $response->get('Content')->getData('head');
+        $head = $response->get('Content')->head;
         $head->addAsset(AssetType::CSS, 'Resources/chartjs/Chartjs/chart.css');
         $head->addAsset(AssetType::JSLATE, 'Resources/chartjs/Chartjs/chart.js');
         $head->addAsset(AssetType::JSLATE, 'Modules/ClientManagement/Controller.js', ['type' => 'module']);
 
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/rep-analysis');
-        $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1001602001, $request, $response));
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1001602001, $request, $response);
 
         /////
         $currentCustomerRegion = [
@@ -643,7 +625,7 @@ final class BackendController extends Controller
             'Other'   => (int) (\mt_rand(200, 400) / 4),
         ];
 
-        $view->addData('currentCustomerRegion', $currentCustomerRegion);
+        $view->data['currentCustomerRegion'] = $currentCustomerRegion;
 
         $annualCustomerRegion = [];
         for ($i = 1; $i < 11; ++$i) {
@@ -659,7 +641,7 @@ final class BackendController extends Controller
             ];
         }
 
-        $view->addData('annualCustomerRegion', $annualCustomerRegion);
+        $view->data['annualCustomerRegion'] = $annualCustomerRegion;
 
          /////
         $currentCustomersRep = [];
@@ -673,7 +655,7 @@ final class BackendController extends Controller
             return $b['customers'] <=> $a['customers'];
         });
 
-        $view->addData('currentCustomersRep', $currentCustomersRep);
+        $view->data['currentCustomersRep'] = $currentCustomersRep;
 
         $annualCustomersRep = [];
         for ($i = 1; $i < 13; ++$i) {
@@ -687,7 +669,7 @@ final class BackendController extends Controller
             }
         }
 
-        $view->addData('annualCustomersRep', $annualCustomersRep);
+        $view->data['annualCustomersRep'] = $annualCustomersRep;
 
         return $view;
     }
@@ -708,7 +690,7 @@ final class BackendController extends Controller
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/purchase-bill-upload');
-        $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1002901101, $request, $response));
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1002901101, $request, $response);
 
         return $view;
     }
@@ -729,7 +711,7 @@ final class BackendController extends Controller
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/user-purchase-bill-upload');
-        $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005109001, $request, $response));
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005109001, $request, $response);
 
         return $view;
     }
@@ -750,7 +732,7 @@ final class BackendController extends Controller
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/user-purchase-bill-dashboard');
-        $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005109001, $request, $response));
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005109001, $request, $response);
 
         $mapperQuery = PurchaseBillMapper::getAll()
             ->with('type')
@@ -762,24 +744,18 @@ final class BackendController extends Controller
             ->limit(25);
 
         if ($request->getData('ptype') === 'p') {
-            $view->setData('bills',
-                $mapperQuery
+            $view->data['bills'] = $mapperQuery
                     ->where('id', $request->getDataInt('id') ?? 0, '<')
                     ->where('type/l11n/language', $response->header->l11n->language)
-                    ->execute()
-            );
+                    ->execute();
         } elseif ($request->getData('ptype') === 'n') {
-            $view->setData('bills',
-                $mapperQuery->where('id', $request->getDataInt('id') ?? 0, '>')
+            $view->data['bills'] = $mapperQuery->where('id', $request->getDataInt('id') ?? 0, '>')
                     ->where('type/l11n/language', $response->header->l11n->language)
-                    ->execute()
-            );
+                    ->execute();
         } else {
-            $view->setData('bills',
-                $mapperQuery->where('id', 0, '>')
+            $view->data['bills'] = $mapperQuery->where('id', 0, '>')
                     ->where('type/l11n/language', $response->header->l11n->language)
-                    ->execute()
-            );
+                    ->execute();
         }
 
         return $view;
@@ -801,7 +777,7 @@ final class BackendController extends Controller
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/user-purchase-bill');
-        $view->addData('nav', $this->app->moduleManager->get('Navigation')->createNavigationMid(1005109001, $request, $response));
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005109001, $request, $response);
 
         $bill = PurchaseBillMapper::get()
             ->with('elements')
@@ -811,7 +787,7 @@ final class BackendController extends Controller
             ->where('id', (int) $request->getData('id'))
             ->execute();
 
-        $view->setData('bill', $bill);
+        $view->data['bill'] = $bill;
 
         /** @var \Model\Setting $previewType */
         $previewType = $this->app->appSettings->get(
@@ -819,7 +795,7 @@ final class BackendController extends Controller
             module: self::NAME
         );
 
-        $view->setData('previewType', (int) $previewType->content);
+        $view->data['previewType'] = (int) $previewType->content;
 
         /** @var \Model\Setting $originalType */
         $originalType = $this->app->appSettings->get(
@@ -827,7 +803,7 @@ final class BackendController extends Controller
             module: self::NAME
         );
 
-        $view->setData('originalType', (int) $originalType->content);
+        $view->data['originalType'] = (int) $originalType->content;
 
         return $view;
     }

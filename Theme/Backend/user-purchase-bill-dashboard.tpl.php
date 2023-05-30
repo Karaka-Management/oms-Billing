@@ -16,9 +16,9 @@ use phpOMS\Localization\ISO3166NameEnum;
 use phpOMS\Localization\ISO3166TwoEnum;
 use phpOMS\Uri\UriFactory;
 
-$bills = $this->getData('bills') ?? [];
+$bills = $this->data['bills'] ?? [];
 
-echo $this->getData('nav')->render(); ?>
+echo $this->data['nav']->render(); ?>
 
 <div class="row">
     <div class="col-xs-12">

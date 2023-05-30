@@ -18,7 +18,7 @@ declare(strict_types=1);
 /**
  * @var \phpOMS\Views\View $this
  */
-echo $this->getData('nav')->render();
+echo $this->data['nav']->render();
 ?>
 
 <div class="tabview tab-2">
@@ -97,7 +97,7 @@ echo $this->getData('nav')->render();
                             Sales per Rep - Current
                             <?php include __DIR__ . '/../../../../Web/Backend/Themes/popup-export-data.tpl.php'; ?>
                         </div>
-                        <?php $customersRep = $this->getData('currentCustomersRep'); ?>
+                        <?php $customersRep = $this->data['currentCustomersRep']; ?>
                         <div class="portlet-body">
                             <canvas id="sales-region" data-chart='{
                                             "type": "horizontalBar",
@@ -175,7 +175,7 @@ echo $this->getData('nav')->render();
                             Sales per Rep - Annual
                             <?php include __DIR__ . '/../../../../Web/Backend/Themes/popup-export-data.tpl.php'; ?>
                         </div>
-                        <?php $customersRep = $this->getData('annualCustomersRep'); ?>
+                        <?php $customersRep = $this->data['annualCustomersRep']; ?>
                                 <table class="default">
                                     <thead>
                                         <tr>
@@ -211,7 +211,7 @@ echo $this->getData('nav')->render();
                             Profit per Rep - Current
                             <?php include __DIR__ . '/../../../../Web/Backend/Themes/popup-export-data.tpl.php'; ?>
                         </div>
-                        <?php $customersRep = $this->getData('currentCustomersRep'); ?>
+                        <?php $customersRep = $this->data['currentCustomersRep']; ?>
                         <div class="portlet-body">
                             <canvas id="sales-region" data-chart='{
                                             "type": "horizontalBar",
@@ -289,7 +289,7 @@ echo $this->getData('nav')->render();
                             Profit per Rep - Annual
                             <?php include __DIR__ . '/../../../../Web/Backend/Themes/popup-export-data.tpl.php'; ?>
                         </div>
-                        <?php $customersRep = $this->getData('annualCustomersRep'); ?>
+                        <?php $customersRep = $this->data['annualCustomersRep']; ?>
                                 <table class="default">
                                     <thead>
                                         <tr>

@@ -28,23 +28,23 @@ $currencies      = ISO4217Enum::getConstants();
 /**
  * @var \phpOMS\Views\View $this
  */
-$media = $this->getData('media') ?? [];
+$media = $this->data['media'] ?? [];
 
 /** @var \Modules\Billing\Models\Bill $bill */
 $bill     = $this->getData('bill') ?? new NullBill();
 $elements = $bill->getElements();
 
-$billTypes = $this->getData('billtypes') ?? [];
+$billTypes = $this->data['billtypes'] ?? [];
 
 $archive = $bill->getFileByTypeName('original');
 
 /** @var \Modules\Auditor\Models\Audit */
-$logs = $this->getData('logs') ?? [];
+$logs = $this->data['logs'] ?? [];
 
 $editable = $bill->id === 0 || \in_array($bill->getStatus(), [BillStatus::DRAFT, BillStatus::UNPARSED]);
 $disabled = !$editable  ? ' disabled' : '';
 
-echo $this->getData('nav')->render(); ?>
+echo $this->data['nav']->render(); ?>
 
 <div class="tabview tab-2 col-simple">
     <div class="box">

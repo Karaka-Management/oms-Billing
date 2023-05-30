@@ -20,7 +20,7 @@ use phpOMS\Localization\Money;
 /**
  * @var \phpOMS\Views\View $this
  */
-echo $this->getData('nav')->render();
+echo $this->data['nav']->render();
 ?>
 
 <div class="tabview tab-2">
@@ -100,7 +100,7 @@ echo $this->getData('nav')->render();
                             Sales per Region - Current
                             <?php include __DIR__ . '/../../../../Web/Backend/Themes/popup-export-data.tpl.php'; ?>
                         </div>
-                        <?php $customerRegion = $this->getData('currentCustomerRegion'); ?>
+                        <?php $customerRegion = $this->data['currentCustomerRegion']; ?>
                         <div class="portlet-body">
                             <canvas id="sales-region" data-chart='{
                                         "type": "pie",
@@ -171,7 +171,7 @@ echo $this->getData('nav')->render();
                             Sales per Region - Annual
                             <?php include __DIR__ . '/../../../../Web/Backend/Themes/popup-export-data.tpl.php'; ?>
                         </div>
-                        <?php $customerRegion = $this->getData('annualCustomerRegion'); ?>
+                        <?php $customerRegion = $this->data['annualCustomerRegion']; ?>
                         <div class="portlet-body">
                             <canvas id="sales-region" data-chart='{
                                             "type": "line",
@@ -370,7 +370,7 @@ echo $this->getData('nav')->render();
                             Profit per Region - Current
                             <?php include __DIR__ . '/../../../../Web/Backend/Themes/popup-export-data.tpl.php'; ?>
                         </div>
-                        <?php $customerRegion = $this->getData('currentCustomerRegion'); ?>
+                        <?php $customerRegion = $this->data['currentCustomerRegion']; ?>
                         <div class="portlet-body">
                             <canvas id="sales-region" data-chart='{
                                         "type": "pie",
@@ -441,7 +441,7 @@ echo $this->getData('nav')->render();
                             Profit per Region - Annual
                             <?php include __DIR__ . '/../../../../Web/Backend/Themes/popup-export-data.tpl.php'; ?>
                         </div>
-                        <?php $customerRegion = $this->getData('annualCustomerRegion'); ?>
+                        <?php $customerRegion = $this->data['annualCustomerRegion']; ?>
                         <div class="portlet-body">
                             <canvas id="sales-region" data-chart='{
                                             "type": "line",
@@ -682,7 +682,7 @@ echo $this->getData('nav')->render();
                             Sales / Profit - Monthly
                             <?php include __DIR__ . '/../../../../Web/Backend/Themes/popup-export-data.tpl.php'; ?>
                         </div>
-                        <?php $saleCustomer = $this->getData('monthlySaleCustomer'); ?>
+                        <?php $saleCustomer = $this->data['monthlySaleCustomer']; ?>
                         <div class="portlet-body">
                             <canvas id="sales-region" data-chart='{
                                             "type": "bar",
@@ -809,7 +809,7 @@ echo $this->getData('nav')->render();
                             Sales / Profit - Annual
                             <?php include __DIR__ . '/../../../../Web/Backend/Themes/popup-export-data.tpl.php'; ?>
                         </div>
-                        <?php $saleCustomer = $this->getData('annualSaleCustomer'); ?>
+                        <?php $saleCustomer = $this->data['annualSaleCustomer']; ?>
                         <div class="portlet-body">
                             <canvas id="sales-customer-annual" data-chart='{
                                             "type": "bar",
@@ -927,7 +927,7 @@ echo $this->getData('nav')->render();
                             Sales per Attribute - Current
                             <?php include __DIR__ . '/../../../../Web/Backend/Themes/popup-export-data.tpl.php'; ?>
                         </div>
-                        <?php $customerGroups = $this->getData('customerGroups'); ?>
+                        <?php $customerGroups = $this->data['customerGroups']; ?>
                         <div class="portlet-body">
                             <div class="form-group">
                                 <label for="iOname"><?= $this->getHtml('Attribute'); ?></label>
@@ -1014,7 +1014,7 @@ echo $this->getData('nav')->render();
                             Sales per Attribute - Annual
                             <?php include __DIR__ . '/../../../../Web/Backend/Themes/popup-export-data.tpl.php'; ?>
                         </div>
-                        <?php $customerRegion = $this->getData('annualCustomerRegion'); ?>
+                        <?php $customerRegion = $this->data['annualCustomerRegion']; ?>
                         <div class="portlet-body">
                             <div class="form-group">
                                 <label for="iOname"><?= $this->getHtml('Attribute'); ?></label>
@@ -1220,7 +1220,7 @@ echo $this->getData('nav')->render();
                             Profit per Attribute - Current
                             <?php include __DIR__ . '/../../../../Web/Backend/Themes/popup-export-data.tpl.php'; ?>
                         </div>
-                        <?php $customerGroups = $this->getData('customerGroups'); ?>
+                        <?php $customerGroups = $this->data['customerGroups']; ?>
                         <div class="portlet-body">
                             <div class="form-group">
                                 <label for="iOname"><?= $this->getHtml('Attribute'); ?></label>
@@ -1307,7 +1307,7 @@ echo $this->getData('nav')->render();
                             Profit per Attribute - Annual
                             <?php include __DIR__ . '/../../../../Web/Backend/Themes/popup-export-data.tpl.php'; ?>
                         </div>
-                        <?php $customerRegion = $this->getData('annualCustomerRegion'); ?>
+                        <?php $customerRegion = $this->data['annualCustomerRegion']; ?>
                         <div class="portlet-body">
                             <div class="form-group">
                                 <label for="iOname"><?= $this->getHtml('Attribute'); ?></label>
@@ -1513,7 +1513,7 @@ echo $this->getData('nav')->render();
                             Invoices / Articles - Monthly
                             <?php include __DIR__ . '/../../../../Web/Backend/Themes/popup-export-data.tpl.php'; ?>
                         </div>
-                        <?php $saleCustomer = $this->getData('monthlySaleCustomer'); ?>
+                        <?php $saleCustomer = $this->data['monthlySaleCustomer']; ?>
                         <div class="portlet-body">
                             <canvas id="sales-region" data-chart='{
                                             "type": "bar",
@@ -1639,7 +1639,7 @@ echo $this->getData('nav')->render();
                             Invoices / Articles - Annual
                             <?php include __DIR__ . '/../../../../Web/Backend/Themes/popup-export-data.tpl.php'; ?>
                         </div>
-                        <?php $saleCustomer = $this->getData('annualSaleCustomer'); ?>
+                        <?php $saleCustomer = $this->data['annualSaleCustomer']; ?>
                         <div class="portlet-body">
                             <canvas id="sales-customer-annual" data-chart='{
                                             "type": "bar",

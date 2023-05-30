@@ -413,7 +413,7 @@ final class ApiBillController extends Controller
                 virtualPath: $path,
                 pathSettings: PathSettings::FILE_PATH,
                 hasAccountRelation: false,
-                readContent: (bool) ($request->getData('parse_content') ?? false)
+                readContent: $request->getDataBool('parse_content') ?? false
             );
 
             $collection = null;
@@ -441,7 +441,9 @@ final class ApiBillController extends Controller
                 }
 
                 if ($collection === null) {
-                    $collection = MediaMapper::getParentCollection($path)->limit(1)->execute();
+                    $collection = MediaMapper::getParentCollection($path)
+                        ->limit(1)
+                        ->execute();
 
                     if ($collection->id === 0) {
                         $collection = $this->app->moduleManager->get('Media')->createRecursiveMediaCollection(
@@ -718,50 +720,50 @@ final class ApiBillController extends Controller
             ->where('id', (int) $settings[AdminSettingsEnum::DEFAULT_ASSETS]->content)
             ->execute();
 
-        $view->setData('defaultTemplates', $defaultTemplates);
-        $view->setData('defaultAssets', $defaultAssets);
+        $view->data['defaultTemplates'] = $defaultTemplates;
+        $view->data['defaultAssets'] = $defaultAssets;
 
         $path   = $this->createBillDir($bill);
         $pdfDir = __DIR__ . '/../../../Modules/Media/Files' . $path;
 
-        $view->setData('bill', $bill);
-        $view->setData('path', $pdfDir . '/' .$bill->billDate->format('Y-m-d') . '_' . $bill->number . '.pdf');
+        $view->data['bill'] = $bill;
+        $view->data['path'] = $pdfDir . '/' .$bill->billDate->format('Y-m-d') . '_' . $bill->number . '.pdf';
 
-        $view->setData('bill_creator', $request->getDataString('bill_creator'));
-        $view->setData('bill_title', $request->getDataString('bill_title'));
-        $view->setData('bill_subtitle', $request->getDataString('bill_subtitle'));
-        $view->setData('keywords', $request->getDataString('keywords'));
+        $view->data['bill_creator'] = $request->getDataString('bill_creator');
+        $view->data['bill_title'] = $request->getDataString('bill_title');
+        $view->data['bill_subtitle'] = $request->getDataString('bill_subtitle');
+        $view->data['keywords'] = $request->getDataString('keywords');
 
-        $view->setData('bill_type_name', $request->getDataString('bill_type_name'));
+        $view->data['bill_type_name'] = $request->getDataString('bill_type_name');
 
-        $view->setData('bill_start_text', $request->getDataString('bill_start_text'));
-        $view->setData('bill_lines', $request->getDataString('bill_lines'));
-        $view->setData('bill_end_text', $request->getDataString('bill_end_text'));
+        $view->data['bill_start_text'] = $request->getDataString('bill_start_text');
+        $view->data['bill_lines'] = $request->getDataString('bill_lines');
+        $view->data['bill_end_text'] = $request->getDataString('bill_end_text');
 
-        $view->setData('bill_payment_terms', $request->getDataString('bill_payment_terms'));
-        $view->setData('bill_terms', $request->getDataString('bill_terms'));
-        $view->setData('bill_taxes', $request->getDataString('bill_taxes'));
-        $view->setData('bill_currency', $request->getDataString('bill_currency'));
+        $view->data['bill_payment_terms'] = $request->getDataString('bill_payment_terms');
+        $view->data['bill_terms'] = $request->getDataString('bill_terms');
+        $view->data['bill_taxes'] = $request->getDataString('bill_taxes');
+        $view->data['bill_currency'] = $request->getDataString('bill_currency');
 
         // Unit specifc settings
-        $view->setData('bill_logo_name', $request->getDataString('bill_logo_name'));
-        $view->setData('bill_slogan', $request->getDataString('bill_slogan'));
-        $view->setData('legal_company_name', $request->getDataString('legal_company_name'));
-        $view->setData('bill_company_address', $request->getDataString('bill_company_address'));
-        $view->setData('bill_company_city', $request->getDataString('bill_company_city'));
-        $view->setData('bill_company_ceo', $request->getDataString('bill_company_ceo'));
-        $view->setData('bill_company_website', $request->getDataString('bill_company_website'));
-        $view->setData('bill_company_email', $request->getDataString('bill_company_email'));
-        $view->setData('bill_company_phone', $request->getDataString('bill_company_phone'));
-        $view->setData('bill_company_terms', $request->getDataString('bill_company_terms'));
+        $view->data['bill_logo_name'] = $request->getDataString('bill_logo_name');
+        $view->data['bill_slogan'] = $request->getDataString('bill_slogan');
+        $view->data['legal_company_name'] = $request->getDataString('legal_company_name');
+        $view->data['bill_company_address'] = $request->getDataString('bill_company_address');
+        $view->data['bill_company_city'] = $request->getDataString('bill_company_city');
+        $view->data['bill_company_ceo'] = $request->getDataString('bill_company_ceo');
+        $view->data['bill_company_website'] = $request->getDataString('bill_company_website');
+        $view->data['bill_company_email'] = $request->getDataString('bill_company_email');
+        $view->data['bill_company_phone'] = $request->getDataString('bill_company_phone');
+        $view->data['bill_company_terms'] = $request->getDataString('bill_company_terms');
 
-        $view->setData('bill_company_tax_office', $request->getDataString('bill_company_tax_office'));
-        $view->setData('bill_company_tax_id', $request->getDataString('bill_company_tax_id'));
-        $view->setData('bill_company_vat_id', $request->getDataString('bill_company_vat_id'));
+        $view->data['bill_company_tax_office'] = $request->getDataString('bill_company_tax_office');
+        $view->data['bill_company_tax_id'] = $request->getDataString('bill_company_tax_id');
+        $view->data['bill_company_vat_id'] = $request->getDataString('bill_company_vat_id');
 
-        $view->setData('bill_company_bank_name', $request->getDataString('bill_company_bank_name'));
-        $view->setData('bill_company_swift', $request->getDataString('bill_company_swift'));
-        $view->setData('bill_company_bank_account', $request->getDataString('bill_company_bank_account'));
+        $view->data['bill_company_bank_name'] = $request->getDataString('bill_company_bank_name');
+        $view->data['bill_company_swift'] = $request->getDataString('bill_company_swift');
+        $view->data['bill_company_bank_account'] = $request->getDataString('bill_company_bank_account');
 
         $pdf = $view->render();
 
@@ -855,9 +857,9 @@ final class ApiBillController extends Controller
             ->where('id', (int) $settings[AdminSettingsEnum::DEFAULT_ASSETS]->content)
             ->execute();
 
-        $view->setData('defaultTemplates', $defaultTemplates);
-        $view->setData('defaultAssets', $defaultAssets);
-        $view->setData('bill', $bill);
+        $view->data['defaultTemplates'] = $defaultTemplates;
+        $view->data['defaultAssets'] = $defaultAssets;
+        $view->data['bill'] = $bill;
 
         // @todo: add bill data such as company name bank information, ..., etc.
 

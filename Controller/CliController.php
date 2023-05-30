@@ -130,7 +130,7 @@ final class CliController extends Controller
 
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Cli/bill-parsed');
-        $view->setData('bill', $bill);
+        $view->data['bill'] = $bill;
 
         return $view;
     }

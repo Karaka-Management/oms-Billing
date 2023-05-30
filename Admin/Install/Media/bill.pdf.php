@@ -23,7 +23,7 @@ require_once $this->getData('defaultTemplates')
     ->getAbsolutePath();
 
 /** @var \Modules\Billing\Models\Bill $bill */
-$bill = $this->getData('bill') ?? new NullBill();
+$bill = $this->data['bill'] ?? new NullBill();
 
 // Set up default pdf template
 /** @phpstan-import-type DefaultPdf from ../../../../Admin/Install/Media/PdfDefaultTemplate/pdfTemplate.pdf.php */
@@ -33,32 +33,32 @@ $lang = include __DIR__ . '/lang.php';
 
 $pdf->setHeaderData(
     __DIR__ . '/logo.png', 15,
-    $this->getData('bill_logo_name') ?? 'Jingga',
-    $this->getData('bill_slogan') ?? 'Business solutions made simple.'
+    $this->data['bill_logo_name'] ?? 'Jingga',
+    $this->data['bill_slogan'] ?? 'Business solutions made simple.'
 );
-$pdf->setCreator($this->getData('bill_creator') ?? 'Jingga');
-$pdf->setAuthor($this->getData('bill_creator') ?? 'Jingga');
-$pdf->setTitle($this->getData('bill_title') ?? $bill->type->getL11n());
-$pdf->setSubject($this->getData('bill_subtitle') ?? '');
-$pdf->setKeywords(\implode(', ', $this->getData('keywords') ?? []));
+$pdf->setCreator($this->data['bill_creator'] ?? 'Jingga');
+$pdf->setAuthor($this->data['bill_creator'] ?? 'Jingga');
+$pdf->setTitle($this->data['bill_title'] ?? $bill->type->getL11n());
+$pdf->setSubject($this->data['bill_subtitle'] ?? '');
+$pdf->setKeywords(\implode(', ', $this->data['keywords'] ?? []));
 $pdf->language = $bill->language;
 
-$pdf->attributes['legal_name'] = $this->getData('legal_company_name') ?? 'Jingga e.K.';
-$pdf->attributes['address']    = $this->getData('bill_company_address') ?? 'Gartenstr. 26';
-$pdf->attributes['city']       = $this->getData('bill_company_city') ?? '61206 Woellstadt';
+$pdf->attributes['legal_name'] = $this->data['legal_company_name'] ?? 'Jingga e.K.';
+$pdf->attributes['address']    = $this->data['bill_company_address'] ?? 'Gartenstr. 26';
+$pdf->attributes['city']       = $this->data['bill_company_city'] ?? '61206 Woellstadt';
 
-$pdf->attributes['ceo']        = $this->getData('bill_company_ceo') ?? 'Dennis Eichhorn';
-$pdf->attributes['tax_office'] = $this->getData('bill_company_tax_office') ?? 'HRB ???';
-$pdf->attributes['tax_number'] = $this->getData('bill_company_tax_id') ?? '123456789';
-$pdf->attributes['terms']      = $this->getData('bill_company_terms') ?? 'https://jingga.app/terms';
+$pdf->attributes['ceo']        = $this->data['bill_company_ceo'] ?? 'Dennis Eichhorn';
+$pdf->attributes['tax_office'] = $this->data['bill_company_tax_office'] ?? 'HRB ???';
+$pdf->attributes['tax_number'] = $this->data['bill_company_tax_id'] ?? '123456789';
+$pdf->attributes['terms']      = $this->data['bill_company_terms'] ?? 'https://jingga.app/terms';
 
-$pdf->attributes['bank_name']    = $this->getData('bill_company_bank_name') ?? 'Volksbank Mittelhessen';
-$pdf->attributes['swift']        = $this->getData('bill_company_swift') ?? '.....';
-$pdf->attributes['bank_account'] = $this->getData('bill_company_bank_account') ?? '.....';
+$pdf->attributes['bank_name']    = $this->data['bill_company_bank_name'] ?? 'Volksbank Mittelhessen';
+$pdf->attributes['swift']        = $this->data['bill_company_swift'] ?? '.....';
+$pdf->attributes['bank_account'] = $this->data['bill_company_bank_account'] ?? '.....';
 
-$pdf->attributes['website'] = $this->getData('bill_company_website') ?? 'www.jingga.app';
-$pdf->attributes['email']   = $this->getData('bill_company_email') ?? 'info@jingga.app';
-$pdf->attributes['phone']   = $this->getData('bill_company_phone') ?? '+49 0152 ????';
+$pdf->attributes['website'] = $this->data['bill_company_website'] ?? 'www.jingga.app';
+$pdf->attributes['email']   = $this->data['bill_company_email'] ?? 'info@jingga.app';
+$pdf->attributes['phone']   = $this->data['bill_company_phone'] ?? '+49 0152 ????';
 
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
@@ -308,6 +308,6 @@ $pdf->Ln();
 
 //Close and output PDF document
 $pdf->Output(
-    $this->getData('path') ?? ($bill->billDate->format('Y-m-d') . '_' . $bill->number . '.pdf'),
+    $this->data['path'] ?? ($bill->billDate->format('Y-m-d') . '_' . $bill->number . '.pdf'),
     'I'
 );
