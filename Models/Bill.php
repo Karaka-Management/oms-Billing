@@ -611,32 +611,6 @@ class Bill implements \JsonSerializable
     }
 
     /**
-     * Set language.
-     *
-     * @param string $language Language
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function setLanguage(string $language) : void
-    {
-        $this->language = $language;
-    }
-
-    /**
-     * Get language.
-     *
-     * @return string
-     *
-     * @since 1.0.0
-     */
-    public function getLanguage() : string
-    {
-        return $this->language;
-    }
-
-    /**
      * Get vouchers.
      *
      * @return array

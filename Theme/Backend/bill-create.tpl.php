@@ -71,7 +71,7 @@ echo $this->getData('nav')->render(); ?>
                                     <label for="iLanguage"><?= $this->getHtml('Language'); ?></label>
                                     <select id="iLanguage" name="bill_language"<?= $disabled; ?>>
                                         <?php foreach ($languages as $code => $language) : $code = \strtolower(\substr($code, 1)); ?>
-                                        <option value="<?= $this->printHtml($code); ?>"<?= $code === $bill->getLanguage() ? ' selected' : ''; ?>><?= $this->printHtml($language); ?>
+                                        <option value="<?= $this->printHtml($code); ?>"<?= $code === $bill->language ? ' selected' : ''; ?>><?= $this->printHtml($language); ?>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>

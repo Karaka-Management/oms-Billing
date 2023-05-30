@@ -303,7 +303,7 @@ final class ApiBillController extends Controller
      */
     public function createBaseBillElement(Client $client, Item $item, Bill $bill, RequestAbstract $request) : BillElement
     {
-        $taxCode = $this->app->moduleManager->get('Billing', 'ApiTax')->getTaxCodeFromClientItem($client, $item, $request->getCountry());
+        $taxCode = $this->app->moduleManager->get('Billing', 'ApiTax')->getTaxCodeFromClientItem($client, $item, $request->header->l11n->country);
 
         $element = BillElement::fromItem(
             $item,
@@ -586,7 +586,7 @@ final class ApiBillController extends Controller
             ->with('l11n/type')
             ->where('id', $request->getDataInt('item') ?? 0)
             ->where('l11n/type/title', ['name1', 'name2', 'name3'], 'IN')
-            ->where('l11n/language', $bill->getLanguage())
+            ->where('l11n/language', $bill->language)
             ->execute();
 
         $element       = $this->createBaseBillElement($bill->client, $item, $bill, $request);
@@ -802,7 +802,7 @@ final class ApiBillController extends Controller
             ->with('type/defaultTemplate')
             ->with('elements')
             ->where('id', $request->getDataInt('bill') ?? 0)
-            ->where('type/l11n/language', $bill->getLanguage())
+            ->where('type/l11n/language', $bill->language)
             ->execute();
 
         $templateId = $request->getDataInt('bill_template');
@@ -918,7 +918,7 @@ final class ApiBillController extends Controller
                 ? $tmp
                 : $client->account->getEmail();
 
-            $this->sendBillEmail($media, $email, $response->getLanguage());
+            $this->sendBillEmail($media, $email, $response->header->l11n->language);
         }
 
         // Add type to media

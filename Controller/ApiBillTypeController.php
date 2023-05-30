@@ -157,7 +157,7 @@ final class ApiBillTypeController extends Controller
         $billTypeL11n      = new BaseStringL11n();
         $billTypeL11n->ref = $request->getDataInt('type') ?? 0;
         $billTypeL11n->setLanguage(
-            $request->getDataString('language') ?? $request->getLanguage()
+            $request->getDataString('language') ?? $request->header->l11n->language
         );
         $billTypeL11n->content = $request->getDataString('title') ?? '';
 

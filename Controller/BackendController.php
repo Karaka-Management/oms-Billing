@@ -68,7 +68,7 @@ final class BackendController extends Controller
             ->with('type/l11n')
             ->with('client')
             ->where('type/transferType', BillTransferType::SALES)
-            ->where('type/l11n/language', $response->getLanguage())
+            ->where('type/l11n/language', $response->header->l11n->language)
             ->sort('id', OrderType::DESC)
             ->limit(25);
 
@@ -170,7 +170,7 @@ final class BackendController extends Controller
             ->with('l11n')
             ->where('isTemplate', false)
             ->where('transferType', BillTransferType::SALES)
-            ->where('l11n/language', $request->getLanguage())
+            ->where('l11n/language', $request->header->l11n->language)
             ->execute();
 
         $view->setData('billtypes', $billTypes);
@@ -255,21 +255,21 @@ final class BackendController extends Controller
                 $mapperQuery
                     ->where('id', $request->getDataInt('id') ?? 0, '<')
                     ->where('supplier', null, '!=')
-                    ->where('type/l11n/language', $response->getLanguage())
+                    ->where('type/l11n/language', $response->header->l11n->language)
                     ->execute()
             );
         } elseif ($request->getData('ptype') === 'n') {
             $view->setData('bills',
                 $mapperQuery->where('id', $request->getDataInt('id') ?? 0, '>')
                     ->where('supplier', null, '!=')
-                    ->where('type/l11n/language', $response->getLanguage())
+                    ->where('type/l11n/language', $response->header->l11n->language)
                     ->execute()
             );
         } else {
             $view->setData('bills',
                 $mapperQuery->where('id', 0, '>')
                     ->where('supplier', null, '!=')
-                    ->where('type/l11n/language', $response->getLanguage())
+                    ->where('type/l11n/language', $response->header->l11n->language)
                     ->execute()
             );
         }
@@ -765,19 +765,19 @@ final class BackendController extends Controller
             $view->setData('bills',
                 $mapperQuery
                     ->where('id', $request->getDataInt('id') ?? 0, '<')
-                    ->where('type/l11n/language', $response->getLanguage())
+                    ->where('type/l11n/language', $response->header->l11n->language)
                     ->execute()
             );
         } elseif ($request->getData('ptype') === 'n') {
             $view->setData('bills',
                 $mapperQuery->where('id', $request->getDataInt('id') ?? 0, '>')
-                    ->where('type/l11n/language', $response->getLanguage())
+                    ->where('type/l11n/language', $response->header->l11n->language)
                     ->execute()
             );
         } else {
             $view->setData('bills',
                 $mapperQuery->where('id', 0, '>')
-                    ->where('type/l11n/language', $response->getLanguage())
+                    ->where('type/l11n/language', $response->header->l11n->language)
                     ->execute()
             );
         }
