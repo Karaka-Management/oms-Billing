@@ -271,7 +271,7 @@ final class ApiBillController extends Controller
             }
         }
 
-        $bill->setLanguage($billLanguage);
+        $bill->language = $billLanguage;
 
         $typeMapper = BillTypeMapper::get()
             ->with('l11n')
