@@ -239,7 +239,7 @@ final class ApiPriceController extends Controller
     {
         if (!empty($val = $this->validatePriceCreate($request))) {
             $response->data['price_create'] = new FormValidation($val);
-            $response->header->status = RequestStatusCode::R_400;
+            $response->header->status       = RequestStatusCode::R_400;
 
             return;
         }

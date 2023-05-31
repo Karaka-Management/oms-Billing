@@ -59,7 +59,7 @@ final class ApiAttributeController extends Controller
     {
         if (!empty($val = $this->validateBillAttributeCreate($request))) {
             $response->data['attribute_create'] = new FormValidation($val);
-            $response->header->status = RequestStatusCode::R_400;
+            $response->header->status           = RequestStatusCode::R_400;
 
             return;
         }
@@ -138,7 +138,7 @@ final class ApiAttributeController extends Controller
     {
         if (!empty($val = $this->validateBillAttributeTypeL11nCreate($request))) {
             $response->data['attr_type_l11n_create'] = new FormValidation($val);
-            $response->header->status = RequestStatusCode::R_400;
+            $response->header->status                = RequestStatusCode::R_400;
 
             return;
         }
@@ -207,7 +207,7 @@ final class ApiAttributeController extends Controller
     {
         if (!empty($val = $this->validateBillAttributeTypeCreate($request))) {
             $response->data['attr_type_create'] = new FormValidation($val);
-            $response->header->status = RequestStatusCode::R_400;
+            $response->header->status           = RequestStatusCode::R_400;
 
             return;
         }
@@ -278,7 +278,7 @@ final class ApiAttributeController extends Controller
     {
         if (!empty($val = $this->validateBillAttributeValueCreate($request))) {
             $response->data['attr_value_create'] = new FormValidation($val);
-            $response->header->status = RequestStatusCode::R_400;
+            $response->header->status            = RequestStatusCode::R_400;
 
             return;
         }
@@ -363,7 +363,7 @@ final class ApiAttributeController extends Controller
     {
         if (!empty($val = $this->validateBillAttributeValueL11nCreate($request))) {
             $response->data['attr_value_l11n_create'] = new FormValidation($val);
-            $response->header->status = RequestStatusCode::R_400;
+            $response->header->status                 = RequestStatusCode::R_400;
 
             return;
         }

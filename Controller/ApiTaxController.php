@@ -118,7 +118,7 @@ final class ApiTaxController extends Controller
     {
         if (!empty($val = $this->validateTaxCombinationCreate($request))) {
             $response->data['tax_combination_create'] = new FormValidation($val);
-            $response->header->status = RequestStatusCode::R_400;
+            $response->header->status                 = RequestStatusCode::R_400;
 
             return;
         }
