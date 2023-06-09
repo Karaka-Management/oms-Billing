@@ -106,12 +106,21 @@ echo $this->data['nav']->render(); ?>
 
                                 <div class="form-group">
                                     <label for="iClient"><?= $this->getHtml('Client'); ?></label>
-                                    <span class="input">
-                                        <button type="button" formaction="">
-                                            <i class="fa fa-book"></i>
-                                        </button>
-                                        <input type="text" id="iClient" name="bill_client" value="<?= $bill->client?->number ?? $bill->supplier?->number; ?>"<?= $disabled; ?>>
-                                    </span>
+                                    <div class="ipt-wrap">
+                                        <div class="ipt-first">
+                                            <span class="input">
+                                                <button type="button" formaction="">
+                                                    <i class="fa fa-book"></i>
+                                                </button>
+                                                <input type="text" id="iClient" name="bill_client" value="<?= $bill->client?->number ?? $bill->supplier?->number; ?>"<?= $disabled; ?>>
+                                            </span>
+                                        </div>
+                                        <?php if (($bill->client?->id ?? 0) > 0) : ?>
+                                        <div class="ipt-second">
+                                             <a class="button" href="<?= UriFactory::build('{/app}/sales/client/profile?id=' . $bill->client->id); ?>"><?= $this->getHtml('Client'); ?></a>
+                                        </div>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
 
                                 <div class="form-group">
@@ -271,11 +280,11 @@ echo $this->data['nav']->render(); ?>
                                 <td><?= $this->getHtml('Item'); ?>
                                 <td class="wf-100"><?= $this->getHtml('Name'); ?>
                                 <td><?= $this->getHtml('Quantity'); ?>
-                                <td><?= $this->getHtml('Discount'); ?>
-                                <td><?= $this->getHtml('DiscountP'); ?>
-                                <td><?= $this->getHtml('Bonus'); ?>
-                                <td><?= $this->getHtml('Tax'); ?>
-                                <td><?= $this->getHtml('Price'); ?>
+                                <td style="min-width:90px"><?= $this->getHtml('Discount'); ?>
+                                <td style="min-width:90px"><?= $this->getHtml('DiscountP'); ?>
+                                <td style="min-width:90px"><?= $this->getHtml('Bonus'); ?>
+                                <td style="min-width:90px"><?= $this->getHtml('Tax'); ?>
+                                <td style="min-width:90px"><?= $this->getHtml('Price'); ?>
                                 <td><?= $this->getHtml('Net'); ?>
                             <tbody class="oms-ordercontainer">
                             <?php if ($editable) : ?>
@@ -290,11 +299,11 @@ echo $this->data['nav']->render(); ?>
                                             <label><i class="fa fa-book"></i></label>
                                         </button><input type="text" autocomplete="off"></span>
                                     <td><textarea autocomplete="off"></textarea>
-                                    <td><input type="number" min="0" value="" autocomplete="off">
-                                    <td><input type="number" min="0" value="" autocomplete="off">
-                                    <td><input type="number" min="0" max="100" step="any" value="" autocomplete="off">
-                                    <td><input type="number" min="0" step="any" value="" autocomplete="off">
-                                    <td><input type="number" min="0" step="any" value="" autocomplete="off">
+                                    <td><input type="number" step="any" value="" autocomplete="off">
+                                    <td><input type="number" step="0.01" value="" autocomplete="off">
+                                    <td><input type="number" min="-100" max="100" step="0.01" value="" autocomplete="off">
+                                    <td><input type="number" step="0.01" value="" autocomplete="off">
+                                    <td><input type="number" step="0.01" value="" autocomplete="off">
                                     <td>
                                 </tr>
                             </template>
@@ -308,12 +317,12 @@ echo $this->data['nav']->render(); ?>
                                         <?php endif; ?>
                                     <td><span class="input"><button type="button" formaction=""><i class="fa fa-book"></i></button><input name="" type="text" value="<?= $element->itemNumber; ?>" required<?= $disabled; ?>></span>
                                     <td><textarea required<?= $disabled; ?>><?= $element->itemName; ?></textarea>
-                                    <td><input name="" type="number" min="0" value="<?= $element->getQuantity(); ?>" required<?= $disabled; ?>>
-                                    <td><input name="" type="text" value="<?= $this->getCurrency($element->singleSalesPriceNet, symbol: ''); ?>"<?= $disabled; ?>>
-                                    <td><input name="" type="number" min="0"<?= $disabled; ?>>
-                                    <td><input name="" type="number" min="0" max="100" step="any"<?= $disabled; ?>>
-                                    <td><input name="" type="number" min="0" step="any"<?= $disabled; ?>>
-                                    <td><input name="" type="number" min="0" step="any"<?= $disabled; ?>>
+                                    <td><input name="" type="number" step="any" value="<?= $element->getQuantity(); ?>" required<?= $disabled; ?>>
+                                    <td><input name="" type="number" step="0.01"<?= $disabled; ?>>
+                                    <td><input name="" type="number" step="0.01"<?= $disabled; ?>>
+                                    <td><input name="" type="number" min="-100" max="100" step="0.01"<?= $disabled; ?>>
+                                    <td><input name="" type="number" step="0.01"<?= $disabled; ?>>
+                                    <td><input name="" type="number" step="0.01" value="<?= $element->singleSalesPriceNet->getFloat(); ?>"<?= $disabled; ?>>
                                     <td><?= $this->getCurrency($element->totalSalesPriceNet); ?>
                                 <?php endforeach; ?>
                             <?php if ($editable) : ?>
@@ -323,11 +332,12 @@ echo $this->data['nav']->render(); ?>
                                         <i class="fa fa-times btn remove-form"></i>
                                     <td><span class="input"><button type="button" formaction=""><i class="fa fa-book"></i></button><input type="text" autocomplete="off"></span>
                                     <td><textarea autocomplete="off"></textarea>
-                                    <td><input type="number" min="0" value="" autocomplete="off">
-                                    <td><input type="number" min="0" value="" autocomplete="off">
-                                    <td><input type="number" min="0" max="100" step="any" value="" autocomplete="off">
-                                    <td><input type="number" min="0" step="any" value="" autocomplete="off">
-                                    <td><input type="number" min="0" step="any" value="" autocomplete="off">
+                                    <td><input type="number" step="any" value="" autocomplete="off">
+                                    <td><input type="number" step="0.01" value="" autocomplete="off">
+                                    <td><input type="number" min="-100" max="100" step="0.01" value="" autocomplete="off">
+                                    <td><input type="number" step="0.01" value="" autocomplete="off">
+                                    <td><input type="number" step="0.01" value="" autocomplete="off">
+                                    <td><input type="number" step="0.01" value="" autocomplete="off">
                                     <td>
                             <?php endif; ?>
                         </table>
@@ -460,7 +470,7 @@ echo $this->data['nav']->render(); ?>
                                         <i class="fa fa-times btn remove-form"></i>
                                         <?php endif; ?>
                                     <td><input type="datetime-local" autocomplete="off" required>
-                                    <td><input type="number" min="0" value="" autocomplete="off" required>
+                                    <td><input type="number" value="" autocomplete="off" required>
                                 </tr>
                             </template>
                         </table>

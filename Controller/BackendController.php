@@ -110,6 +110,7 @@ final class BackendController extends Controller
 
         /** @var \Modules\Billing\Models\Bill $bill */
         $bill = SalesBillMapper::get()
+            ->with('client')
             ->with('elements')
             ->with('files')
             ->with('files/types')
