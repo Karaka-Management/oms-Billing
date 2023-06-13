@@ -17,6 +17,7 @@ namespace Modules\Billing\Models;
 use Modules\Finance\Models\TaxCode;
 use Modules\ItemManagement\Models\Item;
 use phpOMS\Stdlib\Base\FloatInt;
+use phpOMS\Stdlib\Base\SmartDateTime;
 
 /**
  * Bill class.
@@ -272,12 +273,15 @@ class BillElement implements \JsonSerializable
 
         if (!empty($element->bill)
             && $item->getAttribute('subscription')->value->getValue() === 1
+            && $element->item !== null
         ) {
-            $element->subscription            = new Subscription();
-            $element->subscription->bill      = $element->bill;
-            $element->subscription->item      = $element->item;
-            $element->subscription->start     = $element->quantity;
-            $element->subscription->end       = $element->quantity;
+            $element->subscription        = new Subscription();
+            $element->subscription->bill  = $element->bill;
+            $element->subscription->item  = $element->item;
+            $element->subscription->start = new \DateTime('now'); // @todo: change to bill performanceDate
+            $element->subscription->end   = new SmartDateTime('now'); // @todo: depends on subscription type
+            $element->subscription->end->smartModify(m: 1);
+
             $element->subscription->quantity  = $element->quantity;
             $element->subscription->autoRenew = $item->getAttribute('subscription_renewal_type')->value->getValue() === 1;
         }

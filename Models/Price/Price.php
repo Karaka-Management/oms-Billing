@@ -95,6 +95,11 @@ class Price implements \JsonSerializable
 
     public ?\DateTime $end = null;
 
+    /**
+     * Constructor.
+     *
+     * @since 1.0.0
+     */
     public function __construct()
     {
         $this->item        = new NullItem();

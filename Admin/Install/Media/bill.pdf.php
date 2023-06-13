@@ -136,11 +136,11 @@ $pdf->setXY($rightPos + 26 + 2, $tempY, true);
 $pdf->MultiCell(
     25, 30,
     $bill->number . "\n"
-    . $bill->billDate->format('Y-m-d') . "\n"
-    . $bill->performanceDate->format('Y-m-d') . "\n"
+    . ($bill->billDate?->format('Y-m-d') ?? '0') . "\n"
+    . ($bill->performanceDate?->format('Y-m-d') ?? '0') . "\n"
     . $bill->accountNumber . "\n"
     . '' . "\n" /* @todo: implement customer / supplier reference as string */
-    .  $bill->billDate->format('Y-m-d'), /* Consider to add dueDate in addition */
+    .  ($bill->billDate?->format('Y-m-d') ?? '0'), /* Consider to add dueDate in addition */
     0, 'L'
 );
 $pdf->Ln();
@@ -308,6 +308,6 @@ $pdf->Ln();
 
 //Close and output PDF document
 $pdf->Output(
-    $this->data['path'] ?? ($bill->billDate->format('Y-m-d') . '_' . $bill->number . '.pdf'),
+    $this->data['path'] ?? (($bill->billDate?->format('Y-m-d') ?? '0') . '_' . $bill->number . '.pdf'),
     'I'
 );

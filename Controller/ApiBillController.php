@@ -24,6 +24,7 @@ use Modules\Billing\Models\BillElementMapper;
 use Modules\Billing\Models\BillMapper;
 use Modules\Billing\Models\BillStatus;
 use Modules\Billing\Models\BillTypeMapper;
+use Modules\Billing\Models\NullBillElement;
 use Modules\Billing\Models\SettingsEnum;
 use Modules\ClientManagement\Models\Client;
 use Modules\ClientManagement\Models\ClientMapper;
@@ -187,7 +188,7 @@ final class ApiBillController extends Controller
     /**
      * Create a base Bill object with default values
      *
-     * @param Client          $client  The client object for whom the bill is being created
+     * @param Client|Supplier $account The client or supplier object for whom the bill is being created
      * @param RequestAbstract $request The request object that contains the header account
      *
      * @return Bill The new Bill object with default values
@@ -251,7 +252,9 @@ final class ApiBillController extends Controller
         $validLanguages = [];
         if (!empty($settings) && !empty($settings->content)) {
             $validLanguages = \json_decode($settings->content, true);
-        } else {
+        }
+
+        if (empty($validLanguages) || !\is_array($validLanguages)) {
             $validLanguages = [
                 ISO639x1Enum::_EN,
             ];
@@ -441,6 +444,7 @@ final class ApiBillController extends Controller
                 }
 
                 if ($collection === null) {
+                    /** @var \Modules\Media\Models\Collection $collection */
                     $collection = MediaMapper::getParentCollection($path)
                         ->limit(1)
                         ->execute();
@@ -591,6 +595,10 @@ final class ApiBillController extends Controller
             ->where('l11n/language', $bill->language)
             ->execute();
 
+        if ($bill->client === null) {
+            return new NullBillElement();
+        }
+
         $element       = $this->createBaseBillElement($bill->client, $item, $bill, $request);
         $element->bill = $bill->id;
 
@@ -621,6 +629,19 @@ final class ApiBillController extends Controller
         return [];
     }
 
+    /**
+     * Render bill media
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
+     *
+     * @return void
+     *
+     * @api
+     *
+     * @since 1.0.0
+     */
     public function apiMediaRender(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         // @todo: check if has permission
@@ -727,7 +748,7 @@ final class ApiBillController extends Controller
         $pdfDir = __DIR__ . '/../../../Modules/Media/Files' . $path;
 
         $view->data['bill'] = $bill;
-        $view->data['path'] = $pdfDir . '/' .$bill->billDate->format('Y-m-d') . '_' . $bill->number . '.pdf';
+        $view->data['path'] = $pdfDir . '/' . ($bill->billDate?->format('Y-m-d') ?? '0') . '_' . $bill->number . '.pdf';
 
         $view->data['bill_creator']  = $request->getDataString('bill_creator');
         $view->data['bill_title']    = $request->getDataString('bill_title');
@@ -878,7 +899,7 @@ final class ApiBillController extends Controller
             // @codeCoverageIgnoreEnd
         }
 
-        $billFileName = $bill->billDate->format('Y-m-d') . '_' . $bill->number . '.pdf';
+        $billFileName = ($bill->billDate?->format('Y-m-d') ?? '0') . '_' . $bill->number . '.pdf';
 
         \file_put_contents($pdfDir . '/' . $billFileName, $pdf);
         if (!\is_file($pdfDir . '/' . $billFileName)) {
@@ -911,7 +932,7 @@ final class ApiBillController extends Controller
             ->with('attributes')
             ->with('attributes/type')
             ->with('attributes/value')
-            ->where('id', $bill->client->id)
+            ->where('id', $bill->client?->id ?? 0)
             ->where('attributes/type/name', ['bill_emails', 'bill_email_address'], 'IN')
             ->execute();
 
@@ -924,6 +945,7 @@ final class ApiBillController extends Controller
         }
 
         // Add type to media
+        /** @var \Model\Setting $originalType */
         $originalType = $this->app->appSettings->get(
             names: SettingsEnum::ORIGINAL_MEDIA_TYPE,
             module: self::NAME
@@ -953,28 +975,41 @@ final class ApiBillController extends Controller
         $this->createStandardCreateResponse($request, $response, $media);
     }
 
+    /**
+     * Send bill as email
+     *
+     * @param Media  $media    Media to send
+     * @param string $email    Email address
+     * @param string $language Message language
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function sendBillEmail(Media $media, string $email, string $language = 'en') : void
     {
-        $handler = $this->app->moduleMaanger->get('Admin', 'Api')->setUpServerMailHandler();
+        $handler = $this->app->moduleManager->get('Admin', 'Api')->setUpServerMailHandler();
 
-        $emailSettings = $this->app->appSettings->get(
+        /** @var \Model\Setting $emailFrom */
+        $emailFrom = $this->app->appSettings->get(
             names: AdminSettingsEnum::MAIL_SERVER_ADDR,
             module: 'Admin'
         );
 
-        $emailSettings = $this->app->appSettings->get(
+        /** @var \Model\Setting $billingTemplate */
+        $billingTemplate = $this->app->appSettings->get(
             names: SettingsEnum::BILLING_CUSTOMER_EMAIL_TEMPLATE,
             module: 'Billing'
         );
 
         $mail = EmailMapper::get()
             ->with('l11n')
-            ->where('id', (int) $emailSettings->content)
+            ->where('id', (int) $billingTemplate->content)
             ->where('l11n/language', $language)
             ->execute();
 
         $mail = new Email();
-        $mail->setFrom($emailSettings->content);
+        $mail->setFrom($emailFrom->content);
         $mail->addTo($email);
         $mail->addAttachment($media->getAbsolutePath(), $media->name);
 
@@ -1015,6 +1050,7 @@ final class ApiBillController extends Controller
             return;
         }
 
+        /** @var \Modules\Editor\Models\EditorDoc $model */
         $model = $response->get($request->uri->__toString())['response'];
         $this->createModelRelation($request->header->account, $request->getDataInt('id'), $model->id, BillMapper::class, 'bill_note', '', $request->getOrigin());
     }

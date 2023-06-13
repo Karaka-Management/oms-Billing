@@ -120,7 +120,7 @@ final class BackendController extends Controller
 
         $view->data['bill'] = $bill;
 
-        /** @var \Modules\Auditor\Models\Auditor[] $logsBill */
+        /** @var \Modules\Auditor\Models\Audit[] $logsBill */
         $logsBill = AuditMapper::getAll()
             ->with('createdBy')
             ->where('module', 'Billing')
@@ -128,7 +128,7 @@ final class BackendController extends Controller
             ->where('ref', $bill->id)
             ->execute();
 
-        /** @var \Modules\Auditor\Models\Auditor[] $logsElements */
+        /** @var \Modules\Auditor\Models\Audit[] $logsElements */
         $logsElements = AuditMapper::getAll()
             ->with('createdBy')
             ->where('module', 'Billing')

@@ -155,6 +155,13 @@ final class PriceMapper extends DataMapperFactory
      */
     public const PRIMARYFIELD = 'billing_price_id';
 
+    /**
+     * Find price for a client
+     *
+     * @return Price[]
+     *
+     * @since 1.0.0
+     */
     public static function findClientPrice() : array
     {
         /*

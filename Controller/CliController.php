@@ -407,7 +407,7 @@ final class CliController extends Controller
             return \DateTime::createFromFormat(
                 $supplier->getAttribute('bill_date_format')->value->valueStr ?? '',
                 $date
-            );
+            ) ?? new \DateTime('1970-01-01');
         }
 
         foreach ($formats as $format) {

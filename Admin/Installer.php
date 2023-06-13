@@ -104,16 +104,16 @@ final class Installer extends InstallerAbstract
     /**
      * Install default attribute types
      *
-     * @param ApplicationAbstract                                                                                                                                                              $app        Application
-     * @param array<array{name:string, l11n?:array<string, string>, is_required?:bool, is_custom_allowed?:bool, validation_pattern?:string, value_type?:string, values?:array<string, mixed>}> $attributes Attribute definition
+     * @param ApplicationAbstract $app        Application
+     * @param array               $attributes Attribute definition
      *
-     * @return array<string, array>
+     * @return array
      *
      * @since 1.0.0
      */
     private static function createBillAttributeTypes(ApplicationAbstract $app, array $attributes) : array
     {
-        /** @var array<string, array> $billAttrType */
+        /** @var array $billAttrType */
         $billAttrType = [];
 
         /** @var \Modules\Billing\Controller\ApiController $module */
@@ -258,7 +258,7 @@ final class Installer extends InstallerAbstract
         /** @var \Modules\Billing\Controller\ApiController $module */
         $module = $app->moduleManager->getModuleInstance('Billing');
 
-        /** @var \Modules\Attribute\Models\ItemAttributeTypeMapper $itemAttributeSales */
+        /** @var \Modules\Attribute\Models\AttributeType $itemAttributeSales */
         $itemAttributeSales = ItemAttributeTypeMapper::get()
             ->with('defaults')
             ->where('name', 'sales_tax_code')

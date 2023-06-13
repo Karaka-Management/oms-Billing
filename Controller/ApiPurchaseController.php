@@ -96,6 +96,7 @@ final class ApiPurchaseController extends Controller
             $mediaRequest->setData('parse_content', true, true);
             $this->app->moduleManager->get('Billing', 'Api')->apiMediaAddToBill($mediaRequest, $mediaResponse, $data);
 
+            /** @var \Modules\Media\Models\Media[] $uploaded */
             $uploaded = $mediaResponse->get('')['response']['upload'];
             $in       = \reset($uploaded)->getAbsolutePath(); // pdf is parsed in $in->content
 
