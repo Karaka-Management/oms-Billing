@@ -127,14 +127,6 @@ class Bill implements \JsonSerializable
      */
     public Account $createdBy;
 
-    /**
-     * Files.
-     *
-     * @var EditorDoc[]
-     * @since 1.0.0
-     */
-    private array $notes = [];
-
     public ?Client $client = null;
 
     public ?Supplier $supplier = null;
@@ -444,14 +436,6 @@ class Bill implements \JsonSerializable
     public int $reference = 0;
 
     /**
-     * Attributes.
-     *
-     * @var \Modules\Attribute\Models\Attribute[]
-     * @since 1.0.0
-     */
-    private array $attributes = [];
-
-    /**
      * Constructor.
      *
      * @since 1.0.0
@@ -700,32 +684,6 @@ class Bill implements \JsonSerializable
     }
 
     /**
-     * Add note to item
-     *
-     * @param EditorDoc $note Note
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function addNote(EditorDoc $note) : void
-    {
-        $this->notes[] = $note;
-    }
-
-    /**
-     * Get notes
-     *
-     * @return EditorDoc[]
-     *
-     * @since 1.0.0
-     */
-    public function getNotes() : array
-    {
-        return $this->notes;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function toArray() : array
@@ -758,5 +716,6 @@ class Bill implements \JsonSerializable
     }
 
     use \Modules\Attribute\Models\AttributeHolderTrait;
+    use \Modules\Editor\Models\EditorDocListTrait;
     use \Modules\Media\Models\MediaListTrait;
 }
