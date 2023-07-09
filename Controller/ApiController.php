@@ -352,4 +352,21 @@ final class ApiController extends Controller
     {
         $this->app->moduleManager->get('Billing', 'ApiAttribute')->apiBillAttributeValueL11nCreate($request, $response, $data);
     }
+
+    /**
+     * Api method to find subscriptions
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
+     *
+     * @return void
+     *
+     * @api
+     *
+     * @since 1.0.0
+     */
+    public function apiSubscriptionFind(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    {
+    }
 }
