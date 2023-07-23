@@ -562,6 +562,12 @@ final class ApiBillController extends Controller
         $element = $this->createBillElementFromRequest($request, $response, $old, $data);
         $this->createModel($request->header->account, $element, BillElementMapper::class, 'bill_element', $request->getOrigin());
 
+        // @todo: handle stock transaction here
+        // @todo: if transaction fails don't update below and send warning to user
+        // @todo: however mark transaction as reserved and only update when bill is finalized!!!
+
+        // @todo: in BillElementUpdate do the same
+
         $new = clone $old;
         $new->addElement($element);
 
