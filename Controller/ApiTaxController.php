@@ -219,4 +219,127 @@ final class ApiTaxController extends Controller
 
         return $taxCode;
     }
+
+    /**
+     * Api method to update TaxCombination
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
+     *
+     * @return void
+     *
+     * @api
+     *
+     * @since 1.0.0
+     */
+    public function apiTaxCombinationUpdate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    {
+        if (!empty($val = $this->validateTaxCombinationUpdate($request))) {
+            $response->data[$request->uri->__toString()] = new FormValidation($val);
+            $response->header->status                     = RequestStatusCode::R_400;
+
+            return;
+        }
+
+        /** @var \Modules\Billing\Models\Tax\TaxCombination $old */
+        $old = TaxCombinationMapper::get()->where('id', (int) $request->getData('id'))->execute();
+        $new = $this->updateTaxCombinationFromRequest($request, clone $old);
+
+        $this->updateModel($request->header->account, $old, $new, TaxCombinationMapper::class, 'tax_combination', $request->getOrigin());
+        $this->createStandardUpdateResponse($request, $response, $new);
+    }
+
+    /**
+     * Method to update TaxCombination from request.
+     *
+     * @param RequestAbstract  $request Request
+     * @param TaxCombination   $new     Model to modify
+     *
+     * @return TaxCombination
+     *
+     * @since 1.0.0
+     */
+    public function updateTaxCombinationFromRequest(RequestAbstract $request, TaxCombination $new) : TaxCombination
+    {
+        $new->taxType  = $request->getDataInt('tax_type') ?? $new->taxType;
+        $new->taxCode  = $request->getDataString('tax_code') ?? $new->taxCode;
+        $new->itemCode = $request->hasData('item_code') ? new NullAttributeValue((int) $request->getData('item_code')) : $new->itemCode;
+
+        if ($new->taxType === 1) {
+            $new->clientCode = $request->hasData('account_code') ? new NullAttributeValue((int) $request->getData('account_code')) : $new->clientCode;
+        } else {
+            $new->supplierCode = $request->hasData('account_code') ? new NullAttributeValue((int) $request->getData('account_code')) : $new->supplierCode;
+        }
+
+        return $new;
+    }
+
+    /**
+     * Validate TaxCombination update request
+     *
+     * @param RequestAbstract $request Request
+     *
+     * @return array<string, bool>
+     *
+     * @since 1.0.0
+     */
+    private function validateTaxCombinationUpdate(RequestAbstract $request) : array
+    {
+        $val = [];
+        if (($val['id'] = !$request->hasData('id'))) {
+            return $val;
+        }
+
+        return [];
+    }
+
+    /**
+     * Api method to delete TaxCombination
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
+     *
+     * @return void
+     *
+     * @api
+     *
+     * @since 1.0.0
+     */
+    public function apiTaxCombinationDelete(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    {
+        if (!empty($val = $this->validateTaxCombinationDelete($request))) {
+            $response->data[$request->uri->__toString()] = new FormValidation($val);
+            $response->header->status                     = RequestStatusCode::R_400;
+
+            return;
+        }
+
+        /** @var \Modules\Billing\Models\TaxCombination $taxCombination */
+        $taxCombination = TaxCombinationMapper::get()->where('id', (int) $request->getData('id'))->execute();
+        $this->deleteModel($request->header->account, $taxCombination, TaxCombinationMapper::class, 'tax_combination', $request->getOrigin());
+        $this->createStandardDeleteResponse($request, $response, $taxCombination);
+    }
+
+    /**
+     * Validate TaxCombination delete request
+     *
+     * @param RequestAbstract $request Request
+     *
+     * @return array<string, bool>
+     *
+     * @todo: implement
+     *
+     * @since 1.0.0
+     */
+    private function validateTaxCombinationDelete(RequestAbstract $request) : array
+    {
+        $val = [];
+        if (($val['id'] = !$request->hasData('id'))) {
+            return $val;
+        }
+
+        return [];
+    }
 }

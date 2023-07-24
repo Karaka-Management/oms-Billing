@@ -28,6 +28,7 @@ use Modules\Billing\Models\NullBillElement;
 use Modules\Billing\Models\SettingsEnum;
 use Modules\ClientManagement\Models\Client;
 use Modules\ClientManagement\Models\ClientMapper;
+use Modules\Editor\Models\EditorDocMapper;
 use Modules\ItemManagement\Models\Item;
 use Modules\ItemManagement\Models\ItemMapper;
 use Modules\Media\Models\CollectionMapper;
@@ -84,8 +85,8 @@ final class ApiBillController extends Controller
         }
 
         /** @var \Modules\Billing\Models\Bill $old */
-        $old = BillMapper::get()->where('id', (int) $request->getData('bill'));
-        $new = $this->updateBillFromRequest($request, $response, $data);
+        $old = BillMapper::get()->where('id', (int) $request->getData('bill'))->execute();
+        $new = $this->updateBillFromRequest($request, clone $old);
 
         $this->updateModel($request->header->account, $old, $new, BillMapper::class, 'bill', $request->getOrigin());
         $this->createStandardUpdateResponse($request, $response, $new);
@@ -114,19 +115,15 @@ final class ApiBillController extends Controller
      * Method to create a bill from request.
      *
      * @param RequestAbstract  $request  Request
-     * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param Bill             $old      Bill
      *
      * @return Bill
      *
      * @since 1.0.0
      */
-    public function updateBillFromRequest(RequestAbstract $request, ResponseAbstract $response, $data = null) : Bill
+    public function updateBillFromRequest(RequestAbstract $request, Bill $old) : Bill
     {
-        /** @var Bill $bill */
-        $bill = BillMapper::get()->where('id', (int) $request->getData('bill'))->execute();
-
-        return $bill;
+        return $old;
     }
 
     /**
@@ -380,7 +377,7 @@ final class ApiBillController extends Controller
     }
 
     /**
-     * Api method to create a bill
+     * Api method to add Media to a Bill
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
@@ -488,6 +485,109 @@ final class ApiBillController extends Controller
             'upload' => $uploaded,
             'media'  => $mediaFiles,
         ]);
+    }
+
+    /**
+     * Api method to remove Media from Bill
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
+     *
+     * @return void
+     *
+     * @api
+     *
+     * @since 1.0.0
+     */
+    public function apiMediaRemoveFromBill(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    {
+        // @todo: check that it is not system generated media!
+        if (!empty($val = $this->validateMediaRemoveFromBill($request))) {
+            $response->data[$request->uri->__toString()] = new FormValidation($val);
+            $response->header->status                    = RequestStatusCode::R_400;
+
+            return;
+        }
+
+        /** @var \Modules\Media\Models\Media $media */
+        $media = MediaMapper::get()->where('id', (int) $request->getData('media'))->execute();
+
+        /** @var \Modules\Billing\Models\Bill $bill */
+        $bill = BillMapper::get()->where('id', (int) $request->getData('bill'))->execute();
+
+        $path = $this->createBillDir($bill);
+
+        $billCollection = CollectionMapper::getAll()
+            ->where('virtual', $path)
+            ->execute();
+
+        if (\count($billCollection) !== 1) {
+            // For some reason there are multiple collections with the same virtual path?
+            // @todo: check if this is the correct way to handle it or if we need to make sure that it is a collection
+            return;
+        }
+
+        $collection = \reset($billCollection);
+
+        $this->deleteModelRelation(
+            $request->header->account,
+            $bill->id,
+            $media->id,
+            BillMapper::class,
+            'files',
+            '',
+            $request->getOrigin()
+        );
+
+        $this->deleteModelRelation(
+            $request->header->account,
+            $collection->id,
+            $media->id,
+            CollectionMapper::class,
+            'sources',
+            '',
+            $request->getOrigin()
+        );
+
+        $referenceCount = MediaMapper::countInternalReferences($media->id);
+
+        if ($referenceCount === 0) {
+            // Is not used anywhere else -> remove from db and file system
+
+            // @todo: remove media types from media
+
+            $this->deleteModel($request->header->account, $media, MediaMapper::class, 'bill_media', $request->getOrigin());
+
+            if (\is_dir($media->getAbsolutePath())) {
+                \phpOMS\System\File\Local\Directory::delete($media->getAbsolutePath());
+            } else {
+                \phpOMS\System\File\Local\File::delete($media->getAbsolutePath());
+            }
+        }
+
+        $this->createStandardDeleteResponse($request, $response, $media);
+    }
+
+    /**
+     * Validate Media remove from Bill request
+     *
+     * @param RequestAbstract $request Request
+     *
+     * @return array<string, bool>
+     *
+     * @since 1.0.0
+     */
+    private function validateMediaRemoveFromBill(RequestAbstract $request) : array
+    {
+        $val = [];
+        if (($val['media'] = !$request->hasData('media'))
+            || ($val['bill'] = !$request->hasData('bill'))
+        ) {
+            return $val;
+        }
+
+        return [];
     }
 
     /**
@@ -1078,5 +1178,236 @@ final class ApiBillController extends Controller
         }
 
         return [];
+    }
+
+    /**
+     * Api method to delete Bill
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
+     *
+     * @return void
+     *
+     * @api
+     *
+     * @since 1.0.0
+     */
+    public function apiBillDelete(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    {
+        if (!empty($val = $this->validateBillDelete($request))) {
+            $response->data[$request->uri->__toString()] = new FormValidation($val);
+            $response->header->status                     = RequestStatusCode::R_400;
+
+            return;
+        }
+
+        /** @var \Modules\Billing\Models\Bill $old */
+        $old = BillMapper::get()->where('id', (int) $request->getData('id'))->execute();
+
+        // @todo: check if bill can be deleted
+        // @todo: adjust stock transfer
+
+        $new = $this->deleteBillFromRequest($request, clone $old);
+        $this->updateModel($request->header->account, $old, $new, BillMapper::class, 'bill', $request->getOrigin());
+        $this->createStandardDeleteResponse($request, $response, $old);
+    }
+
+    /**
+     * Method to create a bill from request.
+     *
+     * @param RequestAbstract  $request  Request
+     * @param Bill             $new Bill
+     *
+     * @return Bill
+     *
+     * @since 1.0.0
+     */
+    public function deleteBillFromRequest(RequestAbstract $request, Bill $new) : Bill
+    {
+        $new->status = BillStatus::DELETED;
+
+        return $new;
+    }
+
+    /**
+     * Validate Bill delete request
+     *
+     * @param RequestAbstract $request Request
+     *
+     * @return array<string, bool>
+     *
+     * @todo: implement
+     *
+     * @since 1.0.0
+     */
+    private function validateBillDelete(RequestAbstract $request) : array
+    {
+        $val = [];
+        if (($val['id'] = !$request->hasData('id'))) {
+            return $val;
+        }
+
+        return [];
+    }
+
+    /**
+     * Api method to update BillElement
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
+     *
+     * @return void
+     *
+     * @api
+     *
+     * @since 1.0.0
+     */
+    public function apiBillElementUpdate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    {
+        if (!empty($val = $this->validateBillElementUpdate($request))) {
+            $response->data[$request->uri->__toString()] = new FormValidation($val);
+            $response->header->status                     = RequestStatusCode::R_400;
+
+            return;
+        }
+
+        /** @var BillElement $old */
+        $old = BillElementMapper::get()->where('id', (int) $request->getData('id'))->execute();
+
+        // @todo: can be edited?
+        // @todo: adjust transfer protocolls
+
+        $new = $this->updateBillElementFromRequest($request, clone $old);
+
+        $this->updateModel($request->header->account, $old, $new, BillElementMapper::class, 'bill_element', $request->getOrigin());
+        $this->createStandardUpdateResponse($request, $response, $new);
+    }
+
+    /**
+     * Method to update BillElement from request.
+     *
+     * @param RequestAbstract  $request Request
+     * @param BillElement     $new     Model to modify
+     *
+     * @return BillElement
+     *
+     * @todo: implement
+     *
+     * @since 1.0.0
+     */
+    public function updateBillElementFromRequest(RequestAbstract $request, BillElement $new) : BillElement
+    {
+        return $new;
+    }
+
+    /**
+     * Validate BillElement update request
+     *
+     * @param RequestAbstract $request Request
+     *
+     * @return array<string, bool>
+     *
+     * @todo: implement
+     *
+     * @since 1.0.0
+     */
+    private function validateBillElementUpdate(RequestAbstract $request) : array
+    {
+        $val = [];
+        if (($val['id'] = !$request->hasData('id'))) {
+            return $val;
+        }
+
+        return [];
+    }
+
+    /**
+     * Api method to delete BillElement
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
+     *
+     * @return void
+     *
+     * @api
+     *
+     * @since 1.0.0
+     */
+    public function apiBillElementDelete(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    {
+        if (!empty($val = $this->validateBillElementDelete($request))) {
+            $response->data[$request->uri->__toString()] = new FormValidation($val);
+            $response->header->status                     = RequestStatusCode::R_400;
+
+            return;
+        }
+
+        // @todo: check if can be deleted
+        // @todo: handle transactions and bill update
+
+        /** @var \Modules\Billing\Models\BillElement $billElement */
+        $billElement = BillElementMapper::get()->where('id', (int) $request->getData('id'))->execute();
+        $this->deleteModel($request->header->account, $billElement, BillElementMapper::class, 'bill_element', $request->getOrigin());
+        $this->createStandardDeleteResponse($request, $response, $billElement);
+    }
+
+    /**
+     * Validate BillElement delete request
+     *
+     * @param RequestAbstract $request Request
+     *
+     * @return array<string, bool>
+     *
+     * @since 1.0.0
+     */
+    private function validateBillElementDelete(RequestAbstract $request) : array
+    {
+        $val = [];
+        if (($val['id'] = !$request->hasData('id'))) {
+            return $val;
+        }
+
+        return [];
+    }
+
+    /**
+     * Api method to update Note
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
+     *
+     * @return void
+     *
+     * @api
+     *
+     * @since 1.0.0
+     */
+    public function apiNoteUpdate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    {
+        // @todo: check permissions
+        $this->app->moduleManager->get('Editor', 'Api')->apiEditorDocUpdate($request, $response, $data);
+    }
+
+    /**
+     * Api method to delete Note
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
+     *
+     * @return void
+     *
+     * @api
+     *
+     * @since 1.0.0
+     */
+    public function apiNoteDelete(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    {
+        // @todo: check permissions
+        $this->app->moduleManager->get('Editor', 'Api')->apiEditorDocDelete($request, $response, $data);
     }
 }

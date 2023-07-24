@@ -301,12 +301,166 @@ final class ApiPriceController extends Controller
      *
      * @return array<string, bool>
      *
+     * @todo: consider to prevent name 'base'?
+     * Might not be possible because it is used internally as well (see apiItemCreate in ItemManagement)
+     *
      * @since 1.0.0
      */
     private function validatePriceCreate(RequestAbstract $request) : array
     {
         $val = [];
         if (false) {
+            return $val;
+        }
+
+        return [];
+    }
+
+    /**
+     * Api method to update Price
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
+     *
+     * @return void
+     *
+     * @api
+     *
+     * @since 1.0.0
+     */
+    public function apiPriceUpdate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    {
+        if (!empty($val = $this->validatePriceUpdate($request))) {
+            $response->data[$request->uri->__toString()] = new FormValidation($val);
+            $response->header->status                     = RequestStatusCode::R_400;
+
+            return;
+        }
+
+        /** @var \Modules\Billing\Models\Price\Price $old */
+        $old = PriceMapper::get()->where('id', (int) $request->getData('id'))->execute();
+        $new = $this->updatePriceFromRequest($request, clone $old);
+
+        $this->updateModel($request->header->account, $old, $new, PriceMapper::class, 'price', $request->getOrigin());
+        $this->createStandardUpdateResponse($request, $response, $new);
+    }
+
+    /**
+     * Method to update Price from request.
+     *
+     * @param RequestAbstract  $request Request
+     * @param Price     $new     Model to modify
+     *
+     * @return Price
+     *
+     * @since 1.0.0
+     */
+    public function updatePriceFromRequest(RequestAbstract $request, Price $new) : Price
+    {
+        $new->name      = $new->name !== 'base' && $request->hasData('name') ? $request->getDataString('name') : $new->name;
+        $new->promocode = $request->getDataString('promocode') ?? $new->promocode;
+
+        $new->item        = $request->hasData('item') ? new NullItem((int) $request->getData('item')) : $new->item;
+        $new->itemgroup   = $request->hasData('itemgroup') ? new NullAttributeValue((int) $request->getData('itemgroup')) : $new->itemgroup;
+        $new->itemsegment = $request->hasData('itemsegment') ? new NullAttributeValue((int) $request->getData('itemsegment')) : $new->itemsegment;
+        $new->itemsection = $request->hasData('itemsection') ? new NullAttributeValue((int) $request->getData('itemsection')) : $new->itemsection;
+        $new->itemtype    = $request->hasData('itemtype') ? new NullAttributeValue((int) $request->getData('itemtype')) : $new->itemtype;
+
+        $new->client        = $request->hasData('client') ? new NullClient((int) $request->getData('client')) : $new->client;
+        $new->clientgroup   = $request->hasData('clientgroup') ? new NullAttributeValue((int) $request->getData('clientgroup')) : $new->clientgroup;
+        $new->clientsegment = $request->hasData('clientsegment') ? new NullAttributeValue((int) $request->getData('clientsegment')) : $new->clientsegment;
+        $new->clientsection = $request->hasData('clientsection') ? new NullAttributeValue((int) $request->getData('clientsection')) : $new->clientsection;
+        $new->clienttype    = $request->hasData('clienttype') ? new NullAttributeValue((int) $request->getData('clienttype')) : $new->clienttype;
+
+        $new->supplier           = $request->hasData('supplier') ? new NullSupplier((int) $request->getData('supplier')) : $new->supplier;
+        $new->unit               = $request->getDataInt('unit') ?? $new->unit;
+        $new->type               = $request->getDataInt('type') ?? $new->type;
+        $new->quantity           = $request->getDataInt('quantity') ?? $new->quantity;
+        $new->price              = $request->hasData('price') ? new FloatInt((int) $request->getData('price')) : $new->price;
+        $new->priceNew           = $request->getDataInt('price_new') ?? $new->priceNew;
+        $new->discount           = $request->getDataInt('discount') ?? $new->discount;
+        $new->discountPercentage = $request->getDataInt('discountPercentage') ?? $new->discountPercentage;
+        $new->bonus              = $request->getDataInt('bonus') ?? $new->bonus;
+        $new->multiply           = $request->getDataBool('multiply') ?? $new->multiply;
+        $new->currency           = $request->getDataString('currency') ?? $new->currency;
+        $new->start              = $request->getDataDateTime('start') ?? $new->start;
+        $new->end                = $request->getDataDateTime('end') ?? $new->end;
+
+        return $new;
+    }
+
+    /**
+     * Validate Price update request
+     *
+     * @param RequestAbstract $request Request
+     *
+     * @return array<string, bool>
+     *
+     * @todo: implement
+     * @todo: consider to block 'base' name
+     *
+     * @since 1.0.0
+     */
+    private function validatePriceUpdate(RequestAbstract $request) : array
+    {
+        $val = [];
+        if (($val['id'] = !$request->hasData('id'))) {
+            return $val;
+        }
+
+        return [];
+    }
+
+    /**
+     * Api method to delete Price
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
+     *
+     * @return void
+     *
+     * @api
+     *
+     * @since 1.0.0
+     */
+    public function apiPriceDelete(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    {
+        if (!empty($val = $this->validatePriceDelete($request))) {
+            $response->data[$request->uri->__toString()] = new FormValidation($val);
+            $response->header->status                    = RequestStatusCode::R_400;
+
+            return;
+        }
+
+        /** @var \Modules\Billing\Models\Price\Price $price */
+        $price = PriceMapper::get()->where('id', (int) $request->getData('id'))->execute();
+
+        if ($price->name === 'base') {
+            // default price cannot be deleted
+            $this->createInvalidDeleteResponse($request, $response, []);
+
+            return;
+        }
+
+        $this->deleteModel($request->header->account, $price, PriceMapper::class, 'price', $request->getOrigin());
+        $this->createStandardDeleteResponse($request, $response, $price);
+    }
+
+    /**
+     * Validate Price delete request
+     *
+     * @param RequestAbstract $request Request
+     *
+     * @return array<string, bool>
+     *
+     * @since 1.0.0
+     */
+    private function validatePriceDelete(RequestAbstract $request) : array
+    {
+        $val = [];
+        if (($val['id'] = !$request->hasData('id'))) {
             return $val;
         }
 
