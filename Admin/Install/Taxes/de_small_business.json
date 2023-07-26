@@ -1,0 +1,362 @@
+[
+    {
+        "type": 1,
+        "item_code": "SOFTWARE",
+        "account_code": "EU",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SOFTWARE",
+        "account_code": "AT",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SOFTWARE",
+        "account_code": "BE",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SOFTWARE",
+        "account_code": "BG",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SOFTWARE",
+        "account_code": "HR",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SOFTWARE",
+        "account_code": "CY",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SOFTWARE",
+        "account_code": "CZ",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SOFTWARE",
+        "account_code": "DK",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SOFTWARE",
+        "account_code": "EE",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SOFTWARE",
+        "account_code": "FI",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SOFTWARE",
+        "account_code": "FR",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SOFTWARE",
+        "account_code": "DE",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SOFTWARE",
+        "account_code": "GR",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SOFTWARE",
+        "account_code": "HU",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SOFTWARE",
+        "account_code": "IE",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SOFTWARE",
+        "account_code": "IT",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SOFTWARE",
+        "account_code": "LV",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SOFTWARE",
+        "account_code": "LT",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SOFTWARE",
+        "account_code": "LU",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SOFTWARE",
+        "account_code": "MT",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SOFTWARE",
+        "account_code": "NL",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SOFTWARE",
+        "account_code": "PL",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SOFTWARE",
+        "account_code": "PT",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SOFTWARE",
+        "account_code": "RO",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SOFTWARE",
+        "account_code": "SK",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SOFTWARE",
+        "account_code": "SI",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SOFTWARE",
+        "account_code": "ES",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SOFTWARE",
+        "account_code": "SE",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SOFTWARE",
+        "account_code": "GB",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SOFTWARE",
+        "account_code": "INT",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SERVICE",
+        "account_code": "EU",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SERVICE",
+        "account_code": "AT",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SERVICE",
+        "account_code": "BE",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SERVICE",
+        "account_code": "BG",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SERVICE",
+        "account_code": "HR",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SERVICE",
+        "account_code": "CY",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SERVICE",
+        "account_code": "CZ",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SERVICE",
+        "account_code": "DK",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SERVICE",
+        "account_code": "EE",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SERVICE",
+        "account_code": "FI",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SERVICE",
+        "account_code": "FR",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SERVICE",
+        "account_code": "DE",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SERVICE",
+        "account_code": "GR",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SERVICE",
+        "account_code": "HU",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SERVICE",
+        "account_code": "IE",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SERVICE",
+        "account_code": "IT",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SERVICE",
+        "account_code": "LV",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SERVICE",
+        "account_code": "LT",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SERVICE",
+        "account_code": "LU",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SERVICE",
+        "account_code": "MT",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SERVICE",
+        "account_code": "NL",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SERVICE",
+        "account_code": "PL",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SERVICE",
+        "account_code": "PT",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SERVICE",
+        "account_code": "RO",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SERVICE",
+        "account_code": "SK",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SERVICE",
+        "account_code": "SI",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SERVICE",
+        "account_code": "ES",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SERVICE",
+        "account_code": "SE",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SERVICE",
+        "account_code": "GB",
+        "tax_code": "SBIZ_0"
+    },
+    {
+        "type": 1,
+        "item_code": "SERVICE",
+        "account_code": "INT",
+        "tax_code": "SBIZ_0"
+    }
+]

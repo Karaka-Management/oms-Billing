@@ -14,8 +14,8 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Models\Tax;
 
-use Modules\ClientManagement\Models\ClientAttributeValueMapper;
-use Modules\ItemManagement\Models\ItemAttributeValueMapper;
+use Modules\ClientManagement\Models\Attribute\ClientAttributeValueMapper;
+use Modules\ItemManagement\Models\Attribute\ItemAttributeValueMapper;
 use Modules\SupplierManagement\Models\SupplierAttributeValueMapper;
 use phpOMS\DataStorage\Database\Mapper\DataMapperFactory;
 

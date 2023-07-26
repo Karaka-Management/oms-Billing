@@ -24,10 +24,8 @@ use Modules\Media\Models\NullCollection;
 use phpOMS\Localization\BaseStringL11n;
 use phpOMS\Localization\ISO639x1Enum;
 use phpOMS\Message\Http\RequestStatusCode;
-use phpOMS\Message\NotificationLevel;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
-use phpOMS\Model\Message\FormValidation;
 
 /**
  * Billing class.
@@ -55,16 +53,15 @@ final class ApiBillTypeController extends Controller
     public function apiBillTypeCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateBillTypeCreate($request))) {
-            $response->data['bill_type_create'] = new FormValidation($val);
-            $response->header->status           = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidCreateResponse($request, $response, $val);
 
             return;
         }
 
         $billType = $this->createBillTypeFromRequest($request);
         $this->createModel($request->header->account, $billType, BillTypeMapper::class, 'bill_type', $request->getOrigin());
-
-        $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Bill type', 'Bill type successfully created', $billType);
+        $this->createStandardCreateResponse($request, $response, $billType);
     }
 
     /**
@@ -132,15 +129,15 @@ final class ApiBillTypeController extends Controller
     public function apiBillTypeL11nCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateBillTypeL11nCreate($request))) {
-            $response->data['bill_type_l11n_create'] = new FormValidation($val);
-            $response->header->status                = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidCreateResponse($request, $response, $val);
 
             return;
         }
 
         $billTypeL11n = $this->createBillTypeL11nFromRequest($request);
         $this->createModel($request->header->account, $billTypeL11n, BillTypeL11nMapper::class, 'bill_type_l11n', $request->getOrigin());
-        $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Localization', 'Localization successfully created', $billTypeL11n);
+        $this->createStandardCreateResponse($request, $response, $billTypeL11n);
     }
 
     /**
@@ -201,8 +198,8 @@ final class ApiBillTypeController extends Controller
     public function apiBillTypeUpdate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateBillTypeUpdate($request))) {
-            $response->data[$request->uri->__toString()] = new FormValidation($val);
-            $response->header->status                     = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidUpdateResponse($request, $response, $val);
 
             return;
         }
@@ -277,8 +274,8 @@ final class ApiBillTypeController extends Controller
     public function apiBillTypeDelete(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateBillTypeDelete($request))) {
-            $response->data[$request->uri->__toString()] = new FormValidation($val);
-            $response->header->status                     = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidDeleteResponse($request, $response, $val);
 
             return;
         }
@@ -324,8 +321,8 @@ final class ApiBillTypeController extends Controller
     public function apiBillTypeL11nUpdate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateBillTypeL11nUpdate($request))) {
-            $response->data[$request->uri->__toString()] = new FormValidation($val);
-            $response->header->status                     = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidUpdateResponse($request, $response, $val);
 
             return;
         }
@@ -394,8 +391,8 @@ final class ApiBillTypeController extends Controller
     public function apiBillTypeL11nDelete(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateBillTypeL11nDelete($request))) {
-            $response->data[$request->uri->__toString()] = new FormValidation($val);
-            $response->header->status                    = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidDeleteResponse($request, $response, $val);
 
             return;
         }

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Jingga
  *
@@ -21,18 +20,17 @@ use Modules\Attribute\Models\AttributeValue;
 use Modules\Attribute\Models\NullAttributeValue;
 use Modules\Billing\Models\Tax\TaxCombination;
 use Modules\Billing\Models\Tax\TaxCombinationMapper;
+use Modules\ClientManagement\Models\Attribute\ClientAttributeTypeMapper;
 use Modules\ClientManagement\Models\Client;
-use Modules\ClientManagement\Models\ClientAttributeTypeMapper;
 use Modules\Finance\Models\TaxCode;
 use Modules\Finance\Models\TaxCodeMapper;
 use Modules\ItemManagement\Models\Item;
 use Modules\Organization\Models\UnitMapper;
 use phpOMS\Localization\ISO3166CharEnum;
 use phpOMS\Message\Http\RequestStatusCode;
-use phpOMS\Message\NotificationLevel;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
-use phpOMS\Model\Message\FormValidation;
+use phpOMS\Security\Guard;
 
 /**
  * Billing class.
@@ -59,46 +57,48 @@ final class ApiTaxController extends Controller
     {
         // @todo: define default sales tax code if none available?!
         // @todo: consider to actually use a ownsOne reference instead of only a string, this way the next line with the TaxCodeMapper can be removed
+
         /** @var \Modules\Billing\Models\Tax\TaxCombination $taxCombination */
         $taxCombination = TaxCombinationMapper::get()
-                ->where('itemCode', $item->getAttribute('sales_tax_code')->value->id)
-                ->where('clientCode', $client->getAttribute('sales_tax_code')->value->id)
-                ->execute();
+            ->where('itemCode', $item->getAttribute('sales_tax_code')->value->id)
+            ->where('clientCode', $client->getAttribute('sales_tax_code')->value->id)
+            ->execute();
 
         /** @var \Modules\Finance\Models\TaxCode $taxCode */
         $taxCode = TaxCodeMapper::get()
             ->where('abbr', $taxCombination->taxCode)
             ->execute();
 
-        // If now tax code could be found, the local tax code should be used.
-        if ($taxCode->id === 0) {
-            /** @var \Modules\Organization\Models\Unit $unit */
-            $unit = UnitMapper::get()
-                ->with('mainAddress')
-                ->where('id', $this->app->unitId)
-                ->execute();
-
-            // Create dummy client
-            $client              = new Client();
-            $client->mainAddress =  $unit->mainAddress;
-
-            if (!empty($defaultCountry)) {
-                $client->mainAddress->setCountry($defaultCountry);
-            }
-
-            $taxCodeAttribute = $this->getClientTaxCode($client,  $unit->mainAddress);
-
-            /** @var \Modules\Billing\Models\Tax\TaxCombination $taxCombination */
-            $taxCombination = TaxCombinationMapper::get()
-                ->where('itemCode', $item->getAttribute('sales_tax_code')->value->id)
-                ->where('clientCode', $taxCodeAttribute->id)
-                ->execute();
-
-            /** @var \Modules\Finance\Models\TaxCode $taxCode */
-            $taxCode = TaxCodeMapper::get()
-                ->where('abbr', $taxCombination->taxCode)
-                ->execute();
+        if ($taxCode->id !== 0) {
+            return $taxCode;
         }
+
+        /** @var \Modules\Organization\Models\Unit $unit */
+        $unit = UnitMapper::get()
+            ->with('mainAddress')
+            ->where('id', $this->app->unitId)
+            ->execute();
+
+        // Create dummy client
+        $client              = new Client();
+        $client->mainAddress =  $unit->mainAddress;
+
+        if (!empty($defaultCountry)) {
+            $client->mainAddress->setCountry($defaultCountry);
+        }
+
+        $taxCodeAttribute = $this->getClientTaxCode($client,  $unit->mainAddress);
+
+        /** @var \Modules\Billing\Models\Tax\TaxCombination $taxCombination */
+        $taxCombination = TaxCombinationMapper::get()
+            ->where('itemCode', $item->getAttribute('sales_tax_code')->value->id)
+            ->where('clientCode', $taxCodeAttribute->id)
+            ->execute();
+
+        /** @var \Modules\Finance\Models\TaxCode $taxCode */
+        $taxCode = TaxCodeMapper::get()
+            ->where('abbr', $taxCombination->taxCode)
+            ->execute();
 
         return $taxCode;
     }
@@ -117,16 +117,15 @@ final class ApiTaxController extends Controller
     public function apiTaxCombinationCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateTaxCombinationCreate($request))) {
-            $response->data['tax_combination_create'] = new FormValidation($val);
-            $response->header->status                 = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidCreateResponse($request, $response, $val);
 
             return;
         }
 
         $tax = $this->createTaxCombinationFromRequest($request);
         $this->createModel($request->header->account, $tax, TaxCombinationMapper::class, 'tax_combination', $request->getOrigin());
-
-        $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Tax combination', 'Tax combination successfully created', $tax);
+        $this->createStandardCreateResponse($request, $response, $tax);
     }
 
     /**
@@ -197,6 +196,7 @@ final class ApiTaxController extends Controller
 
         $taxCode = new NullAttributeValue();
 
+        // @todo: need to consider own tax id as well
         if ($taxOfficeAddress->getCountry() === $client->mainAddress->getCountry()) {
             $taxCode = $codes->getDefaultByValue($client->mainAddress->getCountry());
         } elseif (\in_array($taxOfficeAddress->getCountry(), ISO3166CharEnum::getRegion('eu'))
@@ -236,8 +236,8 @@ final class ApiTaxController extends Controller
     public function apiTaxCombinationUpdate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateTaxCombinationUpdate($request))) {
-            $response->data[$request->uri->__toString()] = new FormValidation($val);
-            $response->header->status                     = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidUpdateResponse($request, $response, $val);
 
             return;
         }
@@ -248,6 +248,80 @@ final class ApiTaxController extends Controller
 
         $this->updateModel($request->header->account, $old, $new, TaxCombinationMapper::class, 'tax_combination', $request->getOrigin());
         $this->createStandardUpdateResponse($request, $response, $new);
+    }
+
+    /**
+     * Api method to update TaxCombination
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
+     *
+     * @return void
+     *
+     * @api
+     *
+     * @since 1.0.0
+     */
+    public function apiChangeDefaultTaxCombinations(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    {
+        if (!empty($val = $this->validateDefaultTaxCombinationChange($request))) {
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidUpdateResponse($request, $response, $val);
+
+            return;
+        }
+
+        if (!Guard::isSafePath(
+                $path = __DIR__ . '/../Admin/Install/Taxes/' . $request->getDataString('type') . '.json',
+                __DIR__ . '/../Admin/Install/Taxes'
+            )
+        ) {
+            return;
+        }
+
+        $combinations = \json_decode(\file_get_contents($path), true);
+
+        foreach ($combinations as $combination) {
+            $old = TaxCombinationMapper::getAll()
+                ->with('clientCode')
+                ->with('itemCode')
+                ->where('clientCode/valueStr', $combination['account_code'])
+                ->where('itemCode/valueStr', $combination['item_code'])
+                ->execute();
+
+            if (\count($old) !== 1) {
+                continue;
+            }
+
+            $old = \reset($old);
+
+            $new = clone $old;
+            $new->taxCode = $combination['tax_code'];
+
+            $this->updateModel($request->header->account, $old, $new, TaxCombinationMapper::class, 'tax_combination', $request->getOrigin());
+        }
+
+        $this->createStandardUpdateResponse($request, $response, []);
+    }
+
+    /**
+     * Validate TaxCombination update request
+     *
+     * @param RequestAbstract $request Request
+     *
+     * @return array<string, bool>
+     *
+     * @since 1.0.0
+     */
+    private function validateDefaultTaxCombinationChange(RequestAbstract $request) : array
+    {
+        $val = [];
+        if (($val['type'] = !$request->hasData('type'))) {
+            return $val;
+        }
+
+        return [];
     }
 
     /**
@@ -310,8 +384,8 @@ final class ApiTaxController extends Controller
     public function apiTaxCombinationDelete(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateTaxCombinationDelete($request))) {
-            $response->data[$request->uri->__toString()] = new FormValidation($val);
-            $response->header->status                     = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidDeleteResponse($request, $response, $val);
 
             return;
         }

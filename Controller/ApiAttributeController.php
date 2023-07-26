@@ -24,10 +24,8 @@ use Modules\Billing\Models\Attribute\BillAttributeValueL11nMapper;
 use Modules\Billing\Models\Attribute\BillAttributeValueMapper;
 use phpOMS\Localization\BaseStringL11n;
 use phpOMS\Message\Http\RequestStatusCode;
-use phpOMS\Message\NotificationLevel;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
-use phpOMS\Model\Message\FormValidation;
 
 /**
  * Billing class.
@@ -39,7 +37,7 @@ use phpOMS\Model\Message\FormValidation;
  */
 final class ApiAttributeController extends Controller
 {
-    use \Modules\Attribute\Controller\ApiTraitController;
+    use \Modules\Attribute\Controller\ApiAttributeTraitController;
 
     /**
      * Api method to create item attribute
@@ -57,15 +55,15 @@ final class ApiAttributeController extends Controller
     public function apiBillAttributeCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateAttributeCreate($request))) {
-            $response->data['attribute_create'] = new FormValidation($val);
-            $response->header->status           = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidCreateResponse($request, $response, $val);
 
             return;
         }
 
         $attribute = $this->createAttributeFromRequest($request);
         $this->createModel($request->header->account, $attribute, BillAttributeMapper::class, 'attribute', $request->getOrigin());
-        $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Attribute', 'Attribute successfully created', $attribute);
+        $this->createStandardCreateResponse($request, $response, $attribute);
     }
 
     /**
@@ -84,15 +82,15 @@ final class ApiAttributeController extends Controller
     public function apiBillAttributeTypeL11nCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateAttributeTypeL11nCreate($request))) {
-            $response->data['attr_type_l11n_create'] = new FormValidation($val);
-            $response->header->status                = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidCreateResponse($request, $response, $val);
 
             return;
         }
 
         $attrL11n = $this->createAttributeTypeL11nFromRequest($request);
         $this->createModel($request->header->account, $attrL11n, BillAttributeTypeL11nMapper::class, 'attr_type_l11n', $request->getOrigin());
-        $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Localization', 'Localization successfully created', $attrL11n);
+        $this->createStandardCreateResponse($request, $response, $attrL11n);
     }
 
     /**
@@ -111,15 +109,15 @@ final class ApiAttributeController extends Controller
     public function apiBillAttributeTypeCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateAttributeTypeCreate($request))) {
-            $response->data['attr_type_create'] = new FormValidation($val);
-            $response->header->status           = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidCreateResponse($request, $response, $val);
 
             return;
         }
 
         $attrType = $this->createAttributeTypeFromRequest($request);
         $this->createModel($request->header->account, $attrType, BillAttributeTypeMapper::class, 'attr_type', $request->getOrigin());
-        $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Attribute type', 'Attribute type successfully created', $attrType);
+        $this->createStandardCreateResponse($request, $response, $attrType);
     }
 
     /**
@@ -138,8 +136,8 @@ final class ApiAttributeController extends Controller
     public function apiBillAttributeValueCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateAttributeValueCreate($request))) {
-            $response->data['attr_value_create'] = new FormValidation($val);
-            $response->header->status            = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidCreateResponse($request, $response, $val);
 
             return;
         }
@@ -161,7 +159,7 @@ final class ApiAttributeController extends Controller
             );
         }
 
-        $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Attribute value', 'Attribute value successfully created', $attrValue);
+        $this->createStandardCreateResponse($request, $response, $attrValue);
     }
 
     /**
@@ -180,15 +178,15 @@ final class ApiAttributeController extends Controller
     public function apiBillAttributeValueL11nCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateAttributeValueL11nCreate($request))) {
-            $response->data['attr_value_l11n_create'] = new FormValidation($val);
-            $response->header->status                 = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidCreateResponse($request, $response, $val);
 
             return;
         }
 
         $attrL11n = $this->createAttributeValueL11nFromRequest($request);
         $this->createModel($request->header->account, $attrL11n, BillAttributeValueL11nMapper::class, 'attr_value_l11n', $request->getOrigin());
-        $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Localization', 'Localization successfully created', $attrL11n);
+        $this->createStandardCreateResponse($request, $response, $attrL11n);
     }
 
     /**
@@ -207,8 +205,8 @@ final class ApiAttributeController extends Controller
     public function apiBillAttributeUpdate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateAttributeUpdate($request))) {
-            $response->data[$request->uri->__toString()] = new FormValidation($val);
-            $response->header->status                     = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidUpdateResponse($request, $response, $val);
 
             return;
         }
@@ -256,8 +254,8 @@ final class ApiAttributeController extends Controller
     public function apiBillAttributeDelete(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateAttributeDelete($request))) {
-            $response->data[$request->uri->__toString()] = new FormValidation($val);
-            $response->header->status                     = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidDeleteResponse($request, $response, $val);
 
             return;
         }
@@ -293,8 +291,8 @@ final class ApiAttributeController extends Controller
     public function apiBillAttributeTypeL11nUpdate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateAttributeTypeL11nUpdate($request))) {
-            $response->data[$request->uri->__toString()] = new FormValidation($val);
-            $response->header->status                     = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidUpdateResponse($request, $response, $val);
 
             return;
         }
@@ -323,8 +321,8 @@ final class ApiAttributeController extends Controller
     public function apiBillAttributeTypeL11nDelete(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateAttributeTypeL11nDelete($request))) {
-            $response->data[$request->uri->__toString()] = new FormValidation($val);
-            $response->header->status                     = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidDeleteResponse($request, $response, $val);
 
             return;
         }
@@ -351,8 +349,8 @@ final class ApiAttributeController extends Controller
     public function apiBillAttributeTypeUpdate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateAttributeTypeUpdate($request))) {
-            $response->data[$request->uri->__toString()] = new FormValidation($val);
-            $response->header->status                     = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidUpdateResponse($request, $response, $val);
 
             return;
         }
@@ -383,8 +381,8 @@ final class ApiAttributeController extends Controller
     public function apiBillAttributeTypeDelete(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateAttributeTypeDelete($request))) {
-            $response->data[$request->uri->__toString()] = new FormValidation($val);
-            $response->header->status                     = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidDeleteResponse($request, $response, $val);
 
             return;
         }
@@ -411,8 +409,8 @@ final class ApiAttributeController extends Controller
     public function apiBillAttributeValueUpdate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateAttributeValueUpdate($request))) {
-            $response->data[$request->uri->__toString()] = new FormValidation($val);
-            $response->header->status                     = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidUpdateResponse($request, $response, $val);
 
             return;
         }
@@ -453,8 +451,8 @@ final class ApiAttributeController extends Controller
         // However, It should be possible to remove UNUSED default values
         // either here or other function?
         if (!empty($val = $this->validateAttributeValueDelete($request))) {
-            $response->data[$request->uri->__toString()] = new FormValidation($val);
-            $response->header->status                     = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidDeleteResponse($request, $response, $val);
 
             return;
         }
@@ -481,8 +479,8 @@ final class ApiAttributeController extends Controller
     public function apiBillAttributeValueL11nUpdate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateAttributeValueL11nUpdate($request))) {
-            $response->data[$request->uri->__toString()] = new FormValidation($val);
-            $response->header->status                     = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidUpdateResponse($request, $response, $val);
 
             return;
         }
@@ -511,8 +509,8 @@ final class ApiAttributeController extends Controller
     public function apiBillAttributeValueL11nDelete(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateAttributeValueL11nDelete($request))) {
-            $response->data[$request->uri->__toString()] = new FormValidation($val);
-            $response->header->status                     = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidDeleteResponse($request, $response, $val);
 
             return;
         }

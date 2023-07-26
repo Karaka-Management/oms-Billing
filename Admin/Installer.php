@@ -15,8 +15,8 @@ declare(strict_types=1);
 namespace Modules\Billing\Admin;
 
 use Modules\Billing\Models\BillTransferType;
-use Modules\ClientManagement\Models\ClientAttributeTypeMapper;
-use Modules\ItemManagement\Models\ItemAttributeTypeMapper;
+use Modules\ClientManagement\Models\Attribute\ClientAttributeTypeMapper;
+use Modules\ItemManagement\Models\Attribute\ItemAttributeTypeMapper;
 use Modules\SupplierManagement\Models\SupplierAttributeTypeMapper;
 use phpOMS\Application\ApplicationAbstract;
 use phpOMS\Config\SettingsInterface;
@@ -72,7 +72,7 @@ final class Installer extends InstallerAbstract
         self::createBillTypes($app, $types, $defaultTemplate);
 
         /* Tax types */
-        $fileContent = \file_get_contents(__DIR__ . '/Install/taxes.json');
+        $fileContent = \file_get_contents(__DIR__ . '/Install/Taxes/taxes.json');
         if ($fileContent === false) {
             return;
         }

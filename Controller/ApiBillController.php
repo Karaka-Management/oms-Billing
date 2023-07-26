@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Jingga
  *
@@ -28,7 +27,6 @@ use Modules\Billing\Models\NullBillElement;
 use Modules\Billing\Models\SettingsEnum;
 use Modules\ClientManagement\Models\Client;
 use Modules\ClientManagement\Models\ClientMapper;
-use Modules\Editor\Models\EditorDocMapper;
 use Modules\ItemManagement\Models\Item;
 use Modules\ItemManagement\Models\ItemMapper;
 use Modules\Media\Models\CollectionMapper;
@@ -78,8 +76,8 @@ final class ApiBillController extends Controller
     public function apiBillUpdate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateBillUpdate($request))) {
-            $response->data[$request->uri->__toString()] = new FormValidation($val);
-            $response->header->status                    = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidUpdateResponse($request, $response, $val);
 
             return;
         }
@@ -142,15 +140,14 @@ final class ApiBillController extends Controller
     public function apiBillCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateBillCreate($request))) {
-            $response->data[$request->uri->__toString()] = new FormValidation($val);
-            $response->header->status                    = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidCreateResponse($request, $response, $val);
 
             return;
         }
 
         $bill = $this->createBillFromRequest($request, $response, $data);
         $this->createBillDatabaseEntry($bill, $request);
-
         $this->createStandardCreateResponse($request, $response, $bill);
     }
 
@@ -303,7 +300,8 @@ final class ApiBillController extends Controller
      */
     public function createBaseBillElement(Client $client, Item $item, Bill $bill, RequestAbstract $request) : BillElement
     {
-        $taxCode = $this->app->moduleManager->get('Billing', 'ApiTax')->getTaxCodeFromClientItem($client, $item, $request->header->l11n->country);
+        $taxCode = $this->app->moduleManager->get('Billing', 'ApiTax')
+            ->getTaxCodeFromClientItem($client, $item, $request->header->l11n->country);
 
         $element = BillElement::fromItem(
             $item,
@@ -392,8 +390,8 @@ final class ApiBillController extends Controller
     public function apiMediaAddToBill(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateMediaAddToBill($request))) {
-            $response->data[$request->uri->__toString()] = new FormValidation($val);
-            $response->header->status                    = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidUpdateResponse($request, $response, $val);
 
             return;
         }
@@ -504,8 +502,8 @@ final class ApiBillController extends Controller
     {
         // @todo: check that it is not system generated media!
         if (!empty($val = $this->validateMediaRemoveFromBill($request))) {
-            $response->data[$request->uri->__toString()] = new FormValidation($val);
-            $response->header->status                    = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidDeleteResponse($request, $response, $val);
 
             return;
         }
@@ -644,8 +642,8 @@ final class ApiBillController extends Controller
     public function apiBillElementCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateBillElementCreate($request))) {
-            $response->data[$request->uri->__toString()] = new FormValidation($val);
-            $response->header->status                    = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidCreateResponse($request, $response, $val);
 
             return;
         }
@@ -1140,8 +1138,8 @@ final class ApiBillController extends Controller
     public function apiNoteCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateNoteCreate($request))) {
-            $response->data['bill_note_create'] = new FormValidation($val);
-            $response->header->status           = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidCreateResponse($request, $response, $val);
 
             return;
         }
@@ -1196,8 +1194,8 @@ final class ApiBillController extends Controller
     public function apiBillDelete(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateBillDelete($request))) {
-            $response->data[$request->uri->__toString()] = new FormValidation($val);
-            $response->header->status                     = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidDeleteResponse($request, $response, $val);
 
             return;
         }
@@ -1267,8 +1265,8 @@ final class ApiBillController extends Controller
     public function apiBillElementUpdate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateBillElementUpdate($request))) {
-            $response->data[$request->uri->__toString()] = new FormValidation($val);
-            $response->header->status                     = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidUpdateResponse($request, $response, $val);
 
             return;
         }
@@ -1339,8 +1337,8 @@ final class ApiBillController extends Controller
     public function apiBillElementDelete(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateBillElementDelete($request))) {
-            $response->data[$request->uri->__toString()] = new FormValidation($val);
-            $response->header->status                     = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidDeleteResponse($request, $response, $val);
 
             return;
         }

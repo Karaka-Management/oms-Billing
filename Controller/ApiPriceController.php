@@ -238,16 +238,15 @@ final class ApiPriceController extends Controller
     public function apiPriceCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validatePriceCreate($request))) {
-            $response->data['price_create'] = new FormValidation($val);
-            $response->header->status       = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidCreateResponse($request, $response, $val);
 
             return;
         }
 
         $tax = $this->createPriceFromRequest($request);
         $this->createModel($request->header->account, $tax, PriceMapper::class, 'price', $request->getOrigin());
-
-        $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Price', 'Price successfully created', $tax);
+        $this->createStandardCreateResponse($request, $response, $tax);
     }
 
     /**
@@ -332,8 +331,8 @@ final class ApiPriceController extends Controller
     public function apiPriceUpdate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validatePriceUpdate($request))) {
-            $response->data[$request->uri->__toString()] = new FormValidation($val);
-            $response->header->status                     = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidUpdateResponse($request, $response, $val);
 
             return;
         }
@@ -428,8 +427,8 @@ final class ApiPriceController extends Controller
     public function apiPriceDelete(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validatePriceDelete($request))) {
-            $response->data[$request->uri->__toString()] = new FormValidation($val);
-            $response->header->status                    = RequestStatusCode::R_400;
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidDeleteResponse($request, $response, $val);
 
             return;
         }

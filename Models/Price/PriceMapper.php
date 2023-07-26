@@ -14,9 +14,9 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Models\Price;
 
-use Modules\ClientManagement\Models\ClientAttributeValueMapper;
+use Modules\ClientManagement\Models\Attribute\ClientAttributeValueMapper;
 use Modules\ClientManagement\Models\ClientMapper;
-use Modules\ItemManagement\Models\ItemAttributeValueMapper;
+use Modules\ItemManagement\Models\Attribute\ItemAttributeValueMapper;
 use Modules\ItemManagement\Models\ItemMapper;
 use Modules\SupplierManagement\Models\SupplierMapper;
 use phpOMS\DataStorage\Database\Mapper\DataMapperFactory;
