@@ -36,6 +36,8 @@ class WarehouseManagement
      *
      * @return void
      *
+     * @throws \Exception
+     *
      * @since 1.0.0
      */
     public static function install(ApplicationAbstract $app, string $path) : void

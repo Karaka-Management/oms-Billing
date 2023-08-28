@@ -50,6 +50,8 @@ final class ApiPurchaseController extends Controller
      *
      * @api
      *
+     * @throws \Exception
+     *
      * @since 1.0.0
      */
     public function apiSupplierBillUpload(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
