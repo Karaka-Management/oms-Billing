@@ -112,8 +112,8 @@ final class ApiBillController extends Controller
     /**
      * Method to create a bill from request.
      *
-     * @param RequestAbstract  $request  Request
-     * @param Bill             $old      Bill
+     * @param RequestAbstract $request Request
+     * @param Bill            $old     Bill
      *
      * @return Bill
      *
@@ -1214,8 +1214,8 @@ final class ApiBillController extends Controller
     /**
      * Method to create a bill from request.
      *
-     * @param RequestAbstract  $request  Request
-     * @param Bill             $new Bill
+     * @param RequestAbstract $request Request
+     * @param Bill            $new     Bill
      *
      * @return Bill
      *
@@ -1286,7 +1286,7 @@ final class ApiBillController extends Controller
     /**
      * Method to update BillElement from request.
      *
-     * @param RequestAbstract  $request Request
+     * @param RequestAbstract $request Request
      * @param BillElement     $new     Model to modify
      *
      * @return BillElement

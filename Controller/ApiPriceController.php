@@ -29,10 +29,8 @@ use Modules\SupplierManagement\Models\NullSupplier;
 use Modules\SupplierManagement\Models\SupplierMapper;
 use phpOMS\Localization\ISO4217CharEnum;
 use phpOMS\Message\Http\RequestStatusCode;
-use phpOMS\Message\NotificationLevel;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
-use phpOMS\Model\Message\FormValidation;
 use phpOMS\Stdlib\Base\FloatInt;
 use phpOMS\System\MimeType;
 
@@ -348,8 +346,8 @@ final class ApiPriceController extends Controller
     /**
      * Method to update Price from request.
      *
-     * @param RequestAbstract  $request Request
-     * @param Price     $new     Model to modify
+     * @param RequestAbstract $request Request
+     * @param Price           $new     Model to modify
      *
      * @return Price
      *

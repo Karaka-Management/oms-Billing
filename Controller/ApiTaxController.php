@@ -296,7 +296,7 @@ final class ApiTaxController extends Controller
 
             $old = \reset($old);
 
-            $new = clone $old;
+            $new          = clone $old;
             $new->taxCode = $combination['tax_code'];
 
             $this->updateModel($request->header->account, $old, $new, TaxCombinationMapper::class, 'tax_combination', $request->getOrigin());
@@ -327,8 +327,8 @@ final class ApiTaxController extends Controller
     /**
      * Method to update TaxCombination from request.
      *
-     * @param RequestAbstract  $request Request
-     * @param TaxCombination   $new     Model to modify
+     * @param RequestAbstract $request Request
+     * @param TaxCombination  $new     Model to modify
      *
      * @return TaxCombination
      *

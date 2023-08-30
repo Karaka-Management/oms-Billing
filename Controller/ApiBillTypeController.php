@@ -215,8 +215,8 @@ final class ApiBillTypeController extends Controller
     /**
      * Method to update BillType from request.
      *
-     * @param RequestAbstract  $request Request
-     * @param BillType     $new     Model to modify
+     * @param RequestAbstract $request Request
+     * @param BillType        $new     Model to modify
      *
      * @return BillType
      *
@@ -338,8 +338,8 @@ final class ApiBillTypeController extends Controller
     /**
      * Method to update BillTypeL11n from request.
      *
-     * @param RequestAbstract  $request Request
-     * @param BaseStringL11n     $new     Model to modify
+     * @param RequestAbstract $request Request
+     * @param BaseStringL11n  $new     Model to modify
      *
      * @return BaseStringL11n
      *

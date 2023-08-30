@@ -17,7 +17,6 @@ namespace Modules\Billing\Models;
 use Modules\Admin\Models\Account;
 use Modules\Admin\Models\NullAccount;
 use Modules\ClientManagement\Models\Client;
-use Modules\Editor\Models\EditorDoc;
 use Modules\Media\Models\Collection;
 use Modules\SupplierManagement\Models\Supplier;
 use phpOMS\Localization\ISO4217CharEnum;
