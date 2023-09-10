@@ -38,6 +38,7 @@ use Modules\Messages\Models\EmailMapper;
 use Modules\SupplierManagement\Models\NullSupplier;
 use Modules\SupplierManagement\Models\Supplier;
 use Modules\SupplierManagement\Models\SupplierMapper;
+use phpOMS\Application\ApplicationAbstract;
 use phpOMS\Autoloader;
 use phpOMS\Localization\ISO4217CharEnum;
 use phpOMS\Localization\ISO639x1Enum;
@@ -60,6 +61,22 @@ use phpOMS\Views\View;
  */
 final class ApiBillController extends Controller
 {
+    /**
+     * Constructor.
+     *
+     * @param null|ApplicationAbstract $app Application instance
+     *
+     * @since 1.0.0
+     */
+    public function __construct(ApplicationAbstract $app = null)
+    {
+        parent::__construct($app);
+
+        if ($this->app->moduleManager->isActive('WarehouseManagement')) {
+            $this->app->eventManager->importFromFile(__DIR__ . '/../../WarehouseManagement/Admin/Hooks/Manual.php');
+        }
+    }
+
     /**
      * Api method to update a bill
      *

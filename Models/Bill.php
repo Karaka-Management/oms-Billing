@@ -424,7 +424,7 @@ class Bill implements \JsonSerializable
      * @var BillElement[]
      * @since 1.0.0
      */
-    private array $elements = [];
+    public array $elements = [];
 
     /**
      * Reference to other Bill (delivery note/credit note etc).

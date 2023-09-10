@@ -1,0 +1,107 @@
+{
+    "office_supplies": {
+        "en": [
+            "office supplies", "pencil", "pen", "notepad", "note", "highlighter",
+            "eraser", "paperclip", "binder clip", "staples", "stapler", "tape dispenser",
+            "scotch tape", "rubber bands", "marker", "whiteboard marker",
+            "whiteboard eraser", "desk organizer", "calendar", "desk calendar",
+            "file folder", "folder", "hanging file folder",  "envelope", "stamp",
+            "scissor", "calculator", "ruler", "trash can", "recycling bin",
+            "cabinet labels", "paper towels", "cleaning supplies", "sticky tack",
+            "adhesive putty", "wall calendar"
+        ],
+        "de": []
+    },
+    "it_supplies": {
+        "en": [
+            "keyboard", "mouse", "mice", "USB drive", "network cable", "toner",
+            "printer paper", "ink", "cartridge"
+        ],
+        "de": []
+    },
+    "it_equipment": {
+        "en": [
+            "PC", "computer", "laptop", "monitor", "switch", "psu", "server", "printer",
+            "router", "webcam", "headset", "hard drive", "microphone", "macbook", "phone",
+            "cellphone", "mobile phone"
+        ],
+        "de": []
+    },
+    "internet_phone": {
+        "en": [
+            "domain", "website", "web server", "phone", "internet", "cellphone"
+        ],
+        "de": []
+    },
+    "furniture": {
+        "en": [
+            "sofa", "armchair", "table", "chair", "bed", "nightstand", "dresser", "wardrobe",
+            "bookshelf", "desk", "cabinet", "couch", "recliner", "tv stand", "kitchen island",
+            "barstool", "bathroom vanity", "dining room hutch", "chest of drawers",
+            "bench", "credenza", "sideboard", "ottoman", "headboard", "footboard",
+            "chaise lounge", "patio furniture", "outdoor dining set", "hammock",
+            "bean bag", "stool", "cubby storage", "shoe rack", "coat rack", "futon",
+            "crib", "playpen"
+        ],
+        "de": []
+    },
+    "appliances": {
+        "en": [
+            "refrigerator", "oven", "stove", "microwave", "dishwasher", "washing machine",
+            "clothes dryer", "freezer", "coffee maker", "toaster", "blender",
+            "food processor", "kettle", "rice cooker", "slow cooker",
+            "toaster oven", "air conditioner", "heater", "ceiling fan", "vacuum cleaner",
+            "iron", "hair dryer", "curling iron", "shaver",
+            "air purifier", "dehumidifier", "humidifier", "garbage disposal",
+            "trash compactor", "range hood", "juicer", "mixer", "grill",
+            "bread maker", "ice maker", "water dispenser", "ductless mini-split system",
+            "wall oven", "induction cooktop", "espresso machine", "can opener",
+            "portable air conditioner", "hot water dispenser", "skillet",
+            "popcorn maker", "margarita machine", "deep fryer", "griddle", "scale"
+        ],
+        "de": []
+    },
+    "cleaning": {
+        "en": [
+            "broom", "mop", "dustpan", "bucket", "sponge", "scrub brush", "cloth",
+            "paper towels", "trash bags", "trash can", "vacuum cleaner",
+            "carpet cleaner", "glass cleaner", "cleaner", "disinfectant wipes",
+            "toilet brush", "toilet bowl cleaner", "bathroom cleaner", "tile cleaner",
+            "oven cleaner", "dishwashing liquid", "detergent", "fabric softener",
+            "stain remover", "trash can liners", "baking soda", "vinegar",
+            "dust mask", "cleaning caddy", "window squeegee", "feather duster",
+            "lint roller", "air freshener", "gloves", "degreaser", "floor wax",
+            "furniture polish", "shoe polish", "stainless steel cleaner", "rust remover",
+            "grill brush", "lime scale remover", "rug cleaner", "furniture stain remover"
+        ],
+        "de": []
+    },
+    "marketing": {
+        "en": [
+            "flyer", "brochure", "article", "trade fair", "exhibition", "trade show",
+            "advertising", "social media", "market research", "marketing", "catalogue",
+            "catalog", "price list"
+        ],
+        "de": []
+    },
+    "food": {
+        "en": [
+            "wine", "beer", "schnaps", "water", "cola", "fanta", "juice", "sprite", "coffe",
+            "cake", "ice cream", "pudding", "donut",
+            "nudle", "steak", "fish", "salat", "burger", "fries", "potato", "soup"
+        ],
+        "de": []
+    },
+    "hotel": {
+        "en": [
+            "hotel", "motel", "hostel"
+        ],
+        "de": []
+    },
+    "travel": {
+        "en": [
+            "flight", "taxi", "train", "uber", "parking"
+        ],
+        "de": []
+    }
+}

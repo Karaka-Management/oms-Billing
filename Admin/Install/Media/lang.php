@@ -33,6 +33,7 @@ return [
         'Taxes'        => 'Taxes',
         'Terms'        => 'Terms',
         'PaymentTerms' => 'Payment Terms',
+        'TaxRemark'    => 'No sales tax will be charged in accordance with §19 (1) UStG.',
     ],
     'de' => [
         'InvoiceNo'    => 'Belegnummer',
@@ -52,5 +53,6 @@ return [
         'Taxes'        => 'USt',
         'Terms'        => 'AGB',
         'PaymentTerms' => 'Zahlungsbedingungen',
+        'TaxRemark'    => 'Es wird gemäß §19 Abs. 1 UStG keine Umsatzsteuer berechnet.',
     ],
 ];

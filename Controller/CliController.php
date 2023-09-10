@@ -404,10 +404,12 @@ final class CliController extends Controller
     private function parseDate(string $date, Supplier $supplier, array $formats) : ?\DateTime
     {
         if ((!empty($supplier->getAttribute('bill_date_format')->value->valueStr))) {
-            return \DateTime::createFromFormat(
+            $dt = \DateTime::createFromFormat(
                 $supplier->getAttribute('bill_date_format')->value->valueStr ?? '',
                 $date
-            ) ?? new \DateTime('1970-01-01');
+            );
+
+            return $dt === false ? new \DateTime('1970-01-01') : $dt;
         }
 
         foreach ($formats as $format) {

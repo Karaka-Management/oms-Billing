@@ -43,22 +43,22 @@ $pdf->setSubject($this->data['bill_subtitle'] ?? '');
 $pdf->setKeywords(\implode(', ', $this->data['keywords'] ?? []));
 $pdf->language = $bill->language;
 
-$pdf->attributes['legal_name'] = $this->data['legal_company_name'] ?? 'Jingga e.K.';
+$pdf->attributes['legal_name'] = $this->data['legal_company_name'] ?? 'Jingga e. K.';
 $pdf->attributes['address']    = $this->data['bill_company_address'] ?? 'Gartenstr. 26';
-$pdf->attributes['city']       = $this->data['bill_company_city'] ?? '61206 Woellstadt';
+$pdf->attributes['city']       = $this->data['bill_company_city'] ?? '61206 Wöllstadt';
 
 $pdf->attributes['ceo']        = $this->data['bill_company_ceo'] ?? 'Dennis Eichhorn';
-$pdf->attributes['tax_office'] = $this->data['bill_company_tax_office'] ?? 'HRB ???';
-$pdf->attributes['tax_number'] = $this->data['bill_company_tax_id'] ?? '123456789';
+$pdf->attributes['tax_office'] = $this->data['bill_company_tax_office'] ?? 'HRA 5058';
+$pdf->attributes['tax_number'] = $this->data['bill_company_tax_id'] ?? '16 814 6253 3';
 $pdf->attributes['terms']      = $this->data['bill_company_terms'] ?? 'https://jingga.app/terms';
 
 $pdf->attributes['bank_name']    = $this->data['bill_company_bank_name'] ?? 'Volksbank Mittelhessen';
-$pdf->attributes['swift']        = $this->data['bill_company_swift'] ?? '.....';
-$pdf->attributes['bank_account'] = $this->data['bill_company_bank_account'] ?? '.....';
+$pdf->attributes['swift']        = $this->data['bill_company_swift'] ?? 'VBMHDE5F';
+$pdf->attributes['bank_account'] = $this->data['bill_company_bank_account'] ?? 'DE62 5139 0000 0084 8044 10';
 
 $pdf->attributes['website'] = $this->data['bill_company_website'] ?? 'www.jingga.app';
 $pdf->attributes['email']   = $this->data['bill_company_email'] ?? 'info@jingga.app';
-$pdf->attributes['phone']   = $this->data['bill_company_phone'] ?? '+49 0152 ????';
+$pdf->attributes['phone']   = $this->data['bill_company_phone'] ?? '+49 152 04337728';
 
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
@@ -288,6 +288,10 @@ $pdf->Ln();
 
 $pdf->setFont('helvetica', 'B', 8);
 $pdf->Write(0, $lang[$pdf->language]['Currency'] . ': ' . $bill->currency, '', 0, 'L', false, 0, false, false, 0);
+$pdf->Ln();
+
+$pdf->setFont('helvetica', 'B', 8);
+$pdf->Write(0, $lang[$pdf->language]['TaxRemark'], '', 0, 'L', false, 0, false, false, 0);
 $pdf->Ln();
 
 $pdf->setFont('helvetica', '', 8);

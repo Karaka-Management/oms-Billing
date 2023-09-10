@@ -355,7 +355,10 @@ final class ApiPriceController extends Controller
      */
     public function updatePriceFromRequest(RequestAbstract $request, Price $new) : Price
     {
-        $new->name      = $new->name !== 'base' && $request->hasData('name') ? $request->getDataString('name') : $new->name;
+        $new->name = $new->name !== 'base'
+            ? ($request->getDataString('name') ?? $new->name)
+            : $new->name;
+
         $new->promocode = $request->getDataString('promocode') ?? $new->promocode;
 
         $new->item        = $request->hasData('item') ? new NullItem((int) $request->getData('item')) : $new->item;

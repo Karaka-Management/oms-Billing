@@ -327,7 +327,7 @@ final class ApiAttributeController extends Controller
             return;
         }
 
-        /** @var \Modules\Billing\Models\BillAttributeTypeL11n $billAttributeTypeL11n */
+        /** @var BaseStringL11n $billAttributeTypeL11n */
         $billAttributeTypeL11n = BillAttributeTypeL11nMapper::get()->where('id', (int) $request->getData('id'))->execute();
         $this->deleteModel($request->header->account, $billAttributeTypeL11n, BillAttributeTypeL11nMapper::class, 'bill_attribute_type_l11n', $request->getOrigin());
         $this->createStandardDeleteResponse($request, $response, $billAttributeTypeL11n);
@@ -387,7 +387,7 @@ final class ApiAttributeController extends Controller
             return;
         }
 
-        /** @var \Modules\Billing\Models\BillAttributeType $billAttributeType */
+        /** @var AttributeType $billAttributeType */
         $billAttributeType = BillAttributeTypeMapper::get()->where('id', (int) $request->getData('id'))->execute();
         $this->deleteModel($request->header->account, $billAttributeType, BillAttributeTypeMapper::class, 'bill_attribute_type', $request->getOrigin());
         $this->createStandardDeleteResponse($request, $response, $billAttributeType);
@@ -418,7 +418,7 @@ final class ApiAttributeController extends Controller
         /** @var AttributeValue $old */
         $old = BillAttributeValueMapper::get()->where('id', (int) $request->getData('id'))->execute();
 
-        /** @var \Modules\Attribute\Models\Attribute $type */
+        /** @var \Modules\Attribute\Models\Attribute $attr */
         $attr = BillAttributeMapper::get()
             ->with('type')
             ->where('id', $request->getDataInt('attribute') ?? 0)
@@ -514,7 +514,7 @@ final class ApiAttributeController extends Controller
             return;
         }
 
-        /** @var \Modules\Billing\Models\BillAttributeValueL11n $billAttributeValueL11n */
+        /** @var BaseStringL11n $billAttributeValueL11n */
         $billAttributeValueL11n = BillAttributeValueL11nMapper::get()->where('id', (int) $request->getData('id'))->execute();
         $this->deleteModel($request->header->account, $billAttributeValueL11n, BillAttributeValueL11nMapper::class, 'bill_attribute_value_l11n', $request->getOrigin());
         $this->createStandardDeleteResponse($request, $response, $billAttributeValueL11n);

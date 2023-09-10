@@ -280,14 +280,16 @@ final class ApiTaxController extends Controller
             return;
         }
 
+        /** @var array $combinations */
         $combinations = \json_decode(\file_get_contents($path), true);
 
         foreach ($combinations as $combination) {
+            /** @var TaxCombination[] $old */
             $old = TaxCombinationMapper::getAll()
                 ->with('clientCode')
                 ->with('itemCode')
-                ->where('clientCode/valueStr', $combination['account_code'])
-                ->where('itemCode/valueStr', $combination['item_code'])
+                ->where('clientCode/valueStr', $combination['account_code'] ?? '')
+                ->where('itemCode/valueStr', $combination['item_code'] ?? '')
                 ->execute();
 
             if (\count($old) !== 1) {
@@ -297,7 +299,7 @@ final class ApiTaxController extends Controller
             $old = \reset($old);
 
             $new          = clone $old;
-            $new->taxCode = $combination['tax_code'];
+            $new->taxCode = $combination['tax_code'] ?? '';
 
             $this->updateModel($request->header->account, $old, $new, TaxCombinationMapper::class, 'tax_combination', $request->getOrigin());
         }
@@ -390,7 +392,7 @@ final class ApiTaxController extends Controller
             return;
         }
 
-        /** @var \Modules\Billing\Models\TaxCombination $taxCombination */
+        /** @var \Modules\Billing\Models\Tax\TaxCombination $taxCombination */
         $taxCombination = TaxCombinationMapper::get()->where('id', (int) $request->getData('id'))->execute();
         $this->deleteModel($request->header->account, $taxCombination, TaxCombinationMapper::class, 'tax_combination', $request->getOrigin());
         $this->createStandardDeleteResponse($request, $response, $taxCombination);

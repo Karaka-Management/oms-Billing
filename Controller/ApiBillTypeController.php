@@ -397,7 +397,7 @@ final class ApiBillTypeController extends Controller
             return;
         }
 
-        /** @var \Modules\Billing\Models\BillTypeL11n $billTypeL11n */
+        /** @var BaseStringL11n $billTypeL11n */
         $billTypeL11n = BillTypeL11nMapper::get()->where('id', (int) $request->getData('id'))->execute();
         $this->deleteModel($request->header->account, $billTypeL11n, BillTypeL11nMapper::class, 'bill_type_l11n', $request->getOrigin());
         $this->createStandardDeleteResponse($request, $response, $billTypeL11n);

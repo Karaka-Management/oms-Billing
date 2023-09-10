@@ -50,6 +50,8 @@ class BillType implements \JsonSerializable
 
     public bool $transferStock = true;
 
+    public int $sign = 1;
+
     /**
      * Localization
      *

@@ -312,6 +312,12 @@
                 "type": "TINYINT(1)",
                 "null": false
             },
+            "billing_type_transfer_sign": {
+                "description": "1 = from->to direction, -1 = to->from direction = credit note",
+                "name": "billing_type_transfer_sign",
+                "type": "TINYINT(1)",
+                "null": false
+            },
             "billing_type_account_format": {
                 "name": "billing_type_account_format",
                 "type": "VARCHAR(255)",
