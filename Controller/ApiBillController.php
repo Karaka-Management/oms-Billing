@@ -23,6 +23,7 @@ use Modules\Billing\Models\BillElementMapper;
 use Modules\Billing\Models\BillMapper;
 use Modules\Billing\Models\BillStatus;
 use Modules\Billing\Models\BillTypeMapper;
+use Modules\Billing\Models\NullBill;
 use Modules\Billing\Models\NullBillElement;
 use Modules\Billing\Models\SettingsEnum;
 use Modules\ClientManagement\Models\Client;
@@ -721,7 +722,7 @@ final class ApiBillController extends Controller
         }
 
         $element       = $this->createBaseBillElement($bill->client, $item, $bill, $request);
-        $element->bill = $bill->id;
+        $element->bill = new NullBill($bill->id);
 
         // discounts
         if ($request->getData('discount_percentage') !== null) {
