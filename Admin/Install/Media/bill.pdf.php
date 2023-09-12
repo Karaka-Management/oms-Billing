@@ -211,7 +211,7 @@ foreach($lines as $line) {
     $singleSalesPriceNet = Money::fromFloatInt($line->singleSalesPriceNet);
     $totalSalesPriceNet  = Money::fromFloatInt($line->totalSalesPriceNet);
 
-    $pdf->MultiCell($w[1], $height, $line->getQuantity(), 0, 'L', $fill, 0, 15 + $w[0], $tempY, true, 0, false, true, 0, 'M', true);
+    $pdf->MultiCell($w[1], $height, (string) $line->getQuantity(), 0, 'L', $fill, 0, 15 + $w[0], $tempY, true, 0, false, true, 0, 'M', true);
     $pdf->MultiCell($w[2], $height, $singleSalesPriceNet->getCurrency(2, symbol: ''), 0, 'L', $fill, 0, 15 + $w[0] + $w[1], $tempY, true, 0, false, true, 0, 'M', true);
     $pdf->MultiCell($w[3], $height, $totalSalesPriceNet->getCurrency(2, symbol: ''), 0, 'L', $fill, 1, 15 + $w[0] + $w[1] + $w[2], $tempY, true, 0, false, true, 0, 'M', true);
 
