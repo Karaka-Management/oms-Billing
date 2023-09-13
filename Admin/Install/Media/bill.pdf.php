@@ -44,8 +44,8 @@ $pdf->setKeywords(\implode(', ', $this->data['keywords'] ?? []));
 $pdf->language = $bill->language;
 
 $pdf->attributes['legal_name'] = $this->data['legal_company_name'] ?? 'Jingga e. K.';
-$pdf->attributes['address']    = $this->data['bill_company_address'] ?? 'Gartenstr. 26';
-$pdf->attributes['city']       = $this->data['bill_company_city'] ?? '61206 Wöllstadt';
+$pdf->attributes['address']    = $this->data['bill_company_address'] ?? 'Kirchstr. 33';
+$pdf->attributes['city']       = $this->data['bill_company_city'] ?? '61191 Rosbach';
 
 $pdf->attributes['ceo']        = $this->data['bill_company_ceo'] ?? 'Dennis Eichhorn';
 $pdf->attributes['tax_office'] = $this->data['bill_company_tax_office'] ?? 'HRA 5058';
