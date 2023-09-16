@@ -49,7 +49,7 @@ $pdf->attributes['city']       = $this->data['bill_company_city'] ?? '61191 Rosb
 
 $pdf->attributes['ceo']        = $this->data['bill_company_ceo'] ?? 'Dennis Eichhorn';
 $pdf->attributes['tax_office'] = $this->data['bill_company_tax_office'] ?? 'HRA 5058';
-$pdf->attributes['tax_number'] = $this->data['bill_company_tax_id'] ?? '16 814 6253 3';
+$pdf->attributes['tax_number'] = $this->data['bill_company_tax_id'] ?? 'DE362646968';
 $pdf->attributes['terms']      = $this->data['bill_company_terms'] ?? 'https://jingga.app/terms';
 
 $pdf->attributes['bank_name']    = $this->data['bill_company_bank_name'] ?? 'Volksbank Mittelhessen';
