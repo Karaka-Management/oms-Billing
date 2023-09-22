@@ -277,11 +277,20 @@ final class ApiTaxController extends Controller
                 __DIR__ . '/../Admin/Install/Taxes'
             )
         ) {
+            $this->createInvalidUpdateResponse($request, $response, []);
+
+            return;
+        }
+
+        $content = \file_get_contents($path);
+        if ($content === false) {
+            $this->createInvalidUpdateResponse($request, $response, []);
+
             return;
         }
 
         /** @var array $combinations */
-        $combinations = \json_decode(\file_get_contents($path), true);
+        $combinations = \json_decode($content, true);
 
         foreach ($combinations as $combination) {
             /** @var TaxCombination[] $old */

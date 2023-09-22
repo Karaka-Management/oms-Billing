@@ -18,9 +18,10 @@ use phpOMS\Localization\ISO3166TwoEnum;
 use phpOMS\Localization\Money;
 
 /** @var \phpOMS\Views\View $this */
-require_once $this->getData('defaultTemplates')
-    ->findFile('.pdf.php')
-    ->getAbsolutePath();
+/** @var \Modules\Media\Models\Collection $media */
+$media = $this->getData('defaultTemplates');
+
+require_once $media->findFile('.pdf.php')->getAbsolutePath();
 
 /** @var \Modules\Billing\Models\Bill $bill */
 $bill = $this->data['bill'] ?? new NullBill();

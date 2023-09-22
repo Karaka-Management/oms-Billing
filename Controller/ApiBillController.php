@@ -534,6 +534,7 @@ final class ApiBillController extends Controller
 
         $path = $this->createBillDir($bill);
 
+        /** @var \Modules\Media\Models\Collection[] */
         $billCollection = CollectionMapper::getAll()
             ->where('virtual', $path)
             ->execute();
@@ -1060,7 +1061,7 @@ final class ApiBillController extends Controller
 
         if ($client->getAttribute('bill_emails')->value->getValue() === 1) {
             $email = empty($tmp = $client->getAttribute('bill_email_address')->value->getValue())
-                ? $tmp
+                ? (string) $tmp
                 : $client->account->getEmail();
 
             $this->sendBillEmail($media, $email, $response->header->l11n->language);

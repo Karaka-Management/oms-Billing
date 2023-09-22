@@ -100,8 +100,11 @@ final class ApiPurchaseController extends Controller
 
             /** @var \Modules\Media\Models\Media[] $uploaded */
             $uploaded = $mediaResponse->get('')['response']['upload'];
-            $in       = \reset($uploaded)->getAbsolutePath(); // pdf is parsed in $in->content
+            if (empty($uploaded)) {
+                throw new \Exception();
+            }
 
+            $in = \reset($uploaded)->getAbsolutePath(); // pdf parsed content is available in $in->content
             if (!\is_file($in)) {
                 throw new \Exception();
             }

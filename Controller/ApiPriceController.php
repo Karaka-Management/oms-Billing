@@ -153,7 +153,7 @@ final class ApiPriceController extends Controller
         // Find base price (@todo: probably not a good solution)
         $bestBasePrice = null;
         foreach ($prices as $price) {
-            if ($price->price !== 0 && $price->priceNew === 0
+            if ($price->price->value !== 0 && $price->priceNew === 0
                 && $price->item->id !== 0
                 && $price->itemgroup->id === 0
                 && $price->itemsegment->id === 0
@@ -165,7 +165,7 @@ final class ApiPriceController extends Controller
                 && $price->clientsection->id === 0
                 && $price->clienttype->id === 0
                 && $price->promocode === ''
-                && $price->price < ($bestBasePrice?->price ?? \PHP_INT_MAX)
+                && $price->price->value < ($bestBasePrice?->price->value ?? \PHP_INT_MAX)
             ) {
                 $bestBasePrice = $price;
             }
@@ -178,10 +178,10 @@ final class ApiPriceController extends Controller
         $bestPriceValue = \PHP_INT_MAX;
 
         foreach ($prices as $price) {
-            $newPrice = $bestBasePrice->price;
+            $newPrice = $bestBasePrice->price->value;
 
-            if ($price->price < $newPrice) {
-                $newPrice = $price->price;
+            if ($price->price->value < $newPrice) {
+                $newPrice = $price->price->value;
             }
 
             if ($price->priceNew < $newPrice) {
