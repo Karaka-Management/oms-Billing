@@ -38,10 +38,10 @@ final class BillElementTest extends \PHPUnit\Framework\TestCase
     public function testDefault() : void
     {
         self::assertEquals(0, $this->element->id);
-        self::assertInstanceOf('\phpOMS\Stdlib\Base\IntFloat', $this->element->singleSalesPriceNet);
-        self::assertInstanceOf('\phpOMS\Stdlib\Base\IntFloat', $this->element->totalSalesPriceNet);
-        self::assertInstanceOf('\phpOMS\Stdlib\Base\IntFloat', $this->element->singlePurchasePriceNet);
-        self::assertInstanceOf('\phpOMS\Stdlib\Base\IntFloat', $this->element->totalPurchasePriceNet);
+        self::assertInstanceOf('\phpOMS\Stdlib\Base\FloatInt', $this->element->singleSalesPriceNet);
+        self::assertInstanceOf('\phpOMS\Stdlib\Base\FloatInt', $this->element->totalSalesPriceNet);
+        self::assertInstanceOf('\phpOMS\Stdlib\Base\FloatInt', $this->element->singlePurchasePriceNet);
+        self::assertInstanceOf('\phpOMS\Stdlib\Base\FloatInt', $this->element->totalPurchasePriceNet);
     }
 
     /**
