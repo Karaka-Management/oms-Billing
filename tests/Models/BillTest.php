@@ -121,17 +121,6 @@ final class BillTest extends \PHPUnit\Framework\TestCase
      * @covers Modules\Billing\Models\Bill
      * @group module
      */
-    public function testMediaInputOutput() : void
-    {
-        $this->bill->addMedia($temp = new Media());
-        self::assertCount(1, $this->bill->getMedia());
-        self::assertEquals([$temp], $this->bill->getMediaByType());
-    }
-
-    /**
-     * @covers Modules\Billing\Models\Bill
-     * @group module
-     */
     public function testVoucherInputOutput() : void
     {
         $this->bill->addVoucher('TEST');

@@ -42,7 +42,7 @@ final class BillElementMapper extends DataMapperFactory
         'billing_bill_element_item_number'               => ['name' => 'billing_bill_element_item_number',      'type' => 'string',    'internal' => 'itemNumber'],
         'billing_bill_element_item_name'                 => ['name' => 'billing_bill_element_item_name',      'type' => 'string',    'internal' => 'itemName'],
         'billing_bill_element_item_desc'                 => ['name' => 'billing_bill_element_item_desc',      'type' => 'string',    'internal' => 'itemDescription'],
-        'billing_bill_element_quantity'                  => ['name' => 'billing_bill_element_quantity',      'type' => 'int',    'internal' => 'quantity'],
+        'billing_bill_element_quantity'                  => ['name' => 'billing_bill_element_quantity',      'type' => 'int',    'internal' => 'quantity', 'private' => true],
 
         'billing_bill_element_single_netlistprice'       => ['name' => 'billing_bill_element_single_netlistprice',      'type' => 'Serializable',    'internal' => 'singleListPriceNet'],
         'billing_bill_element_single_grosslistprice'     => ['name' => 'billing_bill_element_single_grosslistprice',      'type' => 'Serializable',    'internal' => 'singleListPriceGross'],
