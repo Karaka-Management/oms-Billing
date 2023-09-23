@@ -54,7 +54,7 @@ final class BillTest extends \PHPUnit\Framework\TestCase
         self::assertNull($this->bill->supplier);
         self::assertEquals([], $this->bill->getVouchers());
         self::assertEquals([], $this->bill->getTrackings());
-        self::assertEquals([], $this->bill->getFileByType(0));
+        self::assertInstanceOf('\Modules\Media\Models\NullMedia', $this->bill->getFileByType(0));
 
         self::assertEquals('', $this->bill->shipTo);
         self::assertEquals('', $this->bill->shipFAO);
