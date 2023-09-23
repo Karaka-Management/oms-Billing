@@ -71,8 +71,8 @@ final class ApiControllerTest extends \PHPUnit\Framework\TestCase
         TestUtils::setMember($account, 'id', 1);
 
         $permission = new AccountPermission();
-        $permission->setUnit(1);
-        $permission->setApp(2);
+        $permission->unit = 1;
+        $permission->app  = 2;
         $permission->setPermission(
             PermissionType::READ
             | PermissionType::CREATE
