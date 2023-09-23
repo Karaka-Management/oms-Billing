@@ -48,13 +48,13 @@ final class BillTest extends \PHPUnit\Framework\TestCase
         self::assertEquals('', $this->bill->info);
         self::assertInstanceOf('\Modules\Billing\Models\NullBillType', $this->bill->type);
         self::assertInstanceOf('\DateTimeImmutable', $this->bill->createdAt);
-        self::assertInstanceOf('\DateTime', $this->bill->performanceDate);
+        self::assertEquals(null, $this->bill->performanceDate);
         self::assertNull($this->bill->send);
         self::assertNull($this->bill->client);
         self::assertNull($this->bill->supplier);
         self::assertEquals([], $this->bill->getVouchers());
         self::assertEquals([], $this->bill->getTrackings());
-        self::assertEquals([], $this->bill->getMediaByType(0));
+        self::assertEquals([], $this->bill->getFileByType(0));
 
         self::assertEquals('', $this->bill->shipTo);
         self::assertEquals('', $this->bill->shipFAO);
@@ -70,14 +70,14 @@ final class BillTest extends \PHPUnit\Framework\TestCase
         self::assertEquals('', $this->bill->billZip);
         self::assertEquals('', $this->bill->billCountry);
 
-        self::assertInstanceOf('\phpOMS\Localization\Money', $this->bill->netSales);
-        self::assertInstanceOf('\phpOMS\Localization\Money', $this->bill->grossSales);
+        self::assertInstanceOf('\phpOMS\Stdlib\Base\FloatInt', $this->bill->netSales);
+        self::assertInstanceOf('\phpOMS\Stdlib\Base\FloatInt', $this->bill->grossSales);
 
-        self::assertInstanceOf('\phpOMS\Localization\Money', $this->bill->netProfit);
-        self::assertInstanceOf('\phpOMS\Localization\Money', $this->bill->grossProfit);
+        self::assertInstanceOf('\phpOMS\Stdlib\Base\FloatInt', $this->bill->netProfit);
+        self::assertInstanceOf('\phpOMS\Stdlib\Base\FloatInt', $this->bill->grossProfit);
 
-        self::assertInstanceOf('\phpOMS\Localization\Money', $this->bill->netCosts);
-        self::assertInstanceOf('\phpOMS\Localization\Money', $this->bill->grossCosts);
+        self::assertInstanceOf('\phpOMS\Stdlib\Base\FloatInt', $this->bill->netCosts);
+        self::assertInstanceOf('\phpOMS\Stdlib\Base\FloatInt', $this->bill->grossCosts);
 
         self::assertEquals(0, $this->bill->payment);
         self::assertEquals('', $this->bill->paymentText);

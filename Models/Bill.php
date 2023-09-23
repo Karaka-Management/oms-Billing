@@ -84,7 +84,13 @@ class Bill implements \JsonSerializable
      */
     public int $status = BillStatus::DRAFT;
 
-    private int $paymentStatus = BillPaymentStatus::UNPAID;
+    /**
+     * Bill payment status
+     *
+     * @var int
+     * @since 1.0.0
+     */
+    public int $paymentStatus = BillPaymentStatus::UNPAID;
 
     /**
      * Bill created at.
