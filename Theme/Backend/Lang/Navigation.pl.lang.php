@@ -16,4 +16,6 @@ return ['Navigation' => [
     'Archive' => 'Archiwum.',
     'Bill'    => 'Rachunek',
     'Billing' => 'Dane do faktury',
+    'Open'    => '',
+    'Upload'  => '',
 ]];

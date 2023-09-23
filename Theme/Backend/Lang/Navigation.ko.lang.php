@@ -16,4 +16,6 @@ return ['Navigation' => [
     'Archive' => '보관소',
     'Bill'    => '청구서',
     'Billing' => '청구자',
+    'Open'    => '',
+    'Upload'  => '',
 ]];

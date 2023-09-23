@@ -16,4 +16,6 @@ return ['Navigation' => [
     'Archive' => 'Arkisto',
     'Bill'    => 'Laskuttaa',
     'Billing' => 'Laskutus',
+    'Open'    => '',
+    'Upload'  => '',
 ]];

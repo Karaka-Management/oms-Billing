@@ -16,4 +16,6 @@ return ['Navigation' => [
     'Archive' => 'Αρχειοθέτηση',
     'Bill'    => 'Νομοσχέδιο',
     'Billing' => 'Χρέωση',
+    'Open'    => '',
+    'Upload'  => '',
 ]];

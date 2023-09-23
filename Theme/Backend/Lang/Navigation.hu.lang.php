@@ -16,4 +16,6 @@ return ['Navigation' => [
     'Archive' => 'Archívum',
     'Bill'    => 'Számla',
     'Billing' => 'Számlázás',
+    'Open'    => '',
+    'Upload'  => '',
 ]];

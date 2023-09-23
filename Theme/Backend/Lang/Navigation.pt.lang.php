@@ -16,4 +16,6 @@ return ['Navigation' => [
     'Archive' => 'Arquivo',
     'Bill'    => 'Conta',
     'Billing' => 'Cobrança',
+    'Open'    => '',
+    'Upload'  => '',
 ]];

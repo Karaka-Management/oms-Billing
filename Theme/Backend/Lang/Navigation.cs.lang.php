@@ -16,4 +16,6 @@ return ['Navigation' => [
     'Archive' => 'Archiv',
     'Bill'    => 'Účtovat',
     'Billing' => 'Fakturační',
+    'Open'    => '',
+    'Upload'  => '',
 ]];
