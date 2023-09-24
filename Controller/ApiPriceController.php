@@ -178,7 +178,7 @@ final class ApiPriceController extends Controller
         $bestPriceValue = \PHP_INT_MAX;
 
         foreach ($prices as $price) {
-            $newPrice = $bestBasePrice->price->value;
+            $newPrice = $bestBasePrice?->price->value ?? \PHP_INT_MAX;
 
             if ($price->price->value < $newPrice) {
                 $newPrice = $price->price->value;
