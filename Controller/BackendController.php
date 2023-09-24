@@ -524,7 +524,7 @@ final class BackendController extends Controller
         /////
         $currentCustomersCountry = [];
         for ($i = 1; $i < 51; ++$i) {
-            $country                                           = ISO3166NameEnum::getRandom();
+            $country                                           = (string) ISO3166NameEnum::getRandom();
             $currentCustomersCountry[\substr($country, 0, 20)] = [
                 'customers' => (int) (\mt_rand(200, 400) / 12),
             ];
@@ -539,7 +539,7 @@ final class BackendController extends Controller
         $annualCustomersCountry = [];
         for ($i = 1; $i < 51; ++$i) {
             $countryCode                                          = ISO3166CharEnum::getRandom();
-            $countryName                                          = ISO3166NameEnum::getByName('_' . $countryCode);
+            $countryName                                          = (string) ISO3166NameEnum::getByName('_' . $countryCode);
             $annualCustomersCountry[\substr($countryName, 0, 20)] = [];
 
             for ($j = 1; $j < 11; ++$j) {

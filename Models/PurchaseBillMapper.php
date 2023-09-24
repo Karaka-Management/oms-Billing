@@ -80,7 +80,9 @@ final class PurchaseBillMapper extends BillMapper
      */
     public static function getPurchaseByItemId(int $id, \DateTime $start, \DateTime $end) : FloatInt
     {
-        $query  = new Builder(self::$db);
+        $query = new Builder(self::$db);
+
+        /** @var array $result */
         $result = $query->select('SUM(billing_bill_element_total_netpurchaseprice)')
             ->from(self::TABLE)
             ->leftJoin(BillElementMapper::TABLE)
@@ -89,9 +91,9 @@ final class PurchaseBillMapper extends BillMapper
             ->andWhere(self::TABLE . '.billing_bill_performance_date', '>=', $start)
             ->andWhere(self::TABLE . '.billing_bill_performance_date', '<=', $end)
             ->execute()
-            ?->fetch();
+            ?->fetch() ?? [];
 
-        return new FloatInt((int) $result[0]);
+        return new FloatInt((int) ($result[0] ?? 0));
     }
 
     /**
@@ -99,16 +101,18 @@ final class PurchaseBillMapper extends BillMapper
      */
     public static function getPurchaseBySupplierId(int $id, \DateTime $start, \DateTime $end) : FloatInt
     {
-        $query  = new Builder(self::$db);
+        $query = new Builder(self::$db);
+
+        /** @var array $result */
         $result = $query->select('SUM(billing_bill_netcosts)')
             ->from(self::TABLE)
             ->where(self::TABLE . '.billing_bill_supplier', '=', $id)
             ->andWhere(self::TABLE . '.billing_bill_performance_date', '>=', $start)
             ->andWhere(self::TABLE . '.billing_bill_performance_date', '<=', $end)
             ->execute()
-            ?->fetch();
+            ?->fetch() ?? [];
 
-        return new FloatInt((int) $result[0]);
+        return new FloatInt((int) ($result[0] ?? 0));
     }
 
     /**
@@ -116,7 +120,9 @@ final class PurchaseBillMapper extends BillMapper
      */
     public static function getAvgPurchasePriceByItemId(int $id, \DateTime $start, \DateTime $end) : FloatInt
     {
-        $query  = new Builder(self::$db);
+        $query = new Builder(self::$db);
+
+        /** @var false|array $result */
         $result = $query->select('SUM(billing_bill_element_single_netpurchaseprice)', 'COUNT(billing_bill_element_total_netpurchaseprice)')
             ->from(self::TABLE)
             ->leftJoin(BillElementMapper::TABLE)
@@ -125,7 +131,7 @@ final class PurchaseBillMapper extends BillMapper
             ->andWhere(self::TABLE . '.billing_bill_performance_date', '>=', $start)
             ->andWhere(self::TABLE . '.billing_bill_performance_date', '<=', $end)
             ->execute()
-            ?->fetch();
+            ?->fetch() ?? false;
 
         return new FloatInt($result === false || $result[1] == 0 ? 0 : (int) (((int) $result[0]) / ((int) $result[1])));
     }
@@ -137,6 +143,8 @@ final class PurchaseBillMapper extends BillMapper
     {
         // @todo: only delivers/invoice/production (no offers ...)
         $query  = new Builder(self::$db);
+
+        /** @var false|array $result */
         $result = $query->select('billing_bill_performance_date')
             ->from(self::TABLE)
             ->leftJoin(BillElementMapper::TABLE)
@@ -145,7 +153,7 @@ final class PurchaseBillMapper extends BillMapper
             ->orderBy('billing_bill_id', 'DESC')
             ->limit(1)
             ->execute()
-            ?->fetch();
+            ?->fetch() ?? false;
 
         return $result === false ? null : new \DateTimeImmutable($result[0]);
     }
@@ -156,14 +164,16 @@ final class PurchaseBillMapper extends BillMapper
     public static function getLastOrderDateBySupplierId(int $id) : ?\DateTimeImmutable
     {
         // @todo: only delivers/invoice/production (no offers ...)
-        $query  = new Builder(self::$db);
+        $query = new Builder(self::$db);
+
+        /** @var false|array $result */
         $result = $query->select('billing_bill_performance_date')
             ->from(self::TABLE)
             ->where(self::TABLE . '.billing_bill_supplier', '=', $id)
             ->orderBy('billing_bill_id', 'DESC')
             ->limit(1)
             ->execute()
-            ?->fetch();
+            ?->fetch() ?? false;
 
         return $result === false ? null : new \DateTimeImmutable($result[0]);
     }

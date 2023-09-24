@@ -80,7 +80,9 @@ final class SalesBillMapper extends BillMapper
      */
     public static function getSalesByItemId(int $id, \DateTime $start, \DateTime $end) : FloatInt
     {
-        $query  = new Builder(self::$db);
+        $query = new Builder(self::$db);
+
+        /** @var array $result */
         $result = $query->select('SUM(billing_bill_element_total_netsalesprice)')
             ->from(self::TABLE)
             ->leftJoin(BillElementMapper::TABLE)
@@ -89,9 +91,9 @@ final class SalesBillMapper extends BillMapper
             ->andWhere(self::TABLE . '.billing_bill_performance_date', '>=', $start)
             ->andWhere(self::TABLE . '.billing_bill_performance_date', '<=', $end)
             ->execute()
-            ?->fetch();
+            ?->fetch() ?? [];
 
-        return new FloatInt((int) $result[0] ?? 0);
+        return new FloatInt((int) ($result[0] ?? 0));
     }
 
     /**
@@ -99,16 +101,18 @@ final class SalesBillMapper extends BillMapper
      */
     public static function getSalesByClientId(int $id, \DateTime $start, \DateTime $end) : FloatInt
     {
-        $query  = new Builder(self::$db);
+        $query = new Builder(self::$db);
+
+        /** @var array $result */
         $result = $query->select('SUM(billing_bill_netsales)')
             ->from(self::TABLE)
             ->where(self::TABLE . '.billing_bill_client', '=', $id)
             ->andWhere(self::TABLE . '.billing_bill_performance_date', '>=', $start)
             ->andWhere(self::TABLE . '.billing_bill_performance_date', '<=', $end)
             ->execute()
-            ?->fetch();
+            ?->fetch() ?? [];
 
-        return new FloatInt((int) $result[0] ?? 0);
+        return new FloatInt((int) ($result[0] ?? 0));
     }
 
     /**
@@ -116,7 +120,9 @@ final class SalesBillMapper extends BillMapper
      */
     public static function getAvgSalesPriceByItemId(int $id, \DateTime $start, \DateTime $end) : FloatInt
     {
-        $query  = new Builder(self::$db);
+        $query = new Builder(self::$db);
+
+        /** @var false|array $result */
         $result = $query->select('SUM(billing_bill_element_single_netsalesprice)', 'COUNT(billing_bill_element_total_netsalesprice)')
             ->from(self::TABLE)
             ->leftJoin(BillElementMapper::TABLE)
@@ -125,7 +131,7 @@ final class SalesBillMapper extends BillMapper
             ->andWhere(self::TABLE . '.billing_bill_performance_date', '>=', $start)
             ->andWhere(self::TABLE . '.billing_bill_performance_date', '<=', $end)
             ->execute()
-            ?->fetch();
+            ?->fetch() ?? false;
 
         return new FloatInt($result === false || ((int) ($result[1] ?? 0)) === 0 ? 0 : (int) (((int) $result[0] ?? 0) / ((int) $result[1])));
     }
@@ -136,7 +142,9 @@ final class SalesBillMapper extends BillMapper
     public static function getLastOrderDateByItemId(int $id) : ?\DateTimeImmutable
     {
         // @todo: only delivers/invoice/production (no offers ...)
-        $query  = new Builder(self::$db);
+        $query = new Builder(self::$db);
+
+        /** @var false|array $result */
         $result = $query->select('billing_bill_performance_date')
             ->from(self::TABLE)
             ->leftJoin(BillElementMapper::TABLE)
@@ -145,7 +153,7 @@ final class SalesBillMapper extends BillMapper
             ->orderBy('billing_bill_id', 'DESC')
             ->limit(1)
             ->execute()
-            ?->fetch();
+            ?->fetch() ?? false;
 
         return $result === false ? null : new \DateTimeImmutable($result[0]);
     }
@@ -156,14 +164,16 @@ final class SalesBillMapper extends BillMapper
     public static function getLastOrderDateByClientId(int $id) : ?\DateTimeImmutable
     {
         // @todo: only delivers/invoice/production (no offers ...)
-        $query  = new Builder(self::$db);
+        $query = new Builder(self::$db);
+
+        /** @var false|array $result */
         $result = $query->select('billing_bill_performance_date')
             ->from(self::TABLE)
             ->where(self::TABLE . '.billing_bill_client', '=', $id)
             ->orderBy('billing_bill_id', 'DESC')
             ->limit(1)
             ->execute()
-            ?->fetch();
+            ?->fetch() ?? false;
 
         return $result === false ? null : new \DateTimeImmutable($result[0]);
     }
@@ -245,7 +255,7 @@ final class SalesBillMapper extends BillMapper
             ->groupBy('client');
 
         $stmt = $query->execute();
-        $data = $stmt->fetchAll();
+        $data = $stmt?->fetchAll() ?? [];
 
         $clientIds = [];
         foreach ($data as $client) {
