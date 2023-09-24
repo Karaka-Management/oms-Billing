@@ -95,5 +95,5 @@ return ['Billing' => [
     'Upload'          => 'Hochladen',
     'Value'           => 'Wert',
     'Variation'       => 'Variation',
-    'Zip'             => 'Reißverschluss',
+    'Zip'             => 'Zip',
 ]];
