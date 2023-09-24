@@ -306,7 +306,7 @@ final class ApiPriceController extends Controller
     private function validatePriceCreate(RequestAbstract $request) : array
     {
         $val = [];
-        if (false) {
+        if (($val['name'] = !$request->hasData('name'))) {
             return $val;
         }
 

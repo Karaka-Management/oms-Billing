@@ -726,9 +726,11 @@ final class ApiBillController extends Controller
         $element->bill = new NullBill($bill->id);
 
         // discounts
+        // @todo: implement a addDiscount function
+        /*
         if ($request->getData('discount_percentage') !== null) {
-            // @todo: implement a addDiscount function
         }
+        */
 
         return $element;
     }
