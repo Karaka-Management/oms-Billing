@@ -171,11 +171,11 @@ echo $this->data['nav']->render(); ?>
                          ?>"><?= $value->billAddress; ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->billZip; ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->billCity; ?></a>
-                        <td><a href="<?= $url; ?>"><?= !empty($value->billCountry)
-                            ? ISO3166NameEnum::getByName(
+                        <td><a href="<?= $url; ?>"><?= empty($value->billCountry)
+                            ? ''
+                            : ISO3166NameEnum::getByName(
                                     ISO3166TwoEnum::getName($value->billCountry)
-                                )
-                            : ''; ?></a>
+                                ); ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->grossCosts->getAmount(); ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->billDate?->format('Y-m-d'); ?></a>
                 <?php endforeach; ?>

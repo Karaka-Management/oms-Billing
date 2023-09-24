@@ -42,7 +42,7 @@ $archive = $bill->getFileByTypeName('original');
 $logs = $this->data['logs'] ?? [];
 
 $editable = $bill->id === 0 || \in_array($bill->getStatus(), [BillStatus::DRAFT, BillStatus::UNPARSED]);
-$disabled = !$editable  ? ' disabled' : '';
+$disabled = $editable  ? '' : ' disabled';
 
 echo $this->data['nav']->render(); ?>
 

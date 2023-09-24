@@ -321,14 +321,12 @@ final class ApiBillController extends Controller
         $taxCode = $this->app->moduleManager->get('Billing', 'ApiTax')
             ->getTaxCodeFromClientItem($client, $item, $request->header->l11n->country);
 
-        $element = BillElement::fromItem(
+        return BillElement::fromItem(
             $item,
             $taxCode,
             $request->getDataInt('quantity') ?? 1,
             $bill->id
         );
-
-        return $element;
     }
 
     /**

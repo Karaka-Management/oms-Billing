@@ -141,9 +141,9 @@ final class Installer extends InstallerAbstract
                 continue;
             }
 
-            $billAttrType[$attribute['name']] = !\is_array($responseData['response'])
-                ? $responseData['response']->toArray()
-                : $responseData['response'];
+            $billAttrType[$attribute['name']] = \is_array($responseData['response'])
+                ? $responseData['response']
+                : $responseData['response']->toArray();
 
             $isFirst = true;
             foreach ($attribute['l11n'] as $language => $l11n) {
@@ -212,9 +212,9 @@ final class Installer extends InstallerAbstract
                     continue;
                 }
 
-                $attrValue = !\is_array($responseData['response'])
-                    ? $responseData['response']->toArray()
-                    : $responseData['response'];
+                $attrValue = \is_array($responseData['response'])
+                    ? $responseData['response']
+                    : $responseData['response']->toArray();
 
                 $billAttrValue[$attribute['name']][] = $attrValue;
 
@@ -298,9 +298,9 @@ final class Installer extends InstallerAbstract
                 continue;
             }
 
-            $result = !\is_array($responseData['response'])
-                ? $responseData['response']->toArray()
-                : $responseData['response'];
+            $result = \is_array($responseData['response'])
+                ? $responseData['response']
+                : $responseData['response']->toArray();
 
             $results[] = $result;
         }
@@ -350,9 +350,9 @@ final class Installer extends InstallerAbstract
                 continue;
             }
 
-            $billType = !\is_array($responseData['response'])
-                ? $responseData['response']->toArray()
-                : $responseData['response'];
+            $billType = \is_array($responseData['response'])
+                ? $responseData['response']
+                : $responseData['response']->toArray();
 
             $billTypes[] = $billType;
 
