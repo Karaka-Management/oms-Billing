@@ -18,7 +18,6 @@ use Modules\Billing\Models\Bill;
 use Modules\Billing\Models\BillElement;
 use Modules\Billing\Models\BillStatus;
 use Modules\Billing\Models\NullBillType;
-use Modules\Media\Models\Media;
 use phpOMS\Localization\ISO4217CharEnum;
 
 /**
@@ -48,7 +47,7 @@ final class BillTest extends \PHPUnit\Framework\TestCase
         self::assertEquals('', $this->bill->info);
         self::assertInstanceOf('\Modules\Billing\Models\NullBillType', $this->bill->type);
         self::assertInstanceOf('\DateTimeImmutable', $this->bill->createdAt);
-        self::assertEquals(null, $this->bill->performanceDate);
+        self::assertNull($this->bill->performanceDate);
         self::assertNull($this->bill->send);
         self::assertNull($this->bill->client);
         self::assertNull($this->bill->supplier);
