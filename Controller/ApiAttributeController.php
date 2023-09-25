@@ -447,7 +447,6 @@ final class ApiAttributeController extends Controller
      */
     public function apiBillAttributeValueDelete(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
-        return;
         // @todo: I don't think values can be deleted? Only Attributes
         // However, It should be possible to remove UNUSED default values
         // either here or other function?
