@@ -126,7 +126,7 @@ class BillElement implements \JsonSerializable
      */
     public int $promotion = 0;
 
-    public int | Bill $bill = 0;
+    public Bill $bill;
 
     /**
      * Constructor.
@@ -135,6 +135,8 @@ class BillElement implements \JsonSerializable
      */
     public function __construct()
     {
+        $this->bill = new NullBill();
+
         $this->singleListPriceNet   = new FloatInt();
         $this->singleListPriceGross = new FloatInt();
 
