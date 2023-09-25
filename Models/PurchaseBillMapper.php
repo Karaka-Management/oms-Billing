@@ -142,7 +142,7 @@ final class PurchaseBillMapper extends BillMapper
     public static function getLastOrderDateByItemId(int $id) : ?\DateTimeImmutable
     {
         // @todo: only delivers/invoice/production (no offers ...)
-        $query  = new Builder(self::$db);
+        $query = new Builder(self::$db);
 
         /** @var false|array $result */
         $result = $query->select('billing_bill_performance_date')
