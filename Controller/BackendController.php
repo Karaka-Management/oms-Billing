@@ -381,10 +381,12 @@ final class BackendController extends Controller
      */
     public function viewRegionAnalysis(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
     {
-        $head = $response->data['Content']->head;
+        $head  = $response->data['Content']->head;
+        $nonce = $this->app->appSettings->getOption('script-nonce');
+
         $head->addAsset(AssetType::CSS, 'Resources/chartjs/Chartjs/chart.css');
-        $head->addAsset(AssetType::JSLATE, 'Resources/chartjs/Chartjs/chart.js');
-        $head->addAsset(AssetType::JSLATE, 'Modules/ClientManagement/Controller.js', ['type' => 'module']);
+        $head->addAsset(AssetType::JSLATE, 'Resources/chartjs/Chartjs/chart.js', ['nonce' => $nonce]);
+        $head->addAsset(AssetType::JSLATE, 'Modules/ClientManagement/Controller.js', ['nonce' => $nonce, 'type' => 'module']);
 
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/region-analysis');
@@ -581,10 +583,12 @@ final class BackendController extends Controller
      */
     public function viewBillAnalysis(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
     {
-        $head = $response->data['Content']->head;
+        $head  = $response->data['Content']->head;
+        $nonce = $this->app->appSettings->getOption('script-nonce');
+
         $head->addAsset(AssetType::CSS, 'Resources/chartjs/Chartjs/chart.css');
-        $head->addAsset(AssetType::JSLATE, 'Resources/chartjs/Chartjs/chart.js');
-        $head->addAsset(AssetType::JSLATE, 'Modules/ClientManagement/Controller.js', ['type' => 'module']);
+        $head->addAsset(AssetType::JSLATE, 'Resources/chartjs/Chartjs/chart.js', ['nonce' => $nonce]);
+        $head->addAsset(AssetType::JSLATE, 'Modules/ClientManagement/Controller.js', ['nonce' => $nonce, 'type' => 'module']);
 
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/bill-analysis');
@@ -607,10 +611,12 @@ final class BackendController extends Controller
      */
     public function viewSalesRepAnalysis(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
     {
-        $head = $response->data['Content']->head;
+        $head  = $response->data['Content']->head;
+        $nonce = $this->app->appSettings->getOption('script-nonce');
+
         $head->addAsset(AssetType::CSS, 'Resources/chartjs/Chartjs/chart.css');
-        $head->addAsset(AssetType::JSLATE, 'Resources/chartjs/Chartjs/chart.js');
-        $head->addAsset(AssetType::JSLATE, 'Modules/ClientManagement/Controller.js', ['type' => 'module']);
+        $head->addAsset(AssetType::JSLATE, 'Resources/chartjs/Chartjs/chart.js', ['nonce' => $nonce]);
+        $head->addAsset(AssetType::JSLATE, 'Modules/ClientManagement/Controller.js', ['nonce' => $nonce, 'type' => 'module']);
 
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/rep-analysis');
