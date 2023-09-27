@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace Modules\Billing\tests\Models;
 
 use Modules\Billing\Models\BillElement;
+use Modules\Billing\Models\NullBill;
 
 /**
  * @internal
@@ -65,7 +66,7 @@ final class BillElementTest extends \PHPUnit\Framework\TestCase
         $this->element->itemNumber      = '123456';
         $this->element->itemName        = 'Test';
         $this->element->itemDescription = 'Description';
-        $this->element->bill            = 5;
+        $this->element->bill            = new NullBill(5);
         $this->element->setQuantity(4);
 
         self::assertEquals(
@@ -77,7 +78,7 @@ final class BillElementTest extends \PHPUnit\Framework\TestCase
                 'itemName'        => 'Test',
                 'itemDescription' => 'Description',
                 'quantity'        => 4,
-                'bill'            => 5,
+                'bill'            => $this->element->bill,
             ],
             $this->element->jsonSerialize()
         );
