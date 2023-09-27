@@ -44,7 +44,7 @@ final class ApiAttributeController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -52,7 +52,7 @@ final class ApiAttributeController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillAttributeCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillAttributeCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validateAttributeCreate($request))) {
             $response->header->status = RequestStatusCode::R_400;
@@ -71,7 +71,7 @@ final class ApiAttributeController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -79,7 +79,7 @@ final class ApiAttributeController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillAttributeTypeL11nCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillAttributeTypeL11nCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validateAttributeTypeL11nCreate($request))) {
             $response->header->status = RequestStatusCode::R_400;
@@ -98,7 +98,7 @@ final class ApiAttributeController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -106,7 +106,7 @@ final class ApiAttributeController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillAttributeTypeCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillAttributeTypeCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validateAttributeTypeCreate($request))) {
             $response->header->status = RequestStatusCode::R_400;
@@ -125,7 +125,7 @@ final class ApiAttributeController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -133,7 +133,7 @@ final class ApiAttributeController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillAttributeValueCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillAttributeValueCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validateAttributeValueCreate($request))) {
             $response->header->status = RequestStatusCode::R_400;
@@ -167,7 +167,7 @@ final class ApiAttributeController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -175,7 +175,7 @@ final class ApiAttributeController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillAttributeValueL11nCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillAttributeValueL11nCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validateAttributeValueL11nCreate($request))) {
             $response->header->status = RequestStatusCode::R_400;
@@ -194,7 +194,7 @@ final class ApiAttributeController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -202,7 +202,7 @@ final class ApiAttributeController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillAttributeUpdate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillAttributeUpdate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validateAttributeUpdate($request))) {
             $response->header->status = RequestStatusCode::R_400;
@@ -245,7 +245,7 @@ final class ApiAttributeController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -253,7 +253,7 @@ final class ApiAttributeController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillAttributeDelete(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillAttributeDelete(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validateAttributeDelete($request))) {
             $response->header->status = RequestStatusCode::R_400;
@@ -282,7 +282,7 @@ final class ApiAttributeController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -290,7 +290,7 @@ final class ApiAttributeController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillAttributeTypeL11nUpdate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillAttributeTypeL11nUpdate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validateAttributeTypeL11nUpdate($request))) {
             $response->header->status = RequestStatusCode::R_400;
@@ -312,7 +312,7 @@ final class ApiAttributeController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -320,7 +320,7 @@ final class ApiAttributeController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillAttributeTypeL11nDelete(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillAttributeTypeL11nDelete(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validateAttributeTypeL11nDelete($request))) {
             $response->header->status = RequestStatusCode::R_400;
@@ -340,7 +340,7 @@ final class ApiAttributeController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -348,7 +348,7 @@ final class ApiAttributeController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillAttributeTypeUpdate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillAttributeTypeUpdate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validateAttributeTypeUpdate($request))) {
             $response->header->status = RequestStatusCode::R_400;
@@ -370,7 +370,7 @@ final class ApiAttributeController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -380,7 +380,7 @@ final class ApiAttributeController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillAttributeTypeDelete(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillAttributeTypeDelete(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validateAttributeTypeDelete($request))) {
             $response->header->status = RequestStatusCode::R_400;
@@ -400,7 +400,7 @@ final class ApiAttributeController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -408,7 +408,7 @@ final class ApiAttributeController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillAttributeValueUpdate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillAttributeValueUpdate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validateAttributeValueUpdate($request))) {
             $response->header->status = RequestStatusCode::R_400;
@@ -437,7 +437,7 @@ final class ApiAttributeController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -445,7 +445,7 @@ final class ApiAttributeController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillAttributeValueDelete(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillAttributeValueDelete(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         // @todo: I don't think values can be deleted? Only Attributes
         // However, It should be possible to remove UNUSED default values
@@ -468,7 +468,7 @@ final class ApiAttributeController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -476,7 +476,7 @@ final class ApiAttributeController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillAttributeValueL11nUpdate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillAttributeValueL11nUpdate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validateAttributeValueL11nUpdate($request))) {
             $response->header->status = RequestStatusCode::R_400;
@@ -498,7 +498,7 @@ final class ApiAttributeController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -506,7 +506,7 @@ final class ApiAttributeController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillAttributeValueL11nDelete(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillAttributeValueL11nDelete(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validateAttributeValueL11nDelete($request))) {
             $response->header->status = RequestStatusCode::R_400;

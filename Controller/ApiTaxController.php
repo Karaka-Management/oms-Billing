@@ -113,7 +113,7 @@ final class ApiTaxController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiTaxCombinationCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiTaxCombinationCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validateTaxCombinationCreate($request))) {
             $response->header->status = RequestStatusCode::R_400;
@@ -224,7 +224,7 @@ final class ApiTaxController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -232,7 +232,7 @@ final class ApiTaxController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiTaxCombinationUpdate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiTaxCombinationUpdate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validateTaxCombinationUpdate($request))) {
             $response->header->status = RequestStatusCode::R_400;
@@ -254,7 +254,7 @@ final class ApiTaxController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -262,7 +262,7 @@ final class ApiTaxController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiChangeDefaultTaxCombinations(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiChangeDefaultTaxCombinations(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validateDefaultTaxCombinationChange($request))) {
             $response->header->status = RequestStatusCode::R_400;
@@ -383,7 +383,7 @@ final class ApiTaxController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -391,7 +391,7 @@ final class ApiTaxController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiTaxCombinationDelete(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiTaxCombinationDelete(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validateTaxCombinationDelete($request))) {
             $response->header->status = RequestStatusCode::R_400;

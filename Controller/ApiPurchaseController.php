@@ -43,7 +43,7 @@ final class ApiPurchaseController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -53,7 +53,7 @@ final class ApiPurchaseController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiSupplierBillUpload(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiSupplierBillUpload(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         $originalType = $request->getDataInt('type') ?? ((int) $this->app->appSettings->get(
             names: SettingsEnum::ORIGINAL_MEDIA_TYPE,

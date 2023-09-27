@@ -48,7 +48,7 @@ final class ApiPriceController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -56,7 +56,7 @@ final class ApiPriceController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiPricingFind(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiPricingFind(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         // Get item
         /** @var null|\Modules\ItemManagement\Models\Item $item */
@@ -224,7 +224,7 @@ final class ApiPriceController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -232,7 +232,7 @@ final class ApiPriceController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiPriceCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiPriceCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validatePriceCreate($request))) {
             $response->header->status = RequestStatusCode::R_400;
@@ -317,7 +317,7 @@ final class ApiPriceController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -325,7 +325,7 @@ final class ApiPriceController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiPriceUpdate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiPriceUpdate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validatePriceUpdate($request))) {
             $response->header->status = RequestStatusCode::R_400;
@@ -416,7 +416,7 @@ final class ApiPriceController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -424,7 +424,7 @@ final class ApiPriceController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiPriceDelete(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiPriceDelete(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validatePriceDelete($request))) {
             $response->header->status = RequestStatusCode::R_400;

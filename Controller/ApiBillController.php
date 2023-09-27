@@ -82,7 +82,7 @@ final class ApiBillController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -90,7 +90,7 @@ final class ApiBillController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillUpdate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillUpdate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validateBillUpdate($request))) {
             $response->header->status = RequestStatusCode::R_400;
@@ -146,7 +146,7 @@ final class ApiBillController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -154,7 +154,7 @@ final class ApiBillController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validateBillCreate($request))) {
             $response->header->status = RequestStatusCode::R_400;
@@ -333,7 +333,7 @@ final class ApiBillController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return Bill
      *
@@ -394,7 +394,7 @@ final class ApiBillController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -402,7 +402,7 @@ final class ApiBillController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiMediaAddToBill(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiMediaAddToBill(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validateMediaAddToBill($request))) {
             $response->header->status = RequestStatusCode::R_400;
@@ -505,7 +505,7 @@ final class ApiBillController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -513,7 +513,7 @@ final class ApiBillController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiMediaRemoveFromBill(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiMediaRemoveFromBill(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         // @todo: check that it is not system generated media!
         if (!empty($val = $this->validateMediaRemoveFromBill($request))) {
@@ -647,7 +647,7 @@ final class ApiBillController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -655,7 +655,7 @@ final class ApiBillController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillElementCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillElementCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validateBillElementCreate($request))) {
             $response->header->status = RequestStatusCode::R_400;
@@ -695,7 +695,7 @@ final class ApiBillController extends Controller
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
      * @param Bill             $bill     Bill to create element for
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return BillElement
      *
@@ -756,7 +756,7 @@ final class ApiBillController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -764,7 +764,7 @@ final class ApiBillController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiMediaRender(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiMediaRender(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         // @todo: check if has permission
         $this->app->moduleManager->get('Media', 'Api')->apiMediaExport($request, $response, ['ignorePermission' => true]);
@@ -775,7 +775,7 @@ final class ApiBillController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -783,7 +783,7 @@ final class ApiBillController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiPreviewRender(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiPreviewRender(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         /** @var \Modules\Billing\Models\Bill $bill */
         $bill = BillMapper::get()
@@ -918,7 +918,7 @@ final class ApiBillController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -926,7 +926,7 @@ final class ApiBillController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillPdfArchiveCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillPdfArchiveCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         Autoloader::addPath(__DIR__ . '/../../../Resources/');
 
@@ -1145,7 +1145,7 @@ final class ApiBillController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -1153,7 +1153,7 @@ final class ApiBillController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiNoteCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiNoteCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validateNoteCreate($request))) {
             $response->header->status = RequestStatusCode::R_400;
@@ -1201,7 +1201,7 @@ final class ApiBillController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -1209,7 +1209,7 @@ final class ApiBillController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillDelete(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillDelete(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validateBillDelete($request))) {
             $response->header->status = RequestStatusCode::R_400;
@@ -1272,7 +1272,7 @@ final class ApiBillController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -1280,7 +1280,7 @@ final class ApiBillController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillElementUpdate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillElementUpdate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validateBillElementUpdate($request))) {
             $response->header->status = RequestStatusCode::R_400;
@@ -1344,7 +1344,7 @@ final class ApiBillController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -1352,7 +1352,7 @@ final class ApiBillController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillElementDelete(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillElementDelete(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validateBillElementDelete($request))) {
             $response->header->status = RequestStatusCode::R_400;
@@ -1394,7 +1394,7 @@ final class ApiBillController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -1402,7 +1402,7 @@ final class ApiBillController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiNoteUpdate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiNoteUpdate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         // @todo: check permissions
         $this->app->moduleManager->get('Editor', 'Api')->apiEditorDocUpdate($request, $response, $data);
@@ -1413,7 +1413,7 @@ final class ApiBillController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -1421,7 +1421,7 @@ final class ApiBillController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiNoteDelete(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiNoteDelete(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         // @todo: check permissions
         $this->app->moduleManager->get('Editor', 'Api')->apiEditorDocDelete($request, $response, $data);

@@ -33,7 +33,7 @@ final class ApiController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -41,7 +41,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillUpdate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillUpdate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         $this->app->moduleManager->get('Billing', 'ApiBill')->apiBillUpdate($request, $response, $data);
     }
@@ -51,7 +51,7 @@ final class ApiController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -59,7 +59,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         $this->app->moduleManager->get('Billing', 'ApiBill')->apiBillCreate($request, $response, $data);
     }
@@ -69,7 +69,7 @@ final class ApiController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -77,7 +77,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiMediaAddToBill(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiMediaAddToBill(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         $this->app->moduleManager->get('Billing', 'ApiBill')->apiMediaAddToBill($request, $response, $data);
     }
@@ -87,7 +87,7 @@ final class ApiController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -95,7 +95,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillElementCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillElementCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         $this->app->moduleManager->get('Billing', 'ApiBill')->apiBillElementCreate($request, $response, $data);
     }
@@ -105,7 +105,7 @@ final class ApiController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -113,7 +113,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiPreviewRender(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiPreviewRender(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         $this->app->moduleManager->get('Billing', 'ApiBill')->apiPreviewRender($request, $response, $data);
     }
@@ -123,7 +123,7 @@ final class ApiController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -131,7 +131,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillPdfArchiveCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillPdfArchiveCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         $this->app->moduleManager->get('Billing', 'ApiBill')->apiBillPdfArchiveCreate($request, $response, $data);
     }
@@ -141,7 +141,7 @@ final class ApiController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -149,7 +149,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillPdfCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillPdfCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         $this->app->moduleManager->get('Billing', 'ApiBill')->apiBillPdfCreate($request, $response, $data);
     }
@@ -159,7 +159,7 @@ final class ApiController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -167,7 +167,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiNoteCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiNoteCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         $this->app->moduleManager->get('Billing', 'ApiBill')->apiNoteCreate($request, $response, $data);
     }
@@ -177,7 +177,7 @@ final class ApiController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -185,7 +185,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiSupplierBillUpload(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiSupplierBillUpload(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         $this->app->moduleManager->get('Billing', 'ApiPurchase')->apiSupplierBillUpload($request, $response, $data);
     }
@@ -195,7 +195,7 @@ final class ApiController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -203,7 +203,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillTypeCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillTypeCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         $this->app->moduleManager->get('Billing', 'ApiBillType')->apiBillTypeCreate($request, $response, $data);
     }
@@ -213,7 +213,7 @@ final class ApiController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -221,7 +221,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillTypeL11nCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillTypeL11nCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         $this->app->moduleManager->get('Billing', 'ApiBillType')->apiBillTypeL11nCreate($request, $response, $data);
     }
@@ -231,7 +231,7 @@ final class ApiController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -239,7 +239,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiTaxCombinationCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiTaxCombinationCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         $this->app->moduleManager->get('Billing', 'ApiTax')->apiTaxCombinationCreate($request, $response, $data);
     }
@@ -249,7 +249,7 @@ final class ApiController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -257,7 +257,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiPriceCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiPriceCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         $this->app->moduleManager->get('Billing', 'ApiPrice')->apiPriceCreate($request, $response, $data);
     }
@@ -267,7 +267,7 @@ final class ApiController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -275,7 +275,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillAttributeCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillAttributeCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         $this->app->moduleManager->get('Billing', 'ApiAttribute')->apiBillAttributeCreate($request, $response, $data);
     }
@@ -285,7 +285,7 @@ final class ApiController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -293,7 +293,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillAttributeTypeL11nCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillAttributeTypeL11nCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         $this->app->moduleManager->get('Billing', 'ApiAttribute')->apiBillAttributeTypeL11nCreate($request, $response, $data);
     }
@@ -303,7 +303,7 @@ final class ApiController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -311,7 +311,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillAttributeTypeCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillAttributeTypeCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         $this->app->moduleManager->get('Billing', 'ApiAttribute')->apiBillAttributeTypeCreate($request, $response, $data);
     }
@@ -321,7 +321,7 @@ final class ApiController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -329,7 +329,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillAttributeValueCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillAttributeValueCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         $this->app->moduleManager->get('Billing', 'ApiAttribute')->apiBillAttributeValueCreate($request, $response, $data);
     }
@@ -339,7 +339,7 @@ final class ApiController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -347,7 +347,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillAttributeValueL11nCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiBillAttributeValueL11nCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         $this->app->moduleManager->get('Billing', 'ApiAttribute')->apiBillAttributeValueL11nCreate($request, $response, $data);
     }
@@ -357,7 +357,7 @@ final class ApiController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -365,7 +365,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiSubscriptionFind(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiSubscriptionFind(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
     }
 }
