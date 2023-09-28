@@ -53,10 +53,13 @@ final class CliController extends Controller
      */
     public function cliParseSupplierBill(RequestAbstract $request, ResponseAbstract $response, array $data = []) : RenderableInterface
     {
-        $originalType = $request->getDataInt('type') ?? (int) $this->app->appSettings->get(
+        /** @var \Model\Setting $setting */
+        $setting = $this->app->appSettings->get(
             names: SettingsEnum::ORIGINAL_MEDIA_TYPE,
             module: self::NAME
-        )->content;
+        );
+
+        $originalType = $request->getDataInt('type') ?? (int) $setting->content;
 
         /** @var \Modules\Billing\Models\Bill $bill */
         $bill = BillMapper::get()
@@ -121,6 +124,11 @@ final class CliController extends Controller
         $billDate     = $this->parseDate($billDateTemp, $supplier, $identifiers['date_format']);
 
         $bill->billDate = $billDate;
+
+        /* Due */
+        $billDueTemp = $this->findBillDue($lines, $identifiers['bill_date'][$language]);
+        $billDue     = $this->parseDate($billDueTemp, $supplier, $identifiers['date_format']);
+        // @todo: implement multiple due dates for bills
 
         /* Total Gross */
         $totalGross       = $this->findBillGross($lines, $identifiers['total_gross'][$language]);
