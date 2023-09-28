@@ -240,7 +240,7 @@ class BillElement implements \JsonSerializable
     public static function fromItem(Item $item, TaxCode $code, int $quantity = 1, int $bill = 0) : self
     {
         $element                  = new self();
-        $element->bill            = $bill;
+        $element->bill            = new NullBill($bill);
         $element->item            = empty($item->id) ? null : $item->id;
         $element->itemNumber      = $item->number;
         $element->itemName        = $item->getL11n('name1')->content;
