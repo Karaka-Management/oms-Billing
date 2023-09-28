@@ -122,7 +122,7 @@ final class SalesBillMapper extends BillMapper
     {
         $query = new Builder(self::$db);
 
-        /** @var false|array $result */
+        /** @var array $result */
         $result = $query->select('SUM(billing_bill_element_single_netsalesprice)', 'COUNT(billing_bill_element_total_netsalesprice)')
             ->from(self::TABLE)
             ->leftJoin(BillElementMapper::TABLE)
@@ -131,9 +131,9 @@ final class SalesBillMapper extends BillMapper
             ->andWhere(self::TABLE . '.billing_bill_performance_date', '>=', $start)
             ->andWhere(self::TABLE . '.billing_bill_performance_date', '<=', $end)
             ->execute()
-            ?->fetch() ?? false;
+            ?->fetch() ?? [];
 
-        return new FloatInt($result === false || ((int) ($result[1] ?? 0)) === 0 ? 0 : (int) (((int) $result[0] ?? 0) / ((int) $result[1])));
+        return new FloatInt(((int) ($result[1] ?? 0)) === 0 ? 0 : (int) (((int) ($result[0] ?? 0)) / ((int) $result[1])));
     }
 
     /**

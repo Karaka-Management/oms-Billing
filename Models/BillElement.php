@@ -273,12 +273,12 @@ class BillElement implements \JsonSerializable
         $element->singleProfitGross->setInt($element->singleSalesPriceGross->getInt() - $element->singlePurchasePriceGross->getInt());
         $element->totalProfitGross->setInt($element->quantity * ($element->totalSalesPriceGross->getInt() - $element->totalPurchasePriceGross->getInt()));
 
-        if (!empty($element->bill)
+        if ($element->bill->id !== 0
             && $item->getAttribute('subscription')->value->getValue() === 1
             && $element->item !== null
         ) {
             $element->subscription        = new Subscription();
-            $element->subscription->bill  = $element->bill;
+            $element->subscription->bill  = $element->bill->id;
             $element->subscription->item  = $element->item;
             $element->subscription->start = new \DateTime('now'); // @todo: change to bill performanceDate
             $element->subscription->end   = new SmartDateTime('now'); // @todo: depends on subscription type

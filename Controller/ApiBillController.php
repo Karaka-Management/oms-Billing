@@ -1173,7 +1173,7 @@ final class ApiBillController extends Controller
         }
 
         /** @var \Modules\Editor\Models\EditorDoc $model */
-        $model = $response->get($request->uri->__toString())['response'];
+        $model = $response->getDataArray($request->uri->__toString())['response'];
         $this->createModelRelation($request->header->account, $request->getDataInt('id'), $model->id, BillMapper::class, 'bill_note', '', $request->getOrigin());
     }
 

@@ -107,7 +107,7 @@ final class ApiTaxController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Data
+     * @param array            $data     Data
      *
      * @return void
      *

@@ -81,7 +81,7 @@ final class ApiPurchaseController extends Controller
 
             $this->app->moduleManager->get('Billing', 'Api')->apiBillCreate($billRequest, $billResponse, $data);
 
-            $billId = $billResponse->get('')['response']->id;
+            $billId = $billResponse->getDataArray('')['response']->id;
 
             // Upload and assign document to bill
             $mediaRequest                  = new HttpRequest();
@@ -98,7 +98,7 @@ final class ApiPurchaseController extends Controller
             $this->app->moduleManager->get('Billing', 'Api')->apiMediaAddToBill($mediaRequest, $mediaResponse, $data);
 
             /** @var \Modules\Media\Models\Media[] $uploaded */
-            $uploaded = $mediaResponse->get('')['response']['upload'];
+            $uploaded = $mediaResponse->getDataArray('')['response']['upload'];
             if (empty($uploaded)) {
                 throw new \Exception();
             }
