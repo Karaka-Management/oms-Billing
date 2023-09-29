@@ -97,13 +97,14 @@ $lineHeight = $pdf->getY();
 $pdf->Write(
     0,
     $addressString,
-    '', 0, 'L', false, 0, false, false, 0
+    '', false, 'L', false, 0, false, false, 0
 );
 $lineHeight = ($lineHeight - $pdf->getY()) / $addressLineCount;
 
 // Bill head
 $pdf->setFont('helvetica', 'B', 16);
 $titleWidth = $pdf->getStringWidth($billTypeName, 'helvetica', 'B', 16);
+$titleWidth = \is_array($titleWidth) ? \array_sum($titleWidth) : $titleWidth;
 
 $pdf->setXY(
     $rightPos = ($pdf->getPageWidth() - $titleWidth - \max(60 - $titleWidth, 0) - 15 - 2),
@@ -172,7 +173,7 @@ $lines = $bill->getElements();
 $headerCount = \count($header);
 $w           = [$pdf->getPageWidth() - 20 - 20 - 20 - 2 * 15, 20, 20, 20];
 
-$pdf->setCellPadding(1, 1, 1, 1);
+$pdf->setCellPadding(1);
 
 $taxes = [];
 $first = true;
@@ -276,23 +277,23 @@ $tempY2 = $pdf->getY();
 $pdf->setTextColor(0);
 $pdf->setFont('helvetica', 'B', 8);
 $pdf->setY($tempY);
-$pdf->Write(0, $lang[$pdf->language]['PaymentTerms'] . ': CreditCard', '', 0, 'L', false, 0, false, false, 0);
+$pdf->Write(0, $lang[$pdf->language]['PaymentTerms'] . ': CreditCard', '', false, 'L', false, 0, false, false, 0);
 
 $pdf->setFont('helvetica', '', 8);
-$pdf->Write(0, $bill->paymentText, '', 0, 'L', false, 0, false, false, 0);
+$pdf->Write(0, $bill->paymentText, '', false, 'L', false, 0, false, false, 0);
 $pdf->Ln();
 
 // @todo: fix terms
 $pdf->setFont('helvetica', 'B', 8);
-$pdf->Write(0, $lang[$pdf->language]['Terms'] . ': ' . $pdf->attributes['terms'], '', 0, 'L', false, 0, false, false, 0);
+$pdf->Write(0, $lang[$pdf->language]['Terms'] . ': ' . $pdf->attributes['terms'], '', false, 'L', false, 0, false, false, 0);
 $pdf->Ln();
 
 $pdf->setFont('helvetica', 'B', 8);
-$pdf->Write(0, $lang[$pdf->language]['Currency'] . ': ' . $bill->currency, '', 0, 'L', false, 0, false, false, 0);
+$pdf->Write(0, $lang[$pdf->language]['Currency'] . ': ' . $bill->currency, '', false, 'L', false, 0, false, false, 0);
 $pdf->Ln();
 
 $pdf->setFont('helvetica', 'B', 8);
-$pdf->Write(0, $lang[$pdf->language]['TaxRemark'], '', 0, 'L', false, 0, false, false, 0);
+$pdf->Write(0, $lang[$pdf->language]['TaxRemark'], '', false, 'L', false, 0, false, false, 0);
 $pdf->Ln();
 
 $pdf->setFont('helvetica', '', 8);
