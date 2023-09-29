@@ -55,10 +55,13 @@ final class ApiPurchaseController extends Controller
      */
     public function apiSupplierBillUpload(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
-        $originalType = $request->getDataInt('type') ?? ((int) $this->app->appSettings->get(
+        /** @var \Model\Setting $setting */
+        $setting = $this->app->appSettings->get(
             names: SettingsEnum::ORIGINAL_MEDIA_TYPE,
             module: self::NAME
-        )->content);
+        );
+
+        $originalType = $request->getDataInt('type') ?? ((int) $setting->content);
 
         /** @var \Modules\Billing\Models\BillType $purchaseTransferType */
         $purchaseTransferType = BillTypeMapper::get()

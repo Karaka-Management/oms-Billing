@@ -822,7 +822,7 @@ final class ApiBillController extends Controller
             ->where('id', $templateId)
             ->execute();
 
-        require_once __DIR__ . '/../../../Resources/tcpdf/tcpdf.php';
+        require_once __DIR__ . '/../../../Resources/tcpdf/TCPDF.php';
 
         $response->header->set('Content-Type', MimeType::M_PDF, true);
 
@@ -961,7 +961,7 @@ final class ApiBillController extends Controller
             ->where('id', $templateId)
             ->execute();
 
-        require_once __DIR__ . '/../../../Resources/tcpdf/tcpdf.php';
+        require_once __DIR__ . '/../../../Resources/tcpdf/TCPDF.php';
 
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/' . \substr($template->getSourceByName('bill.pdf.php')->getPath(), 0, -8), 'pdf.php');
