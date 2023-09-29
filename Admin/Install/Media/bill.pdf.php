@@ -297,7 +297,7 @@ $pdf->Write(0, $lang[$pdf->language]['TaxRemark'], '', false, 'L', false, 0, fal
 $pdf->Ln();
 
 $pdf->setFont('helvetica', '', 8);
-$pdf->Write(0, $bill->termsText, '', 0, 'L', false, 0, false, false, 0);
+$pdf->Write(0, $bill->termsText, '', false, 'L', false, 0, false, false, 0);
 $pdf->Ln();
 
 $pdf->setY($tempY2);
