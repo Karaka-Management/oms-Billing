@@ -32,34 +32,37 @@ $pdf = new DefaultPdf();
 
 $lang = include __DIR__ . '/lang.php';
 
+$pdf->attributes['title_name'] = (string) ($this->data['bill_logo_name'] ?? 'Jingga');
+$pdf->attributes['slogan']     = (string) ($this->data['bill_slogan'] ?? 'Business solutions made simple.');
+
 $pdf->setHeaderData(
     __DIR__ . '/logo.png', 15,
-    $this->data['bill_logo_name'] ?? 'Jingga',
-    $this->data['bill_slogan'] ?? 'Business solutions made simple.'
+    $pdf->attributes['title_name'],
+    $pdf->attributes['slogan'],
 );
-$pdf->setCreator($this->data['bill_creator'] ?? 'Jingga');
-$pdf->setAuthor($this->data['bill_creator'] ?? 'Jingga');
-$pdf->setTitle($this->data['bill_title'] ?? $bill->type->getL11n());
-$pdf->setSubject($this->data['bill_subtitle'] ?? '');
-$pdf->setKeywords(\implode(', ', $this->data['keywords'] ?? []));
+$pdf->setCreator((string) ($this->data['bill_creator'] ?? 'Jingga'));
+$pdf->setAuthor((string) ($this->data['bill_creator'] ?? 'Jingga'));
+$pdf->setTitle((string) ($this->data['bill_title'] ?? $bill->type->getL11n()));
+$pdf->setSubject((string) ($this->data['bill_subtitle'] ?? ''));
+$pdf->setKeywords(\implode(', ', (array) ($this->data['keywords'] ?? [])));
 $pdf->language = $bill->language;
 
-$pdf->attributes['legal_name'] = $this->data['legal_company_name'] ?? 'Jingga e. K.';
-$pdf->attributes['address']    = $this->data['bill_company_address'] ?? 'Kirchstr. 33';
-$pdf->attributes['city']       = $this->data['bill_company_city'] ?? '61191 Rosbach';
+$pdf->attributes['legal_name'] = (string) ($this->data['legal_company_name'] ?? 'Jingga e. K.');
+$pdf->attributes['address']    = (string) ($this->data['bill_company_address'] ?? 'Kirchstr. 33');
+$pdf->attributes['city']       = (string) ($this->data['bill_company_city'] ?? '61191 Rosbach');
 
-$pdf->attributes['ceo']        = $this->data['bill_company_ceo'] ?? 'Dennis Eichhorn';
-$pdf->attributes['tax_office'] = $this->data['bill_company_tax_office'] ?? 'HRA 5058';
-$pdf->attributes['tax_number'] = $this->data['bill_company_tax_id'] ?? 'DE362646968';
-$pdf->attributes['terms']      = $this->data['bill_company_terms'] ?? 'https://jingga.app/terms';
+$pdf->attributes['ceo']        = (string) ($this->data['bill_company_ceo'] ?? 'Dennis Eichhorn');
+$pdf->attributes['tax_office'] = (string) ($this->data['bill_company_tax_office'] ?? 'HRA 5058');
+$pdf->attributes['tax_number'] = (string) ($this->data['bill_company_tax_id'] ?? 'DE362646968');
+$pdf->attributes['terms']      = (string) ($this->data['bill_company_terms'] ?? 'https://jingga.app/terms');
 
-$pdf->attributes['bank_name']    = $this->data['bill_company_bank_name'] ?? 'Volksbank Mittelhessen';
-$pdf->attributes['swift']        = $this->data['bill_company_swift'] ?? 'VBMHDE5F';
-$pdf->attributes['bank_account'] = $this->data['bill_company_bank_account'] ?? 'DE62 5139 0000 0084 8044 10';
+$pdf->attributes['bank_name']    = (string) ($this->data['bill_company_bank_name'] ?? 'Volksbank Mittelhessen');
+$pdf->attributes['swift']        = (string) ($this->data['bill_company_swift'] ?? 'VBMHDE5F');
+$pdf->attributes['bank_account'] = (string) ($this->data['bill_company_bank_account'] ?? 'DE62 5139 0000 0084 8044 10');
 
-$pdf->attributes['website'] = $this->data['bill_company_website'] ?? 'www.jingga.app';
-$pdf->attributes['email']   = $this->data['bill_company_email'] ?? 'info@jingga.app';
-$pdf->attributes['phone']   = $this->data['bill_company_phone'] ?? '+49 152 04337728';
+$pdf->attributes['website'] = (string) ($this->data['bill_company_website'] ?? 'www.jingga.app');
+$pdf->attributes['email']   = (string) ($this->data['bill_company_email'] ?? 'info@jingga.app');
+$pdf->attributes['phone']   = (string) ($this->data['bill_company_phone'] ?? '+49 152 04337728');
 
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
@@ -313,7 +316,5 @@ $pdf->Ln();
 */
 
 //Close and output PDF document
-$pdf->Output(
-    $this->data['path'] ?? (($bill->billDate?->format('Y-m-d') ?? '0') . '_' . $bill->number . '.pdf'),
-    'I'
-);
+$path = (string) ($this->data['path'] ?? (($bill->billDate?->format('Y-m-d') ?? '0') . '_' . $bill->number . '.pdf'));
+$pdf->Output($path, 'I');
