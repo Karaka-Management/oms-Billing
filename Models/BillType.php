@@ -57,7 +57,7 @@ class BillType implements \JsonSerializable
      *
      * @var string|BaseStringL11n
      */
-    protected string | BaseStringL11n $l11n;
+    public string | BaseStringL11n $l11n;
 
     public bool $isTemplate = false;
 

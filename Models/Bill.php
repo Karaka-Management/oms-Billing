@@ -414,7 +414,7 @@ class Bill implements \JsonSerializable
      * @var array
      * @since 1.0.0
      */
-    private array $vouchers = [];
+    public array $vouchers = [];
 
     /**
      * Tracking ids for shipping.
@@ -422,7 +422,7 @@ class Bill implements \JsonSerializable
      * @var array
      * @since 1.0.0
      */
-    private array $trackings = [];
+    public array $trackings = [];
 
     /**
      * Bill elements / bill lines.

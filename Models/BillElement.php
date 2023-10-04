@@ -48,7 +48,7 @@ class BillElement implements \JsonSerializable
 
     public string $itemDescription = '';
 
-    protected int $quantity = 0;
+    public int $quantity = 0;
 
     public ?Subscription $subscription = null;
 
