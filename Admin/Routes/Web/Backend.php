@@ -131,40 +131,6 @@ return [
         ],
     ],
 
-    '^.*/sales/analysis/bill(\?.*|$)$' => [
-        [
-            'dest'       => '\Modules\Billing\Controller\BackendController:viewBillAnalysis',
-            'verb'       => RouteVerb::GET,
-            'permission' => [
-                'module' => BackendController::NAME,
-                'type'   => PermissionType::READ,
-                'state'  => PermissionCategory::SALES_INVOICE,
-            ],
-        ],
-    ],
-    '^.*/sales/analysis/rep(\?.*|$)$' => [
-        [
-            'dest'       => '\Modules\Billing\Controller\BackendController:viewSalesRepAnalysis',
-            'verb'       => RouteVerb::GET,
-            'permission' => [
-                'module' => BackendController::NAME,
-                'type'   => PermissionType::READ,
-                'state'  => PermissionCategory::SALES_ANALYSIS,
-            ],
-        ],
-    ],
-    '^.*/sales/analysis/region(\?.*|$)$' => [
-        [
-            'dest'       => '\Modules\Billing\Controller\BackendController:viewRegionAnalysis',
-            'verb'       => RouteVerb::GET,
-            'permission' => [
-                'module' => BackendController::NAME,
-                'type'   => PermissionType::READ,
-                'state'  => PermissionCategory::SALES_ANALYSIS,
-            ],
-        ],
-    ],
-
     '^.*/private/purchase/billing/dashboard.*$' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewPrivatePurchaseBillDashboard',

@@ -135,7 +135,7 @@ final class Installer extends InstallerAbstract
 
             $module->apiBillAttributeTypeCreate($request, $response);
 
-            $responseData = $response->get('');
+            $responseData = $response->getData('');
 
             if (!\is_array($responseData)) {
                 continue;
@@ -207,7 +207,7 @@ final class Installer extends InstallerAbstract
 
                 $module->apiBillAttributeValueCreate($request, $response);
 
-                $responseData = $response->get('');
+                $responseData = $response->getData('');
                 if (!\is_array($responseData)) {
                     continue;
                 }
@@ -293,7 +293,7 @@ final class Installer extends InstallerAbstract
 
             $module->apiTaxCombinationCreate($request, $response);
 
-            $responseData = $response->get('');
+            $responseData = $response->getData('');
             if (!\is_array($responseData)) {
                 continue;
             }
@@ -345,7 +345,7 @@ final class Installer extends InstallerAbstract
 
             $module->apiBillTypeCreate($request, $response);
 
-            $responseData = $response->get('');
+            $responseData = $response->getData('');
             if (!\is_array($responseData)) {
                 continue;
             }

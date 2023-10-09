@@ -257,7 +257,7 @@ class BillElement implements \JsonSerializable
         $element->totalPurchasePriceNet->setInt($element->quantity * $item->purchasePrice->getInt());
 
         $element->singleProfitNet->setInt($element->singleSalesPriceNet->getInt() - $element->singlePurchasePriceNet->getInt());
-        $element->totalProfitNet->setInt($element->quantity * ($element->totalSalesPriceNet->getInt() - $element->totalPurchasePriceNet->getInt()));
+        $element->totalProfitNet->setInt($element->totalSalesPriceNet->getInt() - $element->totalPurchasePriceNet->getInt());
 
         $element->taxP    = new FloatInt((int) (($code->percentageInvoice * $element->totalSalesPriceNet->getInt()) / 10000));
         $element->taxR    = new FloatInt($code->percentageInvoice);

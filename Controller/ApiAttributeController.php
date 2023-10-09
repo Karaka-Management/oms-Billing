@@ -61,7 +61,8 @@ final class ApiAttributeController extends Controller
             return;
         }
 
-        $attribute = $this->createAttributeFromRequest($request);
+        $type      = BillAttributeTypeMapper::get()->where('id', (int) $request->getData('type'))->execute();
+        $attribute = $this->createAttributeFromRequest($request, $type);
         $this->createModel($request->header->account, $attribute, BillAttributeMapper::class, 'attribute', $request->getOrigin());
         $this->createStandardCreateResponse($request, $response, $attribute);
     }
