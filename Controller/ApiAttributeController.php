@@ -61,7 +61,7 @@ final class ApiAttributeController extends Controller
             return;
         }
 
-        $type      = BillAttributeTypeMapper::get()->where('id', (int) $request->getData('type'))->execute();
+        $type      = BillAttributeTypeMapper::get()->with('defaults')->where('id', (int) $request->getData('type'))->execute();
         $attribute = $this->createAttributeFromRequest($request, $type);
         $this->createModel($request->header->account, $attribute, BillAttributeMapper::class, 'attribute', $request->getOrigin());
         $this->createStandardCreateResponse($request, $response, $attribute);
@@ -359,7 +359,7 @@ final class ApiAttributeController extends Controller
         }
 
         /** @var AttributeType $old */
-        $old = BillAttributeTypeMapper::get()->where('id', (int) $request->getData('id'))->execute();
+        $old = BillAttributeTypeMapper::get()->with('defaults')->where('id', (int) $request->getData('id'))->execute();
         $new = $this->updateAttributeTypeFromRequest($request, clone $old);
 
         $this->updateModel($request->header->account, $old, $new, BillAttributeTypeMapper::class, 'bill_attribute_type', $request->getOrigin());
@@ -391,7 +391,7 @@ final class ApiAttributeController extends Controller
         }
 
         /** @var AttributeType $billAttributeType */
-        $billAttributeType = BillAttributeTypeMapper::get()->where('id', (int) $request->getData('id'))->execute();
+        $billAttributeType = BillAttributeTypeMapper::get()->with('defaults')->where('id', (int) $request->getData('id'))->execute();
         $this->deleteModel($request->header->account, $billAttributeType, BillAttributeTypeMapper::class, 'bill_attribute_type', $request->getOrigin());
         $this->createStandardDeleteResponse($request, $response, $billAttributeType);
     }

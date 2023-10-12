@@ -13,9 +13,10 @@
 declare(strict_types=1);
 
 return ['Navigation' => [
-    'Archive' => '档案',
-    'Bill'    => '账单',
-    'Billing' => '结算',
-    'Open'    => '',
-    'Upload'  => '',
+    'Archive'            => '档案',
+    'Bill'               => '账单',
+    'Billing'            => '结算',
+    'InvoiceRecognition' => '',
+    'Open'               => '',
+    'Upload'             => '',
 ]];

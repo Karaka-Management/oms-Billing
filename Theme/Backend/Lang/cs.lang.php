@@ -71,7 +71,6 @@ return ['Billing' => [
     'Other'           => '',
     'Payment'         => 'Způsob platby',
     'PaymentPlan'     => '',
-    'PazmentPlan'     => '',
     'Postal'          => 'Poštovní',
     'Prepaid'         => 'Předplacený',
     'Preview'         => 'Náhled',

@@ -71,7 +71,6 @@ return ['Billing' => [
     'Other'           => '',
     'Payment'         => 'دفع',
     'PaymentPlan'     => '',
-    'PazmentPlan'     => '',
     'Postal'          => 'بريدي',
     'Prepaid'         => 'مسبقة الدفع',
     'Preview'         => 'معاينة',

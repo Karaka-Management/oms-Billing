@@ -71,7 +71,6 @@ return ['Billing' => [
     'Other'           => '',
     'Payment'         => 'การชำระเงิน',
     'PaymentPlan'     => '',
-    'PazmentPlan'     => '',
     'Postal'          => 'เกี่ยวกับการไปรษณีย์',
     'Prepaid'         => 'ชำระล่วงหน้า',
     'Preview'         => 'ดูตัวอย่าง',

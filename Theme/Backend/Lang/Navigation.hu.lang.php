@@ -13,9 +13,10 @@
 declare(strict_types=1);
 
 return ['Navigation' => [
-    'Archive' => 'Archívum',
-    'Bill'    => 'Számla',
-    'Billing' => 'Számlázás',
-    'Open'    => '',
-    'Upload'  => '',
+    'Archive'            => 'Archívum',
+    'Bill'               => 'Számla',
+    'Billing'            => 'Számlázás',
+    'InvoiceRecognition' => '',
+    'Open'               => '',
+    'Upload'             => '',
 ]];

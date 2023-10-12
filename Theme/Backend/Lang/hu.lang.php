@@ -71,7 +71,6 @@ return ['Billing' => [
     'Other'           => '',
     'Payment'         => 'Fizetés',
     'PaymentPlan'     => '',
-    'PazmentPlan'     => '',
     'Postal'          => 'Postai',
     'Prepaid'         => 'Előre kifizetett',
     'Preview'         => 'Előnézet',

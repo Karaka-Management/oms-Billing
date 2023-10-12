@@ -71,7 +71,6 @@ return ['Billing' => [
     'Other'           => '',
     'Payment'         => '支付',
     'PaymentPlan'     => '',
-    'PazmentPlan'     => '',
     'Postal'          => '邮政',
     'Prepaid'         => '预付款',
     'Preview'         => '预览',

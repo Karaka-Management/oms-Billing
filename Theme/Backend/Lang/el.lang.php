@@ -71,7 +71,6 @@ return ['Billing' => [
     'Other'           => '',
     'Payment'         => 'Πληρωμή',
     'PaymentPlan'     => '',
-    'PazmentPlan'     => '',
     'Postal'          => 'Ταχυδρομικός',
     'Prepaid'         => 'Προπληρωμένος',
     'Preview'         => 'Προεπισκόπηση',

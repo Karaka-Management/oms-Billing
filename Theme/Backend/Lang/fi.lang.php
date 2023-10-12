@@ -71,7 +71,6 @@ return ['Billing' => [
     'Other'           => '',
     'Payment'         => 'Maksu',
     'PaymentPlan'     => '',
-    'PazmentPlan'     => '',
     'Postal'          => 'Posti-',
     'Prepaid'         => 'Prepaid',
     'Preview'         => 'Esikatselu',

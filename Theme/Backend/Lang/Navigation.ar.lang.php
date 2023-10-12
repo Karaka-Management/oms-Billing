@@ -13,9 +13,10 @@
 declare(strict_types=1);
 
 return ['Navigation' => [
-    'Archive' => 'أرشيف',
-    'Bill'    => 'فاتورة',
-    'Billing' => 'الفواتير',
-    'Open'    => '',
-    'Upload'  => '',
+    'Archive'            => 'أرشيف',
+    'Bill'               => 'فاتورة',
+    'Billing'            => 'الفواتير',
+    'InvoiceRecognition' => '',
+    'Open'               => '',
+    'Upload'             => '',
 ]];

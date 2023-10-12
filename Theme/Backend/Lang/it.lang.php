@@ -71,7 +71,6 @@ return ['Billing' => [
     'Other'           => '',
     'Payment'         => 'Pagamento',
     'PaymentPlan'     => '',
-    'PazmentPlan'     => '',
     'Postal'          => 'postale',
     'Prepaid'         => 'Prepagato',
     'Preview'         => 'Anteprima',

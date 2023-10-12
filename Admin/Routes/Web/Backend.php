@@ -131,7 +131,7 @@ return [
         ],
     ],
 
-    '^.*/private/purchase/billing/dashboard.*$' => [
+    '^.*/private/purchase/recognition/dashboard.*$' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewPrivatePurchaseBillDashboard',
             'verb'       => RouteVerb::GET,
@@ -142,7 +142,7 @@ return [
             ],
         ],
     ],
-    '^.*/private/purchase/billing/upload.*$' => [
+    '^.*/private/purchase/recognition/upload.*$' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewPrivatePurchaseBillUpload',
             'verb'       => RouteVerb::GET,
@@ -153,7 +153,40 @@ return [
             ],
         ],
     ],
-    '^.*/private/purchase/billing/bill.*$' => [
+    '^.*/private/purchase/recognition/bill.*$' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewPrivateBillingPurchaseInvoice',
+            'verb'       => RouteVerb::GET,
+            'permission' => [
+                'module' => BackendController::NAME,
+                'type'   => PermissionType::READ,
+                'state'  => PermissionCategory::PRIVATE_DASHBOARD,
+            ],
+        ],
+    ],
+    '^.*/purchase/recognition/dashboard.*$' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewPrivatePurchaseBillDashboard',
+            'verb'       => RouteVerb::GET,
+            'permission' => [
+                'module' => BackendController::NAME,
+                'type'   => PermissionType::READ,
+                'state'  => PermissionCategory::PRIVATE_DASHBOARD,
+            ],
+        ],
+    ],
+    '^.*/purchase/recognition/upload.*$' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewPrivatePurchaseBillUpload',
+            'verb'       => RouteVerb::GET,
+            'permission' => [
+                'module' => BackendController::NAME,
+                'type'   => PermissionType::READ,
+                'state'  => PermissionCategory::PRIVATE_BILL_UPLOAD,
+            ],
+        ],
+    ],
+    '^.*/purchase/recognition/bill.*$' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewPrivateBillingPurchaseInvoice',
             'verb'       => RouteVerb::GET,

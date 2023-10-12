@@ -13,9 +13,10 @@
 declare(strict_types=1);
 
 return ['Navigation' => [
-    'Archive' => 'คลังเก็บเอกสารสำคัญ',
-    'Bill'    => 'ใบแจ้งหนี้',
-    'Billing' => 'การเรียกเก็บเงิน',
-    'Open'    => '',
-    'Upload'  => '',
+    'Archive'            => 'คลังเก็บเอกสารสำคัญ',
+    'Bill'               => 'ใบแจ้งหนี้',
+    'Billing'            => 'การเรียกเก็บเงิน',
+    'InvoiceRecognition' => '',
+    'Open'               => '',
+    'Upload'             => '',
 ]];

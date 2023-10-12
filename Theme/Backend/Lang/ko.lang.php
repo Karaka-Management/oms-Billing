@@ -71,7 +71,6 @@ return ['Billing' => [
     'Other'           => '',
     'Payment'         => '지불',
     'PaymentPlan'     => '',
-    'PazmentPlan'     => '',
     'Postal'          => '우편 엽서',
     'Prepaid'         => '선불',
     'Preview'         => '시사',

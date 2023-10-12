@@ -71,7 +71,6 @@ return ['Billing' => [
     'Other'           => '',
     'Payment'         => 'innbetaling',
     'PaymentPlan'     => '',
-    'PazmentPlan'     => '',
     'Postal'          => 'Postal.',
     'Prepaid'         => 'Forhåndsbetalt',
     'Preview'         => 'Forhåndsvisning',

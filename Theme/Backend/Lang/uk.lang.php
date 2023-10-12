@@ -71,7 +71,6 @@ return ['Billing' => [
     'Other'           => '',
     'Payment'         => 'Платіж',
     'PaymentPlan'     => '',
-    'PazmentPlan'     => '',
     'Postal'          => 'Поштовий',
     'Prepaid'         => 'Передплачений',
     'Preview'         => 'Попередній перегляд',

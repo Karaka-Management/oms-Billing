@@ -71,7 +71,6 @@ return ['Billing' => [
     'Other'           => '',
     'Payment'         => '支払い',
     'PaymentPlan'     => '',
-    'PazmentPlan'     => '',
     'Postal'          => '郵便',
     'Prepaid'         => '前払い',
     'Preview'         => 'プレビュー',

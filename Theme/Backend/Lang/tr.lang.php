@@ -71,7 +71,6 @@ return ['Billing' => [
     'Other'           => '',
     'Payment'         => 'Ödeme',
     'PaymentPlan'     => '',
-    'PazmentPlan'     => '',
     'Postal'          => 'Posta',
     'Prepaid'         => 'Ön ödemeli',
     'Preview'         => 'Ön izleme',
