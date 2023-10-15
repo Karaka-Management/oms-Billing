@@ -260,8 +260,6 @@ foreach ($taxes as $rate => $tax) {
     $pdf->Ln();
 }
 
-// @todo: add currency
-
 $pdf->setFillColor(255, 162, 7);
 $pdf->setTextColor(255);
 $pdf->setDrawColor(255, 162, 7);

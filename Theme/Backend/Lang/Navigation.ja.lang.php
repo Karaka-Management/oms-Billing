@@ -13,9 +13,10 @@
 declare(strict_types=1);
 
 return ['Navigation' => [
-    'Archive' => 'アーカイブ',
-    'Bill'    => '明細書',
-    'Billing' => '請求する',
-    'Open'    => '',
-    'Upload'  => '',
+    'Archive'            => 'アーカイブ',
+    'Bill'               => '明細書',
+    'Billing'            => '請求する',
+    'InvoiceRecognition' => '',
+    'Open'               => '',
+    'Upload'             => '',
 ]];

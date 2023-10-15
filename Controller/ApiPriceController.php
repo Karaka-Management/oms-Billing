@@ -106,7 +106,6 @@ final class ApiPriceController extends Controller
         }
 
         // Get all relevant prices
-        // @todo: allow to define NOT IN somehow (e.g. not in France -> simple solution to define export prices etc.)
         $queryMapper = PriceMapper::getAll();
 
         if ($request->hasData('price_name')) {

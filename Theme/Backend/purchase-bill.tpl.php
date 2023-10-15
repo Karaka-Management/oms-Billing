@@ -22,6 +22,7 @@ include __DIR__ . '/../../../Media/Theme/Backend/template-functions.php';
  * @var \phpOMS\Views\View $this
  */
 
+/** @var \Modules\Billing\Models\Bill $bill */
 $bill     = $this->data['bill'];
 $elements = $bill->getElements();
 
@@ -29,7 +30,7 @@ $previewType  = $this->data['previewType'];
 $originalType = $this->data['originalType'];
 $billPdf      = $bill->getFileByType($previewType);
 $original     = $bill->getFileByType($originalType);
-$media        = $bill->getMedia();
+$media        = $bill->files;
 
 echo $this->data['nav']->render(); ?>
 
@@ -219,7 +220,7 @@ echo $this->data['nav']->render(); ?>
                     <section id="mediaFile" class="portlet col-simple">
                         <div class="portlet-body col-simple">
                             <?php if ($original->id > 0) : ?>
-                            <iframe class="col-simple" data-form="iUiSettings" data-name="iframeHelper" id="iHelperFrame" src="<?= UriFactory::build('Resources/mozilla/Pdf/web/viewer.html{?}&file=' . \urlencode(($original->isAbsolute ? '' : '/../../../../') . $original->getPath())); ?>" allowfullscreen></iframe>
+                                <iframe class="col-simple" id="iOriginal" src="<?= UriFactory::build('Resources/mozilla/Pdf/web/viewer.html?file=' . \urlencode(UriFactory::build('{/api}media/export?id=' . $original->id))); ?>" allowfullscreen></iframe>
                             <?php endif; ?>
                         </div>
                     </section>

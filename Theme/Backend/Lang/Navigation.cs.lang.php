@@ -13,9 +13,10 @@
 declare(strict_types=1);
 
 return ['Navigation' => [
-    'Archive' => 'Archiv',
-    'Bill'    => 'Účtovat',
-    'Billing' => 'Fakturační',
-    'Open'    => '',
-    'Upload'  => '',
+    'Archive'            => 'Archiv',
+    'Bill'               => 'Účtovat',
+    'Billing'            => 'Fakturační',
+    'InvoiceRecognition' => '',
+    'Open'               => '',
+    'Upload'             => '',
 ]];

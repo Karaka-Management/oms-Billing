@@ -182,8 +182,10 @@ final class ApiBillController extends Controller
     {
         $this->createModel($request->header->account, $bill, BillMapper::class, 'bill', $request->getOrigin());
 
-        // We ned to get the bill again since the bill has a trigger which is executed on insert
-        // @todo: consider to remove the trigger and select the latest bill here and add + 1 to the new sequence since we have to tdo an update anyways
+        // We need to get the bill again since the bill has a trigger which is executed on insert
+        // Doing this manually would cause concurrency issues because there are times (up to 200ms)
+        // when the previous element doesn't have a sequence defined.
+
         /** @var Bill $bill */
         $tmp = BillMapper::get()
             ->where('id', $bill->id)
@@ -192,7 +194,7 @@ final class ApiBillController extends Controller
         $bill->sequence = $tmp->sequence;
 
         $old = clone $bill;
-        $bill->buildNumber(); // The bill id is part of the number
+        $bill->buildNumber(); // The bill sequence number is part of the number
         $this->updateModel($request->header->account, $old, $bill, BillMapper::class, 'bill', $request->getOrigin());
     }
 
@@ -537,7 +539,7 @@ final class ApiBillController extends Controller
             ->execute();
 
         if (\count($billCollection) !== 1) {
-            // For some reason there are multiple collections with the same virtual path?
+            // @todo: For some reason there are multiple collections with the same virtual path?
             // @todo: check if this is the correct way to handle it or if we need to make sure that it is a collection
             return;
         }

@@ -13,9 +13,10 @@
 declare(strict_types=1);
 
 return ['Navigation' => [
-    'Archive' => 'Archivio',
-    'Bill'    => 'Conto',
-    'Billing' => 'Fatturazione',
-    'Open'    => '',
-    'Upload'  => '',
+    'Archive'            => 'Archivio',
+    'Bill'               => 'Conto',
+    'Billing'            => 'Fatturazione',
+    'InvoiceRecognition' => '',
+    'Open'               => '',
+    'Upload'             => '',
 ]];

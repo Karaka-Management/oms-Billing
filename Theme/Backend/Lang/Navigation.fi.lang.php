@@ -13,9 +13,10 @@
 declare(strict_types=1);
 
 return ['Navigation' => [
-    'Archive' => 'Arkisto',
-    'Bill'    => 'Laskuttaa',
-    'Billing' => 'Laskutus',
-    'Open'    => '',
-    'Upload'  => '',
+    'Archive'            => 'Arkisto',
+    'Bill'               => 'Laskuttaa',
+    'Billing'            => 'Laskutus',
+    'InvoiceRecognition' => '',
+    'Open'               => '',
+    'Upload'             => '',
 ]];

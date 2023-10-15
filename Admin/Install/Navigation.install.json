@@ -198,21 +198,6 @@
         ]
     },
     {
-        "id": 1005107001,
-        "pid": "/sales/analysis",
-        "type": 3,
-        "subtype": 1,
-        "name": "Bill",
-        "uri": "{/base}/sales/analysis/bill",
-        "target": "self",
-        "icon": null,
-        "order": 15,
-        "from": "Billing",
-        "permission": { "permission": 2, "category": null, "element": null },
-        "parent": 1001602001,
-        "children": []
-    },
-    {
         "id": 1005108001,
         "pid": "/purchase/analysis",
         "type": 3,
@@ -224,7 +209,7 @@
         "order": 15,
         "from": "Billing",
         "permission": { "permission": 2, "category": null, "element": null },
-        "parent": 1001602001,
+        "parent": 1002101001,
         "children": []
     },
     {
@@ -232,8 +217,8 @@
         "pid": "/",
         "type": 2,
         "subtype": 1,
-        "name": "Purchase",
-        "uri": "{/base}/private/purchase/billing/dashboard?{?}",
+        "name": "InvoiceRecognition",
+        "uri": "{/base}/private/purchase/recognition/dashboard?{?}",
         "target": "self",
         "icon": null,
         "order": 5,
@@ -247,7 +232,7 @@
                 "type": 3,
                 "subtype": 1,
                 "name": "List",
-                "uri": "{/base}/private/purchase/billing/dashboard?{?}",
+                "uri": "{/base}/private/purchase/recognition/dashboard?{?}",
                 "target": "self",
                 "icon": null,
                 "order": 1,
@@ -263,13 +248,61 @@
                 "type": 3,
                 "subtype": 1,
                 "name": "Upload",
-                "uri": "{/base}/private/purchase/billing/upload?{?}",
+                "uri": "{/base}/private/purchase/recognition/upload?{?}",
                 "target": "self",
                 "icon": null,
                 "order": 5,
                 "from": "Billing",
                 "permission": { "permission": 2, "category": null, "element": null },
                 "parent": 1005109001,
+                "children": [
+                ]
+            }
+        ]
+    },
+    {
+        "id": 1005110001,
+        "pid": "/",
+        "type": 2,
+        "subtype": 1,
+        "name": "InvoiceRecognition",
+        "uri": "{/base}/purchase/recognition/dashboard?{?}",
+        "target": "self",
+        "icon": null,
+        "order": 5,
+        "from": "Billing",
+        "permission": { "permission": 2, "category": null, "element": null },
+        "parent": 1003401001,
+        "children": [
+            {
+                "id": 1005110101,
+                "pid": "/",
+                "type": 3,
+                "subtype": 1,
+                "name": "List",
+                "uri": "{/base}/purchase/recognition/dashboard?{?}",
+                "target": "self",
+                "icon": null,
+                "order": 1,
+                "from": "Billing",
+                "permission": { "permission": 2, "category": null, "element": null },
+                "parent": 1005110001,
+                "children": [
+                ]
+            },
+            {
+                "id": 1005110201,
+                "pid": "/",
+                "type": 3,
+                "subtype": 1,
+                "name": "Upload",
+                "uri": "{/base}/purchase/recognition/upload?{?}",
+                "target": "self",
+                "icon": null,
+                "order": 5,
+                "from": "Billing",
+                "permission": { "permission": 2, "category": null, "element": null },
+                "parent": 1005110001,
                 "children": [
                 ]
             }
