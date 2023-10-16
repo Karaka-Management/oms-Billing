@@ -14,39 +14,39 @@ declare(strict_types=1);
 
 namespace Modules\Billing\tests\Models;
 
-use Modules\Billing\Models\NullBillElement;
+use Modules\Billing\Models\NullSubscription;
 
 /**
  * @internal
  */
-final class NullBillElementTest extends \PHPUnit\Framework\TestCase
+final class NullSubscriptionTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @covers Modules\Billing\Models\NullBillElement
+     * @covers Modules\Billing\Models\NullSubscription
      * @group framework
      */
     public function testNull() : void
     {
-        self::assertInstanceOf('\Modules\Billing\Models\BillElement', new NullBillElement());
+        self::assertInstanceOf('\Modules\Billing\Models\Subscription', new NullSubscription());
     }
 
     /**
-     * @covers Modules\Billing\Models\NullBillElement
+     * @covers Modules\Billing\Models\NullSubscription
      * @group framework
      */
     public function testId() : void
     {
-        $null = new NullBillElement(2);
+        $null = new NullSubscription(2);
         self::assertEquals(2, $null->id);
     }
 
     /**
-     * @covers Modules\Billing\Models\NullBillElement
+     * @covers Modules\Billing\Models\NullSubscription
      * @group module
      */
     public function testJsonSerialize() : void
     {
-        $null = new NullBillElement(2);
+        $null = new NullSubscription(2);
         self::assertEquals(['id' => 2], $null);
     }
 }

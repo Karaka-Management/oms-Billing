@@ -12,41 +12,41 @@
  */
 declare(strict_types=1);
 
-namespace Modules\Billing\tests\Models;
+namespace Modules\Billing\tests\Models\Price;
 
-use Modules\Billing\Models\NullBillElement;
+use Modules\Billing\Models\Price\NullPrice;
 
 /**
  * @internal
  */
-final class NullBillElementTest extends \PHPUnit\Framework\TestCase
+final class NullPriceTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @covers Modules\Billing\Models\NullBillElement
-     * @group framework
+     * @covers Modules\Billing\Models\Price\NullPrice
+     * @group module
      */
     public function testNull() : void
     {
-        self::assertInstanceOf('\Modules\Billing\Models\BillElement', new NullBillElement());
+        self::assertInstanceOf('\Modules\Billing\Models\Price\Price', new NullPrice());
     }
 
     /**
-     * @covers Modules\Billing\Models\NullBillElement
-     * @group framework
+     * @covers Modules\Billing\Models\Price\NullPrice
+     * @group module
      */
     public function testId() : void
     {
-        $null = new NullBillElement(2);
+        $null = new NullPrice(2);
         self::assertEquals(2, $null->id);
     }
 
     /**
-     * @covers Modules\Billing\Models\NullBillElement
+     * @covers Modules\Billing\Models\Price\NullPrice
      * @group module
      */
     public function testJsonSerialize() : void
     {
-        $null = new NullBillElement(2);
+        $null = new NullPrice(2);
         self::assertEquals(['id' => 2], $null);
     }
 }

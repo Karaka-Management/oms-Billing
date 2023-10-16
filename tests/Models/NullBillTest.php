@@ -39,4 +39,14 @@ final class NullBillTest extends \PHPUnit\Framework\TestCase
         $null = new NullBill(2);
         self::assertEquals(2, $null->id);
     }
+
+    /**
+     * @covers Modules\Billing\Models\NullBill
+     * @group module
+     */
+    public function testJsonSerialize() : void
+    {
+        $null = new NullBill(2);
+        self::assertEquals(['id' => 2], $null);
+    }
 }
