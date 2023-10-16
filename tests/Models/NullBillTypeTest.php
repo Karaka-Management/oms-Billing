@@ -23,7 +23,7 @@ final class NullBillTypeTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @covers Modules\Billing\Models\NullBillType
-     * @group framework
+     * @group module
      */
     public function testNull() : void
     {
@@ -32,7 +32,7 @@ final class NullBillTypeTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @covers Modules\Billing\Models\NullBillType
-     * @group framework
+     * @group module
      */
     public function testId() : void
     {
