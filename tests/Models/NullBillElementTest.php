@@ -47,6 +47,6 @@ final class NullBillElementTest extends \PHPUnit\Framework\TestCase
     public function testJsonSerialize() : void
     {
         $null = new NullBillElement(2);
-        self::assertEquals(['id' => 2], $null);
+        self::assertEquals(['id' => 2], $null->jsonSerialize());
     }
 }
