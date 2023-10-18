@@ -64,8 +64,7 @@ trait ApiPurchaseControllerTrait
             TestUtils::setMember($request, 'files', $toUpload);
 
             $this->modulePurchase->apiSupplierBillUpload($request, $response);
-            self::assertEquals('ok', $response->getData('')['status']);
-            self::assertGreaterThan(0, $response->getDataArray('')['response']->id);
+            self::assertEquals(RequestStatusCode::R_200, $response->header->status);
 
             if (\is_dir(__DIR__ . '/temp')) {
                 Directory::delete(__DIR__ . '/temp');

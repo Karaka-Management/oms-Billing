@@ -21,6 +21,7 @@ use Modules\Billing\Models\BillTypeMapper;
 use Modules\Billing\Models\SettingsEnum;
 use phpOMS\Message\Http\HttpRequest;
 use phpOMS\Message\Http\HttpResponse;
+use phpOMS\Message\Http\RequestStatusCode;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
 use phpOMS\System\OperatingSystem;
@@ -103,11 +104,13 @@ final class ApiPurchaseController extends Controller
             /** @var \Modules\Media\Models\Media[] $uploaded */
             $uploaded = $mediaResponse->getDataArray('')['response']['upload'];
             if (empty($uploaded)) {
+                $response->header->status = RequestStatusCode::R_400;
                 throw new \Exception();
             }
 
             $in = \reset($uploaded)->getAbsolutePath(); // pdf parsed content is available in $in->content
             if (!\is_file($in)) {
+                $response->header->status = RequestStatusCode::R_400;
                 throw new \Exception();
             }
 
@@ -135,6 +138,7 @@ final class ApiPurchaseController extends Controller
                     true
                 );
             } catch (\Throwable $t) {
+                $response->header->status = RequestStatusCode::R_400;
                 $this->app->logger->error($t->getMessage());
             }
         }
