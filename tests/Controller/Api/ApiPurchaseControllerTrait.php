@@ -12,64 +12,100 @@
  */
 declare(strict_types=1);
 
-namespace Modules\Billing\tests\Controller\Api;
+namespace Modules\Billing\tests\Controller;
 
-use phpOMS\Account\AccountStatus;
-use phpOMS\Account\AccountType;
-use phpOMS\Message\Http\HttpRequest;
-use phpOMS\Message\Http\HttpResponse;
-use phpOMS\Message\Http\RequestStatusCode;
-use phpOMS\System\File\Local\Directory;
-use phpOMS\Uri\HttpUri;
-use phpOMS\Utils\RnG\DateTime;
+use Model\CoreSettings;
+use Modules\Admin\Models\AccountPermission;
+use Modules\Billing\tests\Controller\Api\ApiBillControllerTrait;
+use Modules\Billing\tests\Controller\Api\ApiPurchaselControllerTrait;
+use phpOMS\Account\Account;
+use phpOMS\Account\AccountManager;
+use phpOMS\Account\PermissionType;
+use phpOMS\Application\ApplicationAbstract;
+use phpOMS\Dispatcher\Dispatcher;
+use phpOMS\Event\EventManager;
+use phpOMS\Localization\L11nManager;
+use phpOMS\Module\ModuleAbstract;
+use phpOMS\Module\ModuleManager;
+use phpOMS\Router\WebRouter;
 use phpOMS\Utils\TestUtils;
 
-trait ApiPurchaselControllerTrait
+/**
+ * @testdox Modules\tests\Billing\Controller\ApiControllerTest: Billing api controller
+ *
+ * @internal
+ */
+final class ApiControllerTest extends \PHPUnit\Framework\TestCase
 {
-    public function testBillElementCreate() : void
+    protected ApplicationAbstract $app;
+
+    /**
+     * @var \Modules\Billing\Controller\ApiController
+     */
+    protected ModuleAbstract $module;
+
+    /**
+     * @var \Modules\Billing\Controller\ApiController
+     */
+    protected ModuleAbstract $modulePurchase;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function setUp() : void
     {
-        if (!\is_dir(__DIR__ . '/temp')) {
-            \mkdir(__DIR__ . '/temp');
-        }
+        $this->app = new class() extends ApplicationAbstract
+        {
+            protected string $appName = 'Api';
+        };
 
-        $tmpInvoices = \scandir(__DIR__ . '/billing');
-        $invoiceDocs = [];
-        foreach ($tmpInvoices as $invoice) {
-            if ($invoice !== '..' && $invoice !== '.') {
-                $invoiceDocs[] = $invoice;
-            }
-        }
+        $this->app->dbPool          = $GLOBALS['dbpool'];
+        $this->app->unitId          = 1;
+        $this->app->accountManager  = new AccountManager($GLOBALS['session']);
+        $this->app->appSettings     = new CoreSettings();
+        $this->app->moduleManager   = new ModuleManager($this->app, __DIR__ . '/../../../../Modules/');
+        $this->app->dispatcher      = new Dispatcher($this->app);
+        $this->app->eventManager    = new EventManager($this->app->dispatcher);
+        $this->app->l11nManager     = new L11nManager();
+        $this->app->eventManager->importFromFile(__DIR__ . '/../../../../Web/Api/Hooks.php');
 
-        $count = \count($invoiceDocs);
+        $account = new Account();
+        TestUtils::setMember($account, 'id', 1);
 
-        for ($i = 0; $i < $count; ++$i) {
-            $toUpload = [];
-            $file = $invoiceDocs[$i];
+        $permission       = new AccountPermission();
+        $permission->unit = 1;
+        $permission->app  = 2;
+        $permission->setPermission(
+            PermissionType::READ
+            | PermissionType::CREATE
+            | PermissionType::MODIFY
+            | PermissionType::DELETE
+            | PermissionType::PERMISSION
+        );
 
-            $response = new HttpResponse();
-            $request  = new HttpRequest(new HttpUri(''));
+        $account->addPermission($permission);
 
-            $request->header->account = 1;
+        $this->app->accountManager->add($account);
+        $this->app->router = new WebRouter();
 
-            \copy(__DIR__ . '/billing/' . $file, __DIR__ . '/temp/' . $file);
+        $this->module = $this->app->moduleManager->get('Billing', 'ApiBill');
+        $this->modulePurchase = $this->app->moduleManager->get('Billing', 'ApiPurchase');
 
-            $toUpload['file0'] = [
-                'name'     => $file,
-                'type'     => \explode('.', $file)[1],
-                'tmp_name' => __DIR__ . '/temp/' . $file,
-                'error'    => \UPLOAD_ERR_OK,
-                'size'     => \filesize(__DIR__ . '/temp/' . $file),
-            ];
+        TestUtils::setMember($this->module, 'app', $this->app);
+        TestUtils::setMember($this->modulePurchase, 'app', $this->app);
+    }
 
-            TestUtils::setMember($request, 'files', $toUpload);
+    use ApiBillControllerTrait;
+    use ApiPurchaselControllerTrait;
+    }
 
-            $this->modulePurchase->apiSupplierBillUpload($request, $response);
-            self::assertEquals('ok', $response->getData('')['status']);
-            self::assertGreaterThan(0, $response->getDataArray('')['response']->id);
+    public function testInvalidapiTaxCombinationDelete() : void
+    {
+        $response = new HttpResponse();
+        $request  = new HttpRequest(new HttpUri(''));
 
-            if (\is_dir(__DIR__ . '/temp')) {
-                Directory::delete(__DIR__ . '/temp');
-            }
-        }
+        $request->header->account = 1;
+        $this->module->apiTaxCombinationDelete($request, $response);
+        self::assertEquals(RequestStatusCode::R_400, $response->header->status);
     }
 }

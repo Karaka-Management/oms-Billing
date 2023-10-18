@@ -133,4 +133,14 @@ trait ApiBillControllerTrait
         $this->module->apiBillElementCreate($request, $response);
         self::assertEquals(RequestStatusCode::R_400, $response->header->status);
     }
+
+    public function testInvalidapiNoteCreate() : void
+    {
+        $response = new HttpResponse();
+        $request  = new HttpRequest(new HttpUri(''));
+
+        $request->header->account = 1;
+        $this->module->apiNoteCreate($request, $response);
+        self::assertEquals(RequestStatusCode::R_400, $response->header->status);
+    }
 }
