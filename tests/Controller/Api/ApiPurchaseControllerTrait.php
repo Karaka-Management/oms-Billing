@@ -65,10 +65,10 @@ trait ApiPurchaseControllerTrait
 
             $this->modulePurchase->apiSupplierBillUpload($request, $response);
             self::assertEquals(RequestStatusCode::R_200, $response->header->status);
+        }
 
-            if (\is_dir(__DIR__ . '/temp')) {
-                Directory::delete(__DIR__ . '/temp');
-            }
+        if (\is_dir(__DIR__ . '/temp')) {
+            Directory::delete(__DIR__ . '/temp');
         }
     }
 }
