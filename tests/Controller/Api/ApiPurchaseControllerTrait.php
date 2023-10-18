@@ -24,7 +24,7 @@ use phpOMS\Uri\HttpUri;
 use phpOMS\Utils\RnG\DateTime;
 use phpOMS\Utils\TestUtils;
 
-trait ApiPurchaselControllerTrait
+trait ApiPurchaseControllerTrait
 {
     public function testBillElementCreate() : void
     {

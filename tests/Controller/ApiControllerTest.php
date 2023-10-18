@@ -17,7 +17,7 @@ namespace Modules\Billing\tests\Controller;
 use Model\CoreSettings;
 use Modules\Admin\Models\AccountPermission;
 use Modules\Billing\tests\Controller\Api\ApiBillControllerTrait;
-use Modules\Billing\tests\Controller\Api\ApiPurchaselControllerTrait;
+use Modules\Billing\tests\Controller\Api\ApiPurchaseControllerTrait;
 use phpOMS\Account\Account;
 use phpOMS\Account\AccountManager;
 use phpOMS\Account\PermissionType;
@@ -96,5 +96,5 @@ final class ApiControllerTest extends \PHPUnit\Framework\TestCase
     }
 
     use ApiBillControllerTrait;
-    use ApiPurchaselControllerTrait;
+    use ApiPurchaseControllerTrait;
 }
