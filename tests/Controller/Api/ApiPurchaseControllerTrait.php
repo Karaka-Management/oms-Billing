@@ -26,7 +26,7 @@ use phpOMS\Utils\TestUtils;
 
 trait ApiPurchaseControllerTrait
 {
-    public function testBillElementCreate() : void
+    public function testPurchaseBillElementCreate() : void
     {
         if (!\is_dir(__DIR__ . '/temp')) {
             \mkdir(__DIR__ . '/temp');
