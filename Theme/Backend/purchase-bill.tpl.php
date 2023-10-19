@@ -57,7 +57,7 @@ echo $this->data['nav']->render(); ?>
                             <div class="portlet-body">
                                 <table class="layout wf-100">
                                     <tr><td><label for="iSource"><?= $this->getHtml('Source'); ?></label>
-                                    <tr><td><span class="input"><button type="button" formaction=""><i class="fa fa-book"></i></button><input type="text" id="iSource" name="source"></span>
+                                    <tr><td><span class="input"><button type="button" formaction=""><i class="g-icon">book</i></button><input type="text" id="iSource" name="source"></span>
                                     <tr><td><label for="iType"><?= $this->getHtml('Type'); ?></label>
                                     <tr><td><select id="iType" name="type">
                                                 <option><?= $this->getHtml('Invoice'); ?>
@@ -67,7 +67,7 @@ echo $this->data['nav']->render(); ?>
                                                 <option><?= $this->getHtml('CreditNote'); ?>
                                             </select>
                                     <tr><td><label for="iClient"><?= $this->getHtml('Client'); ?></label>
-                                    <tr><td><span class="input"><button type="button" formaction=""><i class="fa fa-book"></i></button><input type="text" id="iClient" name="client"></span>
+                                    <tr><td><span class="input"><button type="button" formaction=""><i class="g-icon">book</i></button><input type="text" id="iClient" name="client"></span>
                                     <tr><td><label for="iDelivery"><?= $this->getHtml('Delivery'); ?></label>
                                     <tr><td><input type="datetime-local" id="iDelivery" name="delivery">
                                     <tr><td><label for="iDue"><?= $this->getHtml('Due'); ?></label>
@@ -147,7 +147,7 @@ echo $this->data['nav']->render(); ?>
             <div class="row">
                 <div class="col-xs-12">
                     <div class="portlet">
-                        <div class="portlet-head"><?= $this->getHtml('Invoice'); ?><i class="lni lni-download download btn end-xs"></i></div>
+                        <div class="portlet-head"><?= $this->getHtml('Invoice'); ?><i class="g-icon download btn end-xs">download</i></div>
                         <div class="slider">
                         <table class="default" id="invoice-item-list">
                             <thead>
@@ -165,8 +165,8 @@ echo $this->data['nav']->render(); ?>
                             <tbody>
                             <?php foreach ($elements as $element) : ?>
                             <tr>
-                                <td><i class="fa fa-plus add"></i> <i class="fa fa-chevron-up order-up"></i> <i class="fa fa-chevron-down order-down"></i>
-                                <td><span class="input"><button type="button" formaction=""><i class="fa fa-book"></i></button><input name="" type="text" value="<?= $element->itemNumber; ?>" required></span>
+                                <td><i class="g-icon add">add</i> <i class="g-icon order-up">expand_less</i> <i class="g-icon order-down">expand_more</i>
+                                <td><span class="input"><button type="button" formaction=""><i class="g-icon">book</i></button><input name="" type="text" value="<?= $element->itemNumber; ?>" required></span>
                                 <td><textarea required><?= $element->itemName; ?></textarea>
                                 <td><input name="" type="number" min="0" value="<?= $element->quantity; ?>" required>
                                 <td><input name="" type="text" value="<?= $this->getCurrency($element->singleSalesPriceNet); ?>">
@@ -177,8 +177,8 @@ echo $this->data['nav']->render(); ?>
                                 <td><?= $this->getCurrency($element->totalSalesPriceNet); ?>
                             <?php endforeach; ?>
                             <tr>
-                                <td><i class="fa fa-plus"></i> <i class="fa fa-chevron-up order-up"></i> <i class="fa fa-chevron-down order-down"></i>
-                                <td><span class="input"><button type="button" formaction=""><i class="fa fa-book"></i></button><input name="" type="text" required></span>
+                                <td><i class="g-icon">add</i> <i class="g-icon order-up">expand_less</i> <i class="g-icon order-down">expand_more</i>
+                                <td><span class="input"><button type="button" formaction=""><i class="g-icon">book</i></button><input name="" type="text" required></span>
                                 <td><textarea required></textarea>
                                 <td><input name="" type="number" min="0" value="0" required>
                                 <td><input name="" type="text">
@@ -289,7 +289,7 @@ echo $this->data['nav']->render(); ?>
 
                 <div class="col-xs-12 col-md-6 col-lg-8">
                     <div class="portlet">
-                        <div class="portlet-head"><?= $this->getHtml('Media'); ?><i class="lni lni-download download btn end-xs"></i></div>
+                        <div class="portlet-head"><?= $this->getHtml('Media'); ?><i class="g-icon download btn end-xs">download</i></div>
                         <table class="default" id="invoice-item-list">
                             <thead>
                             <tr>
@@ -313,7 +313,7 @@ echo $this->data['nav']->render(); ?>
                             ?>
                             <tr data-href="<?= $url; ?>">
                                 <td>
-                                <td data-label="<?= $this->getHtml('Type'); ?>"><a href="<?= $url; ?>"><i class="fa fa-<?= $this->printHtml($icon); ?>"></i></a>
+                                <td data-label="<?= $this->getHtml('Type'); ?>"><a href="<?= $url; ?>"><i class="g-icon"><?= $this->printHtml($icon); ?></i></a>
                                 <td><a href="<?= $url; ?>"><?= $file->name; ?></a>
                                 <td><a href="<?= $url; ?>"><?= $file->extension; ?></a>
                             <?php endforeach; ?>
@@ -328,7 +328,7 @@ echo $this->data['nav']->render(); ?>
                 <div class="col-xs-12">
                     <div class="box wf-100">
                         <table class="default">
-                            <caption><?= $this->getHtml('Logs'); ?><i class="fa fa-download end-xs download btn"></i></caption>
+                            <caption><?= $this->getHtml('Logs'); ?><i class="g-icon end-xs download btn">download</i></caption>
                             <thead>
                             <tr>
                                 <td>IP

@@ -89,7 +89,7 @@ echo $this->data['nav']->render(); ?>
                                     <label for="iSource"><?= $this->getHtml('Source'); ?></label>
                                     <span class="input">
                                         <button type="button" formaction="">
-                                            <i class="fa fa-book"></i>
+                                            <i class="g-icon">book</i>
                                         </button>
                                         <input type="text" id="iSource" name="bill_source"<?= $disabled; ?>>
                                     </span>
@@ -110,7 +110,7 @@ echo $this->data['nav']->render(); ?>
                                         <div class="ipt-first">
                                             <span class="input">
                                                 <button type="button" formaction="">
-                                                    <i class="fa fa-book"></i>
+                                                    <i class="g-icon">book</i>
                                                 </button>
                                                 <input type="text" id="iClient" name="bill_client" value="<?= $bill->client?->number ?? $bill->supplier?->number; ?>"<?= $disabled; ?>>
                                             </span>
@@ -266,7 +266,7 @@ echo $this->data['nav']->render(); ?>
             <div class="row">
                 <div class="col-xs-12">
                     <section class="portlet">
-                        <div class="portlet-head"><?= $this->getHtml('Invoice'); ?><i class="lni lni-download download btn end-xs"></i></div>
+                        <div class="portlet-head"><?= $this->getHtml('Invoice'); ?><i class="g-icon download btn end-xs">download</i></div>
                         <table
                             id="invoiceElements"
                             class="default sticky"
@@ -291,12 +291,12 @@ echo $this->data['nav']->render(); ?>
                             <template class="oms-invoice-add">
                                 <tr data-id="">
                                     <td>
-                                        <i class="fa fa-chevron-up order-up"></i>
-                                        <i class="fa fa-chevron-down order-down"></i>
-                                        <i class="fa fa-times btn remove-form"></i>
+                                        <i class="g-icon order-up">expand_less</i>
+                                        <i class="g-icon order-down">expand_more</i>
+                                        <i class="g-icon btn remove-form">close</i>
                                     <td><span class="input">
                                         <button type="button" formaction="">
-                                            <label><i class="fa fa-book"></i></label>
+                                            <label><i class="g-icon">book</i></label>
                                         </button><input type="text" autocomplete="off"></span>
                                     <td><textarea autocomplete="off"></textarea>
                                     <td><input type="number" step="any" value="" autocomplete="off">
@@ -311,11 +311,11 @@ echo $this->data['nav']->render(); ?>
                                 <?php foreach ($elements as $element) : ?>
                                 <tr>
                                     <td><?php if ($editable) : ?>
-                                        <i class="fa fa-chevron-up order-up"></i>
-                                        <i class="fa fa-chevron-down order-down"></i>
-                                        <i class="fa fa-times btn remove-form"></i>
+                                        <i class="g-icon order-up">expand_less</i>
+                                        <i class="g-icon order-down">expand_more</i>
+                                        <i class="g-icon btn remove-form">close</i>
                                         <?php endif; ?>
-                                    <td><span class="input"><button type="button" formaction=""><i class="fa fa-book"></i></button><input name="" type="text" value="<?= $element->itemNumber; ?>" required<?= $disabled; ?>></span>
+                                    <td><span class="input"><button type="button" formaction=""><i class="g-icon">book</i></button><input name="" type="text" value="<?= $element->itemNumber; ?>" required<?= $disabled; ?>></span>
                                     <td><textarea required<?= $disabled; ?>><?= $element->itemName; ?></textarea>
                                     <td><input name="" type="number" step="any" value="<?= $element->getQuantity(); ?>" required<?= $disabled; ?>>
                                     <td><input name="" type="number" step="0.01"<?= $disabled; ?>>
@@ -327,10 +327,10 @@ echo $this->data['nav']->render(); ?>
                                 <?php endforeach; ?>
                             <?php if ($editable) : ?>
                                 <tr data-id="0">
-                                    <td><i class="fa fa-chevron-up order-up"></i>
-                                        <i class="fa fa-chevron-down order-down"></i>
-                                        <i class="fa fa-times btn remove-form"></i>
-                                    <td><span class="input"><button type="button" formaction=""><i class="fa fa-book"></i></button><input type="text" autocomplete="off"></span>
+                                    <td><i class="g-icon order-up">expand_less</i>
+                                        <i class="g-icon order-down">expand_more</i>
+                                        <i class="g-icon btn remove-form">close</i>
+                                    <td><span class="input"><button type="button" formaction=""><i class="g-icon">book</i></button><input type="text" autocomplete="off"></span>
                                     <td><textarea autocomplete="off"></textarea>
                                     <td><input type="number" step="any" value="" autocomplete="off">
                                     <td><input type="number" step="0.01" value="" autocomplete="off">
@@ -465,9 +465,9 @@ echo $this->data['nav']->render(); ?>
                             <template class="oms-payment-add">
                                 <tr data-id="">
                                     <td><?php if ($editable) : ?>
-                                        <i class="fa fa-chevron-up order-up"></i>
-                                        <i class="fa fa-chevron-down order-down"></i>
-                                        <i class="fa fa-times btn remove-form"></i>
+                                        <i class="g-icon order-up">expand_less</i>
+                                        <i class="g-icon order-down">expand_more</i>
+                                        <i class="g-icon btn remove-form">close</i>
                                         <?php endif; ?>
                                     <td><input type="datetime-local" autocomplete="off" required>
                                     <td><input type="number" value="" autocomplete="off" required>
@@ -525,7 +525,7 @@ echo $this->data['nav']->render(); ?>
             <div class="row">
                 <div class="col-xs-12">
                     <div class="portlet">
-                        <div class="portlet-head"><?= $this->getHtml('Logs'); ?><i class="lni lni-download download btn end-xs"></i></div>
+                        <div class="portlet-head"><?= $this->getHtml('Logs'); ?><i class="g-icon download btn end-xs">download</i></div>
                         <table class="default">
                             <thead>
                             <tr>
