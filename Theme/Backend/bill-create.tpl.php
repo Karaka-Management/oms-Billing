@@ -117,7 +117,7 @@ echo $this->data['nav']->render(); ?>
                                         </div>
                                         <?php if (($bill->client?->id ?? 0) > 0) : ?>
                                         <div class="ipt-second">
-                                             <a class="button" href="<?= UriFactory::build('{/app}/sales/client/profile?id=' . $bill->client->id); ?>"><?= $this->getHtml('Client'); ?></a>
+                                             <a class="button" href="<?= UriFactory::build('{/base}/sales/client/profile?id=' . $bill->client->id); ?>"><?= $this->getHtml('Client'); ?></a>
                                         </div>
                                         <?php endif; ?>
                                     </div>
