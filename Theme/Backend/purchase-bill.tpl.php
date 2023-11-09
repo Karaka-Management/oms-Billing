@@ -32,6 +32,9 @@ $billPdf      = $bill->getFileByType($previewType);
 $original     = $bill->getFileByType($originalType);
 $media        = $bill->files;
 
+/** @var \Modules\Auditor\Models\Audit */
+$logs = $this->data['logs'] ?? [];
+
 echo $this->data['nav']->render(); ?>
 
 <div class="tabview tab-2 col-simple">
@@ -267,82 +270,42 @@ echo $this->data['nav']->render(); ?>
             </div>
         </div>
         <input type="radio" id="c-tab-6" name="tabular-2">
-        <div class="tab">
-            <div class="row">
-                <div class="col-xs-12 col-md-6 col-lg-4">
-                    <section class="box wf-100">
-                        <header><h1><?= $this->getHtml('Media'); ?></h1></header>
-
-                        <div class="inner">
-                            <form>
-                                <table class="layout wf-100">
-                                    <tbody>
-                                    <tr><td colspan="2"><label for="iMedia"><?= $this->getHtml('Media'); ?></label>
-                                    <tr><td><input type="text" id="iMedia" placeholder="&#xf15b; File"><td><button><?= $this->getHtml('Select'); ?></button>
-                                    <tr><td colspan="2"><label for="iUpload"><?= $this->getHtml('Upload'); ?></label>
-                                    <tr><td><input type="file" id="iUpload" form="fTask"><input form="fTask" type="hidden" name="type"><td>
-                                </table>
-                            </form>
-                        </div>
-                    </section>
-                </div>
-
-                <div class="col-xs-12 col-md-6 col-lg-8">
-                    <div class="portlet">
-                        <div class="portlet-head"><?= $this->getHtml('Media'); ?><i class="g-icon download btn end-xs">download</i></div>
-                        <table class="default" id="invoice-item-list">
-                            <thead>
-                            <tr>
-                                <td>
-                                <td>
-                                <td class="wf-100"><?= $this->getHtml('Name'); ?>
-                                <td><?= $this->getHtml('Type'); ?>
-                            <tbody>
-                            <?php foreach ($media as $file) :
-                                $url = $file->extension === 'collection'
-                                ? UriFactory::build('{/base}/media/list?path=' . \rtrim($file->getVirtualPath(), '/') . '/' . $file->name)
-                                : UriFactory::build('{/base}/media/single?id=' . $file->id
-                                    . '&path={?path}' . (
-                                            $file->id === 0
-                                                ? '/' . $file->name
-                                                : ''
-                                        )
-                                );
-
-                                $icon = $fileIconFunction(FileUtils::getExtensionType($file->extension));
-                            ?>
-                            <tr data-href="<?= $url; ?>">
-                                <td>
-                                <td data-label="<?= $this->getHtml('Type'); ?>"><a href="<?= $url; ?>"><i class="g-icon"><?= $this->printHtml($icon); ?></i></a>
-                                <td><a href="<?= $url; ?>"><?= $file->name; ?></a>
-                                <td><a href="<?= $url; ?>"><?= $file->extension; ?></a>
-                            <?php endforeach; ?>
-                        </table>
-                    </div>
-                </div>
-            </div>
+        <div class="tab col-simple">
+            <?= $this->data['media-upload']->render('bill-file', 'files', '', $media); ?>
         </div>
         <input type="radio" id="c-tab-7" name="tabular-2">
         <div class="tab">
             <div class="row">
                 <div class="col-xs-12">
-                    <div class="box wf-100">
+                    <div class="portlet">
+                        <div class="portlet-head"><?= $this->getHtml('Logs'); ?><i class="g-icon download btn end-xs">download</i></div>
                         <table class="default">
-                            <caption><?= $this->getHtml('Logs'); ?><i class="g-icon end-xs download btn">download</i></caption>
                             <thead>
                             <tr>
-                                <td>IP
                                 <td><?= $this->getHtml('ID', '0', '0'); ?>
-                                <td><?= $this->getHtml('Name'); ?>
-                                <td class="wf-100"><?= $this->getHtml('Log'); ?>
-                                <td><?= $this->getHtml('Date'); ?>
+                                <td><?= $this->getHtml('Trigger', 'Auditor', 'Backend'); ?>
+                                <td><?= $this->getHtml('Action', 'Auditor', 'Backend'); ?>
+                                <td><?= $this->getHtml('CreatedBy', 'Auditor', 'Backend'); ?>
+                                <td><?= $this->getHtml('CreatedAt', 'Auditor', 'Backend'); ?>
                             <tbody>
-                            <tr>
-                                <td><?= $this->printHtml($this->request->getOrigin()); ?>
-                                <td><?= $this->printHtml((string) $this->request->header->account); ?>
-                                <td><?= $this->printHtml((string) $this->request->header->account); ?>
-                                <td>Create Invoice
-                                <td><?= $this->printHtml((new \DateTime('now'))->format('Y-m-d H:i:s')); ?>
+                            <?php
+                            foreach ($logs as $audit) :
+                                $url = UriFactory::build('{/base}/admin/audit/single?id=' . $audit->id);
+                            ?>
+                            <tr data-href="<?= $url; ?>">
+                                <td><a href="<?= $url; ?>"><?= $audit->id; ?></a>
+                                <td><a href="<?= $url; ?>"><?= $audit->trigger; ?></a>
+                                <td><?php if ($audit->old === null) : echo $this->getHtml('CREATE', 'Auditor', 'Backend'); ?>
+                                    <?php elseif ($audit->old !== null && $audit->new !== null) : echo $this->getHtml('UPDATE', 'Auditor', 'Backend'); ?>
+                                    <?php elseif ($audit->new === null) : echo $this->getHtml('DELETE', 'Auditor', 'Backend'); ?>
+                                    <?php else : echo $this->getHtml('UNKNOWN', 'Auditor', 'Backend'); ?>
+                                    <?php endif; ?>
+                                <td><a class="content"
+                                    href="<?= UriFactory::build('{/base}/admin/account/settings?id=' . $audit->createdBy->id); ?>"><?= $this->printHtml(
+                                    $this->renderUserName('%3$s %2$s %1$s', [$audit->createdBy->name1, $audit->createdBy->name2, $audit->createdBy->name3, $audit->createdBy->login])
+                                ); ?></a>
+                                <td><a href="<?= $url; ?>"><?= $audit->createdAt->format('Y-m-d'); ?></a>
+                            <?php endforeach; ?>
                         </table>
                     </div>
                 </div>
@@ -350,4 +313,3 @@ echo $this->data['nav']->render(); ?>
         </div>
     </div>
 </div>
-

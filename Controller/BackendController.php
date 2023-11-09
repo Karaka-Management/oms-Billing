@@ -24,11 +24,8 @@ use Modules\Billing\Models\PurchaseBillMapper;
 use Modules\Billing\Models\SalesBillMapper;
 use Modules\Billing\Models\SettingsEnum;
 use Modules\Billing\Models\StockBillMapper;
-use phpOMS\Asset\AssetType;
 use phpOMS\Contract\RenderableInterface;
 use phpOMS\DataStorage\Database\Query\OrderType;
-use phpOMS\Localization\ISO3166CharEnum;
-use phpOMS\Localization\ISO3166NameEnum;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
 use phpOMS\Utils\StringUtils;
@@ -121,24 +118,29 @@ final class BackendController extends Controller
         $view->data['bill'] = $bill;
 
         /** @var \Modules\Auditor\Models\Audit[] $logsBill */
-        $logsBill = AuditMapper::getAll()
+        $logs = AuditMapper::getAll()
             ->with('createdBy')
             ->where('module', 'Billing')
             ->where('type', StringUtils::intHash(BillMapper::class))
             ->where('ref', $bill->id)
             ->execute();
 
-        /** @var \Modules\Auditor\Models\Audit[] $logsElements */
-        $logsElements = AuditMapper::getAll()
-            ->with('createdBy')
-            ->where('module', 'Billing')
-            ->where('type', StringUtils::intHash(BillElementMapper::class))
-            ->where('ref', \array_keys($bill->getElements()), 'IN')
-            ->execute();
+        if (!empty($bill->elements)) {
+            /** @var \Modules\Auditor\Models\Audit[] $logsElements */
+            $logsElements = AuditMapper::getAll()
+                ->with('createdBy')
+                ->where('module', 'Billing')
+                ->where('type', StringUtils::intHash(BillElementMapper::class))
+                ->where('ref', \array_keys($bill->getElements()), 'IN')
+                ->execute();
 
-        $logs = \array_merge($logsBill, $logsElements);
+            $logs = \array_merge($logs, $logsElements);
+        }
+
+        $logs = \array_merge($logs, $logsElements);
 
         $view->data['logs'] = $logs;
+        $view->data['media-upload'] = new \Modules\Media\Theme\Backend\Components\Upload\BaseView($this->app->l11nManager, $request, $response);
 
         return $view;
     }
@@ -310,6 +312,29 @@ final class BackendController extends Controller
 
         $view->data['originalType'] = (int) $originalType->content;
 
+        /** @var \Modules\Auditor\Models\Audit[] $logs */
+        $logs = AuditMapper::getAll()
+            ->with('createdBy')
+            ->where('module', 'Billing')
+            ->where('type', StringUtils::intHash(BillMapper::class))
+            ->where('ref', $bill->id)
+            ->execute();
+
+        if (!empty($bill->elements)) {
+            /** @var \Modules\Auditor\Models\Audit[] $logsElements */
+            $logsElements = AuditMapper::getAll()
+                ->with('createdBy')
+                ->where('module', 'Billing')
+                ->where('type', StringUtils::intHash(BillElementMapper::class))
+                ->where('ref', \array_keys($bill->getElements()), 'IN')
+                ->execute();
+
+            $logs = \array_merge($logs, $logsElements);
+        }
+
+        $view->data['logs']         = $logs;
+        $view->data['media-upload'] = new \Modules\Media\Theme\Backend\Components\Upload\BaseView($this->app->l11nManager, $request, $response);
+
         return $view;
     }
 
@@ -363,6 +388,7 @@ final class BackendController extends Controller
         $bill = StockBillMapper::get()->where('id', (int) $request->getData('id'))->execute();
 
         $view->data['bill'] = $bill;
+        $view->data['media-upload'] = new \Modules\Media\Theme\Backend\Components\Upload\BaseView($this->app->l11nManager, $request, $response);
 
         return $view;
     }
@@ -497,6 +523,7 @@ final class BackendController extends Controller
         );
 
         $view->data['originalType'] = (int) $originalType->content;
+        $view->data['media-upload'] = new \Modules\Media\Theme\Backend\Components\Upload\BaseView($this->app->l11nManager, $request, $response);
 
         return $view;
     }

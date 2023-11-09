@@ -304,6 +304,7 @@ echo $this->data['nav']->render(); ?>
                                     <td><input type="number" min="-100" max="100" step="0.01" value="" autocomplete="off">
                                     <td><input type="number" step="0.01" value="" autocomplete="off">
                                     <td><input type="number" step="0.01" value="" autocomplete="off">
+                                    <td><input type="number" step="0.01" value="" autocomplete="off">
                                     <td>
                                 </tr>
                             </template>
@@ -485,43 +486,11 @@ echo $this->data['nav']->render(); ?>
             </div>
         </div>
         <input type="radio" id="c-tab-6" name="tabular-2">
-        <div class="tab">
-            <div class="row">
-                <div class="col-xs-12 col-md-6 col-lg-4">
-                    <section class="portlet">
-                        <div class="portlet-head"><?= $this->getHtml('Media'); ?></div>
-                        <div class="portlet-body">
-                            <form>
-                                <div class="form-group">
-                                    <label for="iMedia"><?= $this->getHtml('Media'); ?></label>
-                                    <div class="ipt-first">
-                                        <input type="text" id="iMedia" placeholder="&#xf15b; File">
-                                    </div>
-                                    <div class="ipt-second"><button><?= $this->getHtml('Select'); ?></button></div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="iUpload"><?= $this->getHtml('Upload'); ?></label>
-                                    <input type="file" id="iUpload" form="fTask"><input form="fTask" type="hidden" name="type">
-                                </div>
-                            </form>
-                        </div>
-                    </section>
-                </div>
-
-                <div class="col-xs-12 col-md-6 col-lg-8">
-                    <?= $this->getData('medialist')?->render($media); ?>
-                </div>
-            </div>
+        <div class="tab col-simple">
+            <?= $this->data['media-upload']->render('bill-file', 'files', '', $media); ?>
         </div>
         <input type="radio" id="c-tab-7" name="tabular-2">
         <div class="tab">
-            <?php
-            $footerView = new \phpOMS\Views\PaginationView($this->l11nManager, $this->request, $this->response);
-            $footerView->setTemplate('/Web/Templates/Lists/Footer/PaginationBig');
-            $footerView->setPages(20);
-            $footerView->setPage(1);
-            ?>
             <div class="row">
                 <div class="col-xs-12">
                     <div class="portlet">
