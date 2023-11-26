@@ -270,9 +270,11 @@ echo $this->data['nav']->render(); ?>
                         <table
                             id="invoiceElements"
                             class="default sticky"
+                            data-action="<?= \phpOMS\Uri\UriFactory::build('{/api}billing/bill/element?{?}&csrf={$CSRF}'); ?>"
                             data-tag="form"
                             data-ui-container="tbody"
                             data-ui-element="tr"
+                            data-on-change="1"
                             data-add-tpl=".oms-invoice-add">
                             <thead>
                             <tr>
@@ -347,7 +349,7 @@ echo $this->data['nav']->render(); ?>
 
                     <?php if ($editable) : ?>
                     <div class="box">
-                        <input type="submit" class="add-form" value="Add" form="invoiceElements">
+                        <input type="submit" class="add-form" value="<?= $this->getHtml('Add', '0', '0') ?>" form="invoiceElements">
                     </div>
                     <?php endif; ?>
                 </div>
@@ -479,7 +481,7 @@ echo $this->data['nav']->render(); ?>
 
                     <?php if ($editable) : ?>
                     <div class="box">
-                        <input type="submit" class="add-form" value="Add" form="paymentPlan">
+                        <input type="submit" class="add-payment-form" value="<?= $this->getHtml('Add', '0', '0') ?>" form="paymentPlan">
                     </div>
                     <?php endif; ?>
                 </div>
