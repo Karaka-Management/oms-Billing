@@ -326,8 +326,8 @@ final class Installer extends InstallerAbstract
         /** @var \Modules\Billing\Controller\ApiController $module */
         $module = $app->moduleManager->getModuleInstance('Billing');
 
-        // @todo: allow multiple alternative bill templates
-        // @todo: implement ordering of templates
+        // @todo allow multiple alternative bill templates
+        // @todo implement ordering of templates
 
         foreach ($types as $type) {
             $response = new HttpResponse();

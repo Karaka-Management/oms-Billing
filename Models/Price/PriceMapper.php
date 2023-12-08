@@ -182,7 +182,7 @@ final class PriceMapper extends DataMapperFactory
                 AND (unit = ? OR unit = null)
         */
 
-        // @todo: allow nested where clause (already possible with the query builder, but not with the mappers)
+        // @todo allow nested where clause (already possible with the query builder, but not with the mappers)
 
         return [];
     }

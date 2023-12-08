@@ -684,7 +684,7 @@ class Bill implements \JsonSerializable
         $this->grossSales->add($element->totalSalesPriceGross->getInt());
         $this->netDiscount->add($element->totalDiscountP->getInt());
 
-        // @todo: Discount might be in quantities
+        // @todo Discount might be in quantities
         $this->grossDiscount->add((int) ($element->taxR->getInt() * $element->totalDiscountP->getInt() / 10000));
     }
 

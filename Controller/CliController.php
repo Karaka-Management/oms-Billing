@@ -128,7 +128,7 @@ final class CliController extends Controller
         /* Due */
         $billDueTemp = $this->findBillDue($lines, $identifiers['bill_date'][$language]);
         $billDue     = $this->parseDate($billDueTemp, $supplier, $identifiers['date_format']);
-        // @todo: implement multiple due dates for bills
+        // @todo implement multiple due dates for bills
 
         /* Total Gross */
         $totalGross       = $this->findBillGross($lines, $identifiers['total_gross'][$language]);
@@ -248,7 +248,7 @@ final class CliController extends Controller
             foreach ($lines as $row => $line) {
                 if (\preg_match($match, $line, $found) === 1) {
                     if ($row < $bestPos) {
-                        // @todo: don't many invoices have the due date at the bottom? bestPos doesn't make sense?!
+                        // @todo don't many invoices have the due date at the bottom? bestPos doesn't make sense?!
                         $bestPos   = $row;
                         $bestMatch = \trim($found['bill_due']);
                     }
@@ -355,7 +355,7 @@ final class CliController extends Controller
     {
         // bill_match_pattern
         foreach ($suppliers as $supplier) {
-            // @todo: consider to support regex?
+            // @todo consider to support regex?
             if ((!empty($supplier->getAttribute('bill_match_pattern')->value->valueStr)
                     && \stripos($content, $supplier->getAttribute('bill_match_pattern')->value->valueStr) !== false)
             ) {

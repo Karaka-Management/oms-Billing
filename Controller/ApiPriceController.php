@@ -132,10 +132,10 @@ final class ApiPriceController extends Controller
         $queryMapper->where('type', $request->getData('price_type', 'int') ?? PriceType::SALES);
         $queryMapper->where('currency', \array_unique([$request->getData('price_currency', 'int'), null]), 'IN');
 
-        // @todo: implement start and end
+        // @todo implement start and end
 
         /*
-        @todo: implement quantity
+        @todo implement quantity
         if ($request->hasData('price_quantity')) {
             $whereQuery = new Where();
             $whereQuery->where('quantity', (int) $request->getData('price_quantity'), '<=')
@@ -148,7 +148,7 @@ final class ApiPriceController extends Controller
         /** @var \Modules\Billing\Models\Price\Price[] $prices */
         $prices = $queryMapper->execute();
 
-        // Find base price (@todo: probably not a good solution)
+        // Find base price (@todo probably not a good solution)
         $bestBasePrice = null;
         foreach ($prices as $price) {
             if ($price->price->value !== 0 && $price->priceNew === 0
@@ -169,7 +169,7 @@ final class ApiPriceController extends Controller
             }
         }
 
-        // @todo: implement prices which cannot be improved even if there are better prices available (i.e. some customer groups may not get better prices, Dentagen Beispiel)
+        // @todo implement prices which cannot be improved even if there are better prices available (i.e. some customer groups may not get better prices, Dentagen Beispiel)
         // alternatively set prices as 'improvable' => which whitelists a price as can be improved or 'alwaysimproces' which always overwrites other prices
         // Find best price
         $bestPrice      = null;
@@ -190,7 +190,7 @@ final class ApiPriceController extends Controller
             $newPrice  = (int) ((10000 / $price->discountPercentage) * $newPrice);
             $newPrice  = (int) (($price->quantity === 0 ? 10000 : $price->quantity) / (10000 + $price->bonus) * $newPrice);
 
-            // @todo: the calculation above regarding discount and bonus don't consider the purchased quantity.
+            // @todo the calculation above regarding discount and bonus don't consider the purchased quantity.
             // If a customer receives 1+1 but purchases 2, then he gets 2+2 (if multiply === true) which is better than 1+1 with multiply false.
 
             if ($newPrice < $bestPriceValue) {
@@ -296,7 +296,7 @@ final class ApiPriceController extends Controller
      *
      * @return array<string, bool>
      *
-     * @todo: consider to prevent name 'base'?
+     * @todo consider to prevent name 'base'?
      * Might not be possible because it is used internally as well (see apiItemCreate in ItemManagement)
      *
      * @since 1.0.0
@@ -395,8 +395,8 @@ final class ApiPriceController extends Controller
      *
      * @return array<string, bool>
      *
-     * @todo: implement
-     * @todo: consider to block 'base' name
+     * @todo implement
+     * @todo consider to block 'base' name
      *
      * @since 1.0.0
      */

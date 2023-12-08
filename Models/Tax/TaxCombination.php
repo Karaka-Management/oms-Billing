@@ -43,7 +43,7 @@ class TaxCombination implements \JsonSerializable
 
     public string $taxCode = '';
 
-    // @todo: consider to add the tax code object directly, it is annoying to make a manuall mapper call which is often required afterwards.
+    // @todo consider to add the tax code object directly, it is annoying to make a manuall mapper call which is often required afterwards.
 
     public int $taxType = BillTaxType::SALES;
 

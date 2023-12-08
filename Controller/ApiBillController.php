@@ -24,6 +24,7 @@ use Modules\Billing\Models\BillStatus;
 use Modules\Billing\Models\BillTypeMapper;
 use Modules\Billing\Models\NullBill;
 use Modules\Billing\Models\NullBillElement;
+use Modules\Billing\Models\PermissionCategory;
 use Modules\Billing\Models\SettingsEnum;
 use Modules\ClientManagement\Models\Client;
 use Modules\ClientManagement\Models\ClientMapper;
@@ -38,6 +39,7 @@ use Modules\Messages\Models\EmailMapper;
 use Modules\SupplierManagement\Models\NullSupplier;
 use Modules\SupplierManagement\Models\Supplier;
 use Modules\SupplierManagement\Models\SupplierMapper;
+use phpOMS\Account\PermissionType;
 use phpOMS\Application\ApplicationAbstract;
 use phpOMS\Autoloader;
 use phpOMS\Localization\ISO4217CharEnum;
@@ -216,12 +218,12 @@ final class ApiBillController extends Controller
      */
     public function createBaseBill(Client | Supplier $account, RequestAbstract $request) : Bill
     {
-        // @todo: validate vat before creation for clients
+        // @todo validate vat before creation for clients
         $bill                  = new Bill();
         $bill->createdBy       = new NullAccount($request->header->account);
         $bill->unit            = $account->unit ?? $this->app->unitId;
-        $bill->billDate        = new \DateTime('now'); // @todo: Date of payment
-        $bill->performanceDate = $request->getDataDateTime('performancedate') ?? new \DateTime('now'); // @todo: Date of payment
+        $bill->billDate        = new \DateTime('now'); // @todo Date of payment
+        $bill->performanceDate = $request->getDataDateTime('performancedate') ?? new \DateTime('now'); // @todo Date of payment
         $bill->accountNumber   = $account->number;
         $bill->setStatus($request->getDataInt('status') ?? BillStatus::DRAFT);
 
@@ -237,7 +239,7 @@ final class ApiBillController extends Controller
             $bill->supplier = $account;
         }
 
-        // @todo: use bill and shipping address instead of main address if available
+        // @todo use bill and shipping address instead of main address if available
         $bill->billTo      = $request->getDataString('billto') ?? $account->account->name1;
         $bill->billAddress = $request->getDataString('billaddress') ?? $account->mainAddress->address;
         $bill->billCity    = $request->getDataString('billtocity') ?? $account->mainAddress->city;
@@ -517,7 +519,7 @@ final class ApiBillController extends Controller
      */
     public function apiMediaRemoveFromBill(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
-        // @todo: check that it is not system generated media!
+        // @todo check that it is not system generated media!
         if (!empty($val = $this->validateMediaRemoveFromBill($request))) {
             $response->header->status = RequestStatusCode::R_400;
             $this->createInvalidDeleteResponse($request, $response, $val);
@@ -539,8 +541,8 @@ final class ApiBillController extends Controller
             ->execute();
 
         if (\count($billCollection) !== 1) {
-            // @todo: For some reason there are multiple collections with the same virtual path?
-            // @todo: check if this is the correct way to handle it or if we need to make sure that it is a collection
+            // @todo For some reason there are multiple collections with the same virtual path?
+            // @todo check if this is the correct way to handle it or if we need to make sure that it is a collection
             return;
         }
 
@@ -571,7 +573,7 @@ final class ApiBillController extends Controller
         if ($referenceCount === 0) {
             // Is not used anywhere else -> remove from db and file system
 
-            // @todo: remove media types from media
+            // @todo remove media types from media
 
             $this->deleteModel($request->header->account, $media, MediaMapper::class, 'bill_media', $request->getOrigin());
 
@@ -678,11 +680,11 @@ final class ApiBillController extends Controller
         $element = $this->createBillElementFromRequest($request, $response, $old, $data);
         $this->createModel($request->header->account, $element, BillElementMapper::class, 'bill_element', $request->getOrigin());
 
-        // @todo: handle stock transaction here
-        // @todo: if transaction fails don't update below and send warning to user
-        // @todo: however mark transaction as reserved and only update when bill is finalized!!!
+        // @todo handle stock transaction here
+        // @todo if transaction fails don't update below and send warning to user
+        // @todo however mark transaction as reserved and only update when bill is finalized!!!
 
-        // @todo: in BillElementUpdate do the same
+        // @todo in BillElementUpdate do the same
 
         $new = clone $old;
         $new->addElement($element);
@@ -725,7 +727,7 @@ final class ApiBillController extends Controller
         $element->bill = new NullBill($bill->id);
 
         // discounts
-        // @todo: implement a addDiscount function
+        // @todo implement a addDiscount function
         /*
         if ($request->getData('discount_percentage') !== null) {
         }
@@ -768,7 +770,7 @@ final class ApiBillController extends Controller
      */
     public function apiMediaRender(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
-        // @todo: check if has permission
+        // @todo check if has permission
         $this->app->moduleManager->get('Media', 'Api')->apiMediaExport($request, $response, ['ignorePermission' => true]);
     }
 
@@ -937,7 +939,7 @@ final class ApiBillController extends Controller
             ->where('id', $request->getDataInt('bill') ?? 0)
             ->execute();
 
-        // @todo: This is stupid to do twice but I need to get the langauge.
+        // @todo This is stupid to do twice but I need to get the langauge.
         // For the future it should just be a join on the bill langauge!!!
         // The problem is the where here is a model where and not a query
         // builder where meaning it is always considered a value and not a column.
@@ -1006,7 +1008,7 @@ final class ApiBillController extends Controller
         $view->data['defaultAssets']    = $defaultAssets;
         $view->data['bill']             = $bill;
 
-        // @todo: add bill data such as company name bank information, ..., etc.
+        // @todo add bill data such as company name bank information, ..., etc.
 
         $pdf = $view->render();
 
@@ -1050,7 +1052,7 @@ final class ApiBillController extends Controller
         );
 
         // Send bill via email
-        // @todo: maybe not all bill types, and bill status (e.g. deleted should not be sent)
+        // @todo maybe not all bill types, and bill status (e.g. deleted should not be sent)
         $client = ClientMapper::get()
             ->with('account')
             ->with('attributes')
@@ -1223,8 +1225,8 @@ final class ApiBillController extends Controller
         /** @var \Modules\Billing\Models\Bill $old */
         $old = BillMapper::get()->where('id', (int) $request->getData('id'))->execute();
 
-        // @todo: check if bill can be deleted
-        // @todo: adjust stock transfer
+        // @todo check if bill can be deleted
+        // @todo adjust stock transfer
 
         $new = $this->deleteBillFromRequest($request, clone $old);
         $this->updateModel($request->header->account, $old, $new, BillMapper::class, 'bill', $request->getOrigin());
@@ -1255,7 +1257,7 @@ final class ApiBillController extends Controller
      *
      * @return array<string, bool>
      *
-     * @todo: implement
+     * @todo Implement API validation function
      *
      * @since 1.0.0
      */
@@ -1294,8 +1296,8 @@ final class ApiBillController extends Controller
         /** @var BillElement $old */
         $old = BillElementMapper::get()->where('id', (int) $request->getData('id'))->execute();
 
-        // @todo: can be edited?
-        // @todo: adjust transfer protocolls
+        // @todo can be edited?
+        // @todo adjust transfer protocolls
 
         $new = $this->updateBillElementFromRequest($request, clone $old);
 
@@ -1311,7 +1313,7 @@ final class ApiBillController extends Controller
      *
      * @return BillElement
      *
-     * @todo: implement
+     * @todo Implement API update function
      *
      * @since 1.0.0
      */
@@ -1327,7 +1329,7 @@ final class ApiBillController extends Controller
      *
      * @return array<string, bool>
      *
-     * @todo: implement
+     * @todo Implement API validation function
      *
      * @since 1.0.0
      */
@@ -1363,8 +1365,8 @@ final class ApiBillController extends Controller
             return;
         }
 
-        // @todo: check if can be deleted
-        // @todo: handle transactions and bill update
+        // @todo check if can be deleted
+        // @todo handle transactions and bill update
 
         /** @var \Modules\Billing\Models\BillElement $billElement */
         $billElement = BillElementMapper::get()->where('id', (int) $request->getData('id'))->execute();
@@ -1406,8 +1408,17 @@ final class ApiBillController extends Controller
      */
     public function apiNoteUpdate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
-        // @todo: check permissions
-        $this->app->moduleManager->get('Editor', 'Api')->apiEditorDocUpdate($request, $response, $data);
+        $accountId = $request->header->account;
+        if (!$this->app->accountManager->get($accountId)->hasPermission(
+            PermissionType::MODIFY, $this->app->unitId, $this->app->appId, self::NAME, PermissionCategory::BILL_NOTE, $request->getDataInt('id'))
+        ) {
+            $this->fillJsonResponse($request, $response, NotificationLevel::HIDDEN, '', '', []);
+            $response->header->status = RequestStatusCode::R_403;
+
+            return;
+        }
+
+        $this->app->moduleManager->get('Editor', 'Api')->apiEditorUpdate($request, $response, $data);
     }
 
     /**
@@ -1425,7 +1436,16 @@ final class ApiBillController extends Controller
      */
     public function apiNoteDelete(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
-        // @todo: check permissions
-        $this->app->moduleManager->get('Editor', 'Api')->apiEditorDocDelete($request, $response, $data);
+        $accountId = $request->header->account;
+        if (!$this->app->accountManager->get($accountId)->hasPermission(
+            PermissionType::DELETE, $this->app->unitId, $this->app->appId, self::NAME, PermissionCategory::BILL_NOTE, $request->getDataInt('id'))
+        ) {
+            $this->fillJsonResponse($request, $response, NotificationLevel::HIDDEN, '', '', []);
+            $response->header->status = RequestStatusCode::R_403;
+
+            return;
+        }
+
+        $this->app->moduleManager->get('Editor', 'Api')->apiEditorDelete($request, $response, $data);
     }
 }

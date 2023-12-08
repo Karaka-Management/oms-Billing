@@ -141,7 +141,7 @@ final class PurchaseBillMapper extends BillMapper
      */
     public static function getLastOrderDateByItemId(int $id) : ?\DateTimeImmutable
     {
-        // @todo: only delivers/invoice/production (no offers ...)
+        // @todo only delivers/invoice/production (no offers ...)
         $query = new Builder(self::$db);
 
         /** @var false|array $result */
@@ -163,7 +163,7 @@ final class PurchaseBillMapper extends BillMapper
      */
     public static function getLastOrderDateBySupplierId(int $id) : ?\DateTimeImmutable
     {
-        // @todo: only delivers/invoice/production (no offers ...)
+        // @todo only delivers/invoice/production (no offers ...)
         $query = new Builder(self::$db);
 
         /** @var false|array $result */

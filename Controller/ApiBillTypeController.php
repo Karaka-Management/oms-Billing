@@ -219,7 +219,7 @@ final class ApiBillTypeController extends Controller
      *
      * @return BillType
      *
-     * @todo: implement
+     * @todo Implement API update function
      *
      * @since 1.0.0
      */
@@ -243,7 +243,7 @@ final class ApiBillTypeController extends Controller
      *
      * @return array<string, bool>
      *
-     * @todo: implement
+     * @todo Implement API validation function
      *
      * @since 1.0.0
      */

@@ -39,7 +39,7 @@ class BillElement implements \JsonSerializable
 
     public int $order = 0;
 
-    /** @todo: consider to reference the model instead of the int, this would make it much easier in other places like the shop */
+    /** @todo consider to reference the model instead of the int, this would make it much easier in other places like the shop */
     public ?int $item = null;
 
     public string $itemNumber = '';
@@ -196,7 +196,7 @@ class BillElement implements \JsonSerializable
         }
 
         $this->quantity = $quantity;
-        // @todo: recalculate all the prices!!!
+        // @todo recalculate all the prices!!!
     }
 
     /**
@@ -247,8 +247,8 @@ class BillElement implements \JsonSerializable
         $element->itemDescription = $item->getL11n('description_short')->content;
         $element->quantity        = $quantity;
 
-        // @todo: Use pricing instead of the default sales price
-        // @todo: discounts might be in quantities
+        // @todo Use pricing instead of the default sales price
+        // @todo discounts might be in quantities
         $element->singleListPriceNet->setInt($item->salesPrice->getInt());
         $element->totalListPriceNet->setInt($element->quantity * $item->salesPrice->getInt());
         $element->singleSalesPriceNet->setInt($item->salesPrice->getInt());
@@ -280,8 +280,8 @@ class BillElement implements \JsonSerializable
             $element->subscription        = new Subscription();
             $element->subscription->bill  = $element->bill->id;
             $element->subscription->item  = $element->item;
-            $element->subscription->start = new \DateTime('now'); // @todo: change to bill performanceDate
-            $element->subscription->end   = new SmartDateTime('now'); // @todo: depends on subscription type
+            $element->subscription->start = new \DateTime('now'); // @todo change to bill performanceDate
+            $element->subscription->end   = new SmartDateTime('now'); // @todo depends on subscription type
             $element->subscription->end->smartModify(m: 1);
 
             $element->subscription->quantity  = $element->quantity;

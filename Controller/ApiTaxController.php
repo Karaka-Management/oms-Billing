@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Controller;
 
-use Modules\Admin\Models\Address;
 use Modules\Attribute\Models\AttributeValue;
 use Modules\Attribute\Models\NullAttributeValue;
 use Modules\Billing\Models\Tax\TaxCombination;
@@ -30,6 +29,7 @@ use phpOMS\Message\Http\RequestStatusCode;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
 use phpOMS\Security\Guard;
+use phpOMS\Stdlib\Base\Address;
 
 /**
  * Billing class.
@@ -54,8 +54,8 @@ final class ApiTaxController extends Controller
      */
     public function getTaxCodeFromClientItem(Client $client, Item $item, string $defaultCountry = '') : TaxCode
     {
-        // @todo: define default sales tax code if none available?!
-        // @todo: consider to actually use a ownsOne reference instead of only a string, this way the next line with the TaxCodeMapper can be removed
+        // @todo define default sales tax code if none available?!
+        // @todo consider to actually use a ownsOne reference instead of only a string, this way the next line with the TaxCodeMapper can be removed
 
         /** @var \Modules\Billing\Models\Tax\TaxCombination $taxCombination */
         $taxCombination = TaxCombinationMapper::get()
@@ -195,7 +195,7 @@ final class ApiTaxController extends Controller
 
         $taxCode = new NullAttributeValue();
 
-        // @todo: need to consider own tax id as well
+        // @todo need to consider own tax id as well
         if ($taxOfficeAddress->getCountry() === $client->mainAddress->getCountry()) {
             $taxCode = $codes->getDefaultByValue($client->mainAddress->getCountry());
         } elseif (\in_array($taxOfficeAddress->getCountry(), ISO3166CharEnum::getRegion('eu'))
@@ -413,7 +413,7 @@ final class ApiTaxController extends Controller
      *
      * @return array<string, bool>
      *
-     * @todo: implement
+     * @todo Implement API validation function
      *
      * @since 1.0.0
      */

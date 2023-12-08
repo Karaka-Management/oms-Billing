@@ -73,7 +73,7 @@ $topPos = $pdf->getY();
 // Set up default bill template
 $billTypeName = \strtoupper($bill->type->getL11n());
 
-// @todo: depending on amount of lines, there is a solution (html, or use backtracking of tcpdf)
+// @todo depending on amount of lines, there is a solution (html, or use backtracking of tcpdf)
 
 // Address
 $pdf->setY(50);
@@ -144,7 +144,7 @@ $pdf->MultiCell(
     . ($bill->billDate?->format('Y-m-d') ?? '0') . "\n"
     . ($bill->performanceDate?->format('Y-m-d') ?? '0') . "\n"
     . $bill->accountNumber . "\n"
-    . '' . "\n" /* @todo: implement customer / supplier reference as string */
+    . '' . "\n" /* @todo implement customer / supplier reference as string */
     .  ($bill->billDate?->format('Y-m-d') ?? '0'), /* Consider to add dueDate in addition */
     0, 'L'
 );
@@ -184,7 +184,7 @@ $first = true;
 // Data
 $fill = false;
 foreach($lines as $line) {
-    // @todo: add support for empty lines (row = line)
+    // @todo add support for empty lines (row = line)
     if (/*$row === null || */$first || $pdf->getY() > $pdf->getPageHeight() - 40) {
         $pdf->setFillColor(255, 162, 7);
         $pdf->setTextColor(255);
@@ -274,7 +274,7 @@ $pdf->Ln();
 
 $tempY2 = $pdf->getY();
 
-// @todo: fix payment terms
+// @todo fix payment terms
 $pdf->setTextColor(0);
 $pdf->setFont('helvetica', 'B', 8);
 $pdf->setY($tempY);
@@ -284,7 +284,7 @@ $pdf->setFont('helvetica', '', 8);
 $pdf->Write(0, $bill->paymentText, '', false, 'L', false, 0, false, false, 0);
 $pdf->Ln();
 
-// @todo: fix terms
+// @todo fix terms
 $pdf->setFont('helvetica', 'B', 8);
 $pdf->Write(0, $lang[$pdf->language]['Terms'] . ': ' . $pdf->attributes['terms'], '', false, 'L', false, 0, false, false, 0);
 $pdf->Ln();
