@@ -49,13 +49,13 @@ echo $this->data['nav']->render(); ?>
 <div class="tabview tab-2 col-simple">
     <div class="box">
         <ul class="tab-links">
-            <li><label for="c-tab-1"><?= $this->getHtml('Invoice'); ?></label></li>
-            <li><label for="c-tab-2"><?= $this->getHtml('Items'); ?></label></li>
-            <li><label for="c-tab-3"><?= $this->getHtml('Preview'); ?></label></li>
-            <li><label for="c-tab-4"><?= $this->getHtml('Archive'); ?></label></li>
-            <li><label for="c-tab-5"><?= $this->getHtml('Payment'); ?></label></li>
-            <li><label for="c-tab-6"><?= $this->getHtml('Media'); ?></label></li>
-            <li><label for="c-tab-7"><?= $this->getHtml('Logs'); ?></label></li>
+            <li><label for="c-tab-1"><?= $this->getHtml('Invoice'); ?></label>
+            <li><label for="c-tab-2"><?= $this->getHtml('Items'); ?></label>
+            <li><label for="c-tab-3"><?= $this->getHtml('Preview'); ?></label>
+            <li><label for="c-tab-4"><?= $this->getHtml('Archive'); ?></label>
+            <li><label for="c-tab-5"><?= $this->getHtml('Payment'); ?></label>
+            <li><label for="c-tab-6"><?= $this->getHtml('Media'); ?></label>
+            <li><label for="c-tab-7"><?= $this->getHtml('Logs'); ?></label>
         </ul>
     </div>
     <div class="tab-content col-simple">
@@ -349,7 +349,7 @@ echo $this->data['nav']->render(); ?>
 
                     <?php if ($editable) : ?>
                     <div class="box">
-                        <input type="submit" class="add-form" value="<?= $this->getHtml('Add', '0', '0') ?>" form="invoiceElements">
+                        <input type="submit" class="add-form" value="<?= $this->getHtml('Add', '0', '0'); ?>" form="invoiceElements">
                     </div>
                     <?php endif; ?>
                 </div>
@@ -481,7 +481,7 @@ echo $this->data['nav']->render(); ?>
 
                     <?php if ($editable) : ?>
                     <div class="box">
-                        <input type="submit" class="add-payment-form" value="<?= $this->getHtml('Add', '0', '0') ?>" form="paymentPlan">
+                        <input type="submit" class="add-payment-form" value="<?= $this->getHtml('Add', '0', '0'); ?>" form="paymentPlan">
                     </div>
                     <?php endif; ?>
                 </div>
@@ -497,7 +497,7 @@ echo $this->data['nav']->render(); ?>
                 <div class="col-xs-12">
                     <div class="portlet">
                         <div class="portlet-head"><?= $this->getHtml('Logs'); ?><i class="g-icon download btn end-xs">download</i></div>
-                        <table class="default">
+                        <table class="default sticky">
                             <thead>
                             <tr>
                                 <td><?= $this->getHtml('ID', '0', '0'); ?>

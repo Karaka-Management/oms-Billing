@@ -88,7 +88,7 @@ final class ApiControllerTest extends \PHPUnit\Framework\TestCase
         $this->app->accountManager->add($account);
         $this->app->router = new WebRouter();
 
-        $this->module = $this->app->moduleManager->get('Billing', 'ApiBill');
+        $this->module         = $this->app->moduleManager->get('Billing', 'ApiBill');
         $this->modulePurchase = $this->app->moduleManager->get('Billing', 'ApiPurchase');
 
         TestUtils::setMember($this->module, 'app', $this->app);

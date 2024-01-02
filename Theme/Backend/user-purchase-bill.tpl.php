@@ -36,13 +36,13 @@ echo $this->data['nav']->render(); ?>
 <div class="tabview tab-2">
     <div class="box">
         <ul class="tab-links">
-            <li><label for="c-tab-1"><?= $this->getHtml('Invoice'); ?></label></li>
-            <li><label for="c-tab-2"><?= $this->getHtml('Items'); ?></label></li>
-            <li><label for="c-tab-3"><?= $this->getHtml('Preview'); ?></label></li>
-            <li><label for="c-tab-4"><?= $this->getHtml('Original'); ?></label></li>
-            <li><label for="c-tab-5"><?= $this->getHtml('Payment'); ?></label></li>
-            <li><label for="c-tab-6"><?= $this->getHtml('Media'); ?></label></li>
-            <li><label for="c-tab-7"><?= $this->getHtml('Logs'); ?></label></li>
+            <li><label for="c-tab-1"><?= $this->getHtml('Invoice'); ?></label>
+            <li><label for="c-tab-2"><?= $this->getHtml('Items'); ?></label>
+            <li><label for="c-tab-3"><?= $this->getHtml('Preview'); ?></label>
+            <li><label for="c-tab-4"><?= $this->getHtml('Original'); ?></label>
+            <li><label for="c-tab-5"><?= $this->getHtml('Payment'); ?></label>
+            <li><label for="c-tab-6"><?= $this->getHtml('Media'); ?></label>
+            <li><label for="c-tab-7"><?= $this->getHtml('Logs'); ?></label>
         </ul>
     </div>
     <div class="tab-content">
@@ -147,7 +147,7 @@ echo $this->data['nav']->render(); ?>
                 <div class="col-xs-12">
                     <div class="portlet">
                         <div class="portlet-head"><?= $this->getHtml('Invoice'); ?><i class="g-icon download btn end-xs">download</i></div>
-                        <table class="default" id="invoice-item-list">
+                        <table class="default sticky" id="invoice-item-list">
                             <thead>
                             <tr>
                                 <td>
@@ -275,7 +275,7 @@ echo $this->data['nav']->render(); ?>
                                 <table class="layout wf-100">
                                     <tbody>
                                     <tr><td colspan="2"><label for="iMedia"><?= $this->getHtml('Media'); ?></label>
-                                    <tr><td><input type="text" id="iMedia" placeholder="&#xf15b; File"><td><button><?= $this->getHtml('Select'); ?></button>
+                                    <tr><td><input type="text" id="iMedia" placeholder="File"><td><button><?= $this->getHtml('Select'); ?></button>
                                     <tr><td colspan="2"><label for="iUpload"><?= $this->getHtml('Upload'); ?></label>
                                     <tr><td><input type="file" id="iUpload" form="fTask"><input form="fTask" type="hidden" name="type"><td>
                                 </table>
@@ -287,7 +287,7 @@ echo $this->data['nav']->render(); ?>
                 <div class="col-xs-12 col-md-6 col-lg-8">
                     <div class="portlet">
                         <div class="portlet-head"><?= $this->getHtml('Media'); ?><i class="g-icon download btn end-xs">download</i></div>
-                        <table class="default" id="invoice-item-list">
+                        <table class="default sticky" id="invoice-item-list">
                             <thead>
                             <tr>
                                 <td>
@@ -324,7 +324,7 @@ echo $this->data['nav']->render(); ?>
             <div class="row">
                 <div class="col-xs-12">
                     <div class="box wf-100">
-                        <table class="default">
+                        <table class="default sticky">
                             <caption><?= $this->getHtml('Logs'); ?><i class="g-icon end-xs download btn">download</i></caption>
                             <thead>
                             <tr>

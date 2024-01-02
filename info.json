@@ -14,7 +14,6 @@
         "name": "Jingga",
         "website": "jingga.app"
     },
-    "description": "Accounting module.",
     "directory": "Billing",
     "dependencies": {
         "Admin": "1.0.0",

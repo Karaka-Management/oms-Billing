@@ -17,7 +17,7 @@ namespace Modules\Billing\Models;
 use phpOMS\Stdlib\Base\Enum;
 
 /**
- * Permision state enum.
+ * Permission category enum.
  *
  * @package Modules\Billing\Models
  * @license OMS License 2.0

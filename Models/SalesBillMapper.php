@@ -118,22 +118,26 @@ final class SalesBillMapper extends BillMapper
     /**
      * Placeholder
      */
-    public static function getAvgSalesPriceByItemId(int $id, \DateTime $start, \DateTime $end) : FloatInt
+    public static function getItemAvgSalesPrice(int $item, \DateTime $start, \DateTime $end) : FloatInt
     {
+        $sql = <<<SQL
+        SELECT
+            SUM(billing_bill_element_single_netsalesprice) as net_sales,
+            COUNT(billing_bill_element_total_netsalesprice) as net_count
+        FROM billing_bill_element
+        JOIN billing_bill ON billing_bill_element.billing_bill_element_bill = billing_bill.billing_bill_id
+        WHERE
+            billing_bill_element_item = {$item}
+            AND billing_bill_performance_date >= '{$start->format('Y-m-d H:i:s')}'
+            AND billing_bill_performance_date <= '{$end->format('Y-m-d H:i:s')}';
+        SQL;
+
         $query = new Builder(self::$db);
+        $result = $query->raw($sql)->execute()->fetchAll(\PDO::FETCH_ASSOC);
 
-        /** @var array $result */
-        $result = $query->select('SUM(billing_bill_element_single_netsalesprice)', 'COUNT(billing_bill_element_total_netsalesprice)')
-            ->from(self::TABLE)
-            ->leftJoin(BillElementMapper::TABLE)
-                ->on(self::TABLE . '.billing_bill_id', '=', BillElementMapper::TABLE . '.billing_bill_element_bill')
-            ->where(BillElementMapper::TABLE . '.billing_bill_element_item', '=', $id)
-            ->andWhere(self::TABLE . '.billing_bill_performance_date', '>=', $start)
-            ->andWhere(self::TABLE . '.billing_bill_performance_date', '<=', $end)
-            ->execute()
-            ?->fetch() ?? [];
-
-        return new FloatInt(((int) ($result[1] ?? 0)) === 0 ? 0 : (int) (((int) ($result[0] ?? 0)) / ((int) $result[1])));
+        return isset($result[0]['net_count'])
+            ? new FloatInt((int) ($result[0]['net_sales'] ?? 0) / ($result[0]['net_count']))
+            : new FloatInt(0);
     }
 
     /**
@@ -298,6 +302,21 @@ final class SalesBillMapper extends BillMapper
     /**
      * Placeholder
      */
+    public static function getClientBills(int $id, \DateTime $start, \DateTime $end) : array
+    {
+        return self::getAll()
+            ->with('type')
+            ->with('type/l11n')
+            ->where('client', $id)
+            ->where('type/l11n/language', 'en') // @todo fix localization
+            ->where('billDate', $start, '>=')
+            ->where('billDate', $end, '<=')
+            ->execute();
+    }
+
+    /**
+     * Placeholder
+     */
     public static function getClientItem(int $client, \DateTime $start, \DateTime $end) : array
     {
         $query = BillElementMapper::getQuery();
@@ -344,23 +363,26 @@ final class SalesBillMapper extends BillMapper
     /**
      * Placeholder
      */
-    public static function getItemMonthlySalesCosts(int $id, \DateTime $start, \DateTime $end) : array
+    public static function getItemMonthlySalesCosts(int $item, \DateTime $start, \DateTime $end) : array
     {
-        $query  = new Builder(self::$db);
-        $result = $query->selectAs('SUM(billing_bill_element_total_netsalesprice)', 'net_sales')
-            ->selectAs('SUM(billing_bill_element_total_netpurchaseprice)', 'net_costs')
-            ->selectAs('YEAR(billing_bill_performance_date)', 'year')
-            ->selectAs('MONTH(billing_bill_performance_date)', 'month')
-            ->from(self::TABLE)
-            ->leftJoin(BillElementMapper::TABLE)
-                ->on(self::TABLE . '.billing_bill_id', '=', BillElementMapper::TABLE . '.billing_bill_element_bill')
-            ->where(BillElementMapper::TABLE . '.billing_bill_element_item', '=', $id)
-            ->andWhere(self::TABLE . '.billing_bill_performance_date', '>=', $start)
-            ->andWhere(self::TABLE . '.billing_bill_performance_date', '<=', $end)
-            ->groupBy('year', 'month')
-            ->orderBy(['year', 'month'], ['ASC', 'ASC'])
-            ->execute()
-            ?->fetchAll();
+        $sql = <<<SQL
+        SELECT
+            SUM(billing_bill_element_total_netsalesprice) as net_sales,
+            SUM(billing_bill_element_total_netpurchaseprice) as net_costs,
+            YEAR(billing_bill_performance_date) as year,
+            MONTH(billing_bill_performance_date) as month
+        FROM billing_bill_element
+        JOIN billing_bill ON billing_bill_element.billing_bill_element_bill = billing_bill.billing_bill_id
+        WHERE
+            billing_bill_element_item = {$item}
+            AND billing_bill_performance_date >= '{$start->format('Y-m-d H:i:s')}'
+            AND billing_bill_performance_date <= '{$end->format('Y-m-d H:i:s')}'
+        GROUP BY year, month
+        ORDER BY year ASC, month ASC;
+        SQL;
+
+        $query = new Builder(self::$db);
+        $result = $query->raw($sql)->execute()->fetchAll(\PDO::FETCH_ASSOC);
 
         return $result ?? [];
     }
@@ -368,22 +390,137 @@ final class SalesBillMapper extends BillMapper
     /**
      * Placeholder
      */
-    public static function getClientMonthlySalesCosts(int $id, \DateTime $start, \DateTime $end) : array
+    public static function getClientMonthlySalesCosts(int $client, \DateTime $start, \DateTime $end) : array
     {
-        $query  = new Builder(self::$db);
-        $result = $query->selectAs('SUM(billing_bill_netsales)', 'net_sales')
-            ->selectAs('SUM(billing_bill_netcosts)', 'net_costs')
-            ->selectAs('YEAR(billing_bill_performance_date)', 'year')
-            ->selectAs('MONTH(billing_bill_performance_date)', 'month')
-            ->from(self::TABLE)
-            ->where(self::TABLE . '.billing_bill_client', '=', $id)
-            ->andWhere(self::TABLE . '.billing_bill_performance_date', '>=', $start)
-            ->andWhere(self::TABLE . '.billing_bill_performance_date', '<=', $end)
-            ->groupBy('year', 'month')
-            ->orderBy(['year', 'month'], ['ASC', 'ASC'])
-            ->execute()
-            ?->fetchAll();
+        $sql = <<<SQL
+        SELECT
+            SUM(billing_bill_netsales) as net_sales,
+            SUM(billing_bill_netcosts) as net_costs,
+            YEAR(billing_bill_performance_date) as year,
+            MONTH(billing_bill_performance_date) as month
+        FROM billing_bill
+        WHERE
+            billing_bill_client = {$client}
+            AND billing_bill_performance_date >= '{$start->format('Y-m-d H:i:s')}'
+            AND billing_bill_performance_date <= '{$end->format('Y-m-d H:i:s')}'
+        GROUP BY year, month
+        ORDER BY year ASC, month ASC;
+        SQL;
+
+        $query = new Builder(self::$db);
+        $result = $query->raw($sql)->execute()->fetchAll(\PDO::FETCH_ASSOC);
 
         return $result ?? [];
+    }
+
+    public static function getItemNetSales(int $item, \DateTime $start, \DateTime $end) : FloatInt
+    {
+        $sql = <<<SQL
+        SELECT SUM(billing_bill_element_single_netsalesprice) as net_sales
+        FROM billing_bill_element
+        JOIN billing_bill ON billing_bill_element.billing_bill_element_bill = billing_bill.billing_bill_id
+        WHERE
+            billing_bill_element_item = {$item}
+            AND billing_bill_performance_date >= '{$start->format('Y-m-d H:i:s')}'
+            AND billing_bill_performance_date <= '{$end->format('Y-m-d H:i:s')}';
+        SQL;
+
+        $query = new Builder(self::$db);
+        $result = $query->raw($sql)->execute()->fetchAll(\PDO::FETCH_ASSOC);
+
+        return new FloatInt((int) ($result[0]['net_sales'] ?? 0));
+    }
+
+    public static function getILVHistoric(int $item) : FloatInt
+    {
+        $sql = <<<SQL
+        SELECT SUM(billing_bill_element_single_netsalesprice) as net_sales
+        FROM billing_bill_element
+        JOIN billing_bill ON billing_bill_element.billing_bill_element_bill = billing_bill.billing_bill_id
+        WHERE billing_bill_element_item = {$item}
+        SQL;
+
+        $query = new Builder(self::$db);
+        $result = $query->raw($sql)->execute()->fetchAll(\PDO::FETCH_ASSOC);
+
+        return new FloatInt((int) ($result[0]['net_sales'] ?? 0));
+    }
+
+    public static function getItemMRR() : FloatInt
+    {
+        return new FloatInt(0);
+    }
+
+    public static function getItemLastOrder(int $item) : ?\DateTime
+    {
+        $sql = <<<SQL
+        SELECT billing_bill_created_at
+        FROM billing_bill
+        JOIN billing_bill_element ON billing_bill.billing_bill_id = billing_bill_element.billing_bill_element_id
+        WHERE billing_bill_element_item = {$item}
+        ORDER BY billing_bill_created_at DESC
+        LIMIT 1;
+        SQL;
+
+        $query = new Builder(self::$db);
+        $result = $query->raw($sql)->execute()->fetchAll(\PDO::FETCH_ASSOC);
+
+        return isset($result[0]['billing_bill_created_at'])
+            ? new \DateTime(($result[0]['billing_bill_created_at']))
+            : null;
+    }
+
+    public static function getClientNetSales(int $client, \DateTime $start, \DateTime $end) : FloatInt
+    {
+        $sql = <<<SQL
+        SELECT SUM(billing_bill_netsales) as net_sales
+        FROM billing_bill
+        WHERE
+            billing_bill_client = {$client}
+            AND billing_bill_performance_date >= '{$start->format('Y-m-d H:i:s')}'
+            AND billing_bill_performance_date <= '{$end->format('Y-m-d H:i:s')}';
+        SQL;
+
+        $query = new Builder(self::$db);
+        $result = $query->raw($sql)->execute()->fetchAll(\PDO::FETCH_ASSOC);
+
+        return new FloatInt((int) ($result[0]['net_sales'] ?? 0));
+    }
+
+    public static function getCLVHistoric(int $client) : FloatInt
+    {
+        $sql = <<<SQL
+        SELECT SUM(billing_bill_netsales) as net_sales
+        FROM billing_bill
+        WHERE billing_bill_client = {$client};
+        SQL;
+
+        $query = new Builder(self::$db);
+        $result = $query->raw($sql)->execute()->fetchAll(\PDO::FETCH_ASSOC);
+
+        return new FloatInt((int) ($result[0]['net_sales'] ?? 0));
+    }
+
+    public static function getClientMRR() : FloatInt
+    {
+        return new FloatInt(0);
+    }
+
+    public static function getClientLastOrder(int $client) : ?\DateTime
+    {
+        $sql = <<<SQL
+        SELECT billing_bill_created_at
+        FROM billing_bill
+        WHERE billing_bill_client = {$client}
+        ORDER BY billing_bill_created_at DESC
+        LIMIT 1;
+        SQL;
+
+        $query = new Builder(self::$db);
+        $result = $query->raw($sql)->execute()->fetchAll(\PDO::FETCH_ASSOC);
+
+        return isset($result[0]['billing_bill_created_at'])
+            ? new \DateTime(($result[0]['billing_bill_created_at']))
+            : null;
     }
 }

@@ -12,7 +12,6 @@
  */
 declare(strict_types=1);
 
-use phpOMS\System\File\FileUtils;
 use phpOMS\Uri\UriFactory;
 
 // Media helper functions (e.g. file icon generator)
@@ -40,13 +39,13 @@ echo $this->data['nav']->render(); ?>
 <div class="tabview tab-2 col-simple">
     <div class="box">
         <ul class="tab-links">
-            <li><label for="c-tab-1"><?= $this->getHtml('Invoice'); ?></label></li>
-            <li><label for="c-tab-2"><?= $this->getHtml('Items'); ?></label></li>
-            <li><label for="c-tab-3"><?= $this->getHtml('Preview'); ?></label></li>
-            <li><label for="c-tab-4"><?= $this->getHtml('Original'); ?></label></li>
-            <li><label for="c-tab-5"><?= $this->getHtml('Payment'); ?></label></li>
-            <li><label for="c-tab-6"><?= $this->getHtml('Media'); ?></label></li>
-            <li><label for="c-tab-7"><?= $this->getHtml('Logs'); ?></label></li>
+            <li><label for="c-tab-1"><?= $this->getHtml('Invoice'); ?></label>
+            <li><label for="c-tab-2"><?= $this->getHtml('Items'); ?></label>
+            <li><label for="c-tab-3"><?= $this->getHtml('Preview'); ?></label>
+            <li><label for="c-tab-4"><?= $this->getHtml('Original'); ?></label>
+            <li><label for="c-tab-5"><?= $this->getHtml('Payment'); ?></label>
+            <li><label for="c-tab-6"><?= $this->getHtml('Media'); ?></label>
+            <li><label for="c-tab-7"><?= $this->getHtml('Logs'); ?></label>
         </ul>
     </div>
     <div class="tab-content col-simple">
@@ -152,7 +151,7 @@ echo $this->data['nav']->render(); ?>
                     <div class="portlet">
                         <div class="portlet-head"><?= $this->getHtml('Invoice'); ?><i class="g-icon download btn end-xs">download</i></div>
                         <div class="slider">
-                        <table class="default" id="invoice-item-list">
+                        <table class="default sticky" id="invoice-item-list">
                             <thead>
                             <tr>
                                 <td>
@@ -279,7 +278,7 @@ echo $this->data['nav']->render(); ?>
                 <div class="col-xs-12">
                     <div class="portlet">
                         <div class="portlet-head"><?= $this->getHtml('Logs'); ?><i class="g-icon download btn end-xs">download</i></div>
-                        <table class="default">
+                        <table class="default sticky">
                             <thead>
                             <tr>
                                 <td><?= $this->getHtml('ID', '0', '0'); ?>

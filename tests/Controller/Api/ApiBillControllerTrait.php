@@ -14,8 +14,6 @@ declare(strict_types=1);
 
 namespace Modules\Billing\tests\Controller\Api;
 
-use phpOMS\Account\AccountStatus;
-use phpOMS\Account\AccountType;
 use phpOMS\Message\Http\HttpRequest;
 use phpOMS\Message\Http\HttpResponse;
 use phpOMS\Message\Http\RequestStatusCode;
