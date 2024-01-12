@@ -25,11 +25,10 @@ include __DIR__ . '/../../../Media/Theme/Backend/template-functions.php';
 $bill     = $this->data['bill'];
 $elements = $bill->getElements();
 
-$previewType  = $this->data['previewType'];
+$billTypes = $this->data['billtypes'] ?? [];
+
 $originalType = $this->data['originalType'];
-$billPdf      = $bill->getFileByType($previewType);
-$original     = $bill->getFileByType($originalType);
-$media        = $bill->files;
+$original = $bill->getFileByType($originalType);
 
 /** @var \Modules\Auditor\Models\Audit */
 $logs = $this->data['logs'] ?? [];
@@ -155,15 +154,15 @@ echo $this->data['nav']->render(); ?>
                             <thead>
                             <tr>
                                 <td>
-                                <td><?= $this->getHtml('Item'); ?>
-                                <td class="wf-100"><?= $this->getHtml('Name'); ?>
-                                <td><?= $this->getHtml('Quantity'); ?>
-                                <td><?= $this->getHtml('Price'); ?>
-                                <td><?= $this->getHtml('Discount'); ?>
-                                <td><?= $this->getHtml('DiscountP'); ?>
-                                <td><?= $this->getHtml('Bonus'); ?>
-                                <td><?= $this->getHtml('Tax'); ?>
-                                <td><?= $this->getHtml('Net'); ?>
+                                <td style="min-width:150px"><?= $this->getHtml('Item'); ?>
+                                <td class="wf-100" style="min-width:150px"><?= $this->getHtml('Name'); ?>
+                                <td style="min-width:50px"><?= $this->getHtml('Quantity'); ?>
+                                <td style="min-width:90px"><?= $this->getHtml('Price'); ?>
+                                <td style="min-width:90px"><?= $this->getHtml('Discount'); ?>
+                                <td style="min-width:90px"><?= $this->getHtml('DiscountP'); ?>
+                                <td style="min-width:90px"><?= $this->getHtml('Bonus'); ?>
+                                <td style="min-width:90px"><?= $this->getHtml('Tax'); ?>
+                                <td style="min-width:90px"><?= $this->getHtml('Net'); ?>
                             <tbody>
                             <?php foreach ($elements as $element) : ?>
                             <tr>
@@ -171,7 +170,7 @@ echo $this->data['nav']->render(); ?>
                                 <td><span class="input"><button type="button" formaction=""><i class="g-icon">book</i></button><input name="" type="text" value="<?= $element->itemNumber; ?>" required></span>
                                 <td><textarea required><?= $element->itemName; ?></textarea>
                                 <td><input name="" type="number" min="0" value="<?= $element->quantity; ?>" required>
-                                <td><input name="" type="text" value="<?= $this->getCurrency($element->singleSalesPriceNet); ?>">
+                                <td><input name="" type="text" value="<?= $this->getCurrency($element->singleSalesPriceNet, ''); ?>">
                                 <td><input name="" type="number" min="0">
                                 <td><input name="" type="number" min="0" max="100" step="any">
                                 <td><input name="" type="number" min="0" step="any">
@@ -201,20 +200,31 @@ echo $this->data['nav']->render(); ?>
                 </div>
             </div>
         </div>
+
         <input type="radio" id="c-tab-3" name="tabular-2">
         <div class="tab col-simple">
-            <div class="row col-simple">
+            <div>
+                <div class="col-xs-12 col-sm-3 box">
+                    <select id="iBillPreviewType" name="bill_preview_type"
+                    data-action='[{"listener": "change", "action": [{"key": 1, "type": "dom.reload", "src": "iPreviewBill"}]}]'>
+                        <?php foreach ($billTypes as $type) : ?>
+                        <option value="<?= $type->id; ?>"><?= $this->printHtml($type->getL11n()); ?>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-simple">
                 <div class="col-xs-12 col-simple">
                     <section id="mediaFile" class="portlet col-simple">
                         <div class="portlet-body col-simple">
-                            <?php if ($billPdf->id > 0) : ?>
-                            <iframe class="col-simple" data-form="iUiSettings" data-name="iframeHelper" id="iHelperFrame" src="<?= UriFactory::build('Resources/mozilla/Pdf/web/viewer.html{?}&file=' . \urlencode(($billPdf->isAbsolute ? '' : '/../../../../') . $billPdf->getPath())); ?>" allowfullscreen></iframe>
-                            <?php endif; ?>
+                            <iframe class="col-simple" id="iPreviewBill" data-src="Resources/mozilla/Pdf/web/viewer.html?file=<?= \urlencode(UriFactory::build('{/api}bill/render/preview?bill=' . $bill->id) . '&bill_type='); ?>{#iBillPreviewType}" loading="lazy" allowfullscreen></iframe>
                         </div>
                     </section>
                 </div>
             </div>
         </div>
+
         <input type="radio" id="c-tab-4" name="tabular-2">
         <div class="tab col-simple">
             <div class="row col-simple">
@@ -229,6 +239,7 @@ echo $this->data['nav']->render(); ?>
                 </div>
             </div>
         </div>
+
         <input type="radio" id="c-tab-5" name="tabular-2">
         <div class="tab">
             <div class="row">
@@ -268,10 +279,12 @@ echo $this->data['nav']->render(); ?>
                 </div>
             </div>
         </div>
+
         <input type="radio" id="c-tab-6" name="tabular-2">
         <div class="tab col-simple">
-            <?= $this->data['media-upload']->render('bill-file', 'files', '', $media); ?>
+            <?= $this->data['media-upload']->render('bill-file', 'files', '', $bill->files); ?>
         </div>
+
         <input type="radio" id="c-tab-7" name="tabular-2">
         <div class="tab">
             <div class="row">

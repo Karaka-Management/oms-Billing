@@ -59,6 +59,7 @@ final class BillAttributeValueMapper extends DataMapperFactory
             'mapper'   => BillAttributeValueL11nMapper::class,
             'table'    => 'billing_attr_value_l11n',
             'self'     => 'billing_attr_value_l11n_value',
+            'column'   => 'content',
             'external' => null,
         ],
     ];

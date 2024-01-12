@@ -30,5 +30,7 @@ abstract class BillTransferType extends Enum
 
     public const PURCHASE = 2;
 
+    public const PRODUCTION = 3;
+
     public const STOCK = 4;
 }

@@ -45,7 +45,7 @@ final class ApiTaxController extends Controller
      * Get tax code from client and item.
      *
      * @param Client $client         Client to get tax code from
-     * @param Item   $item           Item toget tax code from
+     * @param Item   $item           Item to get tax code from
      * @param string $defaultCountry default country to use if no valid tax code could be found and if the unit country code shouldn't be used
      *
      * @return TaxCode

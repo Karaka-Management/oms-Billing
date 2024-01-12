@@ -283,11 +283,15 @@ final class SalesBillMapper extends BillMapper
      */
     public static function getItemBills(int $id, \DateTime $start, \DateTime $end) : array
     {
-        $query = self::getQuery();
+        $query = self::reader()
+            ->with('type')
+            ->with('type/l11n')
+            ->where('type/l11n/language', 'en')
+            ->getQuery();
+
         $query->leftJoin(BillElementMapper::TABLE, BillElementMapper::TABLE . '_d1')
                 ->on(self::TABLE . '_d1.billing_bill_id', '=', BillElementMapper::TABLE . '_d1.billing_bill_element_bill')
-            ->where(BillElementMapper::TABLE . '_d1.billing_bill_element_item', '=', $id)
-            ->limit($limit = 10);
+            ->where(BillElementMapper::TABLE . '_d1.billing_bill_element_item', '=', $id);
 
         /** @phpstan-ignore-next-line */
         if (!empty(self::CREATED_AT)) {
@@ -296,7 +300,10 @@ final class SalesBillMapper extends BillMapper
             $query->orderBy(self::TABLE  . '_d1.' . self::COLUMNS[self::PRIMARYFIELD]['name'], 'DESC');
         }
 
-        return self::getAll()->execute($query);
+        return self::getAll()
+            ->with('type')
+            ->with('type/l11n')
+            ->execute($query);
     }
 
     /**
@@ -319,20 +326,12 @@ final class SalesBillMapper extends BillMapper
      */
     public static function getClientItem(int $client, \DateTime $start, \DateTime $end) : array
     {
-        $query = BillElementMapper::getQuery();
-        $query->leftJoin(self::TABLE, self::TABLE . '_d1')
-                ->on(BillElementMapper::TABLE . '_d1.billing_bill_element_bill', '=', self::TABLE . '_d1.billing_bill_id')
-            ->where(self::TABLE . '_d1.billing_bill_client', '=', $client)
-            ->limit($limit = 10);
-
-        /** @phpstan-ignore-next-line */
-        if (!empty(self::CREATED_AT)) {
-            $query->orderBy(self::TABLE  . '_d1.' . self::COLUMNS[self::CREATED_AT]['name'], 'DESC');
-        } else {
-            $query->orderBy(self::TABLE  . '_d1.' . self::COLUMNS[self::PRIMARYFIELD]['name'], 'DESC');
-        }
-
-        return BillElementMapper::getAll()->execute($query);
+        return BillElementMapper::getAll()
+            ->with('bill')
+            ->with('bill/type')
+            ->where('bill/client', $client)
+            ->where('bill/type/transferStock', true)
+            ->execute();
     }
 
     /**

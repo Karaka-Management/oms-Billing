@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Models;
 
+use Modules\ItemManagement\Models\ItemMapper;
 use phpOMS\DataStorage\Database\Mapper\DataMapperFactory;
 
 /**
@@ -93,6 +94,10 @@ final class BillElementMapper extends DataMapperFactory
         'subscription' => [
             'mapper'     => SubscriptionMapper::class,
             'external'   => 'billing_bill_element_subscription',
+        ],
+        'item' => [
+            'mapper'     => ItemMapper::class,
+            'external'   => 'billing_bill_element_item',
         ],
     ];
 

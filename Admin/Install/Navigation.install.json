@@ -57,6 +57,36 @@
                 "permission": { "permission": 4, "category": null, "element": null },
                 "parent": 1005104001,
                 "children": []
+            },
+            {
+                "id": 1005104401,
+                "pid": "/sales/bill",
+                "type": 3,
+                "subtype": 1,
+                "name": "PaymentTerms",
+                "uri": "{/base}/bill/payment/list?{?}",
+                "target": "self",
+                "icon": null,
+                "order": 15,
+                "from": "Billing",
+                "permission": { "permission": 4, "category": null, "element": null },
+                "parent": 1005104001,
+                "children": []
+            },
+            {
+                "id": 1005104501,
+                "pid": "/sales/bill",
+                "type": 3,
+                "subtype": 1,
+                "name": "ShippingTerms",
+                "uri": "{/base}/bill/shipping/list?{?}",
+                "target": "self",
+                "icon": null,
+                "order": 20,
+                "from": "Billing",
+                "permission": { "permission": 4, "category": null, "element": null },
+                "parent": 1005104001,
+                "children": []
             }
         ]
     },

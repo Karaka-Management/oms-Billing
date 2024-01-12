@@ -16,6 +16,7 @@ namespace Modules\Billing\Models;
 
 use Modules\Finance\Models\TaxCode;
 use Modules\ItemManagement\Models\Item;
+use Modules\ItemManagement\Models\NullItem;
 use phpOMS\Stdlib\Base\FloatInt;
 use phpOMS\Stdlib\Base\SmartDateTime;
 
@@ -39,8 +40,7 @@ class BillElement implements \JsonSerializable
 
     public int $order = 0;
 
-    /** @todo consider to reference the model instead of the int, this would make it much easier in other places like the shop */
-    public ?int $item = null;
+    public ?Item $item = null;
 
     public string $itemNumber = '';
 
@@ -222,7 +222,7 @@ class BillElement implements \JsonSerializable
      */
     public function setItem(int $item) : void
     {
-        $this->item = $item;
+        $this->item = new NullItem($item);
     }
 
     /**
@@ -241,7 +241,7 @@ class BillElement implements \JsonSerializable
     {
         $element                  = new self();
         $element->bill            = new NullBill($bill);
-        $element->item            = empty($item->id) ? null : $item->id;
+        $element->item            = empty($item->id) ? null : $item;
         $element->itemNumber      = $item->number;
         $element->itemName        = $item->getL11n('name1')->content;
         $element->itemDescription = $item->getL11n('description_short')->content;
@@ -279,7 +279,7 @@ class BillElement implements \JsonSerializable
         ) {
             $element->subscription        = new Subscription();
             $element->subscription->bill  = $element->bill->id;
-            $element->subscription->item  = $element->item;
+            $element->subscription->item  = $element->item->id;
             $element->subscription->start = new \DateTime('now'); // @todo change to bill performanceDate
             $element->subscription->end   = new SmartDateTime('now'); // @todo depends on subscription type
             $element->subscription->end->smartModify(m: 1);
@@ -299,7 +299,7 @@ class BillElement implements \JsonSerializable
         return [
             'id'              => $this->id,
             'order'           => $this->order,
-            'item'            => $this->item,
+            'item'            => $this->item->id,
             'itemNumber'      => $this->itemNumber,
             'itemName'        => $this->itemName,
             'itemDescription' => $this->itemDescription,

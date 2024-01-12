@@ -239,7 +239,7 @@ class Bill implements \JsonSerializable
     public string $billEmail = '';
 
     /**
-     * Person refering for this order.
+     * Person referring for this order.
      *
      * @var Account
      * @since 1.0.0
@@ -360,12 +360,6 @@ class Bill implements \JsonSerializable
      */
     public string $info = '';
 
-    /**
-     * Payment type.
-     *
-     * @var int
-     * @since 1.0.0
-     */
     public int $payment = 0;
 
     /**
@@ -384,6 +378,9 @@ class Bill implements \JsonSerializable
      */
     public int $terms = 0;
 
+    public ?int $paymentTerms = null;
+    public ?int $shippingTerms = null;
+
     /**
      * Terms text.
      *
@@ -391,14 +388,6 @@ class Bill implements \JsonSerializable
      * @since 1.0.0
      */
     public string $termsText = '';
-
-    /**
-     * Shipping.
-     *
-     * @var int
-     * @since 1.0.0
-     */
-    public int $shipping = 0;
 
     /**
      * Shipping text.
@@ -492,6 +481,9 @@ class Bill implements \JsonSerializable
                 '{id}',
                 '{sequence}',
                 '{type}',
+                '{unit}',
+                '{account}',
+                '{country}',
             ],
             [
                 $this->createdAt->format('Y'),
@@ -500,6 +492,9 @@ class Bill implements \JsonSerializable
                 $this->id,
                 $this->sequence,
                 $this->type->id,
+                $this->unit,
+                $this->accountNumber,
+                $this->billCountry
             ],
             $this->type->numberFormat
         );

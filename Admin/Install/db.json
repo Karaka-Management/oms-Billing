@@ -1,4 +1,112 @@
 {
+    "billing_payment_term": {
+        "name": "billing_payment_term",
+        "fields": {
+            "billing_payment_term_id": {
+                "name": "billing_payment_term_id",
+                "type": "INT",
+                "null": false,
+                "primary": true,
+                "autoincrement": true
+            },
+            "billing_payment_term_code": {
+                "description": "In days",
+                "name": "billing_payment_term_code",
+                "type": "VARCHAR(100)",
+                "null": false,
+                "unique": true
+            },
+            "billing_payment_term_due": {
+                "description": "In days",
+                "name": "billing_payment_term_due",
+                "type": "INT",
+                "null": false
+            }
+        }
+    },
+    "billing_payment_term_l11n": {
+        "name": "billing_payment_term_l11n",
+        "fields": {
+            "billing_payment_term_l11n_id": {
+                "name": "billing_payment_term_l11n_id",
+                "type": "INT",
+                "null": false,
+                "primary": true,
+                "autoincrement": true
+            },
+            "billing_payment_term_l11n_name": {
+                "name": "billing_payment_term_l11n_name",
+                "type": "VARCHAR(255)",
+                "null": false
+            },
+            "billing_payment_term_l11n_term": {
+                "name": "billing_payment_term_l11n_term",
+                "type": "INT",
+                "null": false,
+                "foreignTable": "billing_payment_term",
+                "foreignKey": "billing_payment_term_id"
+            },
+            "billing_payment_term_l11n_language": {
+                "name": "billing_payment_term_l11n_language",
+                "type": "VARCHAR(2)",
+                "default": null,
+                "null": true,
+                "foreignTable": "language",
+                "foreignKey": "language_639_1"
+            }
+        }
+    },
+    "billing_shipping_term": {
+        "name": "billing_shipping_term",
+        "fields": {
+            "billing_shipping_term_id": {
+                "name": "billing_shipping_term_id",
+                "type": "INT",
+                "null": false,
+                "primary": true,
+                "autoincrement": true
+            },
+            "billing_shipping_term_code": {
+                "description": "In days",
+                "name": "billing_shipping_term_code",
+                "type": "VARCHAR(100)",
+                "null": false,
+                "unique": true
+            }
+        }
+    },
+    "billing_shipping_term_l11n": {
+        "name": "billing_shipping_term_l11n",
+        "fields": {
+            "billing_shipping_term_l11n_id": {
+                "name": "billing_shipping_term_l11n_id",
+                "type": "INT",
+                "null": false,
+                "primary": true,
+                "autoincrement": true
+            },
+            "billing_shipping_term_l11n_name": {
+                "name": "billing_shipping_term_l11n_name",
+                "type": "VARCHAR(255)",
+                "null": false
+            },
+            "billing_shipping_term_l11n_term": {
+                "name": "billing_shipping_term_l11n_term",
+                "type": "INT",
+                "null": false,
+                "foreignTable": "billing_shipping_term",
+                "foreignKey": "billing_shipping_term_id"
+            },
+            "billing_shipping_term_l11n_language": {
+                "name": "billing_shipping_term_l11n_language",
+                "type": "VARCHAR(2)",
+                "default": null,
+                "null": true,
+                "foreignTable": "language",
+                "foreignKey": "language_639_1"
+            }
+        }
+    },
     "billing_price": {
         "name": "billing_price",
         "fields": {
@@ -27,8 +135,16 @@
                 "foreignTable": "itemmgmt_item",
                 "foreignKey": "itemmgmt_item_id"
             },
-            "billing_price_itemgroup": {
-                "name": "billing_price_itemgroup",
+            "billing_price_itemsalesgroup": {
+                "name": "billing_price_itemsalesgroup",
+                "type": "INT",
+                "null": true,
+                "default": null,
+                "foreignTable": "itemmgmt_attr_value",
+                "foreignKey": "itemmgmt_attr_value_id"
+            },
+            "billing_price_itemproductgroup": {
+                "name": "billing_price_itemproductgroup",
                 "type": "INT",
                 "null": true,
                 "default": null,
@@ -666,7 +782,10 @@
             "billing_bill_paymentterms": {
                 "name": "billing_bill_paymentterms",
                 "type": "INT",
-                "null": false
+                "null": true,
+                "default": null,
+                "foreignTable": "billing_payment_term",
+                "foreignKey": "billing_payment_term_id"
             },
             "billing_bill_paymentterms_text": {
                 "name": "billing_bill_paymentterms_text",
@@ -677,7 +796,10 @@
             "billing_bill_ship_type": {
                 "name": "billing_bill_ship_type",
                 "type": "INT",
-                "null": false
+                "null": true,
+                "default": null,
+                "foreignTable": "billing_shipping_term",
+                "foreignKey": "billing_shipping_term_id"
             },
             "billing_bill_ship_text": {
                 "name": "billing_bill_ship_text",
@@ -1035,6 +1157,11 @@
             },
             "billing_attr_type_custom": {
                 "name": "billing_attr_type_custom",
+                "type": "TINYINT(1)",
+                "null": false
+            },
+            "billing_attr_type_repeatable": {
+                "name": "billing_attr_type_repeatable",
                 "type": "TINYINT(1)",
                 "null": false
             },

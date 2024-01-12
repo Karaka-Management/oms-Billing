@@ -37,4 +37,10 @@ abstract class PermissionCategory extends Enum
     public const PRIVATE_BILL_UPLOAD = 6;
 
     public const BILL_NOTE = 7;
+
+    public const PRICE = 8;
+
+    public const PAYMENT_TERM = 9;
+
+    public const SHIPPING_TERM = 10;
 }

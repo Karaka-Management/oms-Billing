@@ -33,6 +33,7 @@ use Modules\ItemManagement\Models\ItemMapper;
 use Modules\Media\Models\CollectionMapper;
 use Modules\Media\Models\Media;
 use Modules\Media\Models\MediaMapper;
+use Modules\Media\Models\NullCollection;
 use Modules\Media\Models\PathSettings;
 use Modules\Media\Models\UploadStatus;
 use Modules\Messages\Models\EmailMapper;
@@ -42,6 +43,7 @@ use Modules\SupplierManagement\Models\SupplierMapper;
 use phpOMS\Account\PermissionType;
 use phpOMS\Application\ApplicationAbstract;
 use phpOMS\Autoloader;
+use phpOMS\DataStorage\Database\Query\ColumnName;
 use phpOMS\Localization\ISO4217CharEnum;
 use phpOMS\Localization\ISO639x1Enum;
 use phpOMS\Message\Http\RequestStatusCode;
@@ -227,10 +229,10 @@ final class ApiBillController extends Controller
         $bill->accountNumber   = $account->number;
         $bill->setStatus($request->getDataInt('status') ?? BillStatus::DRAFT);
 
-        $bill->shipping     = 0;
+        $bill->shippingTerms     = null;
         $bill->shippingText = '';
 
-        $bill->payment     = 0;
+        $bill->paymentTerms     = null;
         $bill->paymentText = '';
 
         if ($account instanceof Client) {
@@ -258,7 +260,7 @@ final class ApiBillController extends Controller
         if (empty($settings)) {
             /** @var \Model\Setting $settings */
             $settings = $this->app->appSettings->get(null,
-            SettingsEnum::VALID_BILL_LANGUAGES,
+                SettingsEnum::VALID_BILL_LANGUAGES,
                 unit: null,
                 module: 'Admin'
             );
@@ -293,7 +295,7 @@ final class ApiBillController extends Controller
 
         $typeMapper = BillTypeMapper::get()
             ->with('l11n')
-            ->where('l11n/langauge', $billLanguage)
+            ->where('l11n/language', $billLanguage)
             ->limit(1);
 
         if ($request->hasData('type')) {
@@ -789,49 +791,31 @@ final class ApiBillController extends Controller
      */
     public function apiPreviewRender(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
+        Autoloader::addPath(__DIR__ . '/../../../Resources/');
+
         /** @var \Modules\Billing\Models\Bill $bill */
         $bill = BillMapper::get()
-            ->with('type')
-            ->with('type/l11n')
             ->with('elements')
             ->where('id', $request->getDataInt('bill') ?? 0)
             ->execute();
 
-        Autoloader::addPath(__DIR__ . '/../../../Resources/');
-
-        $templateId = $request->getData('bill_template', 'int');
-        if ($templateId === null) {
-            $billTypeId = $request->getData('bill_type', 'int');
-
-            if (empty($billTypeId)) {
-                $billTypeId = $bill->type->id;
-            }
-
-            if (empty($billTypeId)) {
-                return;
-            }
-
-            /** @var \Modules\Billing\Models\BillType $billType */
-            $billType = BillTypeMapper::get()
-                ->with('defaultTemplate')
-                ->where('id', $billTypeId)
-                ->execute();
-
-            $templateId = $billType->defaultTemplate?->id;
+        // Load bill type
+        $billTypeId = $request->getDataInt('bill_type') ?? $bill->type->id;
+        if (empty($billTypeId)) {
+            return;
         }
 
-        /** @var \Modules\Media\Models\Collection $template */
-        $template = CollectionMapper::get()
-            ->with('sources')
-            ->where('id', $templateId)
+        /** @var \Modules\Billing\Models\BillType $billType */
+        $billType = BillTypeMapper::get()
+            ->with('l11n')
+            ->where('id', $billTypeId)
+            ->where('l11n/language', $bill->language)
             ->execute();
 
-        require_once __DIR__ . '/../../../Resources/tcpdf/TCPDF.php';
+        $templateId = $request->getDataInt('bill_template') ?? $billType->defaultTemplate?->id ?? 0;
 
-        $response->header->set('Content-Type', MimeType::M_PDF, true);
-
-        $view = new View($this->app->l11nManager, $request, $response);
-        $view->setTemplate('/' . \substr($template->getSourceByName('bill.pdf.php')->getPath(), 0, -8), 'pdf.php');
+        // Overriding actual bill type
+        $bill->type = $billType;
 
         /** @var \Model\Setting[] $settings */
         $settings = $this->app->appSettings->get(null,
@@ -855,17 +839,36 @@ final class ApiBillController extends Controller
             );
         }
 
-        /** @var \Modules\Media\Models\Collection $defaultTemplates */
-        $defaultTemplates = CollectionMapper::get()
+        $template         = new NullCollection();
+        $defaultTemplates = new NullCollection();
+        $defaultAssets    = new NullCollection();
+
+        /** @var \Modules\Media\Models\Collection[] $collections */
+        $collections = CollectionMapper::get()
             ->with('sources')
-            ->where('id', (int) $settings[AdminSettingsEnum::DEFAULT_TEMPLATES]->content)
+            ->where('id', [
+                (int) $settings[AdminSettingsEnum::DEFAULT_TEMPLATES]->content,
+                (int) $settings[AdminSettingsEnum::DEFAULT_ASSETS]->content,
+                $templateId
+            ], 'IN')
             ->execute();
 
-        /** @var \Modules\Media\Models\Collection $defaultAssets */
-        $defaultAssets = CollectionMapper::get()
-            ->with('sources')
-            ->where('id', (int) $settings[AdminSettingsEnum::DEFAULT_ASSETS]->content)
-            ->execute();
+        foreach ($collections as $collection) {
+            if ($collection->id === $templateId) {
+                $template = $collection;
+            } elseif ($collection->id === (int) $settings[AdminSettingsEnum::DEFAULT_TEMPLATES]->content) {
+                $defaultTemplates = $collection;
+            } elseif ($collection->id === (int) $settings[AdminSettingsEnum::DEFAULT_ASSETS]->content) {
+                $defaultAssets = $collection;
+            }
+        }
+
+        require_once __DIR__ . '/../../../Resources/tcpdf/TCPDF.php';
+
+        $response->header->set('Content-Type', MimeType::M_PDF, true);
+
+        $view = new View($this->app->l11nManager, $request, $response);
+        $view->setTemplate('/' . \substr($template->getSourceByName('bill.pdf.php')->getPath(), 0, -8), 'pdf.php');
 
         $view->data['defaultTemplates'] = $defaultTemplates;
         $view->data['defaultAssets']    = $defaultAssets;
@@ -892,7 +895,7 @@ final class ApiBillController extends Controller
         $view->data['bill_taxes']         = $request->getDataString('bill_taxes');
         $view->data['bill_currency']      = $request->getDataString('bill_currency');
 
-        // Unit specifc settings
+        // Unit specific settings
         $view->data['bill_logo_name']       = $request->getDataString('bill_logo_name');
         $view->data['bill_slogan']          = $request->getDataString('bill_slogan');
         $view->data['legal_company_name']   = $request->getDataString('legal_company_name');
@@ -936,42 +939,18 @@ final class ApiBillController extends Controller
 
         /** @var \Modules\Billing\Models\Bill $bill */
         $bill = BillMapper::get()
-            ->where('id', $request->getDataInt('bill') ?? 0)
-            ->execute();
-
-        // @todo This is stupid to do twice but I need to get the langauge.
-        // For the future it should just be a join on the bill langauge!!!
-        // The problem is the where here is a model where and not a query
-        // builder where meaning it is always considered a value and not a column.
-
-        /** @var \Modules\Billing\Models\Bill $bill */
-        $bill = BillMapper::get()
+            ->with('elements')
             ->with('type')
             ->with('type/l11n')
-            ->with('type/defaultTemplate')
-            ->with('elements')
             ->where('id', $request->getDataInt('bill') ?? 0)
-            ->where('type/l11n/language', $bill->language)
+            ->where('type/l11n/language', new ColumnName(BillMapper::getColumnByMember('language')))
             ->execute();
 
-        $templateId = $request->getDataInt('bill_template');
-        if ($templateId === null) {
-            $templateId = $bill->type->defaultTemplate?->id;
-        }
+        // Handle PDF generation
+        $templateId = $request->getDataInt('bill_template') ?? $bill->type->defaultTemplate?->id ?? 0;
 
-        /** @var \Modules\Media\Models\Collection $template */
-        $template = CollectionMapper::get()
-            ->with('sources')
-            ->where('id', $templateId)
-            ->execute();
-
-        require_once __DIR__ . '/../../../Resources/tcpdf/TCPDF.php';
-
-        $view = new View($this->app->l11nManager, $request, $response);
-        $view->setTemplate('/' . \substr($template->getSourceByName('bill.pdf.php')->getPath(), 0, -8), 'pdf.php');
-
-        /** @var \Model\Setting[] $settings */
-        $settings = $this->app->appSettings->get(null,
+         /** @var \Model\Setting[] $settings */
+         $settings = $this->app->appSettings->get(null,
             [
                 AdminSettingsEnum::DEFAULT_TEMPLATES,
                 AdminSettingsEnum::DEFAULT_ASSETS,
@@ -992,17 +971,34 @@ final class ApiBillController extends Controller
             );
         }
 
-        /** @var \Modules\Media\Models\Collection $defaultTemplates */
-        $defaultTemplates = CollectionMapper::get()
+        $template         = new NullCollection();
+        $defaultTemplates = new NullCollection();
+        $defaultAssets    = new NullCollection();
+
+        /** @var \Modules\Media\Models\Collection[] $collections */
+        $collections = CollectionMapper::get()
             ->with('sources')
-            ->where('id', (int) $settings[AdminSettingsEnum::DEFAULT_TEMPLATES]->content)
+            ->where('id', [
+                (int) $settings[AdminSettingsEnum::DEFAULT_TEMPLATES]->content,
+                (int) $settings[AdminSettingsEnum::DEFAULT_ASSETS]->content,
+                $templateId
+            ], 'IN')
             ->execute();
 
-        /** @var \Modules\Media\Models\Collection $defaultAssets */
-        $defaultAssets = CollectionMapper::get()
-            ->with('sources')
-            ->where('id', (int) $settings[AdminSettingsEnum::DEFAULT_ASSETS]->content)
-            ->execute();
+        foreach ($collections as $collection) {
+            if ($collection->id === $templateId) {
+                $template = $collection;
+            } elseif ($collection->id === (int) $settings[AdminSettingsEnum::DEFAULT_TEMPLATES]->content) {
+                $defaultTemplates = $collection;
+            } elseif ($collection->id === (int) $settings[AdminSettingsEnum::DEFAULT_ASSETS]->content) {
+                $defaultAssets = $collection;
+            }
+        }
+
+        require_once __DIR__ . '/../../../Resources/tcpdf/TCPDF.php';
+
+        $view = new View($this->app->l11nManager, $request, $response);
+        $view->setTemplate('/' . \substr($template->getSourceByName('bill.pdf.php')->getPath(), 0, -8), 'pdf.php');
 
         $view->data['defaultTemplates'] = $defaultTemplates;
         $view->data['defaultAssets']    = $defaultAssets;
@@ -1297,7 +1293,7 @@ final class ApiBillController extends Controller
         $old = BillElementMapper::get()->where('id', (int) $request->getData('id'))->execute();
 
         // @todo can be edited?
-        // @todo adjust transfer protocolls
+        // @todo adjust transfer protocols
 
         $new = $this->updateBillElementFromRequest($request, clone $old);
 

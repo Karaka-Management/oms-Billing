@@ -44,6 +44,8 @@ $logs = $this->data['logs'] ?? [];
 $editable = $bill->id === 0 || \in_array($bill->getStatus(), [BillStatus::DRAFT, BillStatus::UNPARSED]);
 $disabled = $editable  ? '' : ' disabled';
 
+$isNew = $archive->id === 0;
+
 echo $this->data['nav']->render(); ?>
 
 <div class="tabview tab-2 col-simple">
@@ -52,10 +54,10 @@ echo $this->data['nav']->render(); ?>
             <li><label for="c-tab-1"><?= $this->getHtml('Invoice'); ?></label>
             <li><label for="c-tab-2"><?= $this->getHtml('Items'); ?></label>
             <li><label for="c-tab-3"><?= $this->getHtml('Preview'); ?></label>
-            <li><label for="c-tab-4"><?= $this->getHtml('Archive'); ?></label>
+            <?php if (!$isNew) : ?><li><label for="c-tab-4"><?= $this->getHtml('Archive'); ?></label><?php endif; ?>
             <li><label for="c-tab-5"><?= $this->getHtml('Payment'); ?></label>
-            <li><label for="c-tab-6"><?= $this->getHtml('Media'); ?></label>
-            <li><label for="c-tab-7"><?= $this->getHtml('Logs'); ?></label>
+            <li><label for="c-tab-6"><?= $this->getHtml('Files'); ?></label>
+            <?php if (!$isNew) : ?><li><label for="c-tab-7"><?= $this->getHtml('Logs'); ?></label><?php endif; ?>
         </ul>
     </div>
     <div class="tab-content col-simple">
@@ -267,6 +269,7 @@ echo $this->data['nav']->render(); ?>
                 <div class="col-xs-12">
                     <section class="portlet">
                         <div class="portlet-head"><?= $this->getHtml('Invoice'); ?><i class="g-icon download btn end-xs">download</i></div>
+                        <div class="slider">
                         <table
                             id="invoiceElements"
                             class="default sticky"
@@ -279,9 +282,9 @@ echo $this->data['nav']->render(); ?>
                             <thead>
                             <tr>
                                 <td>
-                                <td><?= $this->getHtml('Item'); ?>
-                                <td class="wf-100"><?= $this->getHtml('Name'); ?>
-                                <td><?= $this->getHtml('Quantity'); ?>
+                                <td style="min-width:150px"><?= $this->getHtml('Item'); ?>
+                                <td class="wf-100" style="min-width:150px"><?= $this->getHtml('Name'); ?>
+                                <td style="min-width:50px"><?= $this->getHtml('Quantity'); ?>
                                 <td style="min-width:90px"><?= $this->getHtml('Discount'); ?>
                                 <td style="min-width:90px"><?= $this->getHtml('DiscountP'); ?>
                                 <td style="min-width:90px"><?= $this->getHtml('Bonus'); ?>
@@ -318,9 +321,9 @@ echo $this->data['nav']->render(); ?>
                                         <i class="g-icon order-down">expand_more</i>
                                         <i class="g-icon btn remove-form">close</i>
                                         <?php endif; ?>
-                                    <td><span class="input"><button type="button" formaction=""><i class="g-icon">book</i></button><input name="" type="text" value="<?= $element->itemNumber; ?>" required<?= $disabled; ?>></span>
-                                    <td><textarea required<?= $disabled; ?>><?= $element->itemName; ?></textarea>
-                                    <td><input name="" type="number" step="any" value="<?= $element->getQuantity(); ?>" required<?= $disabled; ?>>
+                                    <td><span class="input"><button type="button" formaction=""><i class="g-icon">book</i></button><input name="" type="text" value="<?= $element->itemNumber; ?>"<?= $disabled; ?>></span>
+                                    <td><textarea<?= $disabled; ?>><?= $element->itemName; ?></textarea>
+                                    <td><input name="" type="number" step="any" value="<?= $element->getQuantity(); ?>"<?= $disabled; ?>>
                                     <td><input name="" type="number" step="0.01"<?= $disabled; ?>>
                                     <td><input name="" type="number" step="0.01"<?= $disabled; ?>>
                                     <td><input name="" type="number" min="-100" max="100" step="0.01"<?= $disabled; ?>>
@@ -344,7 +347,7 @@ echo $this->data['nav']->render(); ?>
                                     <td>
                             <?php endif; ?>
                         </table>
-
+                        </div>
                     </section>
 
                     <?php if ($editable) : ?>
@@ -359,7 +362,8 @@ echo $this->data['nav']->render(); ?>
         <div class="tab col-simple">
             <div>
                 <div class="col-xs-12 col-sm-3 box">
-                    <select id="iBillPreviewType" name="bill_preview_type">>
+                    <select id="iBillPreviewType" name="bill_preview_type"
+                    data-action='[{"listener": "change", "action": [{"key": 1, "type": "dom.reload", "src": "iPreviewBill"}]}]'>
                         <?php foreach ($billTypes as $type) : ?>
                         <option value="<?= $type->id; ?>"><?= $this->printHtml($type->getL11n()); ?>
                         <?php endforeach; ?>
@@ -371,12 +375,14 @@ echo $this->data['nav']->render(); ?>
                 <div class="col-xs-12 col-simple">
                     <section id="mediaFile" class="portlet col-simple">
                         <div class="portlet-body col-simple">
-                            <iframe class="col-simple" id="iHelperFrame" src="" loading="lazy" allowfullscreen></iframe>
+                            <iframe class="col-simple" id="iPreviewBill" data-src="Resources/mozilla/Pdf/web/viewer.html?file=<?= \urlencode(UriFactory::build('{/api}bill/render/preview?bill=' . $bill->id) . '&bill_type='); ?>{#iBillPreviewType}" loading="lazy" allowfullscreen></iframe>
                         </div>
                     </section>
                 </div>
             </div>
         </div>
+
+        <?php if (!$isNew) : ?>
         <input type="radio" id="c-tab-4" name="tabular-2">
         <div class="tab col-simple">
             <div class="col-simple">
@@ -389,6 +395,8 @@ echo $this->data['nav']->render(); ?>
                 </div>
             </div>
         </div>
+        <?php endif; ?>
+
         <input type="radio" id="c-tab-5" name="tabular-2">
         <div class="tab">
             <div class="row">
@@ -491,6 +499,8 @@ echo $this->data['nav']->render(); ?>
         <div class="tab col-simple">
             <?= $this->data['media-upload']->render('bill-file', 'files', '', $media); ?>
         </div>
+
+        <?php if (!$isNew) : ?>
         <input type="radio" id="c-tab-7" name="tabular-2">
         <div class="tab">
             <div class="row">
@@ -501,8 +511,8 @@ echo $this->data['nav']->render(); ?>
                             <thead>
                             <tr>
                                 <td><?= $this->getHtml('ID', '0', '0'); ?>
-                                <td><?= $this->getHtml('Trigger', 'Auditor', 'Backend'); ?>
                                 <td><?= $this->getHtml('Action', 'Auditor', 'Backend'); ?>
+                                <td class="wf-100"><?= $this->getHtml('Trigger', 'Auditor', 'Backend'); ?>
                                 <td><?= $this->getHtml('CreatedBy', 'Auditor', 'Backend'); ?>
                                 <td><?= $this->getHtml('CreatedAt', 'Auditor', 'Backend'); ?>
                             <tbody>
@@ -512,12 +522,12 @@ echo $this->data['nav']->render(); ?>
                             ?>
                             <tr data-href="<?= $url; ?>">
                                 <td><a href="<?= $url; ?>"><?= $audit->id; ?></a>
-                                <td><a href="<?= $url; ?>"><?= $audit->trigger; ?></a>
                                 <td><?php if ($audit->old === null) : echo $this->getHtml('CREATE', 'Auditor', 'Backend'); ?>
                                     <?php elseif ($audit->old !== null && $audit->new !== null) : echo $this->getHtml('UPDATE', 'Auditor', 'Backend'); ?>
                                     <?php elseif ($audit->new === null) : echo $this->getHtml('DELETE', 'Auditor', 'Backend'); ?>
                                     <?php else : echo $this->getHtml('UNKNOWN', 'Auditor', 'Backend'); ?>
                                     <?php endif; ?>
+                                <td><a href="<?= $url; ?>"><?= $audit->trigger; ?></a>
                                 <td><a class="content"
                                     href="<?= UriFactory::build('{/base}/admin/account/settings?id=' . $audit->createdBy->id); ?>"><?= $this->printHtml(
                                     $this->renderUserName('%3$s %2$s %1$s', [$audit->createdBy->name1, $audit->createdBy->name2, $audit->createdBy->name3, $audit->createdBy->login])
@@ -529,6 +539,8 @@ echo $this->data['nav']->render(); ?>
                 </div>
             </div>
         </div>
+        <?php endif; ?>
+
     </div>
 </div>
 

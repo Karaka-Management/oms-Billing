@@ -10,14 +10,26 @@
             "cabinet labels", "paper towels", "cleaning supplies", "sticky tack",
             "adhesive putty", "wall calendar"
         ],
-        "de": []
+        "de": [
+            "Büromaterial", "Bleistift", "Kugelschreiber", "Notizbuch", "Notiz", "Textmarker",
+            "Radiergummi", "Büroklammer", "Foldback-Klammer", "Heftklammern", "Hefter", "Klebebandabroller",
+            "Tesafilm", "Gummibänder", "Marker", "Whiteboard-Marker",
+            "Whiteboard-Radiergummi", "Schreibtischorganizer", "Kalender", "Schreibtischkalender",
+            "Aktenordner", "Ordner", "Hängeregistratur", "Umschlag", "Briefmarke",
+            "Schere", "Taschenrechner", "Lineal", "Mülleimer", "Abfalleimer",
+            "Schranketiketten", "Papierhandtücher", "Putzmittel", "Knetklebe", "Haftmasse",
+            "Wandkalender"
+        ]
     },
     "it_supplies": {
         "en": [
             "keyboard", "mouse", "mice", "USB drive", "network cable", "toner",
             "printer paper", "ink", "cartridge"
         ],
-        "de": []
+        "de": [
+            "Tastatur", "Maus", "Mäuse", "USB-Laufwerk", "Netzwerkkabel", "Toner",
+            "Druckerpapier", "Tinte", "Patrone"
+        ]
     },
     "it_equipment": {
         "en": [
@@ -25,13 +37,19 @@
             "router", "webcam", "headset", "hard drive", "microphone", "macbook", "phone",
             "cellphone", "mobile phone"
         ],
-        "de": []
+        "de": [
+            "PC", "Computer", "Laptop", "Monitor", "Switch", "Netzteil", "Server", "Drucker",
+            "Router", "Webcam", "Headset", "Festplatte", "Mikrofon", "Macbook", "Telefon",
+            "Handy", "Mobiltelefon"
+        ]
     },
     "internet_phone": {
         "en": [
             "domain", "website", "web server", "phone", "internet", "cellphone"
         ],
-        "de": []
+        "de": [
+            "Domäne", "Website", "Webserver", "Telefon", "Internet", "Mobiltelefon"
+        ]
     },
     "furniture": {
         "en": [
@@ -43,7 +61,15 @@
             "bean bag", "stool", "cubby storage", "shoe rack", "coat rack", "futon",
             "crib", "playpen"
         ],
-        "de": []
+        "de": [
+            "Sofa", "Sessel", "Tisch", "Stuhl", "Bett", "Nachttisch", "Kommode", "Kleiderschrank",
+            "Bücherregal", "Schreibtisch", "Schrank", "Couch", "Sessel", "Fernsehtisch", "Kücheninsel",
+            "Barhocker", "Badezimmer-Waschtisch", "Esszimmerschrank", "Kommode",
+            "Bank", "Kredenz", "Sideboard", "Ottomane", "Kopfteil", "Fußteil",
+            "Chaiselongue", "Terrassenmöbel", "Essgarnitur für draußen", "Hängematte",
+            "Sitzsack", "Hocker", "Schrankmöbel", "Schuhregal", "Garderobe", "Futon",
+            "Kinderbett", "Laufstall"
+        ]
     },
     "appliances": {
         "en": [
@@ -59,7 +85,19 @@
             "portable air conditioner", "hot water dispenser", "skillet",
             "popcorn maker", "margarita machine", "deep fryer", "griddle", "scale"
         ],
-        "de": []
+        "de": [
+            "Kühlschrank", "Backofen", "Herd", "Mikrowelle", "Geschirrspüler", "Waschmaschine",
+            "Wäschetrockner", "Gefrierschrank", "Kaffeemaschine", "Toaster", "Mixer",
+            "Küchenmaschine", "Wasserkocher", "Reiskocher", "Langsamkocher",
+            "Toaster", "Klimaanlage", "Heizung", "Deckenventilator", "Staubsauger",
+            "Bügeleisen", "Haartrockner", "Lockenstab", "Rasierapparat",
+            "Luftreiniger", "Luftentfeuchter", "Luftbefeuchter", "Müllschlucker",
+            "Müllpresse", "Dunstabzugshaube", "Entsafter", "Mixer", "Grill",
+            "Brotbackautomat", "Eismaschine", "Wasserspender", "ductless mini-split system",
+            "Wandofen", "Induktionskochfeld", "Espressomaschine", "Dosenöffner",
+            "tragbares Klimagerät", "Heißwasserspender", "Bratpfanne",
+            "Popcornmaschine", "Margarita-Maschine", "Fritteuse", "Bratplatte", "Waage"
+        ]
     },
     "cleaning": {
         "en": [
@@ -74,7 +112,18 @@
             "furniture polish", "shoe polish", "stainless steel cleaner", "rust remover",
             "grill brush", "lime scale remover", "rug cleaner", "furniture stain remover"
         ],
-        "de": []
+        "de": [
+            "Besen", "Mopp", "Kehrblech", "Eimer", "Schwamm", "Schrubber", "Lappen",
+            "Papierhandtücher", "Müllbeutel", "Mülleimer", "Staubsauger",
+            "Teppichreiniger", "Glasreiniger", "Reinigungsmittel", "Desinfektionstücher",
+            "Toilettenbürste", "Toilettenschüsselreiniger", "Badreiniger", "Fliesenreiniger",
+            "Backofenreiniger", "Geschirrspülmittel", "Waschmittel", "Weichspüler",
+            "Fleckenentferner", "Mülleimerauskleidung", "Backpulver", "Essig",
+            "Staubmaske", "Putzkorb", "Fensterabzieher", "Staubwedel",
+            "Fusselrolle", "Lufterfrischer", "Handschuhe", "Entfetter", "Bodenwachs",
+            "Möbelpolitur", "Schuhcreme", "Edelstahlreiniger", "Rostlöser",
+            "Grillbürste", "Kalkentferner", "Teppichreiniger", "Möbelfleckenentferner"
+        ]
     },
     "marketing": {
         "en": [
@@ -82,7 +131,11 @@
             "advertising", "social media", "market research", "marketing", "catalogue",
             "catalog", "price list"
         ],
-        "de": []
+        "de": [
+            "Flugblatt", "Broschüre", "Artikel", "Messe", "Ausstellung", "Messe",
+            "Werbung", "Social Media", "Marktforschung", "Marketing", "Katalog",
+            "katalog", "preisliste"
+        ]
     },
     "food": {
         "en": [
@@ -90,18 +143,26 @@
             "cake", "ice cream", "pudding", "donut",
             "nudle", "steak", "fish", "salat", "burger", "fries", "potato", "soup"
         ],
-        "de": []
+        "de": [
+            "Wein", "Bier", "Schnaps", "Wasser", "Cola", "Fanta", "Saft", "Sprite", "Kaffee",
+            "Kuchen", "Eis", "Pudding", "Donut",
+            "Nudel", "Steak", "Fisch", "Salat", "Burger", "Pommes", "Kartoffel", "Suppe"
+        ]
     },
     "hotel": {
         "en": [
             "hotel", "motel", "hostel"
         ],
-        "de": []
+        "de": [
+            "Hotel", "Motel", "Herberge"
+        ]
     },
     "travel": {
         "en": [
-            "flight", "taxi", "train", "uber", "parking"
+            "flight", "taxi", "train", "uber", "parking", "garage"
         ],
-        "de": []
+        "de": [
+            "Flug", "Taxi", "Zug", "Uber", "Parken", "Garage"
+        ]
     }
 }

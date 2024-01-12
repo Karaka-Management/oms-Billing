@@ -1,0 +1,164 @@
+{
+    "type": {
+        "purchase_invoice": {
+            "en": [
+                "Invoice"
+            ],
+            "de": [
+                "Rechnung"
+            ]
+        },
+        "purchase_credit_note": {
+            "en": [
+                "Credit Note"
+            ],
+            "de": [
+                "Rechnungskorrektur",
+                "Gutschrift"
+            ]
+        },
+        "purchase_delivery_note": {
+            "en": [
+                "Delivery Note"
+            ],
+            "de": [
+                "Lieferschein"
+            ]
+        },
+        "purchase_order_confirmation": {
+            "en": [
+                "Order Confirmation"
+            ],
+            "de": [
+                "Auftragsbestätigung"
+            ]
+        },
+        "purchase_reverse_invoice": {
+            "en": [
+                "Credit Note"
+            ],
+            "de": [
+                "Gutschrift"
+            ]
+        }
+    },
+    "date_format": [
+        "Y-m-d",
+        "Y.m.d",
+        "Y/m/d",
+        "d-m-Y",
+        "d.m.Y",
+        "d/m/Y",
+        "m-d-Y",
+        "m.d.Y",
+        "m/d/Y",
+        "M. d.Y",
+        "M. d. Y",
+        "M. d Y",
+        "M. d,Y",
+        "M. d, Y",
+        "M d.Y",
+        "M d. Y",
+        "M d Y",
+        "M d,Y",
+        "M d, Y",
+        "M, d.Y",
+        "M, d. Y",
+        "M, d Y",
+        "M, d,Y",
+        "M, d, Y"
+    ],
+    "bill_no": {
+        "en": [
+            "/(inv.*?)(no|\\s|,|:|\\.|#)+(?<bill_no>.*?)(  |$)/i",
+            "/(#)(?<bill_no>.*?)(  |$)/i"
+        ],
+        "de": [
+            "/(rechnungsn.*?|beleg.*?)(?<bill_no>.*?)(  |$)/i"
+        ]
+    },
+    "bill_date": {
+        "en": [
+            "/(inv.*?)(date.*?)(\\s|,|:|\\.)+(?<bill_date>.*?)( |$)/i",
+            "/(date.*?)(\\s|,|:|\\.)+(?<bill_date>.*?)(  |$)/i"
+        ],
+        "de": [
+            "/(rechnungsdat.*?|belegdat.*?)(\\s|,|:|\\.)+(?<bill_date>.*?)( |$)/i"
+        ]
+    },
+    "bill_due": {
+        "en": [
+            "/(due date.*?)(\\s|,|:|\\.)+(?<bill_due>.*?)( |$)/i",
+            "/(due.*?)(\\s|,|:|\\.)+(?<bill_due>.*?)( |$)/i"
+        ],
+        "de": [
+            "/(fällig.*?)(\\s|,|:|\\.)+(?<bill_due>.*?)( |$)/i"
+        ]
+    },
+    "total_net": {
+        "en": [
+            "/(subtotal.*?|net.*?)(?<total_net>([0-9]+,*\\.*)+)/i"
+        ],
+        "de": [
+            "/(netto.*?|zwischensumme.*?)(?<total_net>([0-9]+,*\\.*)+)/i"
+        ]
+    },
+    "total_tax": {
+        "en": [
+            "/(tax.*?)(?<total_tax>([0-9]+,*\\.*)+)/i"
+        ],
+        "de": [
+            "/(USt.*?|Mwst.*?|Umsatzsteuer.*?|Mehrwehrtsteuer.*?)(?<total_tax>([0-9]+,*\\.*)+)/i"
+        ]
+    },
+    "total_gross": {
+        "en": [
+            "/(total.*?|gross.*?)(?<total_gross>([0-9]+,*\\.*)+)/i"
+        ],
+        "de": [
+            "/(betrag.*?|gesamt.*?|brutto|rechnungsbetrag.*?|summe.*?)(?<total_gross>([0-9]+,*\\.*)+)/i"
+        ]
+    },
+    "item_table": {
+        "en": {
+            "headline": {
+                "order": ["no.", "#"],
+                "description": ["description", "name", "service", "product"],
+                "quantity": ["qty", "quantity"],
+                "price": ["price", "net", "gross"],
+                "unit": ["unit"],
+                "total": ["amount", "total", "price", "net", "gross"],
+                "tax": ["tax"]
+            },
+            "row": {
+                "order": "\\d+",
+                "description": ".*?",
+                "quantity": "[+-]?([0-9]{1,3}([,\\.][0-9]{3})*(,\\.[0-9]+)?|\\d*[,\\.]\\d+|\\d+)",
+                "price": "[+-]?([0-9]{1,3}([,\\.][0-9]{3})*(,\\.[0-9]+)?|\\d*[,\\.]\\d+|\\d+)",
+                "unit": ".*?",
+                "total": "[+-]?([0-9]{1,3}([,\\.][0-9]{3})*(,\\.[0-9]+)?|\\d*[,\\.]\\d+|\\d+)",
+                "tax": "[+-]?([0-9]{1,3}([,\\.][0-9]{3})*(,\\.[0-9]+)?|\\d*[,\\.]\\d+|\\d+)"
+            }
+        },
+        "de": {
+            "headline": {
+                "order": ["Pos", "#", "Position"],
+                "description": ["Beschreibung", "Bez", "Bezeichnung", "Leistung", "Produkt"],
+                "quantity": ["Menge", "Anzahl"],
+                "price": ["Einzel", "Preis", "Netto", "Net", "Brutto"],
+                "unit": ["Einheit", "Einh"],
+                "total": ["Gesamt", "Preis", "Netto", "Net", "Brutto"],
+                "tax": ["MwSt", "USt"]
+            },
+            "row": {
+                "order": "\\d+",
+                "description": ".*?",
+                "quantity": "[+-]?([0-9]{1,3}([,\\.][0-9]{3})*(,\\.[0-9]+)?|\\d*[,\\.]\\d+|\\d+)",
+                "price": "[+-]?([0-9]{1,3}([,\\.][0-9]{3})*(,\\.[0-9]+)?|\\d*[,\\.]\\d+|\\d+)",
+                "unit": ".*?",
+                "total": "[+-]?([0-9]{1,3}([,\\.][0-9]{3})*(,\\.[0-9]+)?|\\d*[,\\.]\\d+|\\d+)",
+                "tax": "[+-]?([0-9]{1,3}([,\\.][0-9]{3})*(,\\.[0-9]+)?|\\d*[,\\.]\\d+|\\d+)"
+            }
+        }
+    }
+}

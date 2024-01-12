@@ -81,13 +81,13 @@ final class ApiPriceController extends Controller
         /** @var null|\Modules\SupplierManagement\Models\Supplier $supplier */
         $supplier = null;
 
-        if ($request->hasData('price_client')) {
+        if ($request->hasData('client')) {
             /** @var \Modules\ClientManagement\Models\Client $client */
             $client = ClientMapper::get()
                 ->with('attributes')
                 ->with('attributes/type')
                 ->with('attributes/value')
-                ->where('id', (int) $request->getData('price_client'))
+                ->where('id', (int) $request->getData('client'))
                 ->execute();
 
             /** @var \Modules\ClientManagement\Models\Client */
@@ -98,7 +98,7 @@ final class ApiPriceController extends Controller
                 ->with('attributes')
                 ->with('attributes/type')
                 ->with('attributes/value')
-                ->where('id', (int) $request->getData('price_supplier'))
+                ->where('id', (int) $request->getData('supplier'))
                 ->execute();
 
             /** @var \Modules\SupplierManagement\Models\Supplier $account */
@@ -109,28 +109,29 @@ final class ApiPriceController extends Controller
         $queryMapper = PriceMapper::getAll();
 
         if ($request->hasData('price_name')) {
-            $queryMapper->where('name', $request->getData('price_name'));
+            $queryMapper->where('name', $request->getData('name'));
         }
 
-        $queryMapper->where('promocode', \array_unique([$request->getData('price_promocode'), null]), 'IN');
+        $queryMapper->where('promocode', \array_unique([$request->getData('promocode'), null]), 'IN');
 
-        $queryMapper->where('item', \array_unique([$request->getData('price_item', 'int'), null]), 'IN');
-        $queryMapper->where('itemgroup', \array_unique([$request->getData('price_itemgroup', 'int'), $item?->getAttribute('itemgroup')->id, null]), 'IN');
-        $queryMapper->where('itemsegment', \array_unique([$request->getData('price_itemsegment', 'int'), $item?->getAttribute('itemsegment')->id, null]), 'IN');
-        $queryMapper->where('itemsection', \array_unique([$request->getData('price_itemsection', 'int'), $item?->getAttribute('itemsection')->id, null]), 'IN');
-        $queryMapper->where('itemtype', \array_unique([$request->getData('price_itemtype', 'int'), $item?->getAttribute('itemtype')->id, null]), 'IN');
+        $queryMapper->where('item', \array_unique([$request->getData('item', 'int'), null]), 'IN');
+        $queryMapper->where('itemsalesgroup', \array_unique([$request->getData('sales_group', 'int'), $item?->getAttribute('sales_group')->id, null]), 'IN');
+        $queryMapper->where('itemproductgroup', \array_unique([$request->getData('product_group', 'int'), $item?->getAttribute('product_group')->id, null]), 'IN');
+        $queryMapper->where('itemsegment', \array_unique([$request->getData('item_segment', 'int'), $item?->getAttribute('segment')->id, null]), 'IN');
+        $queryMapper->where('itemsection', \array_unique([$request->getData('item_section', 'int'), $item?->getAttribute('section')->id, null]), 'IN');
+        $queryMapper->where('itemtype', \array_unique([$request->getData('product_type', 'int'), $item?->getAttribute('product_type')->id, null]), 'IN');
 
-        $queryMapper->where('client', \array_unique([$request->getData('price_client', 'int'), null]), 'IN');
-        $queryMapper->where('clientgroup', \array_unique([$request->getData('price_clientgroup', 'int'), $client?->getAttribute('clientgroup')->id, null]), 'IN');
-        $queryMapper->where('clientsegment', \array_unique([$request->getData('price_clientsegment', 'int'), $client?->getAttribute('clientsegment')->id, null]), 'IN');
-        $queryMapper->where('clientsection', \array_unique([$request->getData('price_clientsection', 'int'), $client?->getAttribute('clientsection')->id, null]), 'IN');
-        $queryMapper->where('clienttype', \array_unique([$request->getData('price_clienttype', 'int'), $client?->getAttribute('clienttype')->id, null]), 'IN');
-        $queryMapper->where('clientcountry', \array_unique([$request->getData('price_clientcountry'), $client?->mainAddress->getCountry(), null]), 'IN');
+        $queryMapper->where('client', \array_unique([$request->getData('client', 'int'), null]), 'IN');
+        $queryMapper->where('clientgroup', \array_unique([$request->getData('client_group', 'int'), $client?->getAttribute('client_group')->id, null]), 'IN');
+        $queryMapper->where('clientsegment', \array_unique([$request->getData('client_segment', 'int'), $client?->getAttribute('segment')->id, null]), 'IN');
+        $queryMapper->where('clientsection', \array_unique([$request->getData('client_section', 'int'), $client?->getAttribute('section')->id, null]), 'IN');
+        $queryMapper->where('clienttype', \array_unique([$request->getData('client_type', 'int'), $client?->getAttribute('client_type')->id, null]), 'IN');
+        $queryMapper->where('clientcountry', \array_unique([$request->getData('client_region'), $client?->mainAddress->getCountry(), null]), 'IN');
 
-        $queryMapper->where('supplier', \array_unique([$request->getData('price_supplier', 'int'), null]), 'IN');
+        $queryMapper->where('supplier', \array_unique([$request->getData('supplier', 'int'), null]), 'IN');
         $queryMapper->where('unit', \array_unique([$request->getData('price_unit', 'int'), null]), 'IN');
         $queryMapper->where('type', $request->getData('price_type', 'int') ?? PriceType::SALES);
-        $queryMapper->where('currency', \array_unique([$request->getData('price_currency', 'int'), null]), 'IN');
+        $queryMapper->where('currency', \array_unique([$request->getData('currency', 'int'), null]), 'IN');
 
         // @todo implement start and end
 
@@ -153,7 +154,8 @@ final class ApiPriceController extends Controller
         foreach ($prices as $price) {
             if ($price->price->value !== 0 && $price->priceNew === 0
                 && $price->item->id !== 0
-                && $price->itemgroup->id === 0
+                && $price->itemsalesgroup->id === 0
+                && $price->itemproductgroup->id === 0
                 && $price->itemsegment->id === 0
                 && $price->itemsection->id === 0
                 && $price->itemtype->id === 0
@@ -261,15 +263,16 @@ final class ApiPriceController extends Controller
         $price->promocode = $request->getDataString('promocode') ?? '';
 
         $price->item        = new NullItem((int) $request->getData('item'));
-        $price->itemgroup   = new NullAttributeValue((int) $request->getData('itemgroup'));
         $price->itemsegment = new NullAttributeValue((int) $request->getData('itemsegment'));
         $price->itemsection = new NullAttributeValue((int) $request->getData('itemsection'));
+        $price->itemsalesgroup   = new NullAttributeValue((int) $request->getData('itemsalesgroup'));
+        $price->itemproductgroup   = new NullAttributeValue((int) $request->getData('itemproductgroup'));
         $price->itemtype    = new NullAttributeValue((int) $request->getData('itemtype'));
 
         $price->client        = new NullClient((int) $request->getData('client'));
-        $price->clientgroup   = new NullAttributeValue((int) $request->getData('clientgroup'));
         $price->clientsegment = new NullAttributeValue((int) $request->getData('clientsegment'));
         $price->clientsection = new NullAttributeValue((int) $request->getData('clientsection'));
+        $price->clientgroup   = new NullAttributeValue((int) $request->getData('clientgroup'));
         $price->clienttype    = new NullAttributeValue((int) $request->getData('clienttype'));
 
         $price->supplier           = new NullSupplier((int) $request->getData('supplier'));
@@ -283,8 +286,8 @@ final class ApiPriceController extends Controller
         $price->bonus              = (int) $request->getData('bonus');
         $price->multiply           = $request->getDataBool('multiply') ?? false;
         $price->currency           = $request->getDataString('currency') ?? ISO4217CharEnum::_EUR;
-        $price->start              = $request->getDataDateTime('start') ?? null;
-        $price->end                = $request->getDataDateTime('end') ?? null;
+        $price->start              = $request->getDataDateTime('start');
+        $price->end                = $request->getDataDateTime('end');
 
         return $price;
     }
@@ -360,7 +363,8 @@ final class ApiPriceController extends Controller
         $new->promocode = $request->getDataString('promocode') ?? $new->promocode;
 
         $new->item        = $request->hasData('item') ? new NullItem((int) $request->getData('item')) : $new->item;
-        $new->itemgroup   = $request->hasData('itemgroup') ? new NullAttributeValue((int) $request->getData('itemgroup')) : $new->itemgroup;
+        $new->itemsalesgroup   = $request->hasData('itemsalesgroup') ? new NullAttributeValue((int) $request->getData('itemsalesgroup')) : $new->itemsalesgroup;
+        $new->itemproductgroup   = $request->hasData('itemproductgroup') ? new NullAttributeValue((int) $request->getData('itemproductgroup')) : $new->itemproductgroup;
         $new->itemsegment = $request->hasData('itemsegment') ? new NullAttributeValue((int) $request->getData('itemsegment')) : $new->itemsegment;
         $new->itemsection = $request->hasData('itemsection') ? new NullAttributeValue((int) $request->getData('itemsection')) : $new->itemsection;
         $new->itemtype    = $request->hasData('itemtype') ? new NullAttributeValue((int) $request->getData('itemtype')) : $new->itemtype;

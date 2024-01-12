@@ -40,7 +40,7 @@ use phpOMS\Views\View;
 final class CliController extends Controller
 {
     /**
-     * Analyse supplier bill
+     * Analyze supplier bill
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
@@ -78,7 +78,7 @@ final class CliController extends Controller
         $language       = $this->detectLanguage($content);
         $bill->language = $language;
 
-        $identifierContent = \file_get_contents(__DIR__ . '/../Models/billIdentifier.json');
+        $identifierContent = \file_get_contents(__DIR__ . '/../Models/bill_identifier.json');
         if ($identifierContent === false) {
             $identifierContent = '{}';
         }
@@ -130,9 +130,19 @@ final class CliController extends Controller
         $billDue     = $this->parseDate($billDueTemp, $supplier, $identifiers['date_format']);
         // @todo implement multiple due dates for bills
 
+        /* Total Net */
+        $totalNet       = $this->findBillNet($lines, $identifiers['total_net'][$language]);
+        $bill->netCosts = new FloatInt($totalNet);
+
+        /* Total Tax */
+        $totalTaxAmount = $this->findBillTaxAmount($lines, $identifiers['total_net'][$language]);
+
         /* Total Gross */
         $totalGross       = $this->findBillGross($lines, $identifiers['total_gross'][$language]);
         $bill->grossCosts = new FloatInt($totalGross);
+
+        /* Item lines */
+        $itemLines = $this->findBillItemLines($lines, $identifiers['item_table'][$language]);
 
         $this->updateModel($request->header->account, $old, $bill, BillMapper::class, 'bill_parsing', $request->getOrigin());
 
@@ -298,6 +308,91 @@ final class CliController extends Controller
      * Detect the supplier bill gross amount
      *
      * @param string[] $lines   Bill lines
+     * @param array    $matches Tax match patterns
+     *
+     * @return int
+     *
+     * @since 1.0.0
+     * @todo What about multiple tax lines?
+     */
+    private function findBillTaxAmount(array $lines, array $matches) : int
+    {
+        $bestMatch = 0;
+
+        $found = [];
+
+        foreach ($matches as $match) {
+            foreach ($lines as $line) {
+                if (\preg_match($match, $line, $found) === 1) {
+                    $temp = \trim($found['total_tax']);
+
+                    $posD = \stripos($temp, '.');
+                    $posK = \stripos($temp, ',');
+
+                    $hasDecimal = ($posD !== false || $posK !== false)
+                        && \max((int) $posD, (int) $posK) + 3 >= \strlen($temp);
+
+                    $gross = ((int) \str_replace(['.', ','], ['', ''], $temp)) * ($hasDecimal
+                        ? 100
+                        : 10000);
+
+                    if ($gross > $bestMatch) {
+                        $bestMatch = $gross;
+                    }
+                }
+            }
+        }
+
+        return $bestMatch;
+    }
+
+    /**
+     * Detect the supplier bill gross amount
+     *
+     * @param string[] $lines   Bill lines
+     * @param array    $matches Net match patterns
+     *
+     * @return int
+     *
+     * @since 1.0.0
+     * @todo maybe check with taxes
+     * @todo maybe make sure text position is before total_gross
+     */
+    private function findBillNet(array $lines, array $matches) : int
+    {
+        $bestMatch = 0;
+
+        $found = [];
+
+        foreach ($matches as $match) {
+            foreach ($lines as $line) {
+                if (\preg_match($match, $line, $found) === 1) {
+                    $temp = \trim($found['total_net']);
+
+                    $posD = \stripos($temp, '.');
+                    $posK = \stripos($temp, ',');
+
+                    $hasDecimal = ($posD !== false || $posK !== false)
+                        && \max((int) $posD, (int) $posK) + 3 >= \strlen($temp);
+
+                    $gross = ((int) \str_replace(['.', ','], ['', ''], $temp)) * ($hasDecimal
+                        ? 100
+                        : 10000);
+
+                    if ($gross > $bestMatch) {
+                        $bestMatch = $gross;
+                    }
+                }
+            }
+        }
+
+        return $bestMatch;
+    }
+
+    /**
+     * Detect the supplier bill gross amount
+     *
+     * @param string[] $lines   Bill lines
      * @param array    $matches Gross match patterns
      *
      * @return int
@@ -336,11 +431,69 @@ final class CliController extends Controller
     }
 
     /**
+     * Detect the supplier bill gross amount
+     *
+     * @param string[] $lines   Bill lines
+     * @param array    $matches Item lines match patterns
+     *
+     * @return array
+     *
+     * @since 1.0.0
+     */
+    private function findBillItemLines(array $lines, array $matches) : array
+    {
+        // Find start for item list (should be a headline containing certain words)
+        $startLine = 0;
+        $bestMatch = 0;
+
+        foreach ($lines as $idx => $line) {
+            $headlineMatches = 0;
+
+            foreach ($matches['headline'] as $match) {
+                foreach ($match as $headline) {
+                    if (\stripos($line, $headline) !== false) {
+                        ++$headlineMatches;
+
+                        continue;
+                    }
+                }
+            }
+
+            if ($headlineMatches > $bestMatch && $headlineMatches > 1) {
+                $bestMatch = $headlineMatches;
+                $startLine = $idx;
+            }
+        }
+
+        if ($startLine === 0) {
+            return [];
+        }
+
+        // Get headline structure = item list structure
+        $headlineStructure = [];
+        foreach ($matches['headline'] as $type => $match) {
+            foreach ($match as $headline) {
+                if (($pos = \stripos($line, $headline)) !== false) {
+                    $headlineStructure[$type] = $pos;
+
+                    continue;
+                }
+            }
+        }
+
+        \asort($headlineStructure);
+
+        // Get item list until end of item list/table is reached
+
+        return [];
+    }
+
+    /**
      * Find possible supplier id
      *
      * Priorities:
      *  1. bill_match_pattern
-     *  2. name1 + iban
+     *  2. name1 + IBAN
      *  3. name1 + city || address
      *  4. name1
      *
@@ -363,7 +516,7 @@ final class CliController extends Controller
             }
         }
 
-        // name1 + iban
+        // name1 + IBAN
         foreach ($suppliers as $supplier) {
             if (\stripos($content, $supplier->account->name1) !== false) {
                 $ibans = $supplier->getPaymentsByType(PaymentType::SWIFT);

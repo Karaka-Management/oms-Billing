@@ -197,4 +197,49 @@ return [
             ],
         ],
     ],
+
+    '^.*/bill/payment/list.*$' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewPaymentList',
+            'verb'       => RouteVerb::GET,
+            'permission' => [
+                'module' => BackendController::NAME,
+                'type'   => PermissionType::READ,
+                'state'  => PermissionCategory::PAYMENT_TERM,
+            ],
+        ],
+    ],
+    '^.*/bill/payment/view.*$' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewPaymentView',
+            'verb'       => RouteVerb::GET,
+            'permission' => [
+                'module' => BackendController::NAME,
+                'type'   => PermissionType::READ,
+                'state'  => PermissionCategory::PAYMENT_TERM,
+            ],
+        ],
+    ],
+    '^.*/bill/shipping/list.*$' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewShippingList',
+            'verb'       => RouteVerb::GET,
+            'permission' => [
+                'module' => BackendController::NAME,
+                'type'   => PermissionType::READ,
+                'state'  => PermissionCategory::SHIPPING_TERM,
+            ],
+        ],
+    ],
+    '^.*/bill/shipping/view.*$' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewShippingView',
+            'verb'       => RouteVerb::GET,
+            'permission' => [
+                'module' => BackendController::NAME,
+                'type'   => PermissionType::READ,
+                'state'  => PermissionCategory::SHIPPING_TERM,
+            ],
+        ],
+    ],
 ];

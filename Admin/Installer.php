@@ -17,7 +17,7 @@ namespace Modules\Billing\Admin;
 use Modules\Billing\Models\BillTransferType;
 use Modules\ClientManagement\Models\Attribute\ClientAttributeTypeMapper;
 use Modules\ItemManagement\Models\Attribute\ItemAttributeTypeMapper;
-use Modules\SupplierManagement\Models\SupplierAttributeTypeMapper;
+use Modules\SupplierManagement\Models\Attribute\SupplierAttributeTypeMapper;
 use phpOMS\Application\ApplicationAbstract;
 use phpOMS\Config\SettingsInterface;
 use phpOMS\Message\Http\HttpRequest;
@@ -99,6 +99,26 @@ final class Installer extends InstallerAbstract
 
         $attrTypes  = self::createBillAttributeTypes($app, $attributes);
         $attrValues = self::createBillAttributeValues($app, $attrTypes, $attributes);
+
+        /* Payment terms */
+        $fileContent = \file_get_contents(__DIR__ . '/Install/paymentterms.json');
+        if ($fileContent === false) {
+            return;
+        }
+
+        /** @var array $terms */
+        $terms     = \json_decode($fileContent, true);
+        $paymentTypeArray = self::createPaymentTerms($app, $terms);
+
+        /* Shipping terms */
+        $fileContent = \file_get_contents(__DIR__ . '/Install/shippingterms.json');
+        if ($fileContent === false) {
+            return;
+        }
+
+        /** @var array $terms */
+        $terms     = \json_decode($fileContent, true);
+        $shippingTypeArray = self::createShippingTerms($app, $terms);
     }
 
     /**
@@ -376,5 +396,125 @@ final class Installer extends InstallerAbstract
         }
 
         return $billTypes;
+    }
+
+    /**
+     * Install default payment terms
+     *
+     * @param ApplicationAbstract $app   Application
+     * @param array               $types Payment term definitions
+     *
+     * @return array
+     *
+     * @since 1.0.0
+     */
+    private static function createPaymentTerms(ApplicationAbstract $app, array $types) : array
+    {
+        /** @var array<string, array> $paymentTerms */
+        $paymentTerms = [];
+
+        /** @var \Modules\Billing\Controller\ApiController $module */
+        $module = $app->moduleManager->getModuleInstance('Billing', 'Api');
+
+        /** @var array $type */
+        foreach ($types as $type) {
+            $response = new HttpResponse();
+            $request  = new HttpRequest(new HttpUri(''));
+
+            $request->header->account = 1;
+            $request->setData('name', $type['name'] ?? '');
+            $request->setData('title', \reset($type['l11n']));
+
+            $module->apiPaymentTermCreate($request, $response);
+
+            $responseData = $response->getData('');
+            if (!\is_array($responseData)) {
+                continue;
+            }
+
+            $paymentTerms[$type['name']] = \is_array($responseData['response'])
+                ? $responseData['response']
+                : $responseData['response']->toArray();
+
+            $isFirst = true;
+            foreach ($type['l11n'] as $language => $l11n) {
+                if ($isFirst) {
+                    $isFirst = false;
+                    continue;
+                }
+
+                $response = new HttpResponse();
+                $request  = new HttpRequest(new HttpUri(''));
+
+                $request->header->account = 1;
+                $request->setData('title', $l11n);
+                $request->setData('language', $language);
+                $request->setData('type', $paymentTerms[$type['name']]['id']);
+
+                $module->apiPaymentTermL11nCreate($request, $response);
+            }
+        }
+
+        return $paymentTerms;
+    }
+
+    /**
+     * Install default shipping terms
+     *
+     * @param ApplicationAbstract $app   Application
+     * @param array               $types Shipping term definitions
+     *
+     * @return array
+     *
+     * @since 1.0.0
+     */
+    private static function createShippingTerms(ApplicationAbstract $app, array $types) : array
+    {
+        /** @var array<string, array> $shippingTerms */
+        $shippingTerms = [];
+
+        /** @var \Modules\Billing\Controller\ApiController $module */
+        $module = $app->moduleManager->getModuleInstance('Billing', 'Api');
+
+        /** @var array $type */
+        foreach ($types as $type) {
+            $response = new HttpResponse();
+            $request  = new HttpRequest(new HttpUri(''));
+
+            $request->header->account = 1;
+            $request->setData('name', $type['name'] ?? '');
+            $request->setData('title', \reset($type['l11n']));
+
+            $module->apiShippingTermCreate($request, $response);
+
+            $responseData = $response->getData('');
+            if (!\is_array($responseData)) {
+                continue;
+            }
+
+            $shippingTerms[$type['name']] = \is_array($responseData['response'])
+                ? $responseData['response']
+                : $responseData['response']->toArray();
+
+            $isFirst = true;
+            foreach ($type['l11n'] as $language => $l11n) {
+                if ($isFirst) {
+                    $isFirst = false;
+                    continue;
+                }
+
+                $response = new HttpResponse();
+                $request  = new HttpRequest(new HttpUri(''));
+
+                $request->header->account = 1;
+                $request->setData('title', $l11n);
+                $request->setData('language', $language);
+                $request->setData('type', $shippingTerms[$type['name']]['id']);
+
+                $module->apiShippingTermL11nCreate($request, $response);
+            }
+        }
+
+        return $shippingTerms;
     }
 }

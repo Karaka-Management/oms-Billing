@@ -46,14 +46,15 @@ final class PriceMapper extends DataMapperFactory
         'billing_price_name'              => ['name' => 'billing_price_name',          'type' => 'string',   'internal' => 'name'],
         'billing_price_promocode'         => ['name' => 'billing_price_promocode',     'type' => 'string',   'internal' => 'promocode'],
         'billing_price_item'              => ['name' => 'billing_price_item',          'type' => 'int',      'internal' => 'item'],
-        'billing_price_itemgroup'         => ['name' => 'billing_price_itemgroup',     'type' => 'int',      'internal' => 'itemgroup'],
         'billing_price_itemsegment'       => ['name' => 'billing_price_itemsegment',   'type' => 'int',      'internal' => 'itemsegment'],
         'billing_price_itemsection'       => ['name' => 'billing_price_itemsection',   'type' => 'int',      'internal' => 'itemsection'],
+        'billing_price_itemsalesgroup'         => ['name' => 'billing_price_itemsalesgroup',     'type' => 'int',      'internal' => 'itemsalesgroup'],
+        'billing_price_itemproductgroup'         => ['name' => 'billing_price_itemproductgroup',     'type' => 'int',      'internal' => 'itemproductgroup'],
         'billing_price_itemtype'          => ['name' => 'billing_price_itemtype',      'type' => 'int',      'internal' => 'itemtype'],
         'billing_price_client'            => ['name' => 'billing_price_client',        'type' => 'int',      'internal' => 'client'],
-        'billing_price_clientgroup'       => ['name' => 'billing_price_clientgroup',   'type' => 'int',      'internal' => 'clientgroup'],
         'billing_price_clientsegment'     => ['name' => 'billing_price_clientsegment', 'type' => 'int',      'internal' => 'clientsegment'],
         'billing_price_clientsection'     => ['name' => 'billing_price_clientsection', 'type' => 'int',      'internal' => 'clientsection'],
+        'billing_price_clientgroup'       => ['name' => 'billing_price_clientgroup',   'type' => 'int',      'internal' => 'clientgroup'],
         'billing_price_clienttype'        => ['name' => 'billing_price_clienttype',    'type' => 'int',      'internal' => 'clienttype'],
         'billing_price_clientcountry'     => ['name' => 'billing_price_clientcountry', 'type' => 'string',   'internal' => 'clientcountry'],
         'billing_price_supplier'          => ['name' => 'billing_price_supplier',      'type' => 'int',      'internal' => 'supplier'],
@@ -82,9 +83,13 @@ final class PriceMapper extends DataMapperFactory
             'mapper'   => ItemMapper::class,
             'external' => 'billing_price_item',
         ],
-        'itemgroup' => [
+        'itemsalesgroup' => [
             'mapper'   => ItemAttributeValueMapper::class,
-            'external' => 'billing_price_itemgroup',
+            'external' => 'billing_price_itemsalesgroup',
+        ],
+        'itemproductgroup' => [
+            'mapper'   => ItemAttributeValueMapper::class,
+            'external' => 'billing_price_itemproductgroup',
         ],
         'itemsegment' => [
             'mapper'   => ItemAttributeValueMapper::class,

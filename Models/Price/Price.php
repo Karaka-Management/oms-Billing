@@ -49,7 +49,8 @@ class Price implements \JsonSerializable
 
     public Item $item;
 
-    public AttributeValue $itemgroup;
+    public AttributeValue $itemsalesgroup;
+    public AttributeValue $itemproductgroup;
 
     public AttributeValue $itemsegment;
 
@@ -103,7 +104,8 @@ class Price implements \JsonSerializable
     public function __construct()
     {
         $this->item        = new NullItem();
-        $this->itemgroup   = new NullAttributeValue();
+        $this->itemsalesgroup   = new NullAttributeValue();
+        $this->itemproductgroup   = new NullAttributeValue();
         $this->itemsegment = new NullAttributeValue();
         $this->itemsection = new NullAttributeValue();
         $this->itemtype    = new NullAttributeValue();
