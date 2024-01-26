@@ -63,7 +63,7 @@ final class CliController extends Controller
 
         /** @var \Modules\Billing\Models\Bill $bill */
         $bill = BillMapper::get()
-            ->with('media')
+            ->with('files')
             ->with('media/types')
             ->with('media/content')
             ->where('id', (int) $request->getData('i'))
@@ -97,13 +97,13 @@ final class CliController extends Controller
 
         $supplierId     = $this->matchSupplier($content, $suppliers);
         $bill->supplier = new NullSupplier($supplierId);
-        $supplier       =  $suppliers[$supplierId] ?? new NullSupplier();
+        $supplier       = $suppliers[$supplierId] ?? new NullSupplier();
 
         $bill->billTo      = $supplier->account->name1;
         $bill->billAddress = $supplier->mainAddress->address;
         $bill->billCity    = $supplier->mainAddress->city;
         $bill->billZip     = $supplier->mainAddress->postal;
-        $bill->billCountry = $supplier->mainAddress->getCountry();
+        $bill->billCountry = $supplier->mainAddress->country;
 
         /* Type */
         $type = $this->findSupplierInvoiceType($content, $identifiers['type'], $language);
@@ -149,6 +149,8 @@ final class CliController extends Controller
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Cli/bill-parsed');
         $view->data['bill'] = $bill;
+
+        // @todo change tax code during/after bill parsing
 
         return $view;
     }

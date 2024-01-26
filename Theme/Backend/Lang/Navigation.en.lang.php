@@ -19,6 +19,6 @@ return ['Navigation' => [
     'InvoiceRecognition' => 'Invoice Recognition',
     'Open'               => 'Open',
     'Upload'             => 'Upload',
-    'PaymentTerms'             => 'Payment Terms',
-    'ShippingTerms'             => 'Shipping Terms',
+    'PaymentTerms'       => 'Payment Terms',
+    'ShippingTerms'      => 'Shipping Terms',
 ]];

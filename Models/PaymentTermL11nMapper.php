@@ -37,10 +37,10 @@ final class PaymentTermL11nMapper extends DataMapperFactory
      * @since 1.0.0
      */
     public const COLUMNS = [
-        'billing_payment_term_l11n_id'    => ['name' => 'billing_payment_term_l11n_id',    'type' => 'int',    'internal' => 'id'],
-        'billing_payment_term_l11n_name' => ['name' => 'billing_payment_term_l11n_name', 'type' => 'string', 'internal' => 'content', 'autocomplete' => true],
-        'billing_payment_term_l11n_term'  => ['name' => 'billing_payment_term_l11n_term',  'type' => 'int',    'internal' => 'ref'],
-        'billing_payment_term_l11n_language'  => ['name' => 'billing_payment_term_l11n_language',  'type' => 'string', 'internal' => 'language'],
+        'billing_payment_term_l11n_id'       => ['name' => 'billing_payment_term_l11n_id',    'type' => 'int',    'internal' => 'id'],
+        'billing_payment_term_l11n_name'     => ['name' => 'billing_payment_term_l11n_name', 'type' => 'string', 'internal' => 'content', 'autocomplete' => true],
+        'billing_payment_term_l11n_term'     => ['name' => 'billing_payment_term_l11n_term',  'type' => 'int',    'internal' => 'ref'],
+        'billing_payment_term_l11n_language' => ['name' => 'billing_payment_term_l11n_language',  'type' => 'string', 'internal' => 'language'],
     ];
 
     /**

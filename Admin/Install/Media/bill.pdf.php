@@ -73,8 +73,6 @@ $topPos = $pdf->getY();
 // Set up default bill template
 $billTypeName = \strtoupper($bill->type->getL11n());
 
-// @todo depending on amount of lines, there is a solution (html, or use backtracking of tcpdf)
-
 // Address
 $pdf->setY(50);
 $pdf->setFont('helvetica', '', 10);
@@ -170,7 +168,7 @@ $header = [
     $lang[$pdf->language]['Total'],
 ];
 
-$lines = $bill->getElements();
+$lines = $bill->elements;
 
 // Header
 $headerCount = \count($header);
@@ -184,8 +182,8 @@ $first = true;
 // Data
 $fill = false;
 foreach($lines as $line) {
-    // @todo add support for empty lines (row = line)
-    if (/*$row === null || */$first || $pdf->getY() > $pdf->getPageHeight() - 40) {
+    // @todo depending on amount of lines, there is a solution (html, or use backtracking of tcpdf)
+    if ($first || $pdf->getY() > $pdf->getPageHeight() - 40) {
         $pdf->setFillColor(255, 162, 7);
         $pdf->setTextColor(255);
         $pdf->setDrawColor(255, 162, 7);
@@ -209,24 +207,36 @@ foreach($lines as $line) {
         $first = false;
     }
 
+    // Discounts are shown below the original price -> additional line
+    // We don't want discount columns because that hints at customers they might be able to get discounts.
+    $lines = 1
+        + ((int) ($line->discountQ->value > 0))
+        + ((int) ($line->singleDiscountP->value > 0))
+        + ((int) ($line->singleDiscountR->value > 0));
+
     $tempY = $pdf->getY();
-    $pdf->writeHTMLCell($w[0], 10, null, null, $line->itemNumber . ' ' . $line->itemName, 0, 2, $fill);
+    //$pdf->writeHTMLCell($w[0], 10, null, null, $line->itemNumber . ' ' . $line->itemName, 0, 2, $fill);
+    $pdf->MultiCell($w[0], 10 * $lines, \trim($line->itemNumber . ' ' . $line->itemName), 0, 'L', $fill, 2, null, null, true, 0, true, true, 0, 'M', false);
     $height = $pdf->getY() - $tempY;
 
-    $singleSalesPriceNet = Money::fromFloatInt($line->singleSalesPriceNet);
-    $totalSalesPriceNet  = Money::fromFloatInt($line->totalSalesPriceNet);
+    $singleListPriceNet = Money::fromFloatInt($line->singleListPriceNet);
+    $totalSalesPriceNet = Money::fromFloatInt($line->totalSalesPriceNet);
 
-    $pdf->MultiCell($w[1], $height, (string) $line->getQuantity(), 0, 'L', $fill, 0, 15 + $w[0], $tempY, true, 0, false, true, 0, 'M', true);
-    $pdf->MultiCell($w[2], $height, $singleSalesPriceNet->getCurrency(2, symbol: ''), 0, 'L', $fill, 0, 15 + $w[0] + $w[1], $tempY, true, 0, false, true, 0, 'M', true);
-    $pdf->MultiCell($w[3], $height, $totalSalesPriceNet->getCurrency(2, symbol: ''), 0, 'L', $fill, 1, 15 + $w[0] + $w[1] + $w[2], $tempY, true, 0, false, true, 0, 'M', true);
+    if ($line->quantity->value === 0) {
+        $pdf->MultiCell($w[1] + $w[2] + $w[3], $height, '', 0, 'L', $fill, 0, 15 + $w[0], $tempY, true, 0, false, true, 0, 'M', true);
+    } else {
+        $pdf->MultiCell($w[1], $height, (string) $line->quantity->getAmount($line->container->quantityDecimals), 0, 'L', $fill, 0, 15 + $w[0], $tempY, true, 0, false, true, 0, 'M', true);
+        $pdf->MultiCell($w[2], $height, $singleListPriceNet->getCurrency(2, symbol: ''), 0, 'L', $fill, 0, 15 + $w[0] + $w[1], $tempY, true, 0, false, true, 0, 'M', true);
+        $pdf->MultiCell($w[3], $height, $totalSalesPriceNet->getCurrency(2, symbol: ''), 0, 'L', $fill, 1, 15 + $w[0] + $w[1] + $w[2], $tempY, true, 0, false, true, 0, 'M', true);
+    }
 
     $fill = !$fill;
 
     // get taxes
-    if (!isset($taxes[$line->taxR->getInt() / 100])) {
-        $taxes[$line->taxR->getInt() / 100] = $line->taxP;
+    if (!isset($taxes[$line->taxR->value / 10000])) {
+        $taxes[$line->taxR->value / 10000] = $line->taxP;
     } else {
-        $taxes[$line->taxR->getInt() / 100]->add($line->taxP);
+        $taxes[$line->taxR->value / 10000]->add($line->taxP);
     }
 }
 

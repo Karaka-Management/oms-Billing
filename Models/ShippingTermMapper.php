@@ -37,8 +37,8 @@ final class ShippingTermMapper extends DataMapperFactory
      * @since 1.0.0
      */
     public const COLUMNS = [
-        'billing_shipping_term_id'         => ['name' => 'billing_shipping_term_id',       'type' => 'int',    'internal' => 'id'],
-        'billing_shipping_term_code'       => ['name' => 'billing_shipping_term_code',     'type' => 'string', 'internal' => 'title', 'autocomplete' => true],
+        'billing_shipping_term_id'   => ['name' => 'billing_shipping_term_id',       'type' => 'int',    'internal' => 'id'],
+        'billing_shipping_term_code' => ['name' => 'billing_shipping_term_code',     'type' => 'string', 'internal' => 'title', 'autocomplete' => true],
     ];
 
     /**
@@ -54,7 +54,7 @@ final class ShippingTermMapper extends DataMapperFactory
             'self'     => 'billing_shipping_term_l11n_term',
             'column'   => 'content',
             'external' => null,
-        ]
+        ],
     ];
 
     /**

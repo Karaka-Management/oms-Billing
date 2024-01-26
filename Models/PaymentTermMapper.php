@@ -37,8 +37,8 @@ final class PaymentTermMapper extends DataMapperFactory
      * @since 1.0.0
      */
     public const COLUMNS = [
-        'billing_payment_term_id'         => ['name' => 'billing_payment_term_id',       'type' => 'int',    'internal' => 'id'],
-        'billing_payment_term_code'       => ['name' => 'billing_payment_term_code',     'type' => 'string', 'internal' => 'title', 'autocomplete' => true],
+        'billing_payment_term_id'   => ['name' => 'billing_payment_term_id',       'type' => 'int',    'internal' => 'id'],
+        'billing_payment_term_code' => ['name' => 'billing_payment_term_code',     'type' => 'string', 'internal' => 'title', 'autocomplete' => true],
     ];
 
     /**
@@ -54,7 +54,7 @@ final class PaymentTermMapper extends DataMapperFactory
             'self'     => 'billing_payment_term_l11n_term',
             'column'   => 'content',
             'external' => null,
-        ]
+        ],
     ];
 
     /**

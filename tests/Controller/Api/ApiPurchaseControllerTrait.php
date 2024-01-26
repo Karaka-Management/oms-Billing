@@ -18,7 +18,6 @@ use phpOMS\Message\Http\HttpRequest;
 use phpOMS\Message\Http\HttpResponse;
 use phpOMS\Message\Http\RequestStatusCode;
 use phpOMS\System\File\Local\Directory;
-use phpOMS\Uri\HttpUri;
 use phpOMS\Utils\TestUtils;
 
 trait ApiPurchaseControllerTrait
@@ -44,7 +43,7 @@ trait ApiPurchaseControllerTrait
             $file     = $invoiceDocs[$i];
 
             $response = new HttpResponse();
-            $request  = new HttpRequest(new HttpUri(''));
+            $request  = new HttpRequest();
 
             $request->header->account = 1;
 

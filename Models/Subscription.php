@@ -50,7 +50,7 @@ class Subscription implements \JsonSerializable
 
     public int $client = 0;
 
-    public int $quantity = 0;
+    public FloatInt $quantity;
 
     /**
      * Constructor.
@@ -59,19 +59,8 @@ class Subscription implements \JsonSerializable
      */
     public function __construct()
     {
-        $price = new FloatInt();
-    }
-
-    /**
-     * Get id.
-     *
-     * @return int Model id
-     *
-     * @since 1.0.0
-     */
-    public function getId() : int
-    {
-        return $this->id;
+        $price    = new FloatInt();
+        $quantity = new FloatInt();
     }
 
     /**
@@ -80,7 +69,7 @@ class Subscription implements \JsonSerializable
     public function toArray() : array
     {
         return [
-            'id'              => $this->id,
+            'id' => $this->id,
         ];
     }
 

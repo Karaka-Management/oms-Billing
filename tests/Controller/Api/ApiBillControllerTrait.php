@@ -17,7 +17,6 @@ namespace Modules\Billing\tests\Controller\Api;
 use phpOMS\Message\Http\HttpRequest;
 use phpOMS\Message\Http\HttpResponse;
 use phpOMS\Message\Http\RequestStatusCode;
-use phpOMS\Uri\HttpUri;
 use phpOMS\Utils\RnG\DateTime;
 
 trait ApiBillControllerTrait
@@ -25,7 +24,7 @@ trait ApiBillControllerTrait
     public function testBillCreate() : void
     {
         $response = new HttpResponse();
-        $request  = new HttpRequest(new HttpUri(''));
+        $request  = new HttpRequest();
 
         $request->header->account = 1;
 
@@ -53,7 +52,7 @@ trait ApiBillControllerTrait
     public function testBillElementCreate() : void
     {
         $response = new HttpResponse();
-        $request  = new HttpRequest(new HttpUri(''));
+        $request  = new HttpRequest();
 
         $request->header->account = 1;
 
@@ -73,7 +72,7 @@ trait ApiBillControllerTrait
     public function testBillArchiveCreate() : void
     {
         $response = new HttpResponse();
-        $request  = new HttpRequest(new HttpUri(''));
+        $request  = new HttpRequest();
 
         $request->header->account = 1;
 
@@ -87,7 +86,7 @@ trait ApiBillControllerTrait
     public function testBillNoteCreate() : void
     {
         $response = new HttpResponse();
-        $request  = new HttpRequest(new HttpUri(''));
+        $request  = new HttpRequest();
 
         $request->header->account = \mt_rand(2, 5);
 
@@ -107,7 +106,7 @@ trait ApiBillControllerTrait
     public function testBillCreateInvalidData() : void
     {
         $response = new HttpResponse();
-        $request  = new HttpRequest(new HttpUri(''));
+        $request  = new HttpRequest();
 
         $request->header->account = 1;
         $request->setData('invalid', '1');
@@ -123,7 +122,7 @@ trait ApiBillControllerTrait
     public function testBillElementCreateInvalidData() : void
     {
         $response = new HttpResponse();
-        $request  = new HttpRequest(new HttpUri(''));
+        $request  = new HttpRequest();
 
         $request->header->account = 1;
         $request->setData('invalid', '1');

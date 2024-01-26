@@ -27,7 +27,6 @@ use phpOMS\Message\ResponseAbstract;
 use phpOMS\System\OperatingSystem;
 use phpOMS\System\SystemType;
 use phpOMS\System\SystemUtils;
-use phpOMS\Uri\HttpUri;
 
 /**
  * Billing class.
@@ -73,7 +72,7 @@ final class ApiPurchaseController extends Controller
         $files = $request->files;
         foreach ($files as $file) {
             // Create default bill
-            $billRequest                  = new HttpRequest(new HttpUri(''));
+            $billRequest                  = new HttpRequest();
             $billRequest->header->account = $request->header->account;
             $billRequest->header->l11n    = $request->header->l11n;
             $billRequest->setData('supplier', 0);
@@ -83,7 +82,7 @@ final class ApiPurchaseController extends Controller
             $billResponse               = new HttpResponse();
             $billResponse->header->l11n = $response->header->l11n;
 
-            $this->app->moduleManager->get('Billing', 'Api')->apiBillCreate($billRequest, $billResponse, $data);
+            $this->app->moduleManager->get('Billing', 'ApiBill')->apiBillCreate($billRequest, $billResponse, $data);
 
             $billId = $billResponse->getDataArray('')['response']->id;
 
@@ -99,7 +98,7 @@ final class ApiPurchaseController extends Controller
             $mediaRequest->setData('bill', $billId);
             $mediaRequest->setData('type', $originalType);
             $mediaRequest->setData('parse_content', true, true);
-            $this->app->moduleManager->get('Billing', 'Api')->apiMediaAddToBill($mediaRequest, $mediaResponse, $data);
+            $this->app->moduleManager->get('Billing', 'ApiBill')->apiMediaAddToBill($mediaRequest, $mediaResponse, $data);
 
             /** @var \Modules\Media\Models\Media[] $uploaded */
             $uploaded = $mediaResponse->getDataArray('')['response']['upload'];
@@ -116,12 +115,12 @@ final class ApiPurchaseController extends Controller
 
             // Create internal document
             $billResponse = new HttpResponse();
-            $billRequest  = new HttpRequest(new HttpUri(''));
+            $billRequest  = new HttpRequest();
 
             $billRequest->header->account = $request->header->account;
             $billRequest->setData('bill', $billId);
 
-            $this->app->moduleManager->get('Billing', 'Api')->apiBillPdfArchiveCreate($billRequest, $billResponse);
+            $this->app->moduleManager->get('Billing', 'ApiBill')->apiBillPdfArchiveCreate($billRequest, $billResponse);
 
             // Offload bill parsing to cli
             $cliPath = \realpath(__DIR__ . '/../../../cli.php');

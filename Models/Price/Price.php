@@ -50,6 +50,7 @@ class Price implements \JsonSerializable
     public Item $item;
 
     public AttributeValue $itemsalesgroup;
+
     public AttributeValue $itemproductgroup;
 
     public AttributeValue $itemsegment;
@@ -76,19 +77,21 @@ class Price implements \JsonSerializable
 
     public int $type = PriceType::SALES;
 
-    public int $quantity = 0;
+    public FloatInt $quantity;
 
     public FloatInt $price;
 
-    public int $priceNew = 0;
+    public FloatInt $priceNew;
 
-    public int $discount = 0;
+    public FloatInt $discount;
 
-    public int $discountPercentage = 0;
+    public FloatInt $discountPercentage;
 
-    public int $bonus = 0;
+    public FloatInt $bonus;
 
     public bool $multiply = false;
+
+    public bool $isAdditive = false;
 
     public string $currency = ISO4217CharEnum::_EUR;
 
@@ -103,12 +106,12 @@ class Price implements \JsonSerializable
      */
     public function __construct()
     {
-        $this->item        = new NullItem();
+        $this->item             = new NullItem();
         $this->itemsalesgroup   = new NullAttributeValue();
-        $this->itemproductgroup   = new NullAttributeValue();
-        $this->itemsegment = new NullAttributeValue();
-        $this->itemsection = new NullAttributeValue();
-        $this->itemtype    = new NullAttributeValue();
+        $this->itemproductgroup = new NullAttributeValue();
+        $this->itemsegment      = new NullAttributeValue();
+        $this->itemsection      = new NullAttributeValue();
+        $this->itemtype         = new NullAttributeValue();
 
         $this->client        = new NullClient();
         $this->clientgroup   = new NullAttributeValue();
@@ -118,19 +121,12 @@ class Price implements \JsonSerializable
 
         $this->supplier = new NullSupplier();
 
-        $this->price = new FloatInt();
-    }
-
-    /**
-     * Get id.
-     *
-     * @return int Model id
-     *
-     * @since 1.0.0
-     */
-    public function getId() : int
-    {
-        return $this->id;
+        $this->price              = new FloatInt();
+        $this->quantity           = new FloatInt();
+        $this->priceNew           = new FloatInt();
+        $this->discount           = new FloatInt();
+        $this->discountPercentage = new FloatInt();
+        $this->bonus              = new FloatInt();
     }
 
     /**

@@ -16,11 +16,15 @@ namespace Modules\Billing\Controller;
 
 use Modules\Admin\Models\NullAccount;
 use Modules\Admin\Models\SettingsEnum as AdminSettingsEnum;
+use Modules\Attribute\Models\NullAttribute;
+use Modules\Attribute\Models\NullAttributeType;
+use Modules\Attribute\Models\NullAttributeValue;
 use Modules\Billing\Models\Bill;
 use Modules\Billing\Models\BillElement;
 use Modules\Billing\Models\BillElementMapper;
 use Modules\Billing\Models\BillMapper;
 use Modules\Billing\Models\BillStatus;
+use Modules\Billing\Models\BillTransferType;
 use Modules\Billing\Models\BillTypeMapper;
 use Modules\Billing\Models\NullBill;
 use Modules\Billing\Models\NullBillElement;
@@ -28,8 +32,10 @@ use Modules\Billing\Models\PermissionCategory;
 use Modules\Billing\Models\SettingsEnum;
 use Modules\ClientManagement\Models\Client;
 use Modules\ClientManagement\Models\ClientMapper;
+use Modules\ItemManagement\Models\Attribute\ItemAttributeMapper;
 use Modules\ItemManagement\Models\Item;
 use Modules\ItemManagement\Models\ItemMapper;
+use Modules\ItemManagement\Models\NullContainer;
 use Modules\Media\Models\CollectionMapper;
 use Modules\Media\Models\Media;
 use Modules\Media\Models\MediaMapper;
@@ -46,12 +52,14 @@ use phpOMS\Autoloader;
 use phpOMS\DataStorage\Database\Query\ColumnName;
 use phpOMS\Localization\ISO4217CharEnum;
 use phpOMS\Localization\ISO639x1Enum;
+use phpOMS\Message\Http\HttpRequest;
 use phpOMS\Message\Http\RequestStatusCode;
 use phpOMS\Message\Mail\Email;
 use phpOMS\Message\NotificationLevel;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
 use phpOMS\Model\Message\FormValidation;
+use phpOMS\Stdlib\Base\FloatInt;
 use phpOMS\System\MimeType;
 use phpOMS\Views\View;
 
@@ -72,12 +80,16 @@ final class ApiBillController extends Controller
      *
      * @since 1.0.0
      */
-    public function __construct(ApplicationAbstract $app = null)
+    public function __construct(?ApplicationAbstract $app = null)
     {
         parent::__construct($app);
 
         if ($this->app->moduleManager->isActive('WarehouseManagement')) {
             $this->app->eventManager->importFromFile(__DIR__ . '/../../WarehouseManagement/Admin/Hooks/Manual.php');
+        }
+
+        if ($this->app->moduleManager->isActive('Accounting')) {
+            $this->app->eventManager->importFromFile(__DIR__ . '/../../Accounting/Admin/Hooks/Manual.php');
         }
     }
 
@@ -205,6 +217,13 @@ final class ApiBillController extends Controller
     /**
      * Create a base Bill object with default values
      *
+     * Client attributes required:
+     *      'segment', 'section', 'client_group', 'client_type',
+     *      'sales_tax_code'
+     *
+     * Supplier attributes required:
+     *      'purchase_tax_code'
+     *
      * @param Client|Supplier $account The client or supplier object for whom the bill is being created
      * @param RequestAbstract $request The request object that contains the header account
      *
@@ -227,18 +246,24 @@ final class ApiBillController extends Controller
         $bill->billDate        = new \DateTime('now'); // @todo Date of payment
         $bill->performanceDate = $request->getDataDateTime('performancedate') ?? new \DateTime('now'); // @todo Date of payment
         $bill->accountNumber   = $account->number;
-        $bill->setStatus($request->getDataInt('status') ?? BillStatus::DRAFT);
+        $bill->status          = BillStatus::tryFromValue($request->getDataInt('status')) ?? BillStatus::DRAFT;
 
-        $bill->shippingTerms     = null;
-        $bill->shippingText = '';
+        $bill->shippingTerms = null;
+        $bill->shippingText  = '';
 
-        $bill->paymentTerms     = null;
-        $bill->paymentText = '';
+        $bill->paymentTerms = null;
+        $bill->paymentText  = '';
 
         if ($account instanceof Client) {
-            $bill->client = $account;
+            $bill->client     = $account;
+            $bill->accTaxCode = empty($temp = $bill->client->getAttribute('sales_tax_code')->value->id) ? null : $temp;
+            $bill->accSegment = empty($temp = $bill->client->getAttribute('segment')->value->id) ? null : $temp;
+            $bill->accSection = empty($temp = $bill->client->getAttribute('section')->value->id) ? null : $temp;
+            $bill->accGroup   = empty($temp = $bill->client->getAttribute('client_group')->value->id) ? null : $temp;
+            $bill->accType    = empty($temp = $bill->client->getAttribute('client_type')->value->id) ? null : $temp;
         } else {
-            $bill->supplier = $account;
+            $bill->supplier   = $account;
+            $bill->accTaxCode = empty($temp = $bill->supplier->getAttribute('purchase_tax_code')->value->id) ? null : $temp;
         }
 
         // @todo use bill and shipping address instead of main address if available
@@ -246,9 +271,9 @@ final class ApiBillController extends Controller
         $bill->billAddress = $request->getDataString('billaddress') ?? $account->mainAddress->address;
         $bill->billCity    = $request->getDataString('billtocity') ?? $account->mainAddress->city;
         $bill->billZip     = $request->getDataString('billtopostal') ?? $account->mainAddress->postal;
-        $bill->billCountry = $request->getDataString('billtocountry') ?? $account->mainAddress->getCountry();
+        $bill->billCountry = $request->getDataString('billtocountry') ?? $account->mainAddress->country;
 
-        $bill->setCurrency(ISO4217CharEnum::_EUR);
+        $bill->currency = ISO4217CharEnum::_EUR;
 
         /** @var \Model\Setting $settings */
         $settings = $this->app->appSettings->get(null,
@@ -283,7 +308,7 @@ final class ApiBillController extends Controller
         if (!empty($accountBillLanguage) && \in_array($accountBillLanguage, $validLanguages)) {
             $billLanguage = $accountBillLanguage;
         } else {
-            $accountLanguages = ISO639x1Enum::languageFromCountry($account->mainAddress->getCountry());
+            $accountLanguages = ISO639x1Enum::languageFromCountry($account->mainAddress->country);
             $accountLanguage  = empty($accountLanguages) ? '' : $accountLanguages[0];
 
             if (\in_array($accountLanguage, $validLanguages)) {
@@ -312,7 +337,11 @@ final class ApiBillController extends Controller
     /**
      * Create a base BillElement object with default values
      *
-     * @param Client          $client  The client object for whom the bill is being created
+     * Item attributes required:
+     *      'segment', 'section', 'sales_group', 'product_group', 'product_type',
+     *      'sales_tax_code', 'purchase_tax_code', 'costcenter', 'costobject',
+     *      'default_purchase_container', 'default_sales_container',
+     *
      * @param Item            $item    The item object for which the bill element is being created
      * @param Bill            $bill    The bill object for which the bill element is being created
      * @param RequestAbstract $request The request object that contains the header account
@@ -321,17 +350,94 @@ final class ApiBillController extends Controller
      *
      * @since 1.0.0
      */
-    public function createBaseBillElement(Client $client, Item $item, Bill $bill, RequestAbstract $request) : BillElement
+    public function createBaseBillElement(Item $item, Bill $bill, RequestAbstract $request) : BillElement
     {
-        $taxCode = $this->app->moduleManager->get('Billing', 'ApiTax')
-            ->getTaxCodeFromClientItem($client, $item, $request->header->l11n->country);
+        // Handle person tax code for finding tax combination below
+        $attr           = new NullAttribute();
+        $attrType       = new NullAttributeType();
+        $attrType->name = $bill->client !== null ? 'sales_tax_code' : 'purchase_tax_code';
+        $attrValue      = new NullAttributeValue($bill->accTaxCode ?? 0);
+        $attr->type     = $attrType;
+        $attr->value    = $attrValue;
 
-        return BillElement::fromItem(
+        $container = $request->hasData('container') ? new NullContainer($request->getDataInt('container')) : null;
+        $attr      = new NullAttribute();
+
+        if ($bill->type->transferType === BillTransferType::PURCHASE) {
+            $bill->supplier->attributes[] = $attr;
+
+            if ($container === null) {
+                $attr = $item->getAttribute('default_purchase_container');
+                if ($attr->id === 0) {
+                    /** @var \Modules\Attribute\Models\Attribute $attr */
+                    $attr = ItemAttributeMapper::get()
+                        ->with('type')
+                        ->with('value')
+                        ->where('ref', $item->id)
+                        ->where('type/name', 'default_purchase_container')
+                        ->execute();
+                }
+            }
+        } else {
+            $bill->client->attributes[] = $attr;
+
+            if ($container === null) {
+                $attr = $item->getAttribute('default_sales_container');
+                if ($attr->id === 0) {
+                    /** @var \Modules\Attribute\Models\Attribute $attr */
+                    $attr = ItemAttributeMapper::get()
+                        ->with('type')
+                        ->with('value')
+                        ->where('ref', $item->id)
+                        ->where('type/name', 'default_sales_container')
+                        ->execute();
+                }
+            }
+        }
+
+        $container = $container === null && $attr->id !== 0
+            ? new NullContainer($attr->value->getValue())
+            : $container;
+
+        $taxCombination = $this->app->moduleManager->get('Billing', 'ApiTax')
+            ->getTaxForPerson($bill->client, $bill->supplier, $item, $request->header->l11n->country);
+
+        $element = BillElement::fromItem(
             $item,
-            $taxCode,
-            $request->getDataInt('quantity') ?? 1,
-            $bill->id
+            $taxCombination,
+            FloatInt::toInt($request->getDataString('quantity') ?? 1),
+            $bill->id,
+            $container
         );
+
+        $element->itemSegment      = empty($temp = $item->getAttribute('segment')->value->id) ? null : $temp;
+        $element->itemSection      = empty($temp = $item->getAttribute('section')->value->id) ? null : $temp;
+        $element->itemSalesGroup   = empty($temp = $item->getAttribute('sales_group')->value->id) ? null : $temp;
+        $element->itemProductGroup = empty($temp = $item->getAttribute('product_group')->value->id) ? null : $temp;
+        $element->itemType         = empty($temp = $item->getAttribute('product_type')->value->id) ? null : $temp;
+
+        $internalRequest                  = new HttpRequest($request->uri);
+        $internalRequest->header->account = $request->header->account;
+
+        $price = $this->app->moduleManager->get('Billing', 'ApiPrice')->findBestPrice($internalRequest, $item, $bill->client, $bill->supplier);
+
+        $element->singleListPriceNet->value = $price['bestPrice']->value === 0
+            ? $item->salesPrice->value
+            : $price['bestPrice']->value;
+
+        $element->singleSalesPriceNet->value = $price['bestActualPrice']->value === 0
+            ? $item->salesPrice->value
+            : $price['bestActualPrice']->value;
+
+        $element->singleDiscountP->value = ($price['discountAmount']->value ?? 0) / ($element->quantity->value - $price['bonus']->value);
+        $element->totalDiscountP         = $price['discountAmount'];
+
+        $element->singleDiscountR = $price['discountPercent'];
+        $element->discountQ       = $price['bonus'];
+
+        $element->recalculatePrices();
+
+        return $element;
     }
 
     /**
@@ -354,7 +460,14 @@ final class ApiBillController extends Controller
             $account = ClientMapper::get()
                 ->with('account')
                 ->with('mainAddress')
+                ->with('attributes')
+                ->with('attributes/type')
+                ->with('attributes/value')
                 ->where('id', (int) $request->getData('client'))
+                ->where('attributes/type/name', [
+                    'segment', 'section', 'client_group', 'client_type',
+                    'sales_tax_code',
+                ], 'IN')
                 ->execute();
         } elseif (($request->getDataInt('supplier') ?? -1) === 0) {
             /** @var \Modules\SupplierManagement\Models\Supplier $account */
@@ -364,7 +477,13 @@ final class ApiBillController extends Controller
             $account = SupplierMapper::get()
                 ->with('account')
                 ->with('mainAddress')
+                ->with('attributes')
+                ->with('attributes/type')
+                ->with('attributes/value')
                 ->where('id', (int) $request->getData('supplier'))
+                ->where('attributes/type/name', [
+                    'purchase_tax_code',
+                ], 'IN')
                 ->execute();
         }
 
@@ -673,9 +792,7 @@ final class ApiBillController extends Controller
         /** @var \Modules\Billing\Models\Bill $old */
         $old = BillMapper::get()
             ->with('client')
-            ->with('client/attributes')
-            ->with('client/attributes/type')
-            ->with('client/attributes/value')
+            ->with('supplier')
             ->where('id', $request->getDataInt('bill') ?? 0)
             ->execute();
 
@@ -691,7 +808,7 @@ final class ApiBillController extends Controller
         $new = clone $old;
         $new->addElement($element);
 
-        $this->updateModel($request->header->account, $old, $new, BillMapper::class, 'bill_element', $request->getOrigin());
+        $this->updateModel($request->header->account, $old, $new, BillMapper::class, 'bill', $request->getOrigin());
         $this->createStandardCreateResponse($request, $response, $element);
     }
 
@@ -709,6 +826,8 @@ final class ApiBillController extends Controller
      */
     private function createBillElementFromRequest(RequestAbstract $request, ResponseAbstract $response, Bill $bill, $data = null) : BillElement
     {
+        // @todo handle text element
+
         /** @var \Modules\ItemManagement\Models\Item $item */
         $item = ItemMapper::get()
             ->with('attributes')
@@ -717,6 +836,11 @@ final class ApiBillController extends Controller
             ->with('l11n')
             ->with('l11n/type')
             ->where('id', $request->getDataInt('item') ?? 0)
+            ->where('attributes/type/name', [
+                'segment', 'section', 'sales_group', 'product_group', 'product_type',
+                'sales_tax_code', 'purchase_tax_code', 'costcenter', 'costobject',
+                'default_purchase_container', 'default_sales_container',
+            ], 'IN')
             ->where('l11n/type/title', ['name1', 'name2', 'name3'], 'IN')
             ->where('l11n/language', $bill->language)
             ->execute();
@@ -725,15 +849,8 @@ final class ApiBillController extends Controller
             return new NullBillElement();
         }
 
-        $element       = $this->createBaseBillElement($bill->client, $item, $bill, $request);
+        $element       = $this->createBaseBillElement($item, $bill, $request);
         $element->bill = new NullBill($bill->id);
-
-        // discounts
-        // @todo implement a addDiscount function
-        /*
-        if ($request->getData('discount_percentage') !== null) {
-        }
-        */
 
         return $element;
     }
@@ -796,6 +913,7 @@ final class ApiBillController extends Controller
         /** @var \Modules\Billing\Models\Bill $bill */
         $bill = BillMapper::get()
             ->with('elements')
+            ->with('elements/container')
             ->where('id', $request->getDataInt('bill') ?? 0)
             ->execute();
 
@@ -849,7 +967,7 @@ final class ApiBillController extends Controller
             ->where('id', [
                 (int) $settings[AdminSettingsEnum::DEFAULT_TEMPLATES]->content,
                 (int) $settings[AdminSettingsEnum::DEFAULT_ASSETS]->content,
-                $templateId
+                $templateId,
             ], 'IN')
             ->execute();
 
@@ -940,11 +1058,22 @@ final class ApiBillController extends Controller
         /** @var \Modules\Billing\Models\Bill $bill */
         $bill = BillMapper::get()
             ->with('elements')
+            ->with('elements/container')
             ->with('type')
             ->with('type/l11n')
             ->where('id', $request->getDataInt('bill') ?? 0)
             ->where('type/l11n/language', new ColumnName(BillMapper::getColumnByMember('language')))
             ->execute();
+
+        $this->app->eventManager->triggerSimilar('PRE:Module:' . self::NAME . '-bill-finalize', '', [
+            $request->header->account,
+            null, $bill,
+            null, self::NAME . '-bill-finalize',
+            self::NAME,
+            (string) $bill->id,
+            null,
+            $request->getOrigin(),
+        ]);
 
         // Handle PDF generation
         $templateId = $request->getDataInt('bill_template') ?? $bill->type->defaultTemplate?->id ?? 0;
@@ -981,7 +1110,7 @@ final class ApiBillController extends Controller
             ->where('id', [
                 (int) $settings[AdminSettingsEnum::DEFAULT_TEMPLATES]->content,
                 (int) $settings[AdminSettingsEnum::DEFAULT_ASSETS]->content,
-                $templateId
+                $templateId,
             ], 'IN')
             ->execute();
 

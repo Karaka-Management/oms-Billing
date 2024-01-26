@@ -23,12 +23,12 @@ include __DIR__ . '/../../../Media/Theme/Backend/template-functions.php';
 
 /** @var \Modules\Billing\Models\Bill $bill */
 $bill     = $this->data['bill'];
-$elements = $bill->getElements();
+$elements = $bill->elements;
 
 $billTypes = $this->data['billtypes'] ?? [];
 
 $originalType = $this->data['originalType'];
-$original = $bill->getFileByType($originalType);
+$original     = $bill->getFileByType($originalType);
 
 /** @var \Modules\Auditor\Models\Audit */
 $logs = $this->data['logs'] ?? [];
@@ -302,7 +302,7 @@ echo $this->data['nav']->render(); ?>
                             <tbody>
                             <?php
                             foreach ($logs as $audit) :
-                                $url = UriFactory::build('{/base}/admin/audit/single?id=' . $audit->id);
+                                $url = UriFactory::build('{/base}/admin/audit/view?id=' . $audit->id);
                             ?>
                             <tr data-href="<?= $url; ?>">
                                 <td><a href="<?= $url; ?>"><?= $audit->id; ?></a>

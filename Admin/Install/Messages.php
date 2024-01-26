@@ -18,7 +18,6 @@ use Modules\Billing\Models\SettingsEnum;
 use phpOMS\Application\ApplicationAbstract;
 use phpOMS\Message\Http\HttpRequest;
 use phpOMS\Message\Http\HttpResponse;
-use phpOMS\Uri\HttpUri;
 
 /**
  * Media class.
@@ -57,7 +56,7 @@ class Messages
         ];
 
         $response = new HttpResponse();
-        $request  = new HttpRequest(new HttpUri(''));
+        $request  = new HttpRequest();
 
         $request->header->account = 1;
         $request->setData('settings', \json_encode($settings));

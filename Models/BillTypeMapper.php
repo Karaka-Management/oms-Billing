@@ -37,15 +37,16 @@ final class BillTypeMapper extends DataMapperFactory
      * @since 1.0.0
      */
     public const COLUMNS = [
-        'billing_type_id'                     => ['name' => 'billing_type_id',             'type' => 'int',    'internal' => 'id'],
-        'billing_type_name'                   => ['name' => 'billing_type_name',       'type' => 'string',    'internal' => 'name'],
-        'billing_type_number_format'          => ['name' => 'billing_type_number_format',       'type' => 'string',    'internal' => 'numberFormat'],
-        'billing_type_account_format'         => ['name' => 'billing_type_account_format',       'type' => 'string',    'internal' => 'accountFormat'],
-        'billing_type_transfer_type'          => ['name' => 'billing_type_transfer_type',  'type' => 'int',    'internal' => 'transferType'],
-        'billing_type_default_template'       => ['name' => 'billing_type_default_template',  'type' => 'int',    'internal' => 'defaultTemplate'],
-        'billing_type_transfer_stock'         => ['name' => 'billing_type_transfer_stock', 'type' => 'bool',   'internal' => 'transferStock'],
-        'billing_type_transfer_sign'          => ['name' => 'billing_type_transfer_sign', 'type' => 'int',   'internal' => 'sign'],
-        'billing_type_is_template'            => ['name' => 'billing_type_is_template', 'type' => 'bool',   'internal' => 'isTemplate'],
+        'billing_type_id'               => ['name' => 'billing_type_id',             'type' => 'int',    'internal' => 'id'],
+        'billing_type_name'             => ['name' => 'billing_type_name',       'type' => 'string',    'internal' => 'name'],
+        'billing_type_number_format'    => ['name' => 'billing_type_number_format',       'type' => 'string',    'internal' => 'numberFormat'],
+        'billing_type_account_format'   => ['name' => 'billing_type_account_format',       'type' => 'string',    'internal' => 'accountFormat'],
+        'billing_type_transfer_type'    => ['name' => 'billing_type_transfer_type',  'type' => 'int',    'internal' => 'transferType'],
+        'billing_type_default_template' => ['name' => 'billing_type_default_template',  'type' => 'int',    'internal' => 'defaultTemplate'],
+        'billing_type_transfer_stock'   => ['name' => 'billing_type_transfer_stock', 'type' => 'bool',   'internal' => 'transferStock'],
+        'billing_type_accounting'       => ['name' => 'billing_type_accounting', 'type' => 'bool',   'internal' => 'isAccounting'],
+        'billing_type_transfer_sign'    => ['name' => 'billing_type_transfer_sign', 'type' => 'int',   'internal' => 'sign'],
+        'billing_type_is_template'      => ['name' => 'billing_type_is_template', 'type' => 'bool',   'internal' => 'isTemplate'],
     ];
 
     /**
@@ -56,13 +57,13 @@ final class BillTypeMapper extends DataMapperFactory
      */
     public const HAS_MANY = [
         'l11n' => [
-            'mapper'            => BillTypeL11nMapper::class,
-            'table'             => 'billing_type_l11n',
-            'self'              => 'billing_type_l11n_type',
-            'column'            => 'content',
-            'external'          => null,
+            'mapper'   => BillTypeL11nMapper::class,
+            'table'    => 'billing_type_l11n',
+            'self'     => 'billing_type_l11n_type',
+            'column'   => 'content',
+            'external' => null,
         ],
-        'templates'        => [
+        'templates' => [
             'mapper'   => CollectionMapper::class,
             'table'    => 'billing_bill_type_media_rel',
             'external' => 'billing_bill_type_media_rel_dst',
@@ -77,9 +78,9 @@ final class BillTypeMapper extends DataMapperFactory
      * @since 1.0.0
      */
     public const OWNS_ONE = [
-        'defaultTemplate'  => [
-            'mapper'     => CollectionMapper::class,
-            'external'   => 'billing_type_default_template',
+        'defaultTemplate' => [
+            'mapper'   => CollectionMapper::class,
+            'external' => 'billing_type_default_template',
         ],
     ];
 

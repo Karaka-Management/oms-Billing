@@ -42,7 +42,8 @@ final class BillAttributeTypeMapper extends DataMapperFactory
         'billing_attr_type_datatype'   => ['name' => 'billing_attr_type_datatype',   'type' => 'int',    'internal' => 'datatype'],
         'billing_attr_type_fields'     => ['name' => 'billing_attr_type_fields',   'type' => 'int',    'internal' => 'fields'],
         'billing_attr_type_custom'     => ['name' => 'billing_attr_type_custom',   'type' => 'bool',   'internal' => 'custom'],
-        'billing_attr_type_repeatable'     => ['name' => 'billing_attr_type_repeatable',   'type' => 'bool',   'internal' => 'repeatable'],
+        'billing_attr_type_repeatable' => ['name' => 'billing_attr_type_repeatable',   'type' => 'bool',   'internal' => 'repeatable'],
+        'billing_attr_type_internal'   => ['name' => 'billing_attr_type_internal',   'type' => 'bool',   'internal' => 'isInternal'],
         'billing_attr_type_pattern'    => ['name' => 'billing_attr_type_pattern',  'type' => 'string', 'internal' => 'validationPattern'],
         'billing_attr_type_required'   => ['name' => 'billing_attr_type_required', 'type' => 'bool',   'internal' => 'isRequired'],
     ];

@@ -18,7 +18,7 @@ use phpOMS\Account\PermissionType;
 use phpOMS\Router\RouteVerb;
 
 return [
-    '^.*/bill/render\?.*$' => [
+    '^.*/bill/render(\?.*$|$)' => [
         [
             'dest'       => '\Modules\Billing\Controller\ApiBillController:apiMediaRender',
             'verb'       => RouteVerb::GET,
@@ -29,7 +29,7 @@ return [
             ],
         ],
     ],
-    '^.*/bill/render/preview.*$' => [
+    '^.*/bill/render/preview(\?.*$|$)' => [
         [
             'dest'       => '\Modules\Billing\Controller\ApiBillController:apiPreviewRender',
             'verb'       => RouteVerb::GET,
@@ -40,7 +40,7 @@ return [
             ],
         ],
     ],
-    '^.*/bill/price.*$' => [
+    '^.*/bill/price(\?.*$|$)' => [
         [
             'dest'       => '\Modules\Billing\Controller\ApiPriceController:apiPriceCreate',
             'verb'       => RouteVerb::GET,

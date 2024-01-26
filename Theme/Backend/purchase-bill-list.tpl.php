@@ -163,7 +163,7 @@ echo $this->data['nav']->render(); ?>
                                 </label>
                         <td><a href="<?= $url; ?>"><?= $value->getNumber(); ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->type->getL11n(); ?></a>
-                        <td><a class="content" href="<?= $supplier = UriFactory::build('purchase/supplier/profile?{?}&id=' . $value->supplier->id); ?>"><?= $value->supplier->number; ?></a>
+                        <td><a class="content" href="<?= $supplier = UriFactory::build('purchase/supplier/view?{?}&id=' . $value->supplier->id); ?>"><?= $value->supplier->number; ?></a>
                         <td><a class="content" href="<?= $supplier; ?>"><?= $this->printHtml($value->billTo); ?></a>
                         <td><a href="<?= $url;
                          ?>"><?= $value->billAddress; ?></a>

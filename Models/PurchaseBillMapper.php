@@ -42,10 +42,10 @@ final class PurchaseBillMapper extends BillMapper
      */
     public static function getPurchaseBeforePivot(
         mixed $pivot,
-        string $column = null,
+        ?string $column = null,
         int $limit = 50,
         int $depth = 3,
-        Builder $query = null
+        ?Builder $query = null
     ) : array
     {
         return self::getAll()
@@ -61,10 +61,10 @@ final class PurchaseBillMapper extends BillMapper
      */
     public static function getPurchaseAfterPivot(
         mixed $pivot,
-        string $column = null,
+        ?string $column = null,
         int $limit = 50,
         int $depth = 3,
-        Builder $query = null
+        ?Builder $query = null
     ) : array
     {
         return self::getAll()

@@ -37,10 +37,10 @@ final class ShippingTermL11nMapper extends DataMapperFactory
      * @since 1.0.0
      */
     public const COLUMNS = [
-        'billing_shipping_term_l11n_id'    => ['name' => 'billing_shipping_term_l11n_id',    'type' => 'int',    'internal' => 'id'],
-        'billing_shipping_term_l11n_name' => ['name' => 'billing_shipping_term_l11n_name', 'type' => 'string', 'internal' => 'content', 'autocomplete' => true],
-        'billing_shipping_term_l11n_term'  => ['name' => 'billing_shipping_term_l11n_term',  'type' => 'int',    'internal' => 'ref'],
-        'billing_shipping_term_l11n_language'  => ['name' => 'billing_shipping_term_l11n_language',  'type' => 'string', 'internal' => 'language'],
+        'billing_shipping_term_l11n_id'       => ['name' => 'billing_shipping_term_l11n_id',    'type' => 'int',    'internal' => 'id'],
+        'billing_shipping_term_l11n_name'     => ['name' => 'billing_shipping_term_l11n_name', 'type' => 'string', 'internal' => 'content', 'autocomplete' => true],
+        'billing_shipping_term_l11n_term'     => ['name' => 'billing_shipping_term_l11n_term',  'type' => 'int',    'internal' => 'ref'],
+        'billing_shipping_term_l11n_language' => ['name' => 'billing_shipping_term_l11n_language',  'type' => 'string', 'internal' => 'language'],
     ];
 
     /**

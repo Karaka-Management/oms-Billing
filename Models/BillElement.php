@@ -14,7 +14,9 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Models;
 
+use Modules\Billing\Models\Tax\TaxCombination;
 use Modules\Finance\Models\TaxCode;
+use Modules\ItemManagement\Models\Container;
 use Modules\ItemManagement\Models\Item;
 use Modules\ItemManagement\Models\NullItem;
 use phpOMS\Stdlib\Base\FloatInt;
@@ -42,17 +44,37 @@ class BillElement implements \JsonSerializable
 
     public ?Item $item = null;
 
+    public ?Container $container = null;
+
     public string $itemNumber = '';
 
     public string $itemName = '';
 
     public string $itemDescription = '';
 
-    public int $quantity = 0;
+    /**
+     * Line quantity
+     *
+     * Careful this also includes the bonus items defined in $discountQ!
+     *
+     * @var FloatInt
+     * @since 1.0.0
+     */
+    public FloatInt $quantity;
 
     public ?Subscription $subscription = null;
 
+    /**
+     * Single unit price
+     *
+     * Careful this is NOT corrected by bonus items defined in $discountQ
+     *
+     * @var FloatInt
+     * @since 1.0.0
+     */
     public FloatInt $singleSalesPriceNet;
+
+    public FloatInt $effectiveSingleSalesPriceNet;
 
     public FloatInt $singleSalesPriceGross;
 
@@ -64,9 +86,9 @@ class BillElement implements \JsonSerializable
 
     public FloatInt $totalDiscountP;
 
-    public ?FloatInt $singleDiscountR = null;
+    public FloatInt $singleDiscountR;
 
-    public ?FloatInt $discountQ = null;
+    public FloatInt $discountQ;
 
     public FloatInt $singleListPriceNet;
 
@@ -91,6 +113,22 @@ class BillElement implements \JsonSerializable
     public FloatInt $totalProfitNet;
 
     public FloatInt $totalProfitGross;
+
+    public ?int $itemSegment = null;
+
+    public ?int $itemSection = null;
+
+    public ?int $itemSalesGroup = null;
+
+    public ?int $itemProductGroup = null;
+
+    public ?int $itemType = null;
+
+    public string $fiAccount = '';
+
+    public ?string $costcenter = null;
+
+    public ?string $costobject = null;
 
     /**
      * Tax amount
@@ -128,6 +166,9 @@ class BillElement implements \JsonSerializable
 
     public Bill $bill;
 
+    // Distribution of lots/sn and from which stock location
+    public array $identifiers = [];
+
     /**
      * Constructor.
      *
@@ -137,6 +178,8 @@ class BillElement implements \JsonSerializable
     {
         $this->bill = new NullBill();
 
+        $this->quantity = new FloatInt();
+
         $this->singleListPriceNet   = new FloatInt();
         $this->singleListPriceGross = new FloatInt();
 
@@ -145,6 +188,8 @@ class BillElement implements \JsonSerializable
 
         $this->singleSalesPriceNet   = new FloatInt();
         $this->singleSalesPriceGross = new FloatInt();
+
+        $this->effectiveSingleSalesPriceNet = new FloatInt();
 
         $this->totalSalesPriceNet   = new FloatInt();
         $this->totalSalesPriceGross = new FloatInt();
@@ -163,21 +208,11 @@ class BillElement implements \JsonSerializable
 
         $this->singleDiscountP = new FloatInt();
         $this->totalDiscountP  = new FloatInt();
+        $this->singleDiscountR = new FloatInt();
+        $this->discountQ       = new FloatInt();
 
         $this->taxP = new FloatInt();
         $this->taxR = new FloatInt();
-    }
-
-    /**
-     * Get id.
-     *
-     * @return int Model id
-     *
-     * @since 1.0.0
-     */
-    public function getId() : int
-    {
-        return $this->id;
     }
 
     /**
@@ -196,19 +231,30 @@ class BillElement implements \JsonSerializable
         }
 
         $this->quantity = $quantity;
-        // @todo recalculate all the prices!!!
+
+        $this->recalculatePrices();
     }
 
-    /**
-     * Get quantity.
-     *
-     * @return int
-     *
-     * @since 1.0.0
-     */
-    public function getQuantity() : int
+    public function recalculatePrices() : void
     {
-        return $this->quantity;
+        $this->totalListPriceNet->value  = (int) \round(($this->quantity->getNormalizedValue() - $this->discountQ->getNormalizedValue()) * $this->singleListPriceNet->value, 0);
+        $this->totalSalesPriceNet->value = (int) \round(($this->quantity->getNormalizedValue() - $this->discountQ->getNormalizedValue()) * $this->singleListPriceNet->value, 0);
+
+        $this->singleProfitNet->value = $this->singleSalesPriceNet->value - $this->singlePurchasePriceNet->value;
+        $this->totalProfitNet->value  = $this->totalSalesPriceNet->value - $this->totalPurchasePriceNet->value;
+
+        $this->taxP->value = (int) \round($this->taxR->value / 1000000 * $this->totalSalesPriceNet->value, 0);
+
+        $this->singleListPriceGross->value  = (int) \round($this->singleListPriceNet->value + $this->singleListPriceNet->value * $this->taxR->value / 10000, 0);
+        $this->totalListPriceGross->value   = (int) \round($this->totalListPriceNet->value + $this->totalListPriceNet->value * $this->taxR->value / 10000, 0);
+        $this->singleSalesPriceGross->value = (int) \round($this->singleSalesPriceNet->value + $this->singleSalesPriceNet->value * $this->taxR->value / 10000, 0);
+        $this->totalSalesPriceGross->value  = (int) \round($this->totalSalesPriceNet->value + $this->totalSalesPriceNet->value * $this->taxR->value / 10000, 0);
+
+        $this->singleProfitGross->value = $this->singleSalesPriceGross->value - $this->singlePurchasePriceGross->value;
+        $this->totalProfitGross->value  = (int) \round(($this->quantity->getNormalizedValue() - $this->discountQ->getNormalizedValue()) * ($this->totalSalesPriceGross->value - $this->totalPurchasePriceGross->value), 0);
+
+        // important because the quantity includes $discountQ
+        $this->effectiveSingleSalesPriceNet->value = (int) \round($this->totalSalesPriceNet->value / ($this->quantity->value / 10000));
     }
 
     /**
@@ -229,7 +275,7 @@ class BillElement implements \JsonSerializable
      * Create element from item
      *
      * @param Item    $item     Item
-     * @param TaxCode $code     Tax code used for gross amount calculation
+     * @param TaxCode $taxCode  Tax code used for gross amount calculation
      * @param int     $quantity Quantity
      * @param int     $bill     Bill
      *
@@ -237,41 +283,33 @@ class BillElement implements \JsonSerializable
      *
      * @since 1.0.0
      */
-    public static function fromItem(Item $item, TaxCode $code, int $quantity = 1, int $bill = 0) : self
+    public static function fromItem(
+        Item $item,
+        TaxCombination $taxCombination,
+        int $quantity = 10000,
+        int $bill = 0,
+        ?Container $container = null
+    ) : self
     {
         $element                  = new self();
         $element->bill            = new NullBill($bill);
         $element->item            = empty($item->id) ? null : $item;
+        $element->container       = empty($container->id) ? null : $container;
         $element->itemNumber      = $item->number;
         $element->itemName        = $item->getL11n('name1')->content;
         $element->itemDescription = $item->getL11n('description_short')->content;
-        $element->quantity        = $quantity;
+        $element->quantity->value = $quantity;
 
-        // @todo Use pricing instead of the default sales price
-        // @todo discounts might be in quantities
-        $element->singleListPriceNet->setInt($item->salesPrice->getInt());
-        $element->totalListPriceNet->setInt($element->quantity * $item->salesPrice->getInt());
-        $element->singleSalesPriceNet->setInt($item->salesPrice->getInt());
-        $element->totalSalesPriceNet->setInt($element->quantity * $item->salesPrice->getInt());
-        $element->singlePurchasePriceNet->setInt($item->purchasePrice->getInt());
-        $element->totalPurchasePriceNet->setInt($element->quantity * $item->purchasePrice->getInt());
+        $element->taxR      = new FloatInt($taxCombination->taxCode->percentageInvoice);
+        $element->taxCode   = $taxCombination->taxCode->abbr;
+        $element->fiAccount = $taxCombination->account;
 
-        $element->singleProfitNet->setInt($element->singleSalesPriceNet->getInt() - $element->singlePurchasePriceNet->getInt());
-        $element->totalProfitNet->setInt($element->totalSalesPriceNet->getInt() - $element->totalPurchasePriceNet->getInt());
+        // @todo the purchase price is based on lot/sn/avg prices if available
+        $element->singlePurchasePriceNet->value = $item->purchasePrice->value;
+        $element->totalPurchasePriceNet->value  = (int) ($element->quantity->getNormalizedValue() * $item->purchasePrice->value);
 
-        $element->taxP    = new FloatInt((int) (($code->percentageInvoice * $element->totalSalesPriceNet->getInt()) / 10000));
-        $element->taxR    = new FloatInt($code->percentageInvoice);
-        $element->taxCode = $code->abbr;
-
-        $element->singleListPriceGross->setInt((int) ($element->singleListPriceNet->getInt() + $element->singleListPriceNet->getInt() * $element->taxR->getInt() / 10000));
-        $element->totalListPriceGross->setInt((int) ($element->totalListPriceNet->getInt() + $element->totalListPriceNet->getInt() * $element->taxR->getInt() / 10000));
-        $element->singleSalesPriceGross->setInt((int) ($element->singleSalesPriceNet->getInt() + $element->singleSalesPriceNet->getInt() * $element->taxR->getInt() / 10000));
-        $element->totalSalesPriceGross->setInt((int) ($element->totalSalesPriceNet->getInt() + $element->totalSalesPriceNet->getInt() * $element->taxR->getInt() / 10000));
-        $element->singlePurchasePriceGross->setInt((int) ($element->singlePurchasePriceNet->getInt() + $element->singlePurchasePriceNet->getInt() * $element->taxR->getInt() / 10000));
-        $element->totalPurchasePriceGross->setInt((int) ($element->totalPurchasePriceNet->getInt() + $element->totalPurchasePriceNet->getInt() * $element->taxR->getInt() / 10000));
-
-        $element->singleProfitGross->setInt($element->singleSalesPriceGross->getInt() - $element->singlePurchasePriceGross->getInt());
-        $element->totalProfitGross->setInt($element->quantity * ($element->totalSalesPriceGross->getInt() - $element->totalPurchasePriceGross->getInt()));
+        $element->singlePurchasePriceGross->value = (int) \round($element->singlePurchasePriceNet->value + $element->singlePurchasePriceNet->value * $element->taxR->value / 10000, 0);
+        $element->totalPurchasePriceGross->value  = (int) \round($element->totalPurchasePriceNet->value + $element->totalPurchasePriceNet->value * $element->taxR->value / 10000, 0);
 
         if ($element->bill->id !== 0
             && $item->getAttribute('subscription')->value->getValue() === 1
@@ -281,8 +319,7 @@ class BillElement implements \JsonSerializable
             $element->subscription->bill  = $element->bill->id;
             $element->subscription->item  = $element->item->id;
             $element->subscription->start = new \DateTime('now'); // @todo change to bill performanceDate
-            $element->subscription->end   = new SmartDateTime('now'); // @todo depends on subscription type
-            $element->subscription->end->smartModify(m: 1);
+            $element->subscription->end   = (new SmartDateTime('now'))->smartModify(m: 1); // @todo depends on subscription type
 
             $element->subscription->quantity  = $element->quantity;
             $element->subscription->autoRenew = $item->getAttribute('subscription_renewal_type')->value->getValue() === 1;

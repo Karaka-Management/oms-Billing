@@ -42,10 +42,10 @@ final class SalesBillMapper extends BillMapper
      */
     public static function getSalesBeforePivot(
         mixed $pivot,
-        string $column = null,
+        ?string $column = null,
         int $limit = 50,
         int $depth = 3,
-        Builder $query = null
+        ?Builder $query = null
     ) : array
     {
         return self::getAll()
@@ -61,10 +61,10 @@ final class SalesBillMapper extends BillMapper
      */
     public static function getSalesAfterPivot(
         mixed $pivot,
-        string $column = null,
+        ?string $column = null,
         int $limit = 50,
         int $depth = 3,
-        Builder $query = null
+        ?Builder $query = null
     ) : array
     {
         return self::getAll()
@@ -132,7 +132,7 @@ final class SalesBillMapper extends BillMapper
             AND billing_bill_performance_date <= '{$end->format('Y-m-d H:i:s')}';
         SQL;
 
-        $query = new Builder(self::$db);
+        $query  = new Builder(self::$db);
         $result = $query->raw($sql)->execute()->fetchAll(\PDO::FETCH_ASSOC);
 
         return isset($result[0]['net_count'])
@@ -380,7 +380,7 @@ final class SalesBillMapper extends BillMapper
         ORDER BY year ASC, month ASC;
         SQL;
 
-        $query = new Builder(self::$db);
+        $query  = new Builder(self::$db);
         $result = $query->raw($sql)->execute()->fetchAll(\PDO::FETCH_ASSOC);
 
         return $result ?? [];
@@ -406,7 +406,7 @@ final class SalesBillMapper extends BillMapper
         ORDER BY year ASC, month ASC;
         SQL;
 
-        $query = new Builder(self::$db);
+        $query  = new Builder(self::$db);
         $result = $query->raw($sql)->execute()->fetchAll(\PDO::FETCH_ASSOC);
 
         return $result ?? [];
@@ -424,7 +424,7 @@ final class SalesBillMapper extends BillMapper
             AND billing_bill_performance_date <= '{$end->format('Y-m-d H:i:s')}';
         SQL;
 
-        $query = new Builder(self::$db);
+        $query  = new Builder(self::$db);
         $result = $query->raw($sql)->execute()->fetchAll(\PDO::FETCH_ASSOC);
 
         return new FloatInt((int) ($result[0]['net_sales'] ?? 0));
@@ -439,7 +439,7 @@ final class SalesBillMapper extends BillMapper
         WHERE billing_bill_element_item = {$item}
         SQL;
 
-        $query = new Builder(self::$db);
+        $query  = new Builder(self::$db);
         $result = $query->raw($sql)->execute()->fetchAll(\PDO::FETCH_ASSOC);
 
         return new FloatInt((int) ($result[0]['net_sales'] ?? 0));
@@ -461,7 +461,7 @@ final class SalesBillMapper extends BillMapper
         LIMIT 1;
         SQL;
 
-        $query = new Builder(self::$db);
+        $query  = new Builder(self::$db);
         $result = $query->raw($sql)->execute()->fetchAll(\PDO::FETCH_ASSOC);
 
         return isset($result[0]['billing_bill_created_at'])
@@ -480,7 +480,7 @@ final class SalesBillMapper extends BillMapper
             AND billing_bill_performance_date <= '{$end->format('Y-m-d H:i:s')}';
         SQL;
 
-        $query = new Builder(self::$db);
+        $query  = new Builder(self::$db);
         $result = $query->raw($sql)->execute()->fetchAll(\PDO::FETCH_ASSOC);
 
         return new FloatInt((int) ($result[0]['net_sales'] ?? 0));
@@ -494,7 +494,7 @@ final class SalesBillMapper extends BillMapper
         WHERE billing_bill_client = {$client};
         SQL;
 
-        $query = new Builder(self::$db);
+        $query  = new Builder(self::$db);
         $result = $query->raw($sql)->execute()->fetchAll(\PDO::FETCH_ASSOC);
 
         return new FloatInt((int) ($result[0]['net_sales'] ?? 0));
@@ -515,7 +515,7 @@ final class SalesBillMapper extends BillMapper
         LIMIT 1;
         SQL;
 
-        $query = new Builder(self::$db);
+        $query  = new Builder(self::$db);
         $result = $query->raw($sql)->execute()->fetchAll(\PDO::FETCH_ASSOC);
 
         return isset($result[0]['billing_bill_created_at'])

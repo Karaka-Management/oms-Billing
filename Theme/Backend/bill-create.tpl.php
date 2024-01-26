@@ -20,10 +20,10 @@ use phpOMS\Localization\ISO4217Enum;
 use phpOMS\Localization\ISO639Enum;
 use phpOMS\Uri\UriFactory;
 
-$countryCodes    = ISO3166TwoEnum::getConstants();
-$countries       = ISO3166NameEnum::getConstants();
-$languages       = ISO639Enum::getConstants();
-$currencies      = ISO4217Enum::getConstants();
+$countryCodes = ISO3166TwoEnum::getConstants();
+$countries    = ISO3166NameEnum::getConstants();
+$languages    = ISO639Enum::getConstants();
+$currencies   = ISO4217Enum::getConstants();
 
 /**
  * @var \phpOMS\Views\View $this
@@ -32,7 +32,7 @@ $media = $this->data['media'] ?? [];
 
 /** @var \Modules\Billing\Models\Bill $bill */
 $bill     = $this->getData('bill') ?? new NullBill();
-$elements = $bill->getElements();
+$elements = $bill->elements;
 
 $billTypes = $this->data['billtypes'] ?? [];
 
@@ -41,7 +41,7 @@ $archive = $bill->getFileByTypeName('original');
 /** @var \Modules\Auditor\Models\Audit */
 $logs = $this->data['logs'] ?? [];
 
-$editable = $bill->id === 0 || \in_array($bill->getStatus(), [BillStatus::DRAFT, BillStatus::UNPARSED]);
+$editable = $bill->id === 0 || \in_array($bill->status, [BillStatus::DRAFT, BillStatus::UNPARSED]);
 $disabled = $editable  ? '' : ' disabled';
 
 $isNew = $archive->id === 0;
@@ -82,7 +82,7 @@ echo $this->data['nav']->render(); ?>
                                     <label for="iCurrency"><?= $this->getHtml('Currency'); ?></label>
                                     <select id="iCurrency" name="bill_currency"<?= $disabled; ?>>
                                         <?php foreach ($currencies as $code => $currency) : $code = \substr($code, 1); ?>
-                                        <option value="<?= $this->printHtml($code); ?>"<?= $code === $bill->getCurrency() ? ' selected' : ''; ?>><?= $this->printHtml($currency); ?>
+                                        <option value="<?= $this->printHtml($code); ?>"<?= $code === $bill->currency ? ' selected' : ''; ?>><?= $this->printHtml($currency); ?>
                                             <?php endforeach; ?>
                                     </select>
                                 </div>
@@ -119,7 +119,7 @@ echo $this->data['nav']->render(); ?>
                                         </div>
                                         <?php if (($bill->client?->id ?? 0) > 0) : ?>
                                         <div class="ipt-second">
-                                             <a class="button" href="<?= UriFactory::build('{/base}/sales/client/profile?id=' . $bill->client->id); ?>"><?= $this->getHtml('Client'); ?></a>
+                                             <a class="button" href="<?= UriFactory::build('{/base}/sales/client/view?id=' . $bill->client->id); ?>"><?= $this->getHtml('Client'); ?></a>
                                         </div>
                                         <?php endif; ?>
                                     </div>
@@ -284,13 +284,14 @@ echo $this->data['nav']->render(); ?>
                                 <td>
                                 <td style="min-width:150px"><?= $this->getHtml('Item'); ?>
                                 <td class="wf-100" style="min-width:150px"><?= $this->getHtml('Name'); ?>
-                                <td style="min-width:50px"><?= $this->getHtml('Quantity'); ?>
+                                <td style="min-width:75px"><?= $this->getHtml('Quantity'); ?>
                                 <td style="min-width:90px"><?= $this->getHtml('Discount'); ?>
                                 <td style="min-width:90px"><?= $this->getHtml('DiscountP'); ?>
-                                <td style="min-width:90px"><?= $this->getHtml('Bonus'); ?>
-                                <td style="min-width:90px"><?= $this->getHtml('Tax'); ?>
+                                <td style="min-width:75px"><?= $this->getHtml('Bonus'); ?>
                                 <td style="min-width:90px"><?= $this->getHtml('Price'); ?>
+                                <td style="min-width:75px"><?= $this->getHtml('TaxP'); ?>
                                 <td><?= $this->getHtml('Net'); ?>
+                                <td><?= $this->getHtml('Margin'); ?>
                             <tbody class="oms-ordercontainer">
                             <?php if ($editable) : ?>
                             <template class="oms-invoice-add">
@@ -302,14 +303,15 @@ echo $this->data['nav']->render(); ?>
                                     <td><span class="input">
                                         <button type="button" formaction="">
                                             <label><i class="g-icon">book</i></label>
-                                        </button><input type="text" autocomplete="off"></span>
-                                    <td><textarea autocomplete="off"></textarea>
-                                    <td><input type="number" step="any" value="" autocomplete="off">
-                                    <td><input type="number" step="0.01" value="" autocomplete="off">
-                                    <td><input type="number" min="-100" max="100" step="0.01" value="" autocomplete="off">
-                                    <td><input type="number" step="0.01" value="" autocomplete="off">
-                                    <td><input type="number" step="0.01" value="" autocomplete="off">
-                                    <td><input type="number" step="0.01" value="" autocomplete="off">
+                                        </button><input name="item_number" type="text" autocomplete="off"></span>
+                                    <td><textarea name="item_description" autocomplete="off"></textarea>
+                                    <td><input name="item_quantity" type="number" step="any" value="" autocomplete="off">
+                                    <td><input name="item_discountp" type="number" step="0.01" value="" autocomplete="off">
+                                    <td><input name="item_discountr" type="number" min="-100" max="100" step="0.01" value="" autocomplete="off">
+                                    <td><input name="item_bonus" type="number" step="0.01" value="" autocomplete="off">
+                                    <td><input name="item_price" type="number" step="0.01" value="" autocomplete="off">
+                                    <td><input name="item_taxr" type="number" step="0.01" value="" autocomplete="off">
+                                    <td>
                                     <td>
                                 </tr>
                             </template>
@@ -321,31 +323,49 @@ echo $this->data['nav']->render(); ?>
                                         <i class="g-icon order-down">expand_more</i>
                                         <i class="g-icon btn remove-form">close</i>
                                         <?php endif; ?>
-                                    <td><span class="input"><button type="button" formaction=""><i class="g-icon">book</i></button><input name="" type="text" value="<?= $element->itemNumber; ?>"<?= $disabled; ?>></span>
-                                    <td><textarea<?= $disabled; ?>><?= $element->itemName; ?></textarea>
-                                    <td><input name="" type="number" step="any" value="<?= $element->getQuantity(); ?>"<?= $disabled; ?>>
-                                    <td><input name="" type="number" step="0.01"<?= $disabled; ?>>
-                                    <td><input name="" type="number" step="0.01"<?= $disabled; ?>>
-                                    <td><input name="" type="number" min="-100" max="100" step="0.01"<?= $disabled; ?>>
-                                    <td><input name="" type="number" step="0.01"<?= $disabled; ?>>
-                                    <td><input name="" type="number" step="0.01" value="<?= $element->singleSalesPriceNet->getFloat(); ?>"<?= $disabled; ?>>
-                                    <td><?= $this->getCurrency($element->totalSalesPriceNet); ?>
+                                    <td><span class="input">
+                                        <button type="button" formaction="">
+                                            <i class="g-icon">book</i>
+                                        </button><input name="item_number" autocomplete="off" type="text" value="<?= $element->itemNumber; ?>"<?= $disabled; ?>></span>
+                                    <td><textarea name="item_description" autocomplete="off"<?= $disabled; ?>><?= $element->itemName; ?></textarea>
+                                    <td><input name="item_quantity" autocomplete="off" type="number" step="any" value="<?= $element->quantity->sub($element->discountQ)->getAmount($element->container->quantityDecimals); ?>"<?= $disabled; ?>>
+                                    <td><input name="item_discountp" autocomplete="off" type="number" step="0.01" value="<?= $element->singleDiscountP->getAmount(); ?>"<?= $disabled; ?>>
+                                    <td><input name="item_discountr" autocomplete="off" type="number" step="0.01" value="<?= $element->singleDiscountR->getAmount(); ?>"<?= $disabled; ?>>
+                                    <td><input name="item_bonus" autocomplete="off" type="number" min="-100" max="100" step="0.01" value="<?= $element->discountQ->getAmount($element->container->quantityDecimals); ?>"<?= $disabled; ?>>
+                                    <td><input name="item_price" autocomplete="off" type="number" step="0.01" value="<?= $element->singleSalesPriceNet->getFloat(); ?>"<?= $disabled; ?>>
+                                    <td><input name="item_taxr" autocomplete="off" type="number" step="0.01" value="<?= $element->taxR->getAmount(); ?>"<?= $disabled; ?>>
+                                    <td><?= $this->getCurrency($element->totalSalesPriceNet, symbol: ''); ?>
+                                    <td><?= \number_format($element->totalSalesPriceNet->value === 0 ? 0 : (1 - $element->totalPurchasePriceNet->value / $element->totalSalesPriceNet->value) * 100, 2); ?>%
                                 <?php endforeach; ?>
                             <?php if ($editable) : ?>
                                 <tr data-id="0">
                                     <td><i class="g-icon order-up">expand_less</i>
                                         <i class="g-icon order-down">expand_more</i>
                                         <i class="g-icon btn remove-form">close</i>
-                                    <td><span class="input"><button type="button" formaction=""><i class="g-icon">book</i></button><input type="text" autocomplete="off"></span>
-                                    <td><textarea autocomplete="off"></textarea>
-                                    <td><input type="number" step="any" value="" autocomplete="off">
-                                    <td><input type="number" step="0.01" value="" autocomplete="off">
-                                    <td><input type="number" min="-100" max="100" step="0.01" value="" autocomplete="off">
-                                    <td><input type="number" step="0.01" value="" autocomplete="off">
-                                    <td><input type="number" step="0.01" value="" autocomplete="off">
-                                    <td><input type="number" step="0.01" value="" autocomplete="off">
+                                    <td><span class="input">
+                                        <button type="button" formaction="">
+                                            <i class="g-icon">book</i></button><input name="item_number" type="text" autocomplete="off"></span>
+                                    <td><textarea name="item_description" autocomplete="off"></textarea>
+                                    <td><input name="item_quantity" type="number" step="any" value="" autocomplete="off">
+                                    <td><input name="item_discountp" type="number" step="0.01" value="" autocomplete="off">
+                                    <td><input name="item_discountr" type="number" min="-100" max="100" step="0.01" value="" autocomplete="off">
+                                    <td><input name="item_bonus" type="number" step="0.01" value="" autocomplete="off">
+                                    <td><input name="item_price" type="number" step="0.01" value="" autocomplete="off">
+                                    <td><input name="item_taxr" type="number" step="0.01" value="" autocomplete="off">
+                                    <td>
                                     <td>
                             <?php endif; ?>
+                            <tfoot>
+                                <tr class="highlight-2">
+                                    <td colspan="3"><?= $this->getHtml('Total'); ?>
+                                    <td>
+                                    <td><?= $bill->netDiscount->getAmount(2); ?>
+                                    <td><?= \number_format($bill->netDiscount->value === 0 ? 0 : ($bill->netDiscount->value / ($bill->netSales->value + $bill->netDiscount->value)) * 100, 2); ?>%
+                                    <td>
+                                    <td>
+                                    <td><?= $bill->taxP->getAmount(2); ?>
+                                    <td><?= $bill->netSales->getAmount(2); ?>
+                                    <td><?= \number_format($bill->netSales->value === 0 ? 0 : (1 - $bill->netCosts->value / $bill->netSales->value) * 100, 2); ?>%
                         </table>
                         </div>
                     </section>
@@ -518,7 +538,7 @@ echo $this->data['nav']->render(); ?>
                             <tbody>
                             <?php
                             foreach ($logs as $audit) :
-                                $url = UriFactory::build('{/base}/admin/audit/single?id=' . $audit->id);
+                                $url = UriFactory::build('{/base}/admin/audit/view?id=' . $audit->id);
                             ?>
                             <tr data-href="<?= $url; ?>">
                                 <td><a href="<?= $url; ?>"><?= $audit->id; ?></a>
@@ -532,7 +552,7 @@ echo $this->data['nav']->render(); ?>
                                     href="<?= UriFactory::build('{/base}/admin/account/settings?id=' . $audit->createdBy->id); ?>"><?= $this->printHtml(
                                     $this->renderUserName('%3$s %2$s %1$s', [$audit->createdBy->name1, $audit->createdBy->name2, $audit->createdBy->name3, $audit->createdBy->login])
                                 ); ?></a>
-                                <td><a href="<?= $url; ?>"><?= $audit->createdAt->format('Y-m-d'); ?></a>
+                                <td><a href="<?= $url; ?>"><?= $audit->createdAt->format('Y-m-d H:i'); ?></a>
                             <?php endforeach; ?>
                         </table>
                     </div>

@@ -174,7 +174,7 @@ echo $this->data['nav']->render(); ?>
                                 </label>
                         <td><a href="<?= $url; ?>"><?= $value->getNumber(); ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->type->getL11n(); ?></a>
-                        <td><a class="content" href="<?= $client = UriFactory::build('sales/client/profile?{?}&id=' . $value->client->id); ?>"><?= $value->client->number; ?></a>
+                        <td><a class="content" href="<?= $client = UriFactory::build('sales/client/view?{?}&id=' . $value->client->id); ?>"><?= $value->client->number; ?></a>
                         <td><a class="content" href="<?= $client; ?>"><?= $this->printHtml($value->billTo); ?></a>
                         <td><a href="<?= $url;
                          ?>"><?= $value->billAddress; ?></a>

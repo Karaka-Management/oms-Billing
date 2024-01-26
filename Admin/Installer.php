@@ -24,7 +24,6 @@ use phpOMS\Message\Http\HttpRequest;
 use phpOMS\Message\Http\HttpResponse;
 use phpOMS\Module\InstallerAbstract;
 use phpOMS\Module\ModuleInfo;
-use phpOMS\Uri\HttpUri;
 
 /**
  * Installer class.
@@ -107,7 +106,7 @@ final class Installer extends InstallerAbstract
         }
 
         /** @var array $terms */
-        $terms     = \json_decode($fileContent, true);
+        $terms            = \json_decode($fileContent, true);
         $paymentTypeArray = self::createPaymentTerms($app, $terms);
 
         /* Shipping terms */
@@ -117,7 +116,7 @@ final class Installer extends InstallerAbstract
         }
 
         /** @var array $terms */
-        $terms     = \json_decode($fileContent, true);
+        $terms             = \json_decode($fileContent, true);
         $shippingTypeArray = self::createShippingTerms($app, $terms);
     }
 
@@ -136,19 +135,21 @@ final class Installer extends InstallerAbstract
         /** @var array $billAttrType */
         $billAttrType = [];
 
-        /** @var \Modules\Billing\Controller\ApiController $module */
-        $module = $app->moduleManager->getModuleInstance('Billing');
+        /** @var \Modules\Billing\Controller\ApiAttributeController $module */
+        $module = $app->moduleManager->getModuleInstance('Billing', 'ApiAttribute');
 
         /** @var array $attribute */
         foreach ($attributes as $attribute) {
             $response = new HttpResponse();
-            $request  = new HttpRequest(new HttpUri(''));
+            $request  = new HttpRequest();
 
             $request->header->account = 1;
             $request->setData('name', $attribute['name'] ?? '');
             $request->setData('title', \reset($attribute['l11n']));
             $request->setData('language', \array_keys($attribute['l11n'])[0] ?? 'en');
             $request->setData('is_required', $attribute['is_required'] ?? false);
+            $request->setData('repeatable', $attribute['repeatable'] ?? false);
+            $request->setData('internal', $attribute['internal'] ?? false);
             $request->setData('custom', $attribute['is_custom_allowed'] ?? false);
             $request->setData('validation_pattern', $attribute['validation_pattern'] ?? '');
             $request->setData('datatype', (int) $attribute['value_type']);
@@ -173,7 +174,7 @@ final class Installer extends InstallerAbstract
                 }
 
                 $response = new HttpResponse();
-                $request  = new HttpRequest(new HttpUri(''));
+                $request  = new HttpRequest();
 
                 $request->header->account = 1;
                 $request->setData('title', $l11n);
@@ -203,8 +204,8 @@ final class Installer extends InstallerAbstract
         /** @var array<string, array> $billAttrValue */
         $billAttrValue = [];
 
-        /** @var \Modules\Billing\Controller\ApiController $module */
-        $module = $app->moduleManager->getModuleInstance('Billing');
+        /** @var \Modules\Billing\Controller\ApiAttributeController $module */
+        $module = $app->moduleManager->getModuleInstance('Billing', 'ApiAttribute');
 
         foreach ($attributes as $attribute) {
             $billAttrValue[$attribute['name']] = [];
@@ -212,7 +213,7 @@ final class Installer extends InstallerAbstract
             /** @var array $value */
             foreach ($attribute['values'] as $value) {
                 $response = new HttpResponse();
-                $request  = new HttpRequest(new HttpUri(''));
+                $request  = new HttpRequest();
 
                 $request->header->account = 1;
                 $request->setData('value', $value['value'] ?? '');
@@ -246,7 +247,7 @@ final class Installer extends InstallerAbstract
                     }
 
                     $response = new HttpResponse();
-                    $request  = new HttpRequest(new HttpUri(''));
+                    $request  = new HttpRequest();
 
                     $request->header->account = 1;
                     $request->setData('title', $l11n);
@@ -275,8 +276,8 @@ final class Installer extends InstallerAbstract
     {
         $result = [];
 
-        /** @var \Modules\Billing\Controller\ApiController $module */
-        $module = $app->moduleManager->getModuleInstance('Billing');
+        /** @var \Modules\Billing\Controller\ApiTaxController $module */
+        $module = $app->moduleManager->getModuleInstance('Billing', 'ApiTax');
 
         /** @var \Modules\Attribute\Models\AttributeType $itemAttributeSales */
         $itemAttributeSales = ItemAttributeTypeMapper::get()
@@ -303,7 +304,7 @@ final class Installer extends InstallerAbstract
                 : $supplierAttributeSales->getDefaultByValue($tax['account_code']);
 
             $response = new HttpResponse();
-            $request  = new HttpRequest(new HttpUri(''));
+            $request  = new HttpRequest();
 
             $request->header->account = 1;
             $request->setData('tax_type', $tax['type']);
@@ -343,23 +344,25 @@ final class Installer extends InstallerAbstract
     {
         $billTypes = [];
 
-        /** @var \Modules\Billing\Controller\ApiController $module */
-        $module = $app->moduleManager->getModuleInstance('Billing');
+        /** @var \Modules\Billing\Controller\ApiBillTypeController $module */
+        $module = $app->moduleManager->getModuleInstance('Billing', 'ApiBillType');
 
         // @todo allow multiple alternative bill templates
         // @todo implement ordering of templates
 
         foreach ($types as $type) {
             $response = new HttpResponse();
-            $request  = new HttpRequest(new HttpUri(''));
+            $request  = new HttpRequest();
 
             $request->header->account = 1;
             $request->setData('name', $type['name'] ?? '');
             $request->setData('title', \reset($type['l11n']));
             $request->setData('language', \array_keys($type['l11n'])[0] ?? 'en');
             $request->setData('number_format', $type['numberFormat'] ?? '{id}');
+            $request->setData('sign', $type['sign'] ?? 1);
             $request->setData('transfer_stock', $type['transferStock'] ?? false);
             $request->setData('is_template', $type['isTemplate'] ?? false);
+            $request->setData('is_accounting', $type['isAccounting'] ?? false);
             $request->setData('transfer_type', $type['transferType'] ?? BillTransferType::SALES);
             $request->setData('template', $template);
 
@@ -384,7 +387,7 @@ final class Installer extends InstallerAbstract
                 }
 
                 $response = new HttpResponse();
-                $request  = new HttpRequest(new HttpUri(''));
+                $request  = new HttpRequest();
 
                 $request->header->account = 1;
                 $request->setData('title', $l11n);
@@ -419,7 +422,7 @@ final class Installer extends InstallerAbstract
         /** @var array $type */
         foreach ($types as $type) {
             $response = new HttpResponse();
-            $request  = new HttpRequest(new HttpUri(''));
+            $request  = new HttpRequest();
 
             $request->header->account = 1;
             $request->setData('name', $type['name'] ?? '');
@@ -444,7 +447,7 @@ final class Installer extends InstallerAbstract
                 }
 
                 $response = new HttpResponse();
-                $request  = new HttpRequest(new HttpUri(''));
+                $request  = new HttpRequest();
 
                 $request->header->account = 1;
                 $request->setData('title', $l11n);
@@ -479,7 +482,7 @@ final class Installer extends InstallerAbstract
         /** @var array $type */
         foreach ($types as $type) {
             $response = new HttpResponse();
-            $request  = new HttpRequest(new HttpUri(''));
+            $request  = new HttpRequest();
 
             $request->header->account = 1;
             $request->setData('name', $type['name'] ?? '');
@@ -504,7 +507,7 @@ final class Installer extends InstallerAbstract
                 }
 
                 $response = new HttpResponse();
-                $request  = new HttpRequest(new HttpUri(''));
+                $request  = new HttpRequest();
 
                 $request->header->account = 1;
                 $request->setData('title', $l11n);

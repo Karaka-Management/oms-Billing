@@ -75,11 +75,16 @@ final class ApiBillTypeController extends Controller
     private function createBillTypeFromRequest(RequestAbstract $request) : BillType
     {
         $billType = new BillType($request->getDataString('name') ?? '');
-        $billType->setL11n($request->getDataString('title') ?? '', $request->getDataString('language') ?? ISO639x1Enum::_EN);
+        $billType->setL11n(
+            $request->getDataString('title') ?? '',
+            ISO639x1Enum::tryFromValue($request->getDataString('language')) ?? ISO639x1Enum::_EN
+        );
         $billType->numberFormat    = $request->getDataString('number_format') ?? '{id}';
+        $billType->sign            = $request->getDataInt('sign') ?? 1;
         $billType->transferStock   = $request->getDataBool('transfer_stock') ?? false;
         $billType->isTemplate      = $request->getDataBool('is_template') ?? false;
-        $billType->transferType    = $request->getDataInt('transfer_type') ?? BillTransferType::SALES;
+        $billType->isAccounting    = $request->getDataBool('is_accounting') ?? false;
+        $billType->transferType    = BillTransferType::tryFromValue($request->getDataInt('transfer_type')) ?? BillTransferType::SALES;
         $billType->defaultTemplate = $request->hasData('template')
             ? new NullCollection((int) $request->getData('template'))
             : null;
@@ -150,12 +155,10 @@ final class ApiBillTypeController extends Controller
      */
     private function createBillTypeL11nFromRequest(RequestAbstract $request) : BaseStringL11n
     {
-        $billTypeL11n      = new BaseStringL11n();
-        $billTypeL11n->ref = $request->getDataInt('type') ?? 0;
-        $billTypeL11n->setLanguage(
-            $request->getDataString('language') ?? $request->header->l11n->language
-        );
-        $billTypeL11n->content = $request->getDataString('title') ?? '';
+        $billTypeL11n           = new BaseStringL11n();
+        $billTypeL11n->ref      = $request->getDataInt('type') ?? 0;
+        $billTypeL11n->language = ISO639x1Enum::tryFromValue($request->getDataString('language')) ?? $request->header->l11n->language;
+        $billTypeL11n->content  = $request->getDataString('title') ?? '';
 
         return $billTypeL11n;
     }
@@ -228,7 +231,8 @@ final class ApiBillTypeController extends Controller
         $new->numberFormat    = $request->getDataString('number_format') ?? $new->numberFormat;
         $new->transferStock   = $request->getDataBool('transfer_stock') ?? $new->transferStock;
         $new->isTemplate      = $request->getDataBool('is_template') ?? $new->isTemplate;
-        $new->transferType    = $request->getDataInt('transfer_type') ?? $new->transferType;
+        $new->isAccounting    = $request->getDataBool('is_accounting') ?? $new->isAccounting;
+        $new->transferType    = BillTransferType::tryFromValue($request->getDataInt('transfer_type')) ?? $new->transferType;
         $new->defaultTemplate = $request->hasData('template')
             ? new NullCollection((int) $request->getData('template'))
             : $new->defaultTemplate;
@@ -346,11 +350,9 @@ final class ApiBillTypeController extends Controller
      */
     public function updateBillTypeL11nFromRequest(RequestAbstract $request, BaseStringL11n $new) : BaseStringL11n
     {
-        $new->ref = $request->getDataInt('type') ?? $new->ref;
-        $new->setLanguage(
-            $request->getDataString('language') ?? $new->language
-        );
-        $new->content = $request->getDataString('title') ?? $new->content;
+        $new->ref      = $request->getDataInt('type') ?? $new->ref;
+        $new->language = ISO639x1Enum::tryFromValue($request->getDataString('language')) ?? $new->language;
+        $new->content  = $request->getDataString('title') ?? $new->content;
 
         return $new;
     }

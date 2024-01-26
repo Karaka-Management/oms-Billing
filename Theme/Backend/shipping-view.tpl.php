@@ -15,7 +15,7 @@ declare(strict_types=1);
 use phpOMS\Uri\UriFactory;
 
 /** @var \phpOMS\Localization\BaseStringL11nType */
-$type  = $this->data['type'];
+$type = $this->data['type'];
 
 /** @var \phpOMS\Views\View $this */
 echo $this->data['nav']->render(); ?>

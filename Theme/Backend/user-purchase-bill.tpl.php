@@ -23,13 +23,13 @@ include __DIR__ . '/../../../Media/Theme/Backend/template-functions.php';
  */
 
 $bill     = $this->data['bill'];
-$elements = $bill->getElements();
+$elements = $bill->elements;
 
 $previewType  = $this->data['previewType'];
 $originalType = $this->data['originalType'];
 $billPdf      = $bill->getFileByType($previewType);
 $original     = $bill->getFileByType($originalType);
-$media        = $bill->getMedia();
+$media        = $bill->files;
 
 echo $this->data['nav']->render(); ?>
 
@@ -298,7 +298,7 @@ echo $this->data['nav']->render(); ?>
                             <?php foreach ($media as $file) :
                                 $url = $file->extension === 'collection'
                                 ? UriFactory::build('{/base}/media/list?path=' . \rtrim($file->getVirtualPath(), '/') . '/' . $file->name)
-                                : UriFactory::build('{/base}/media/single?id=' . $file->id
+                                : UriFactory::build('{/base}/media/view?id=' . $file->id
                                     . '&path={?path}' . (
                                             $file->id === 0
                                                 ? '/' . $file->name

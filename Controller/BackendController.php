@@ -113,6 +113,7 @@ final class BackendController extends Controller
         $bill = SalesBillMapper::get()
             ->with('client')
             ->with('elements')
+            ->with('elements/container')
             ->with('files')
             ->with('files/types')
             ->with('notes')
@@ -144,13 +145,11 @@ final class BackendController extends Controller
                 ->with('createdBy')
                 ->where('module', 'Billing')
                 ->where('type', StringUtils::intHash(BillElementMapper::class))
-                ->where('ref', \array_keys($bill->getElements()), 'IN')
+                ->where('ref', \array_keys($bill->elements), 'IN')
                 ->execute();
 
             $logs = \array_merge($logs, $logsElements);
         }
-
-        $logs = \array_merge($logs, $logsElements);
 
         $view->data['logs']         = $logs;
         $view->data['media-upload'] = new \Modules\Media\Theme\Backend\Components\Upload\BaseView($this->app->l11nManager, $request, $response);
@@ -298,7 +297,9 @@ final class BackendController extends Controller
         $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005105001, $request, $response);
 
         $bill = PurchaseBillMapper::get()
+            ->with('supplier')
             ->with('elements')
+            ->with('elements/container')
             ->with('files')
             ->with('files/types')
             ->with('notes')
@@ -338,7 +339,7 @@ final class BackendController extends Controller
                 ->with('createdBy')
                 ->where('module', 'Billing')
                 ->where('type', StringUtils::intHash(BillElementMapper::class))
-                ->where('ref', \array_keys($bill->getElements()), 'IN')
+                ->where('ref', \array_keys($bill->elements), 'IN')
                 ->execute();
 
             $logs = \array_merge($logs, $logsElements);

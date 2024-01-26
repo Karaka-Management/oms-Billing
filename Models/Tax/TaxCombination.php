@@ -16,6 +16,8 @@ namespace Modules\Billing\Models\Tax;
 
 use Modules\Attribute\Models\AttributeValue;
 use Modules\Attribute\Models\NullAttributeValue;
+use Modules\Finance\Models\NullTaxCode;
+use Modules\Finance\Models\TaxCode;
 
 /**
  * Billing class.
@@ -41,9 +43,7 @@ class TaxCombination implements \JsonSerializable
 
     public AttributeValue $itemCode;
 
-    public string $taxCode = '';
-
-    // @todo consider to add the tax code object directly, it is annoying to make a manuall mapper call which is often required afterwards.
+    public TaxCode $taxCode;
 
     public int $taxType = BillTaxType::SALES;
 
@@ -69,6 +69,7 @@ class TaxCombination implements \JsonSerializable
     public function __construct()
     {
         $this->itemCode = new NullAttributeValue();
+        $this->taxCode  = new NullTaxCode();
     }
 
     /**
@@ -77,7 +78,7 @@ class TaxCombination implements \JsonSerializable
     public function toArray() : array
     {
         return [
-            'id'    => $this->id,
+            'id' => $this->id,
         ];
     }
 
