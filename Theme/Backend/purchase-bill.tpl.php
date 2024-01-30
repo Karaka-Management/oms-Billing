@@ -169,7 +169,7 @@ echo $this->data['nav']->render(); ?>
                                 <td><i class="g-icon add">add</i> <i class="g-icon order-up">expand_less</i> <i class="g-icon order-down">expand_more</i>
                                 <td><span class="input"><button type="button" formaction=""><i class="g-icon">book</i></button><input name="" type="text" value="<?= $element->itemNumber; ?>" required></span>
                                 <td><textarea required><?= $element->itemName; ?></textarea>
-                                <td><input name="" type="number" min="0" value="<?= $element->quantity; ?>" required>
+                                <td><input name="" type="number" min="0" value="<?= $element->quantity->getAmount(); ?>" required>
                                 <td><input name="" type="text" value="<?= $this->getCurrency($element->singleSalesPriceNet, ''); ?>">
                                 <td><input name="" type="number" min="0">
                                 <td><input name="" type="number" min="0" max="100" step="any">

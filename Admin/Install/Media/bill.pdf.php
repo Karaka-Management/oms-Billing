@@ -14,14 +14,11 @@ declare(strict_types=1);
 
 use Modules\Billing\Models\NullBill;
 use phpOMS\Localization\ISO3166NameEnum;
-use phpOMS\Localization\ISO3166TwoEnum;
 use phpOMS\Localization\Money;
 
 /** @var \phpOMS\Views\View $this */
-/** @var \Modules\Media\Models\Collection $media */
-$media = $this->getData('defaultTemplates');
 
-require_once $media->findFile('.pdf.php')->getAbsolutePath();
+require_once $this->data['defaultTemplates']->findFile('.pdf.php')->getAbsolutePath();
 
 /** @var \Modules\Billing\Models\Bill $bill */
 $bill = $this->data['bill'] ?? new NullBill();
@@ -32,8 +29,8 @@ $pdf = new DefaultPdf();
 
 $lang = include __DIR__ . '/lang.php';
 
-$pdf->attributes['title_name'] = (string) ($this->data['bill_logo_name'] ?? 'Jingga');
-$pdf->attributes['slogan']     = (string) ($this->data['bill_slogan'] ?? 'Business solutions made simple.');
+$pdf->attributes['title_name'] = $this->data['bill_logo_name'] ?? 'Jingga';
+$pdf->attributes['slogan']     = $this->data['bill_slogan'] ?? 'Business solutions made simple.';
 
 $pdf->setHeaderData(
     __DIR__ . '/logo.png', 15,
@@ -47,22 +44,22 @@ $pdf->setSubject((string) ($this->data['bill_subtitle'] ?? ''));
 $pdf->setKeywords(\implode(', ', (array) ($this->data['keywords'] ?? [])));
 $pdf->language = $bill->language;
 
-$pdf->attributes['legal_name'] = (string) ($this->data['legal_company_name'] ?? 'Jingga e. K.');
-$pdf->attributes['address']    = (string) ($this->data['bill_company_address'] ?? 'Kirchstr. 33');
-$pdf->attributes['city']       = (string) ($this->data['bill_company_city'] ?? '61191 Rosbach');
+$pdf->attributes['legal_name'] = $this->data['legal_company_name'] ?? 'Jingga e. K.';
+$pdf->attributes['address']    = $this->data['bill_company_address'] ?? 'Kirchstr. 33';
+$pdf->attributes['city']       = $this->data['bill_company_city'] ?? '61191 Rosbach';
 
-$pdf->attributes['ceo']        = (string) ($this->data['bill_company_ceo'] ?? 'Dennis Eichhorn');
-$pdf->attributes['tax_office'] = (string) ($this->data['bill_company_tax_office'] ?? 'HRA 5058');
-$pdf->attributes['tax_number'] = (string) ($this->data['bill_company_tax_id'] ?? 'DE362646968');
-$pdf->attributes['terms']      = (string) ($this->data['bill_company_terms'] ?? 'https://jingga.app/terms');
+$pdf->attributes['ceo']        = $this->data['bill_company_ceo'] ?? 'Dennis Eichhorn';
+$pdf->attributes['tax_office'] = $this->data['bill_company_tax_office'] ?? 'HRA 5058';
+$pdf->attributes['tax_number'] = $this->data['bill_company_tax_id'] ?? 'DE362646968';
+$pdf->attributes['terms']      = $this->data['bill_company_terms'] ?? 'https://jingga.app/terms';
 
-$pdf->attributes['bank_name']    = (string) ($this->data['bill_company_bank_name'] ?? 'Volksbank Mittelhessen');
-$pdf->attributes['swift']        = (string) ($this->data['bill_company_swift'] ?? 'VBMHDE5F');
-$pdf->attributes['bank_account'] = (string) ($this->data['bill_company_bank_account'] ?? 'DE62 5139 0000 0084 8044 10');
+$pdf->attributes['bank_name']    = $this->data['bill_company_bank_name'] ?? 'Volksbank Mittelhessen';
+$pdf->attributes['swift']        = $this->data['bill_company_swift'] ?? 'VBMHDE5F';
+$pdf->attributes['bank_account'] = $this->data['bill_company_bank_account'] ?? 'DE62 5139 0000 0084 8044 10';
 
-$pdf->attributes['website'] = (string) ($this->data['bill_company_website'] ?? 'www.jingga.app');
-$pdf->attributes['email']   = (string) ($this->data['bill_company_email'] ?? 'info@jingga.app');
-$pdf->attributes['phone']   = (string) ($this->data['bill_company_phone'] ?? '+49 152 04337728');
+$pdf->attributes['website'] = $this->data['bill_company_website'] ?? 'www.jingga.app';
+$pdf->attributes['email']   = $this->data['bill_company_email'] ?? 'info@jingga.app';
+$pdf->attributes['phone']   = $this->data['bill_company_phone'] ?? '+49 152 04337728';
 
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
@@ -77,11 +74,7 @@ $billTypeName = \strtoupper($bill->type->getL11n());
 $pdf->setY(50);
 $pdf->setFont('helvetica', '', 10);
 
-$countries       = ISO3166NameEnum::getConstants();
-$countryEnumName = ISO3166TwoEnum::getName($bill->billCountry);
-$toCountry       = \is_string($countryEnumName) && ($country = ISO3166NameEnum::getByName($countryEnumName)) !== null
-    ? $country
-    : '';
+$toCountry = ISO3166NameEnum::getBy2Code($bill->billCountry);
 
 $addressString = \trim(
     $bill->billTo . "\n"
@@ -102,20 +95,23 @@ $pdf->Write(
 );
 $lineHeight = ($lineHeight - $pdf->getY()) / $addressLineCount;
 
+$pageWidth  = $pdf->getPageWidth();
+$pageHeight = $pdf->getPageHeight();
+
 // Bill head
 $pdf->setFont('helvetica', 'B', 16);
 $titleWidth = $pdf->getStringWidth($billTypeName, 'helvetica', 'B', 16);
 $titleWidth = \is_array($titleWidth) ? \array_sum($titleWidth) : $titleWidth;
 
 $pdf->setXY(
-    $rightPos = ($pdf->getPageWidth() - $titleWidth - \max(60 - $titleWidth, 0) - 15 - 2),
+    $rightPos = ($pageWidth - $titleWidth - \max(60 - $titleWidth, 0) - 15 - 2),
     $topPos + 50 + $lineHeight * $addressLineCount - 38,
     true
 );
 
 $pdf->setTextColor(255, 255, 255);
 $pdf->setFillColor(255, 162, 7);
-$pdf->Cell($pdf->getPageWidth() - $rightPos - 15, 0, $billTypeName, 0, 0, 'L', true);
+$pdf->Cell($pageWidth - $rightPos - 15, 0, $billTypeName, 0, 0, 'L', true);
 
 $pdf->setFont('helvetica', '', 10);
 $pdf->setTextColor(255, 162, 7);
@@ -132,7 +128,7 @@ $pdf->MultiCell(
     0, 'L'
 );
 
-$pdf->setFont('helvetica', '', 10);
+//$pdf->setFont('helvetica', '', 10);
 $pdf->setTextColor(0, 0, 0);
 
 $pdf->setXY($rightPos + 26 + 2, $tempY, true);
@@ -148,18 +144,7 @@ $pdf->MultiCell(
 );
 $pdf->Ln();
 
-$pdf->setY($pdf->getY() - 30);
-
-/*
-$pdf->writeHTMLCell(
-    $pdf->getPageWidth() - 15 * 2, 0, null, null,
-    "<strong>Lorem ipsum dolor sit amet,</strong><br \><br \>Consectetur adipiscing elit. Vivamus ac massa sit amet eros posuere accumsan feugiat vel est. Maecenas ultricies enim eu eros rhoncus, volutpat cursus enim imperdiet. Aliquam et odio ipsum. Quisque dapibus scelerisque tempor. Phasellus purus lorem, venenatis eget pretium ac, convallis et ante. Aenean pulvinar justo consectetur mi tincidunt venenatis. Suspendisse ultricies enim id nulla facilisis lacinia. <br /><br />Nam congue nunc nunc, eu pellentesque eros aliquam ac. Nunc placerat elementum turpis, quis facilisis diam volutpat at. Suspendisse enim leo, convallis nec ornare eu, auctor nec purus. Nunc neque metus, feugiat quis justo nec, mollis dignissim risus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. In at ornare sem. Cras placerat, sapien sed ornare lacinia, mauris nulla volutpat nisl, eget dapibus nisl ipsum non est. Suspendisse ut nisl a ipsum rhoncus sodales.",
-    0, 0, false, true, 'J'
-);
-$pdf->Ln();
-*/
-
-$pdf->setY($pdf->getY() + 10);
+$pdf->setY($pdf->getY() - 20);
 
 $header = [
     $lang[$pdf->language]['Item'],
@@ -172,7 +157,7 @@ $lines = $bill->elements;
 
 // Header
 $headerCount = \count($header);
-$w           = [$pdf->getPageWidth() - 20 - 20 - 20 - 2 * 15, 20, 20, 20];
+$w           = [$pageWidth - 20 - 20 - 20 - 2 * 15, 20, 20, 20];
 
 $pdf->setCellPadding(1);
 
@@ -183,7 +168,7 @@ $first = true;
 $fill = false;
 foreach($lines as $line) {
     // @todo depending on amount of lines, there is a solution (html, or use backtracking of tcpdf)
-    if ($first || $pdf->getY() > $pdf->getPageHeight() - 40) {
+    if ($first || $pdf->getY() > $pageHeight - 40) {
         $pdf->setFillColor(255, 162, 7);
         $pdf->setTextColor(255);
         $pdf->setDrawColor(255, 162, 7);
@@ -243,7 +228,7 @@ foreach($lines as $line) {
 $pdf->Cell(\array_sum($w), 0, '', 'T');
 $pdf->Ln();
 
-if ($pdf->getY() > $pdf->getPageHeight() - 40) {
+if ($pdf->getY() > $pageHeight - 40) {
     $pdf->AddPage();
 }
 
@@ -256,7 +241,7 @@ $tempY = $pdf->getY();
 
 $netSales = Money::fromFloatInt($bill->netSales);
 
-$pdf->setX($w[0] + $w[1] + 15);
+$pdf->setX($w[0] + $w[1] + 12);
 $pdf->Cell($w[2], 7, $lang[$pdf->language]['Subtotal'], 0, 0, 'L', false);
 $pdf->Cell($w[3], 7, $netSales->getCurrency(2, symbol: ''), 0, 0, 'L', false);
 $pdf->Ln();
@@ -264,7 +249,7 @@ $pdf->Ln();
 foreach ($taxes as $rate => $tax) {
     $tax = Money::fromFloatInt($tax);
 
-    $pdf->setX($w[0] + $w[1] + 15);
+    $pdf->setX($w[0] + $w[1] + 12);
     $pdf->Cell($w[2], 7,  $lang[$pdf->language]['Taxes'] . ' (' . $rate . '%)', 0, 0, 'L', false);
     $pdf->Cell($w[3], 7, $tax->getCurrency(2, symbol: ''), 0, 0, 'L', false);
     $pdf->Ln();
@@ -273,13 +258,13 @@ foreach ($taxes as $rate => $tax) {
 $pdf->setFillColor(255, 162, 7);
 $pdf->setTextColor(255);
 $pdf->setDrawColor(255, 162, 7);
-$pdf->setFont('helvetica', 'B', 10);
+//$pdf->setFont('helvetica', 'B', 10);
 
 $grossSales = Money::fromFloatInt($bill->grossSales);
 
-$pdf->setX($w[0] + $w[1] + 15);
+$pdf->setX($w[0] + $w[1] + 12);
 $pdf->Cell($w[2], 7, \strtoupper($lang[$pdf->language]['Total']), 1, 0, 'L', true);
-$pdf->Cell($w[3], 7,  $grossSales->getCurrency(2, symbol: ''), 1, 0, 'L', true);
+$pdf->Cell($w[3] + 3, 7,  $grossSales->getCurrency(2, symbol: ''), 1, 0, 'L', true);
 $pdf->Ln();
 
 $tempY2 = $pdf->getY();
@@ -299,29 +284,20 @@ $pdf->setFont('helvetica', 'B', 8);
 $pdf->Write(0, $lang[$pdf->language]['Terms'] . ': ' . $pdf->attributes['terms'], '', false, 'L', false, 0, false, false, 0);
 $pdf->Ln();
 
-$pdf->setFont('helvetica', 'B', 8);
+//$pdf->setFont('helvetica', 'B', 8);
 $pdf->Write(0, $lang[$pdf->language]['Currency'] . ': ' . $bill->currency, '', false, 'L', false, 0, false, false, 0);
 $pdf->Ln();
 
-$pdf->setFont('helvetica', 'B', 8);
+//$pdf->setFont('helvetica', 'B', 8);
 $pdf->Write(0, $lang[$pdf->language]['TaxRemark'], '', false, 'L', false, 0, false, false, 0);
 $pdf->Ln();
 
 $pdf->setFont('helvetica', '', 8);
 $pdf->Write(0, $bill->termsText, '', false, 'L', false, 0, false, false, 0);
-$pdf->Ln();
+//$pdf->Ln();
 
-$pdf->setY($tempY2);
-$pdf->Ln();
-
-/*
-$pdf->writeHTMLCell(
-    $pdf->getPageWidth() - 15 * 2, 0, null, null,
-    "Consectetur adipiscing elit. Vivamus ac massa sit amet eros posuere accumsan feugiat vel est. Maecenas ultricies enim eu eros rhoncus, volutpat cursus enim imperdiet. Aliquam et odio ipsum. Quisque dapibus scelerisque tempor. Phasellus purus lorem, venenatis eget pretium ac, convallis et ante. Aenean pulvinar justo consectetur mi tincidunt venenatis. Suspendisse ultricies enim id nulla facilisis lacinia. Nam congue nunc nunc, eu pellentesque eros aliquam ac.<br /><br />Nunc placerat elementum turpis, quis facilisis diam volutpat at. Suspendisse enim leo, convallis nec ornare eu, auctor nec purus. Nunc neque metus, feugiat quis justo nec, mollis dignissim risus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. In at ornare sem. Cras placerat, sapien sed ornare lacinia, mauris nulla volutpat nisl, eget dapibus nisl ipsum non est. Suspendisse ut nisl a ipsum rhoncus sodales.",
-    0, 0, false, true, 'J'
-);
-$pdf->Ln();
-*/
+//$pdf->setY($tempY2);
+//$pdf->Ln();
 
 //Close and output PDF document
 $path = (string) ($this->data['path'] ?? (($bill->billDate?->format('Y-m-d') ?? '0') . '_' . $bill->number . '.pdf'));

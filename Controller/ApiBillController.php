@@ -400,7 +400,7 @@ final class ApiBillController extends Controller
             : $container;
 
         $taxCombination = $this->app->moduleManager->get('Billing', 'ApiTax')
-            ->getTaxForPerson($bill->client, $bill->supplier, $item, $request->header->l11n->country);
+            ->getTaxForPerson($item, $bill->client, $bill->supplier, $request->header->l11n->country);
 
         $element = BillElement::fromItem(
             $item,
@@ -429,11 +429,9 @@ final class ApiBillController extends Controller
             ? $item->salesPrice->value
             : $price['bestActualPrice']->value;
 
-        $element->singleDiscountP->value = ($price['discountAmount']->value ?? 0) / ($element->quantity->value - $price['bonus']->value);
-        $element->totalDiscountP         = $price['discountAmount'];
-
-        $element->singleDiscountR = $price['discountPercent'];
-        $element->discountQ       = $price['bonus'];
+        $element->totalDiscountP  = new FloatInt($request->getDataString('discount_amount') ?? $price['discountAmount']->value);
+        $element->singleDiscountR = new FloatInt($request->getDataString('discount_percentage') ?? $price['discountPercent']->value);
+        $element->discountQ       = new FloatInt($request->getDataString('bonus') ?? $price['bonus']->value);
 
         $element->recalculatePrices();
 
@@ -1303,7 +1301,7 @@ final class ApiBillController extends Controller
 
         /** @var \Modules\Editor\Models\EditorDoc $model */
         $model = $response->getDataArray($request->uri->__toString())['response'];
-        $this->createModelRelation($request->header->account, $request->getDataInt('id'), $model->id, BillMapper::class, 'bill_note', '', $request->getOrigin());
+        $this->createModelRelation($request->header->account, $request->getDataInt('id'), $model->id, BillMapper::class, 'notes', '', $request->getOrigin());
     }
 
     /**

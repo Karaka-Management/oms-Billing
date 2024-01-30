@@ -20,6 +20,8 @@ use Modules\Billing\Models\Tax\TaxCombination;
 use Modules\Billing\Models\Tax\TaxCombinationMapper;
 use Modules\ClientManagement\Models\Attribute\ClientAttributeTypeMapper;
 use Modules\ClientManagement\Models\Client;
+use Modules\Finance\Models\TaxCode;
+use Modules\Finance\Models\TaxCodeMapper;
 use Modules\ItemManagement\Models\Item;
 use Modules\Organization\Models\UnitMapper;
 use Modules\SupplierManagement\Models\Attribute\SupplierAttributeTypeMapper;
@@ -44,15 +46,15 @@ final class ApiTaxController extends Controller
     /**
      * Get tax code from client and item.
      *
-     * @param Client $client         Client to get tax code from
      * @param Item   $item           Item to get tax code from
+     * @param Client $client         Client to get tax code from
      * @param string $defaultCountry default country to use if no valid tax code could be found and if the unit country code shouldn't be used
      *
      * @return TaxCombination
      *
      * @since 1.0.0
      */
-    public function getTaxForPerson(?Client $client = null, ?Supplier $supplier = null, Item $item, string $defaultCountry = '') : TaxCombination
+    public function getTaxForPerson(Item $item, ?Client $client = null, ?Supplier $supplier = null, string $defaultCountry = '') : TaxCombination
     {
         // @todo define default sales tax code if none available?!
         $itemCode        = 0;
@@ -357,7 +359,7 @@ final class ApiTaxController extends Controller
             $old = \reset($old);
 
             $new          = clone $old;
-            $new->taxCode = $combination['tax_code'] ?? '';
+            $new->taxCode = TaxCodeMapper::get()->where('abbr', $combination['tax_code'] ?? '')->execute();
 
             $this->updateModel($request->header->account, $old, $new, TaxCombinationMapper::class, 'tax_combination', $request->getOrigin());
         }

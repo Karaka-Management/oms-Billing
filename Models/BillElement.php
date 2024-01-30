@@ -240,6 +240,8 @@ class BillElement implements \JsonSerializable
         $this->totalListPriceNet->value  = (int) \round(($this->quantity->getNormalizedValue() - $this->discountQ->getNormalizedValue()) * $this->singleListPriceNet->value, 0);
         $this->totalSalesPriceNet->value = (int) \round(($this->quantity->getNormalizedValue() - $this->discountQ->getNormalizedValue()) * $this->singleListPriceNet->value, 0);
 
+        // @todo Check if this is correct, this should maybe happen after applying the discounts?!
+        // This depends on if the single price is already discounted or not
         $this->singleProfitNet->value = $this->singleSalesPriceNet->value - $this->singlePurchasePriceNet->value;
         $this->totalProfitNet->value  = $this->totalSalesPriceNet->value - $this->totalPurchasePriceNet->value;
 
@@ -252,6 +254,10 @@ class BillElement implements \JsonSerializable
 
         $this->singleProfitGross->value = $this->singleSalesPriceGross->value - $this->singlePurchasePriceGross->value;
         $this->totalProfitGross->value  = (int) \round(($this->quantity->getNormalizedValue() - $this->discountQ->getNormalizedValue()) * ($this->totalSalesPriceGross->value - $this->totalPurchasePriceGross->value), 0);
+
+        $this->singleDiscountP->value = $this->quantity->value - $this->discountQ->value === 0
+            ? 0
+            : (int) \round($this->totalDiscountP->value / ($this->quantity->getNormalizedValue() - $this->discountQ->getNormalizedValue()));
 
         // important because the quantity includes $discountQ
         $this->effectiveSingleSalesPriceNet->value = (int) \round($this->totalSalesPriceNet->value / ($this->quantity->value / 10000));
