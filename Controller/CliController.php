@@ -315,7 +315,8 @@ final class CliController extends Controller
      * @return int
      *
      * @since 1.0.0
-     * @todo What about multiple tax lines?
+     * @todo Handle multiple tax lines
+     *      Example: 19% and 7%
      */
     private function findBillTaxAmount(array $lines, array $matches) : int
     {

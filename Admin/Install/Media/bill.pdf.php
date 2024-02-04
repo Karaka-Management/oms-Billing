@@ -123,7 +123,7 @@ $pdf->MultiCell(
     . $lang[$pdf->language]['InvoiceDate'] . "\n"
     . $lang[$pdf->language]['ServiceDate'] . "\n"
     . $lang[$pdf->language]['CustomerNo'] . "\n"
-    . $lang[$pdf->language]['PO'] . "\n"
+    . $lang[$pdf->language]['REF'] . "\n"
     . $lang[$pdf->language]['DueDate'],
     0, 'L'
 );
@@ -138,7 +138,7 @@ $pdf->MultiCell(
     . ($bill->billDate?->format('Y-m-d') ?? '0') . "\n"
     . ($bill->performanceDate?->format('Y-m-d') ?? '0') . "\n"
     . $bill->accountNumber . "\n"
-    . '' . "\n" /* @todo implement customer / supplier reference as string */
+    . $bill->externalReferral . "\n"
     .  ($bill->billDate?->format('Y-m-d') ?? '0'), /* Consider to add dueDate in addition */
     0, 'L'
 );

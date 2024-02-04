@@ -69,7 +69,9 @@ final class ApiPurchaseController extends Controller
             ->limit(1)
             ->execute();
 
-        $files = $request->files;
+        $bills = [];
+
+        $files = \array_merge($request->files, $request->getDataJson('media'));
         foreach ($files as $file) {
             // Create default bill
             $billRequest                  = new HttpRequest();
@@ -85,32 +87,41 @@ final class ApiPurchaseController extends Controller
             $this->app->moduleManager->get('Billing', 'ApiBill')->apiBillCreate($billRequest, $billResponse, $data);
 
             $billId = $billResponse->getDataArray('')['response']->id;
+            $bills[] = $billId;
 
             // Upload and assign document to bill
-            $mediaRequest                  = new HttpRequest();
+            $mediaResponse = new HttpResponse();
+            $mediaRequest  = new HttpRequest();
+
+            $mediaResponse->header->l11n = $response->header->l11n;
+
             $mediaRequest->header->account = $request->header->account;
             $mediaRequest->header->l11n    = $request->header->l11n;
-            $mediaRequest->addFile($file);
 
-            $mediaResponse               = new HttpResponse();
-            $mediaResponse->header->l11n = $response->header->l11n;
+            if (\is_array($file)) {
+                $mediaRequest->addFile($file);
+            } else {
+                $mediaRequest->setData('media', \json_encode($file));
+            }
 
             $mediaRequest->setData('bill', $billId);
             $mediaRequest->setData('type', $originalType);
             $mediaRequest->setData('parse_content', true, true);
             $this->app->moduleManager->get('Billing', 'ApiBill')->apiMediaAddToBill($mediaRequest, $mediaResponse, $data);
 
-            /** @var \Modules\Media\Models\Media[] $uploaded */
-            $uploaded = $mediaResponse->getDataArray('')['response']['upload'];
-            if (empty($uploaded)) {
-                $response->header->status = RequestStatusCode::R_400;
-                throw new \Exception();
-            }
+            if (\is_array($file)) {
+                /** @var \Modules\Media\Models\Media[] $uploaded */
+                $uploaded = $mediaResponse->getDataArray('')['response']['upload'];
+                if (empty($uploaded)) {
+                    $response->header->status = RequestStatusCode::R_400;
+                    throw new \Exception();
+                }
 
-            $in = \reset($uploaded)->getAbsolutePath(); // pdf parsed content is available in $in->content
-            if (!\is_file($in)) {
-                $response->header->status = RequestStatusCode::R_400;
-                throw new \Exception();
+                $in = \reset($uploaded)->getAbsolutePath();
+                if (!\is_file($in)) {
+                    $response->header->status = RequestStatusCode::R_400;
+                    throw new \Exception();
+                }
             }
 
             // Create internal document
@@ -134,12 +145,14 @@ final class ApiPurchaseController extends Controller
                     \escapeshellarg($cliPath)
                         . ' /billing/bill/purchase/parse '
                         . '-i ' . \escapeshellarg((string) $billId),
-                    true
+                    $request->getDataBool('async') ?? true
                 );
             } catch (\Throwable $t) {
                 $response->header->status = RequestStatusCode::R_400;
                 $this->app->logger->error($t->getMessage());
             }
+
+            $this->createStandardCreateResponse($request, $response, $bills);
         }
     }
 }

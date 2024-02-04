@@ -81,7 +81,7 @@ class BillMapper extends DataMapperFactory
         'billing_bill_currency'          => ['name' => 'billing_bill_currency',      'type' => 'string',    'internal' => 'currency'],
         'billing_bill_language'          => ['name' => 'billing_bill_language',      'type' => 'string',    'internal' => 'language'],
         'billing_bill_referral'          => ['name' => 'billing_bill_referral',      'type' => 'int',    'internal' => 'referral'],
-        'billing_bill_referral_name'     => ['name' => 'billing_bill_referral_name',      'type' => 'string',    'internal' => 'referralName'],
+        'billing_bill_referral_name'     => ['name' => 'billing_bill_referral_name',      'type' => 'string',    'internal' => 'externalReferral'],
         'billing_bill_reference'         => ['name' => 'billing_bill_reference',      'type' => 'int',    'internal' => 'reference'],
         'billing_bill_accsegment'        => ['name' => 'billing_bill_accsegment',      'type' => 'int',    'internal' => 'accSegment'],
         'billing_bill_accsection'        => ['name' => 'billing_bill_accsection',      'type' => 'int',    'internal' => 'accSection'],

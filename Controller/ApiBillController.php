@@ -38,6 +38,7 @@ use Modules\ItemManagement\Models\ItemMapper;
 use Modules\ItemManagement\Models\NullContainer;
 use Modules\Media\Models\CollectionMapper;
 use Modules\Media\Models\Media;
+use Modules\Media\Models\MediaClass;
 use Modules\Media\Models\MediaMapper;
 use Modules\Media\Models\NullCollection;
 use Modules\Media\Models\PathSettings;
@@ -117,6 +118,16 @@ final class ApiBillController extends Controller
 
         /** @var \Modules\Billing\Models\Bill $old */
         $old = BillMapper::get()->where('id', (int) $request->getData('bill'))->execute();
+
+        // @feature Allow to update internal statistical fields
+        //      Example: Referral account
+        if ($old->status === BillStatus::ARCHIVED) {
+            $response->header->status = RequestStatusCode::R_423;
+            $this->createInvalidUpdateResponse($request, $response, $val);
+
+            return;
+        }
+
         $new = $this->updateBillFromRequest($request, clone $old);
 
         $this->updateModel($request->header->account, $old, $new, BillMapper::class, 'bill', $request->getOrigin());
@@ -229,23 +240,27 @@ final class ApiBillController extends Controller
      *
      * @return Bill The new Bill object with default values
      *
-     * @todo Validate VAT before creation (maybe need to add a status when last validated, we don't want to validate every time)
-     * @todo Set the correct date of payment
+     * @todo Validate VAT before creation
+     *      Maybe needs to add a status when last validated, we don't want to validate every time
+     *      https://github.com/Karaka-Management/oms-Billing/issues/44
+     *
      * @todo Use bill and shipping address instead of main address if available
+     *
      * @todo Implement allowed invoice languages and a default invoice language if none match
+     *
      * @todo Implement client invoice language (allowing for different invoice languages than invoice address)
      *
      * @since 1.0.0
      */
     public function createBaseBill(Client | Supplier $account, RequestAbstract $request) : Bill
     {
-        // @todo validate vat before creation for clients
         $bill                  = new Bill();
         $bill->createdBy       = new NullAccount($request->header->account);
         $bill->unit            = $account->unit ?? $this->app->unitId;
-        $bill->billDate        = new \DateTime('now'); // @todo Date of payment
-        $bill->performanceDate = $request->getDataDateTime('performancedate') ?? new \DateTime('now'); // @todo Date of payment
+        $bill->billDate        = $request->getDataDateTime('bill_date') ?? new \DateTime('now');
+        $bill->performanceDate = $request->getDataDateTime('performancedate') ?? new \DateTime('now');
         $bill->accountNumber   = $account->number;
+        $bill->externalReferral = $request->getDataString('externalreferral') ?? '';
         $bill->status          = BillStatus::tryFromValue($request->getDataInt('status')) ?? BillStatus::DRAFT;
 
         $bill->shippingTerms = null;
@@ -253,6 +268,10 @@ final class ApiBillController extends Controller
 
         $bill->paymentTerms = null;
         $bill->paymentText  = '';
+
+        // @todo Handle payment due
+        //      Careful, there can be multiple due dates
+        //      Example: payment plan or discounted and none-discounted date
 
         if ($account instanceof Client) {
             $bill->client     = $account;
@@ -406,7 +425,7 @@ final class ApiBillController extends Controller
             $item,
             $taxCombination,
             FloatInt::toInt($request->getDataString('quantity') ?? 1),
-            $bill->id,
+            $bill,
             $container
         );
 
@@ -540,7 +559,7 @@ final class ApiBillController extends Controller
 
         $uploaded = [];
         if (!empty($uploadedFiles = $request->files)) {
-            $uploaded = $this->app->moduleManager->get('Media')->uploadFiles(
+            $uploaded = $this->app->moduleManager->get('Media', 'Api')->uploadFiles(
                 names: [],
                 fileNames: [],
                 files: $uploadedFiles,
@@ -603,20 +622,20 @@ final class ApiBillController extends Controller
             }
         }
 
-        if (!empty($mediaFiles = $request->getDataJson('media'))) {
-            foreach ($mediaFiles as $media) {
-                $this->createModelRelation(
-                    $request->header->account,
-                    $bill->id,
-                    (int) $media,
-                    BillMapper::class,
-                    'files',
-                    '',
-                    $request->getOrigin()
-                );
-            }
+        $mediaFiles = $request->getDataJson('media');
+        foreach ($mediaFiles as $media) {
+            $this->createModelRelation(
+                $request->header->account,
+                $bill->id,
+                (int) $media,
+                BillMapper::class,
+                'files',
+                '',
+                $request->getOrigin()
+            );
         }
 
+        // @todo media should be an array of NullMedia elements
         $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Media', 'Media added to bill.', [
             'upload' => $uploaded,
             'media'  => $mediaFiles,
@@ -638,7 +657,6 @@ final class ApiBillController extends Controller
      */
     public function apiMediaRemoveFromBill(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
-        // @todo check that it is not system generated media!
         if (!empty($val = $this->validateMediaRemoveFromBill($request))) {
             $response->header->status = RequestStatusCode::R_400;
             $this->createInvalidDeleteResponse($request, $response, $val);
@@ -652,20 +670,35 @@ final class ApiBillController extends Controller
         /** @var \Modules\Billing\Models\Bill $bill */
         $bill = BillMapper::get()->where('id', (int) $request->getData('bill'))->execute();
 
-        $path = $this->createBillDir($bill);
+        // Cannot delete system generated bill
+        if (\stripos($media->name, $bill->number) !== false) {
+            $response->header->status = RequestStatusCode::R_423;
+            $this->createInvalidDeleteResponse($request, $response, $media);
 
-        /** @var \Modules\Media\Models\Collection[] */
-        $billCollection = CollectionMapper::getAll()
-            ->where('virtual', $path)
-            ->execute();
-
-        if (\count($billCollection) !== 1) {
-            // @todo For some reason there are multiple collections with the same virtual path?
-            // @todo check if this is the correct way to handle it or if we need to make sure that it is a collection
             return;
         }
 
-        $collection = \reset($billCollection);
+        $path = \dirname($this->createBillDir($bill));
+
+        /** @var \Modules\Media\Models\Collection $collection */
+        $collection = CollectionMapper::get()
+            ->where('name', (string) $bill->id)
+            ->where('virtual', $path)
+            ->where('class', MediaClass::COLLECTION)
+            ->limit(1)
+            ->execute();
+
+        if ($collection->id !== 0) {
+            $this->deleteModelRelation(
+                $request->header->account,
+                $collection->id,
+                $media->id,
+                CollectionMapper::class,
+                'sources',
+                '',
+                $request->getOrigin()
+            );
+        }
 
         $this->deleteModelRelation(
             $request->header->account,
@@ -677,23 +710,9 @@ final class ApiBillController extends Controller
             $request->getOrigin()
         );
 
-        $this->deleteModelRelation(
-            $request->header->account,
-            $collection->id,
-            $media->id,
-            CollectionMapper::class,
-            'sources',
-            '',
-            $request->getOrigin()
-        );
-
+        // Check if media referenced by other media except the parent collection
         $referenceCount = MediaMapper::countInternalReferences($media->id);
-
-        if ($referenceCount === 0) {
-            // Is not used anywhere else -> remove from db and file system
-
-            // @todo remove media types from media
-
+        if ($referenceCount === 1) {
             $this->deleteModel($request->header->account, $media, MediaMapper::class, 'bill_media', $request->getOrigin());
 
             if (\is_dir($media->getAbsolutePath())) {
@@ -797,11 +816,9 @@ final class ApiBillController extends Controller
         $element = $this->createBillElementFromRequest($request, $response, $old, $data);
         $this->createModel($request->header->account, $element, BillElementMapper::class, 'bill_element', $request->getOrigin());
 
-        // @todo handle stock transaction here
-        // @todo if transaction fails don't update below and send warning to user
-        // @todo however mark transaction as reserved and only update when bill is finalized!!!
-
-        // @todo in BillElementUpdate do the same
+        // @todo Handle stock transaction here
+        //      If the transaction fails don't perform the update below
+        //      The same goes for BillElementUpdate
 
         $new = clone $old;
         $new->addElement($element);
@@ -1076,6 +1093,9 @@ final class ApiBillController extends Controller
         // Handle PDF generation
         $templateId = $request->getDataInt('bill_template') ?? $bill->type->defaultTemplate?->id ?? 0;
 
+        // @todo It would be nice if we could somehow make the two settings calls below in one go.
+        //          Maybe always make with unit if defined AND with null (maybe also with app?)
+        //          Then return none-empty strictest match
          /** @var \Model\Setting[] $settings */
          $settings = $this->app->appSettings->get(null,
             [
@@ -1175,7 +1195,9 @@ final class ApiBillController extends Controller
         );
 
         // Send bill via email
-        // @todo maybe not all bill types, and bill status (e.g. deleted should not be sent)
+        // @bug Not all bills should be sent as email
+        //      Depends on bill type and status (i.e. draft, deleted)
+        //      https://github.com/Karaka-Management/oms-Billing/issues/50
         $client = ClientMapper::get()
             ->with('account')
             ->with('attributes')
@@ -1186,9 +1208,10 @@ final class ApiBillController extends Controller
             ->execute();
 
         if ($client->getAttribute('bill_emails')->value->getValue() === 1) {
+            // @todo should this really be a string or an ID for a contact element?
             $email = empty($tmp = $client->getAttribute('bill_email_address')->value->getValue())
-                ? (string) $tmp
-                : $client->account->getEmail();
+                ? $client->account->email
+                : (string) $tmp;
 
             $this->sendBillEmail($media, $email, $response->header->l11n->language);
         }
@@ -1245,6 +1268,10 @@ final class ApiBillController extends Controller
             module: 'Admin'
         );
 
+        if (empty($emailFrom->content)) {
+            return;
+        }
+
         /** @var \Model\Setting $billingTemplate */
         $billingTemplate = $this->app->appSettings->get(
             names: SettingsEnum::BILLING_CUSTOMER_EMAIL_TEMPLATE,
@@ -1263,8 +1290,6 @@ final class ApiBillController extends Controller
         $mail->addAttachment($media->getAbsolutePath(), $media->name);
 
         $handler->send($mail);
-
-        $this->app->moduleManager->get('Billing', 'Api')->sendMail($mail);
     }
 
     /**
@@ -1380,8 +1405,6 @@ final class ApiBillController extends Controller
      *
      * @return array<string, bool>
      *
-     * @todo Implement API validation function
-     *
      * @since 1.0.0
      */
     private function validateBillDelete(RequestAbstract $request) : array
@@ -1417,7 +1440,17 @@ final class ApiBillController extends Controller
         }
 
         /** @var BillElement $old */
-        $old = BillElementMapper::get()->where('id', (int) $request->getData('id'))->execute();
+        $old = BillElementMapper::get()
+            ->with('bill')
+            ->where('id', (int) $request->getData('id'))
+            ->execute();
+
+        if ($old->bill->status === BillStatus::ARCHIVED) {
+            $response->header->status = RequestStatusCode::R_423;
+            $this->createInvalidUpdateResponse($request, $response, $old);
+
+            return;
+        }
 
         // @todo can be edited?
         // @todo adjust transfer protocols

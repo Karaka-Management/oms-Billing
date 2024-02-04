@@ -32,6 +32,12 @@ use phpOMS\Stdlib\Base\FloatInt;
  * @license OMS License 2.0
  * @link    https://jingga.app
  * @since   1.0.0
+ *
+ * @todo Find a way to handle references to the total invoice amount and other items
+ *      Example: If total invoice > $X no shipping expenses
+ *          Maybe additional column referencing total value
+ *      Example: If item Y quantity > Z no costs for item A (e.g. service fee)
+ *          Maybe by referencing another price (i.e. if other price triggered than this is triggered as well)
  */
 class Price implements \JsonSerializable
 {

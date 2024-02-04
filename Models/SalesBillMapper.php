@@ -309,13 +309,13 @@ final class SalesBillMapper extends BillMapper
     /**
      * Placeholder
      */
-    public static function getClientBills(int $id, \DateTime $start, \DateTime $end) : array
+    public static function getClientBills(int $id, string $language, \DateTime $start, \DateTime $end) : array
     {
         return self::getAll()
             ->with('type')
             ->with('type/l11n')
             ->where('client', $id)
-            ->where('type/l11n/language', 'en') // @todo fix localization
+            ->where('type/l11n/language', $language)
             ->where('billDate', $start, '>=')
             ->where('billDate', $end, '<=')
             ->execute();
@@ -362,10 +362,11 @@ final class SalesBillMapper extends BillMapper
     /**
      * Placeholder
      */
-    public static function getItemMonthlySalesCosts(int $item, \DateTime $start, \DateTime $end) : array
+    public static function getItemMonthlySalesCosts(array $item, \DateTime $start, \DateTime $end) : array
     {
         $sql = <<<SQL
         SELECT
+            billing_bill_element_item
             SUM(billing_bill_element_total_netsalesprice) as net_sales,
             SUM(billing_bill_element_total_netpurchaseprice) as net_costs,
             YEAR(billing_bill_performance_date) as year,
@@ -373,11 +374,35 @@ final class SalesBillMapper extends BillMapper
         FROM billing_bill_element
         JOIN billing_bill ON billing_bill_element.billing_bill_element_bill = billing_bill.billing_bill_id
         WHERE
-            billing_bill_element_item = {$item}
+            billing_bill_element_item IN ({$item})
             AND billing_bill_performance_date >= '{$start->format('Y-m-d H:i:s')}'
             AND billing_bill_performance_date <= '{$end->format('Y-m-d H:i:s')}'
-        GROUP BY year, month
-        ORDER BY year ASC, month ASC;
+        GROUP BY billing_bill_element_item, year, month
+        ORDER BY billing_bill_element_item, year ASC, month ASC;
+        SQL;
+
+        $query  = new Builder(self::$db);
+        $result = $query->raw($sql)->execute()->fetchAll(\PDO::FETCH_ASSOC);
+
+        return $result ?? [];
+    }
+
+    public static function getItemMonthlySalesQuantity(array $item, \DateTime $start, \DateTime $end) : array
+    {
+        $sql = <<<SQL
+        SELECT
+            billing_bill_element_item
+            SUM(billing_bill_element_quantity) as quantity,
+            YEAR(billing_bill_performance_date) as year,
+            MONTH(billing_bill_performance_date) as month
+        FROM billing_bill_element
+        JOIN billing_bill ON billing_bill_element.billing_bill_element_bill = billing_bill.billing_bill_id
+        WHERE
+            billing_bill_element_item IN ({$item})
+            AND billing_bill_performance_date >= '{$start->format('Y-m-d H:i:s')}'
+            AND billing_bill_performance_date <= '{$end->format('Y-m-d H:i:s')}'
+        GROUP BY billing_bill_element_item, year, month
+        ORDER BY billing_bill_element_item, year ASC, month ASC;
         SQL;
 
         $query  = new Builder(self::$db);

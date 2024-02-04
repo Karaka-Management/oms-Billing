@@ -247,7 +247,7 @@ class Bill implements \JsonSerializable
      */
     public Account $referral;
 
-    public string $referralName = '';
+    public string $externalReferral = '';
 
     /**
      * Net amount.

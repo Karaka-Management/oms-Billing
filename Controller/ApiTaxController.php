@@ -465,8 +465,6 @@ final class ApiTaxController extends Controller
      *
      * @return array<string, bool>
      *
-     * @todo Implement API validation function
-     *
      * @since 1.0.0
      */
     private function validateTaxCombinationDelete(RequestAbstract $request) : array

@@ -283,7 +283,7 @@ class BillElement implements \JsonSerializable
      * @param Item    $item     Item
      * @param TaxCode $taxCode  Tax code used for gross amount calculation
      * @param int     $quantity Quantity
-     * @param int     $bill     Bill
+     * @param Bill    $bill     Bill
      *
      * @return self
      *
@@ -293,12 +293,12 @@ class BillElement implements \JsonSerializable
         Item $item,
         TaxCombination $taxCombination,
         int $quantity = 10000,
-        int $bill = 0,
+        Bill $bill = null,
         ?Container $container = null
     ) : self
     {
         $element                  = new self();
-        $element->bill            = new NullBill($bill);
+        $element->bill            = $bill;
         $element->item            = empty($item->id) ? null : $item;
         $element->container       = empty($container->id) ? null : $container;
         $element->itemNumber      = $item->number;
@@ -324,7 +324,7 @@ class BillElement implements \JsonSerializable
             $element->subscription        = new Subscription();
             $element->subscription->bill  = $element->bill->id;
             $element->subscription->item  = $element->item->id;
-            $element->subscription->start = new \DateTime('now'); // @todo change to bill performanceDate
+            $element->subscription->start = $bill?->performanceDate ?? new \DateTime('now');
             $element->subscription->end   = (new SmartDateTime('now'))->smartModify(m: 1); // @todo depends on subscription type
 
             $element->subscription->quantity  = $element->quantity;

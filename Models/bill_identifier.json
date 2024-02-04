@@ -2,10 +2,12 @@
     "type": {
         "purchase_invoice": {
             "en": [
-                "Invoice"
+                "Invoice",
+                "Receipt"
             ],
             "de": [
-                "Rechnung"
+                "Rechnung",
+                "Quittung"
             ]
         },
         "purchase_credit_note": {
@@ -34,9 +36,7 @@
             ]
         },
         "purchase_reverse_invoice": {
-            "en": [
-                "Credit Note"
-            ],
+            "en": [],
             "de": [
                 "Gutschrift"
             ]
