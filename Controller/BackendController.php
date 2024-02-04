@@ -296,7 +296,7 @@ final class BackendController extends Controller
         $view->setTemplate('/Modules/Billing/Theme/Backend/purchase-bill');
         $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005105001, $request, $response);
 
-        $bill = PurchaseBillMapper::get()
+        $view->data['bill'] = PurchaseBillMapper::get()
             ->with('supplier')
             ->with('elements')
             ->with('elements/container')
@@ -306,16 +306,12 @@ final class BackendController extends Controller
             ->where('id', (int) $request->getData('id'))
             ->execute();
 
-        $view->data['bill'] = $bill;
-
-        $billTypes = BillTypeMapper::getAll()
+        $view->data['billtypes'] = BillTypeMapper::getAll()
             ->with('l11n')
             ->where('isTemplate', false)
             ->where('transferType', BillTransferType::PURCHASE)
             ->where('l11n/language', $request->header->l11n->language)
             ->execute();
-
-        $view->data['billtypes'] = $billTypes;
 
         /** @var \Model\Setting $originalType */
         $originalType = $this->app->appSettings->get(
@@ -330,16 +326,16 @@ final class BackendController extends Controller
             ->with('createdBy')
             ->where('module', 'Billing')
             ->where('type', StringUtils::intHash(BillMapper::class))
-            ->where('ref', $bill->id)
+            ->where('ref', $view->data['bill']->id)
             ->execute();
 
-        if (!empty($bill->elements)) {
+        if (!empty($view->data['bill']->elements)) {
             /** @var \Modules\Auditor\Models\Audit[] $logsElements */
             $logsElements = AuditMapper::getAll()
                 ->with('createdBy')
                 ->where('module', 'Billing')
                 ->where('type', StringUtils::intHash(BillElementMapper::class))
-                ->where('ref', \array_keys($bill->elements), 'IN')
+                ->where('ref', \array_keys($view->data['bill']->elements), 'IN')
                 ->execute();
 
             $logs = \array_merge($logs, $logsElements);
