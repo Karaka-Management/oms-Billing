@@ -362,11 +362,13 @@ final class SalesBillMapper extends BillMapper
     /**
      * Placeholder
      */
-    public static function getItemMonthlySalesCosts(array $item, \DateTime $start, \DateTime $end) : array
+    public static function getItemMonthlySalesCosts(array $items, \DateTime $start, \DateTime $end) : array
     {
+        $item = \implode(',', $items);
+
         $sql = <<<SQL
         SELECT
-            billing_bill_element_item
+            billing_bill_element_item,
             SUM(billing_bill_element_total_netsalesprice) as net_sales,
             SUM(billing_bill_element_total_netpurchaseprice) as net_costs,
             YEAR(billing_bill_performance_date) as year,
@@ -387,11 +389,13 @@ final class SalesBillMapper extends BillMapper
         return $result ?? [];
     }
 
-    public static function getItemMonthlySalesQuantity(array $item, \DateTime $start, \DateTime $end) : array
+    public static function getItemMonthlySalesQuantity(array $items, \DateTime $start, \DateTime $end) : array
     {
+        $item = \implode(',', $items);
+
         $sql = <<<SQL
         SELECT
-            billing_bill_element_item
+            billing_bill_element_item,
             SUM(billing_bill_element_quantity) as quantity,
             YEAR(billing_bill_performance_date) as year,
             MONTH(billing_bill_performance_date) as month
