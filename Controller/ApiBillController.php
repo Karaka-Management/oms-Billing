@@ -182,6 +182,16 @@ final class ApiBillController extends Controller
 
         $this->updateModel($request->header->account, $old, $new, BillMapper::class, 'bill', $request->getOrigin());
 
+        $this->app->eventManager->triggerSimilar('PRE:Module:' . self::NAME . '-bill-finalize', '', [
+            $request->header->account,
+            null, $bill,
+            null, self::NAME . '-bill-finalize',
+            self::NAME,
+            (string) $bill->id,
+            null,
+            $request->getOrigin(),
+        ]);
+
         // Create final pdf
         $this->apiBillPdfArchiveCreate($request, $response, $data);
         $media = $response->getDataArray($request->uri->__toString())['response'];
@@ -1249,16 +1259,6 @@ final class ApiBillController extends Controller
             ->where('id', $request->getDataInt('bill') ?? 0)
             ->where('type/l11n/language', new ColumnName(BillMapper::getColumnByMember('language')))
             ->execute();
-
-        $this->app->eventManager->triggerSimilar('PRE:Module:' . self::NAME . '-bill-finalize', '', [
-            $request->header->account,
-            null, $bill,
-            null, self::NAME . '-bill-finalize',
-            self::NAME,
-            (string) $bill->id,
-            null,
-            $request->getOrigin(),
-        ]);
 
         // Handle PDF generation
         $templateId = $request->getDataInt('bill_template') ?? $bill->type->defaultTemplate?->id ?? 0;
