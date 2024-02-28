@@ -54,6 +54,8 @@ class BillType implements \JsonSerializable
 
     public int $sign = 1;
 
+    public bool $email = false;
+
     /**
      * Localization
      *

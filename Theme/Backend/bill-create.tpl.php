@@ -36,7 +36,7 @@ $elements = $bill->elements;
 
 $billTypes = $this->data['billtypes'] ?? [];
 
-$archive = $bill->getFileByTypeName('original');
+$archive = $bill->getFileByTypeName('internal');
 
 /** @var \Modules\Auditor\Models\Audit */
 $logs = $this->data['logs'] ?? [];
@@ -47,6 +47,33 @@ $disabled = $editable  ? '' : ' disabled';
 $isNew = $archive->id === 0;
 
 echo $this->data['nav']->render(); ?>
+<?php if (!$bill->isValid()) : ?>
+<div class="row">
+    <div class="col-xs-12">
+        <section class="portlet hl-1">
+            <article class="hl-1">
+                <ul>
+                <?php if (!$bill->areElementsValid()) : ?>
+                    <li><?= $this->getHtml('E_bill_items'); ?></li>
+                <?php endif; ?>
+                <?php if (!$bill->validateTaxAmountElements()) : ?>
+                    <li><?= $this->getHtml('E_bill_taxes'); ?></li>
+                <?php endif; ?>
+                <?php if (!$bill->validateNetElements()) : ?>
+                    <li><?= $this->getHtml('E_bill_net'); ?></li>
+                <?php endif; ?>
+                <?php if (!$bill->validateGrossElements()) : ?>
+                    <li><?= $this->getHtml('E_bill_gross'); ?></li>
+                <?php endif; ?>
+                <?php if (!$bill->validatePriceQuantityElements()) : ?>
+                    <li><?= $this->getHtml('E_bill_unit'); ?></li>
+                <?php endif; ?>
+                </ul>
+            </article>
+        </section>
+    </div>
+</div>
+<?php endif; ?>
 
 <div class="tabview tab-2 col-simple">
     <div class="box">
@@ -55,9 +82,9 @@ echo $this->data['nav']->render(); ?>
             <li><label for="c-tab-2"><?= $this->getHtml('Items'); ?></label>
             <li><label for="c-tab-3"><?= $this->getHtml('Preview'); ?></label>
             <?php if (!$isNew) : ?><li><label for="c-tab-4"><?= $this->getHtml('Archive'); ?></label><?php endif; ?>
-            <li><label for="c-tab-5"><?= $this->getHtml('Payment'); ?></label>
+            <!--<li><label for="c-tab-5"><?= $this->getHtml('Payment'); ?></label>-->
             <li><label for="c-tab-6"><?= $this->getHtml('Files'); ?></label>
-            <?php if (!$isNew) : ?><li><label for="c-tab-7"><?= $this->getHtml('Logs'); ?></label><?php endif; ?>
+            <?php if (!$isNew && !empty($logs)) : ?><li><label for="c-tab-7"><?= $this->getHtml('Logs'); ?></label><?php endif; ?>
         </ul>
     </div>
     <div class="tab-content col-simple">
@@ -101,7 +128,7 @@ echo $this->data['nav']->render(); ?>
                                     <label for="iBillType"><?= $this->getHtml('Type'); ?></label>
                                     <select id="iBillType" name="bill_type"<?= $disabled; ?>>
                                         <?php foreach ($billTypes as $type) : ?>
-                                        <option value="<?= $type->id; ?>"><?= $this->printHtml($type->getL11n()); ?>
+                                        <option value="<?= $type->id; ?>"<?= $type->id === $bill->type->id ? ' selected' : ''; ?>><?= $this->printHtml($type->getL11n()); ?>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
@@ -356,7 +383,7 @@ echo $this->data['nav']->render(); ?>
                                     <td>
                             <?php endif; ?>
                             <tfoot>
-                                <tr class="highlight-2">
+                                <tr class="hl-2">
                                     <td colspan="3"><?= $this->getHtml('Total'); ?>
                                     <td>
                                     <td><?= $bill->netDiscount->getAmount(2); ?>
@@ -385,7 +412,7 @@ echo $this->data['nav']->render(); ?>
                     <select id="iBillPreviewType" name="bill_preview_type"
                     data-action='[{"listener": "change", "action": [{"key": 1, "type": "dom.reload", "src": "iPreviewBill"}]}]'>
                         <?php foreach ($billTypes as $type) : ?>
-                        <option value="<?= $type->id; ?>"><?= $this->printHtml($type->getL11n()); ?>
+                        <option value="<?= $type->id; ?>"<?= $type->id === $bill->type->id ? ' selected' : ''; ?>><?= $this->printHtml($type->getL11n()); ?>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -417,6 +444,7 @@ echo $this->data['nav']->render(); ?>
         </div>
         <?php endif; ?>
 
+        <!--
         <input type="radio" id="c-tab-5" name="tabular-2">
         <div class="tab">
             <div class="row">
@@ -515,12 +543,14 @@ echo $this->data['nav']->render(); ?>
                 </div>
             </div>
         </div>
+        -->
+
         <input type="radio" id="c-tab-6" name="tabular-2">
         <div class="tab col-simple">
             <?= $this->data['media-upload']->render('bill-file', 'files', '', $media); ?>
         </div>
 
-        <?php if (!$isNew) : ?>
+        <?php if (!$isNew && !empty($bill)) : ?>
         <input type="radio" id="c-tab-7" name="tabular-2">
         <div class="tab">
             <div class="row">

@@ -1,0 +1,26 @@
+{
+    "invoice_number": "220002",
+    "grossSales": 6021400,
+    "netSales": 5060000,
+    "tax_amount": 961400,
+    "tax_rate": 190000,
+    "bill_date": "2022-11-04",
+    "delivery_date": "",
+    "service_date": "",
+    "due_date": "2022-11-18",
+    "vat_id": "",
+    "tax_id": "45/123/12345",
+    "address": {
+        "name": "Handwerksmeister Frity Blau",
+        "address": "Musterstraße 123",
+        "city": "12345 Berlin",
+        "country": ""
+    },
+    "iban": "DE100023145678",
+    "elements": [],
+    "language": "de",
+    "currency": "EUR",
+    "email": "info@mustermann.de",
+    "website": "www.mustermann.de",
+    "phone": "+49 (30) 12 34 56 01"
+}

@@ -1,0 +1,34 @@
+{
+    "invoice_number": "20191242",
+    "grossSales": 2800000,
+    "netSales": 2800000,
+    "tax_amount": 0,
+    "tax_rate": 0,
+    "bill_date": "2019-09-12",
+    "delivery_date": "",
+    "due_date": "2019-09-12",
+    "vat_id": "DE12345678",
+    "tax_id": "12/112233/44221",
+    "address": {
+        "name": "fortytools gmbh",
+        "address": "Georgsplatz 10",
+        "city": "20099 Hamburg",
+        "country": ""
+    },
+    "iban": "",
+    "elements": [
+        {
+            "position": 1,
+            "description": "",
+            "quantity": 10000,
+            "unit": "pro Woche",
+            "price": 280000,
+            "total": 280000
+        }
+    ],
+    "language": "de",
+    "currency": "EUR",
+    "email": "info@fortytools-cleaning.com",
+    "website": "",
+    "phone": "+49-40-609 407 89 - 0"
+}

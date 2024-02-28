@@ -1,0 +1,26 @@
+{
+    "invoice_number": "10005",
+    "grossSales": 1160000,
+    "netSales": 1000000,
+    "tax_amount": 160000,
+    "tax_rate": 160000,
+    "bill_date": "2020-09-22",
+    "delivery_date": "",
+    "service_date": "",
+    "due_date": "",
+    "vat_id": "DE814878557",
+    "tax_id": "122/5719/4368",
+    "address": {
+        "name": "easzbill GmbH",
+        "address": "Düsselstr. 21",
+        "city": "41564 Kaarst",
+        "country": ""
+    },
+    "iban": "DE58300700240509944500",
+    "elements": [],
+    "language": "de",
+    "currency": "EUR",
+    "email": "support@easybill.de",
+    "website": "www.easybil.de",
+    "phone": "+49 2154 897 01 - 20"
+}

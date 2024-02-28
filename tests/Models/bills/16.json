@@ -1,0 +1,26 @@
+{
+    "invoice_number": "1001",
+    "grossSales": 4658900,
+    "netSales": 3915000,
+    "tax_amount": 743900,
+    "tax_rate": 190000,
+    "bill_date": "2021-02-17",
+    "delivery_date": "",
+    "service_date": "",
+    "due_date": "",
+    "vat_id": "",
+    "tax_id": "",
+    "address": {
+        "name": "Ihre Firma",
+        "address": "Musterstraße X",
+        "city": "12345 Musterstadt",
+        "country": ""
+    },
+    "iban": "DE85123456789012345678",
+    "elements": [],
+    "language": "de",
+    "currency": "EUR",
+    "email": "firmaxyz@gmail.de",
+    "website": "www.firmaxyz.de",
+    "phone": "+49 1234/12 34 56"
+}

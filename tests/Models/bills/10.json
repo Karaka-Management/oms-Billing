@@ -1,0 +1,26 @@
+{
+    "invoice_number": "12345",
+    "grossSales": 11200000,
+    "netSales": 11200000,
+    "tax_amount": 0,
+    "tax_rate": 0,
+    "bill_date": "",
+    "delivery_date": "",
+    "service_date": "",
+    "due_date": "",
+    "vat_id": "",
+    "tax_id": "",
+    "address": {
+        "name": "",
+        "address": "",
+        "city": "",
+        "country": ""
+    },
+    "iban": "DE34233004333401",
+    "elements": [],
+    "language": "de",
+    "currency": "EUR",
+    "email": "mail@musterfirma.com",
+    "website": "www.musterfirma.com",
+    "phone": "(+49) 1234/98 76 54"
+}

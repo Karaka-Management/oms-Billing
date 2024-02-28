@@ -38,6 +38,6 @@ class Admin
      */
     public static function install(ApplicationAbstract $app, string $path) : void
     {
-        \Modules\Admin\Admin\Installer::installExternal($app, ['path' => __DIR__ . '/Admin.install.json']);
+        \Modules\Admin\Admin\Installer::installExternal($app, ['path' => __DIR__ . '/Admin.install.php']);
     }
 }

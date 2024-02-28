@@ -15,6 +15,7 @@ declare(strict_types=1);
 use Modules\Billing\Models\NullBill;
 use phpOMS\Localization\ISO3166NameEnum;
 use phpOMS\Localization\Money;
+use phpOMS\Stdlib\Base\FloatInt;
 
 /** @var \phpOMS\Views\View $this */
 
@@ -118,7 +119,7 @@ $pdf->setTextColor(255, 162, 7);
 
 $pdf->setXY($rightPos, $tempY = $pdf->getY() + 10, true);
 $pdf->MultiCell(
-    26, 30,
+    29, 30,
     $lang[$pdf->language]['InvoiceNo'] . "\n"
     . $lang[$pdf->language]['InvoiceDate'] . "\n"
     . $lang[$pdf->language]['ServiceDate'] . "\n"
@@ -131,20 +132,22 @@ $pdf->MultiCell(
 //$pdf->setFont('helvetica', '', 10);
 $pdf->setTextColor(0, 0, 0);
 
-$pdf->setXY($rightPos + 26 + 2, $tempY, true);
+$pdf->setXY($rightPos + 29 + 2, $tempY, true);
 $pdf->MultiCell(
     25, 30,
     $bill->number . "\n"
     . ($bill->billDate?->format('Y-m-d') ?? '0') . "\n"
     . ($bill->performanceDate?->format('Y-m-d') ?? '0') . "\n"
     . $bill->accountNumber . "\n"
-    . $bill->externalReferral . "\n"
+    . $bill->external . "\n"
     .  ($bill->billDate?->format('Y-m-d') ?? '0'), /* Consider to add dueDate in addition */
     0, 'L'
 );
 $pdf->Ln();
 
-$pdf->setY($pdf->getY() - 20);
+$tempY = $pdf->getY();
+$height = 0;
+$pdf->setY($tempY - 20);
 
 $header = [
     $lang[$pdf->language]['Item'],
@@ -152,8 +155,6 @@ $header = [
     $lang[$pdf->language]['UnitPrice'],
     $lang[$pdf->language]['Total'],
 ];
-
-$lines = $bill->elements;
 
 // Header
 $headerCount = \count($header);
@@ -166,7 +167,7 @@ $first = true;
 
 // Data
 $fill = false;
-foreach($lines as $line) {
+foreach($bill->elements as $line) {
     // @todo depending on amount of lines, there is a solution (html, or use backtracking of tcpdf)
     if ($first || $pdf->getY() > $pageHeight - 40) {
         $pdf->setFillColor(255, 162, 7);
@@ -218,86 +219,92 @@ foreach($lines as $line) {
     $fill = !$fill;
 
     // get taxes
-    if (!isset($taxes[$line->taxR->value / 10000])) {
-        $taxes[$line->taxR->value / 10000] = $line->taxP;
+    if (!isset($taxes[$line->taxR->value / FloatInt::DIVISOR])) {
+        $taxes[$line->taxR->value / FloatInt::DIVISOR] = $line->taxP;
     } else {
-        $taxes[$line->taxR->value / 10000]->add($line->taxP);
+        $taxes[$line->taxR->value / FloatInt::DIVISOR]->add($line->taxP);
     }
 }
 
-$pdf->Cell(\array_sum($w), 0, '', 'T');
-$pdf->Ln();
+// We have to do the following because in some cases it doesn't set the Y position correctly after the table
+// I assume it is related to if/else above. A html multicell might not correctly set the y position.
+if (!empty($bill->elements)) {
+    $pdf->setY($tempY + $height);
 
-if ($pdf->getY() > $pageHeight - 40) {
-    $pdf->AddPage();
-}
+    $pdf->Cell(\array_sum($w), 0, '', 'T');
+    $pdf->Ln();
 
-$pdf->setFillColor(240, 240, 240);
-$pdf->setTextColor(0);
-$pdf->setDrawColor(240, 240, 240);
-$pdf->setFont('helvetica', 'B', 10);
+    if ($pdf->getY() > $pageHeight - 40) {
+        $pdf->AddPage();
+    }
 
-$tempY = $pdf->getY();
+    $pdf->setFillColor(240, 240, 240);
+    $pdf->setTextColor(0);
+    $pdf->setDrawColor(240, 240, 240);
+    $pdf->setFont('helvetica', 'B', 10);
 
-$netSales = Money::fromFloatInt($bill->netSales);
+    $tempY = $pdf->getY();
 
-$pdf->setX($w[0] + $w[1] + 12);
-$pdf->Cell($w[2], 7, $lang[$pdf->language]['Subtotal'], 0, 0, 'L', false);
-$pdf->Cell($w[3], 7, $netSales->getCurrency(2, symbol: ''), 0, 0, 'L', false);
-$pdf->Ln();
-
-foreach ($taxes as $rate => $tax) {
-    $tax = Money::fromFloatInt($tax);
+    $netSales = Money::fromFloatInt($bill->netSales);
 
     $pdf->setX($w[0] + $w[1] + 12);
-    $pdf->Cell($w[2], 7,  $lang[$pdf->language]['Taxes'] . ' (' . $rate . '%)', 0, 0, 'L', false);
-    $pdf->Cell($w[3], 7, $tax->getCurrency(2, symbol: ''), 0, 0, 'L', false);
+    $pdf->Cell($w[2], 7, $lang[$pdf->language]['Subtotal'], 0, 0, 'L', false);
+    $pdf->Cell($w[3], 7, $netSales->getCurrency(2, symbol: ''), 0, 0, 'L', false);
     $pdf->Ln();
+
+    foreach ($taxes as $rate => $tax) {
+        $tax = Money::fromFloatInt($tax);
+
+        $pdf->setX($w[0] + $w[1] + 12);
+        $pdf->Cell($w[2], 7,  $lang[$pdf->language]['Taxes'] . ' (' . $rate . '%)', 0, 0, 'L', false);
+        $pdf->Cell($w[3], 7, $tax->getCurrency(2, symbol: ''), 0, 0, 'L', false);
+        $pdf->Ln();
+    }
+
+    $pdf->setFillColor(255, 162, 7);
+    $pdf->setTextColor(255);
+    $pdf->setDrawColor(255, 162, 7);
+    //$pdf->setFont('helvetica', 'B', 10);
+
+    $grossSales = Money::fromFloatInt($bill->grossSales);
+
+    $pdf->setX($w[0] + $w[1] + 12);
+    $pdf->Cell($w[2], 7, \strtoupper($lang[$pdf->language]['Total']), 1, 0, 'L', true);
+    $pdf->Cell($w[3] + 3, 7,  $grossSales->getCurrency(2, symbol: ''), 1, 0, 'L', true);
+    $pdf->Ln();
+
+    $tempY2 = $pdf->getY();
+
+    // @todo fix payment terms
+    $pdf->setTextColor(0);
+    $pdf->setFont('helvetica', 'B', 8);
+    $pdf->setY($tempY);
+    $pdf->Write(0, $lang[$pdf->language]['PaymentTerms'] . ': CreditCard', '', false, 'L', false, 0, false, false, 0);
+
+    $pdf->setFont('helvetica', '', 8);
+    $pdf->Write(0, $bill->paymentText, '', false, 'L', false, 0, false, false, 0);
+    $pdf->Ln();
+
+    // @todo fix terms
+    $pdf->setFont('helvetica', 'B', 8);
+    $pdf->Write(0, $lang[$pdf->language]['Terms'] . ': ' . $pdf->attributes['terms'], '', false, 'L', false, 0, false, false, 0);
+    $pdf->Ln();
+
+    //$pdf->setFont('helvetica', 'B', 8);
+    $pdf->Write(0, $lang[$pdf->language]['Currency'] . ': ' . $bill->currency, '', false, 'L', false, 0, false, false, 0);
+    $pdf->Ln();
+
+    //$pdf->setFont('helvetica', 'B', 8);
+    $pdf->Write(0, $lang[$pdf->language]['TaxRemark'], '', false, 'L', false, 0, false, false, 0);
+    $pdf->Ln();
+
+    $pdf->setFont('helvetica', '', 8);
+    $pdf->Write(0, $bill->termsText, '', false, 'L', false, 0, false, false, 0);
+    //$pdf->Ln();
+
+    //$pdf->setY($tempY2);
+    //$pdf->Ln();
 }
-
-$pdf->setFillColor(255, 162, 7);
-$pdf->setTextColor(255);
-$pdf->setDrawColor(255, 162, 7);
-//$pdf->setFont('helvetica', 'B', 10);
-
-$grossSales = Money::fromFloatInt($bill->grossSales);
-
-$pdf->setX($w[0] + $w[1] + 12);
-$pdf->Cell($w[2], 7, \strtoupper($lang[$pdf->language]['Total']), 1, 0, 'L', true);
-$pdf->Cell($w[3] + 3, 7,  $grossSales->getCurrency(2, symbol: ''), 1, 0, 'L', true);
-$pdf->Ln();
-
-$tempY2 = $pdf->getY();
-
-// @todo fix payment terms
-$pdf->setTextColor(0);
-$pdf->setFont('helvetica', 'B', 8);
-$pdf->setY($tempY);
-$pdf->Write(0, $lang[$pdf->language]['PaymentTerms'] . ': CreditCard', '', false, 'L', false, 0, false, false, 0);
-
-$pdf->setFont('helvetica', '', 8);
-$pdf->Write(0, $bill->paymentText, '', false, 'L', false, 0, false, false, 0);
-$pdf->Ln();
-
-// @todo fix terms
-$pdf->setFont('helvetica', 'B', 8);
-$pdf->Write(0, $lang[$pdf->language]['Terms'] . ': ' . $pdf->attributes['terms'], '', false, 'L', false, 0, false, false, 0);
-$pdf->Ln();
-
-//$pdf->setFont('helvetica', 'B', 8);
-$pdf->Write(0, $lang[$pdf->language]['Currency'] . ': ' . $bill->currency, '', false, 'L', false, 0, false, false, 0);
-$pdf->Ln();
-
-//$pdf->setFont('helvetica', 'B', 8);
-$pdf->Write(0, $lang[$pdf->language]['TaxRemark'], '', false, 'L', false, 0, false, false, 0);
-$pdf->Ln();
-
-$pdf->setFont('helvetica', '', 8);
-$pdf->Write(0, $bill->termsText, '', false, 'L', false, 0, false, false, 0);
-//$pdf->Ln();
-
-//$pdf->setY($tempY2);
-//$pdf->Ln();
 
 //Close and output PDF document
 $path = (string) ($this->data['path'] ?? (($bill->billDate?->format('Y-m-d') ?? '0') . '_' . $bill->number . '.pdf'));

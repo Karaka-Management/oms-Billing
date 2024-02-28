@@ -53,6 +53,12 @@ class Messages
                 'content' => (string) $messages['email_template'][0]['id'],
                 'module'  => 'Billing',
             ],
+            [
+                'id'      => null,
+                'name'    => SettingsEnum::BILLING_SUPPLIER_EMAIL_TEMPLATE,
+                'content' => (string) $messages['email_template'][1]['id'],
+                'module'  => 'Billing',
+            ],
         ];
 
         $response = new HttpResponse();

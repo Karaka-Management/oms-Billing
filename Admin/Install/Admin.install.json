@@ -1,9 +1,0 @@
-[
-    {
-        "type": "setting",
-        "name": "1005100003",
-        "content": "[\"en\", \"de\"]",
-        "pattern": "",
-        "module": "Billing"
-    }
-]

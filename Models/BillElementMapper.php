@@ -59,14 +59,10 @@ final class BillElementMapper extends DataMapperFactory
         'billing_bill_element_total_grosssalesprice'         => ['name' => 'billing_bill_element_total_grosssalesprice',      'type' => 'Serializable',    'internal' => 'totalSalesPriceGross'],
 
         'billing_bill_element_single_netprofit'   => ['name' => 'billing_bill_element_single_netprofit',      'type' => 'Serializable',    'internal' => 'singleProfitNet'],
-        'billing_bill_element_single_grossprofit' => ['name' => 'billing_bill_element_single_grossprofit',      'type' => 'Serializable',    'internal' => 'singleProfitGross'],
         'billing_bill_element_total_netprofit'    => ['name' => 'billing_bill_element_total_netprofit',      'type' => 'Serializable',    'internal' => 'totalProfitNet'],
-        'billing_bill_element_total_grossprofit'  => ['name' => 'billing_bill_element_total_grossprofit',      'type' => 'Serializable',    'internal' => 'totalProfitGross'],
 
         'billing_bill_element_single_netpurchaseprice'   => ['name' => 'billing_bill_element_single_netpurchaseprice',      'type' => 'Serializable',    'internal' => 'singlePurchasePriceNet'],
-        'billing_bill_element_single_grosspurchaseprice' => ['name' => 'billing_bill_element_single_grosspurchaseprice',      'type' => 'Serializable',    'internal' => 'singlePurchasePriceGross'],
         'billing_bill_element_total_netpurchaseprice'    => ['name' => 'billing_bill_element_total_netpurchaseprice',      'type' => 'Serializable',    'internal' => 'totalPurchasePriceNet'],
-        'billing_bill_element_total_grosspurchaseprice'  => ['name' => 'billing_bill_element_total_grosspurchaseprice',      'type' => 'Serializable',    'internal' => 'totalPurchasePriceGross'],
         'billing_bill_element_bill'                      => ['name' => 'billing_bill_element_bill',      'type' => 'int',    'internal' => 'bill'],
 
         'billing_bill_element_tax_type'       => ['name' => 'billing_bill_element_tax_type',      'type' => 'string',    'internal' => 'taxCode'],

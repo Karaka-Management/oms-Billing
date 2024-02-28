@@ -242,6 +242,11 @@
                 "type": "TINYINT(1)",
                 "null": false
             },
+            "billing_price_status": {
+                "name": "billing_price_status",
+                "type": "TINYINT(1)",
+                "null": false
+            },
             "billing_price_quantity": {
                 "name": "billing_price_quantity",
                 "type": "BIGINT",
@@ -440,6 +445,12 @@
                 "type": "TINYINT(1)",
                 "null": false
             },
+            "billing_type_email": {
+                "description": "send email on archive",
+                "name": "billing_type_email",
+                "type": "TINYINT(1)",
+                "null": false
+            },
             "billing_type_account_format": {
                 "name": "billing_type_account_format",
                 "type": "VARCHAR(255)",
@@ -532,6 +543,11 @@
             },
             "billing_bill_number": {
                 "name": "billing_bill_number",
+                "type": "VARCHAR(255)",
+                "null": false
+            },
+            "billing_bill_external": {
+                "name": "billing_bill_external",
                 "type": "VARCHAR(255)",
                 "null": false
             },
@@ -715,18 +731,8 @@
                 "type": "BIGINT",
                 "null": false
             },
-            "billing_bill_grossprofit": {
-                "name": "billing_bill_grossprofit",
-                "type": "BIGINT",
-                "null": false
-            },
             "billing_bill_netcosts": {
                 "name": "billing_bill_netcosts",
-                "type": "BIGINT",
-                "null": false
-            },
-            "billing_bill_grosscosts": {
-                "name": "billing_bill_grosscosts",
                 "type": "BIGINT",
                 "null": false
             },
@@ -742,11 +748,6 @@
             },
             "billing_bill_netdiscount": {
                 "name": "billing_bill_netdiscount",
-                "type": "BIGINT",
-                "null": false
-            },
-            "billing_bill_grossdiscount": {
-                "name": "billing_bill_grossdiscount",
                 "type": "BIGINT",
                 "null": false
             },
@@ -780,12 +781,6 @@
                 "default": null,
                 "foreignTable": "account",
                 "foreignKey": "account_id"
-            },
-            "billing_bill_referral_name": {
-                "name": "billing_bill_referral_name",
-                "type": "VARCHAR(255)",
-                "default": null,
-                "null": true
             },
             "billing_bill_reference": {
                 "name": "billing_bill_reference",
@@ -1061,20 +1056,8 @@
                 "null": true,
                 "default": null
             },
-            "billing_bill_element_single_grosspurchaseprice": {
-                "name": "billing_bill_element_single_grosspurchaseprice",
-                "type": "BIGINT",
-                "null": true,
-                "default": null
-            },
             "billing_bill_element_total_netpurchaseprice": {
                 "name": "billing_bill_element_total_netpurchaseprice",
-                "type": "BIGINT",
-                "null": true,
-                "default": null
-            },
-            "billing_bill_element_total_grosspurchaseprice": {
-                "name": "billing_bill_element_total_grosspurchaseprice",
                 "type": "BIGINT",
                 "null": true,
                 "default": null
@@ -1085,20 +1068,8 @@
                 "null": true,
                 "default": null
             },
-            "billing_bill_element_single_grossprofit": {
-                "name": "billing_bill_element_single_grossprofit",
-                "type": "BIGINT",
-                "null": true,
-                "default": null
-            },
             "billing_bill_element_total_netprofit": {
                 "name": "billing_bill_element_total_netprofit",
-                "type": "BIGINT",
-                "null": true,
-                "default": null
-            },
-            "billing_bill_element_total_grossprofit": {
-                "name": "billing_bill_element_total_grossprofit",
                 "type": "BIGINT",
                 "null": true,
                 "default": null

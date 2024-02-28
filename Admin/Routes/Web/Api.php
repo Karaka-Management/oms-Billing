@@ -51,4 +51,15 @@ return [
             ],
         ],
     ],
+    '^.*/bill/parse(\?.*$|$)' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\ApiPurchaseController:apiInvoiceParse',
+            'verb'       => RouteVerb::SET,
+            'permission' => [
+                'module' => BackendController::NAME,
+                'type'   => PermissionType::MODIFY,
+                'state'  => PermissionCategory::PURCHASE_INVOICE,
+            ],
+        ],
+    ],
 ];

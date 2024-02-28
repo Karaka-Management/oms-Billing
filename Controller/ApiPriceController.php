@@ -19,6 +19,7 @@ use Modules\Attribute\Models\NullAttributeValue;
 use Modules\Billing\Models\Price\NullPrice;
 use Modules\Billing\Models\Price\Price;
 use Modules\Billing\Models\Price\PriceMapper;
+use Modules\Billing\Models\Price\PriceStatus;
 use Modules\Billing\Models\Price\PriceType;
 use Modules\ClientManagement\Models\Client;
 use Modules\ClientManagement\Models\ClientMapper;
@@ -28,6 +29,7 @@ use Modules\ItemManagement\Models\ItemMapper;
 use Modules\ItemManagement\Models\NullItem;
 use Modules\SupplierManagement\Models\NullSupplier;
 use Modules\SupplierManagement\Models\Supplier;
+use Modules\SupplierManagement\Models\SupplierMapper;
 use phpOMS\Localization\ISO4217CharEnum;
 use phpOMS\Message\Http\RequestStatusCode;
 use phpOMS\Message\RequestAbstract;
@@ -46,8 +48,12 @@ final class ApiPriceController extends Controller
 {
     public function findBestPrice(RequestAbstract $request, ?Item $item = null, ?Client $client = null, ?Supplier $supplier = null)
     {
+        $item ??= new NullItem();
+        $client ??= new NullClient();
+        $supplier ??= new NullSupplier();
+
         // Get item
-        if ($item === null && $request->hasData('price_item')) {
+        if ($item->id === 0 && $request->hasData('price_item')) {
             /** @var null|\Modules\ItemManagement\Models\Item $item */
             $item = ItemMapper::get()
                 ->with('attributes')
@@ -59,9 +65,10 @@ final class ApiPriceController extends Controller
         }
 
         // Get client
-        if ($client === null && $request->hasData('client')) {
+        if ($client->id === 0 && $request->hasData('client')) {
             /** @var \Modules\ClientManagement\Models\Client $client */
             $client = ClientMapper::get()
+                ->with('mainAddress')
                 ->with('attributes')
                 ->with('attributes/type')
                 ->with('attributes/value')
@@ -71,39 +78,125 @@ final class ApiPriceController extends Controller
         }
 
         // Get supplier
-        if ($supplier === null && $request->hasData('supplier')) {
-            $supplier = new NullSupplier($request->getDataInt('supplier'));
+        if ($supplier->id === 0 && $request->hasData('supplier')) {
+            $supplier = SupplierMapper::get()
+                ->where('id', $request->getDataInt('supplier'))
+                ->execute();
         }
 
-        $quantity = new FloatInt($request->getDataString('price_quantity') ?? 10000);
+        $quantity = new FloatInt($request->getDataString('price_quantity') ?? FloatInt::DIVISOR);
+        $quantity->value = $quantity->value === 0 ? FloatInt::DIVISOR : $quantity->value;
 
         // Get all relevant prices
-        $queryMapper = PriceMapper::getAll();
+        $queryMapper = PriceMapper::getAll()
+            ->where('status', PriceStatus::ACTIVE);
 
         if ($request->hasData('price_name')) {
             $queryMapper->where('name', $request->getData('name'));
         }
 
-        $queryMapper->where('promocode', \array_unique([$request->getData('promocode'), null]), 'IN');
+        $queryMapper->where('promocode', \array_unique([$request->getDataString('promocode') ?? '', '']), 'IN');
 
-        $queryMapper->where('item', \array_unique([$request->getDataInt('item'), $item?->id, null]), 'IN');
-        $queryMapper->where('itemsalesgroup', \array_unique([$request->getDataInt('sales_group'), $item?->getAttribute('sales_group')->value->getValue(), null]), 'IN');
-        $queryMapper->where('itemproductgroup', \array_unique([$request->getDataInt('product_group'), $item?->getAttribute('product_group')->value->getValue(), null]), 'IN');
-        $queryMapper->where('itemsegment', \array_unique([$request->getDataInt('item_segment'), $item?->getAttribute('segment')->value->getValue(), null]), 'IN');
-        $queryMapper->where('itemsection', \array_unique([$request->getDataInt('item_section'), $item?->getAttribute('section')->value->getValue(), null]), 'IN');
-        $queryMapper->where('itemtype', \array_unique([$request->getDataInt('product_type'), $item?->getAttribute('product_type')->value->getValue(), null]), 'IN');
+        // Item
+        if ($item->id !== 0) {
+            $queryMapper->where('item', $item->id);
+        } elseif ($request->hasData('item')) {
+            $queryMapper->where('item', $request->getDataInt('item'));
+        }
 
-        $queryMapper->where('client', \array_unique([$request->getDataInt('client'), $client?->id, null]), 'IN');
-        $queryMapper->where('clientgroup', \array_unique([$request->getDataInt('client_group'), $client?->getAttribute('client_group')->value->getValue(), null]), 'IN');
-        $queryMapper->where('clientsegment', \array_unique([$request->getDataInt('client_segment'), $client?->getAttribute('segment')->value->getValue(), null]), 'IN');
-        $queryMapper->where('clientsection', \array_unique([$request->getDataInt('client_section'), $client?->getAttribute('section')->value->getValue(), null]), 'IN');
-        $queryMapper->where('clienttype', \array_unique([$request->getDataInt('client_type'), $client?->getAttribute('client_type')->value->getValue(), null]), 'IN');
-        $queryMapper->where('clientcountry', \array_unique([$request->getData('client_region'), $client?->mainAddress->country, null]), 'IN');
+        // Item segment
+        $itemSegment = [null, $request->getDataInt('item_segment')];
+        if ($item->getAttribute('segment')->value->id !== 0) {
+            $itemSegment[] = $item->getAttribute('segment')->value->getValue();
+        }
+        $queryMapper->where('itemsegment', \array_unique($itemSegment), 'IN');
 
-        $queryMapper->where('supplier', \array_unique([$supplier?->id, null]), 'IN');
-        $queryMapper->where('unit', \array_unique([$request->getDataInt('price_unit'), null]), 'IN');
-        $queryMapper->where('type', $request->getDataInt('price_type') ?? (($supplier?->id ?? 0) === 0 ? PriceType::SALES : PriceType::PURCHASE));
-        $queryMapper->where('currency', \array_unique([$request->getDataString('currency'), null]), 'IN');
+        // Item section
+        $itemSection = [null, $request->getDataInt('item_section')];
+        if ($item->getAttribute('section')->value->id !== 0) {
+            $itemSection[] = $item->getAttribute('section')->value->getValue();
+        }
+        $queryMapper->where('itemsection', \array_unique($itemSection), 'IN');
+
+        // Item sales group
+        $itemSalesGroups = [null, $request->getDataInt('sales_group')];
+        if ($item->getAttribute('sales_group')->value->id !== 0) {
+            $itemSalesGroups[] = $item->getAttribute('sales_group')->value->getValue();
+        }
+        $queryMapper->where('itemsalesgroup', \array_unique($itemSalesGroups), 'IN');
+
+        // Item product group
+        $itemProductGroups = [null, $request->getDataInt('product_group')];
+        if ($item->getAttribute('product_group')->value->id !== 0) {
+            $itemProductGroups[] = $item->getAttribute('product_group')->value->getValue();
+        }
+        $queryMapper->where('itemproductgroup', \array_unique($itemProductGroups), 'IN');
+
+        // Item product type
+        $itemProductType = [null, $request->getDataInt('product_type')];
+        if ($item->getAttribute('product_type')->value->id !== 0) {
+            $itemProductType[] = $item->getAttribute('product_type')->value->getValue();
+        }
+        $queryMapper->where('itemtype', \array_unique($itemProductType), 'IN');
+
+        // Client
+        if ($client->id !== 0) {
+            $queryMapper->where('client', $client->id);
+        } elseif ($request->hasData('client')) {
+            $queryMapper->where('client', $request->getDataInt('client'));
+        }
+
+        // Client segment
+        $clientSegment = [null, $request->getDataInt('client_segment')];
+        if ($client->getAttribute('segment')->value->id !== 0) {
+            $clientSegment[] = $client->getAttribute('segment')->value->getValue();
+        }
+        $queryMapper->where('clientsegment', \array_unique($clientSegment), 'IN');
+
+        // Client section
+        $clientSection = [null, $request->getDataInt('client_section')];
+        if ($client->getAttribute('section')->value->id !== 0) {
+            $clientSection[] = $client->getAttribute('section')->value->getValue();
+        }
+        $queryMapper->where('clientsection', \array_unique($clientSection), 'IN');
+
+        // Client group
+        $clientGroup = [null, $request->getDataInt('client_group')];
+        if ($client->getAttribute('client_group')->value->id !== 0) {
+            $clientGroup[] = $client->getAttribute('client_group')->value->getValue();
+        }
+        $queryMapper->where('clientgroup', \array_unique($clientGroup), 'IN');
+
+        // Client type
+        $clientType = [null, $request->getDataInt('client_type')];
+        if ($client->getAttribute('client_type')->value->id !== 0) {
+            $clientType[] = $client->getAttribute('client_type')->value->getValue();
+        }
+        $queryMapper->where('clienttype', \array_unique($clientType), 'IN');
+
+        // Client type
+        $clientCountry = [null, $request->getDataInt('client_region')];
+        if ($client->mainAddress->id !== 0) {
+            $clientCountry[] = $client->mainAddress->country;
+        }
+        $queryMapper->where('clientcountry', \array_unique($clientCountry), 'IN');
+
+        // Supplier
+        if ($supplier->id !== 0) {
+            $queryMapper->where('supplier', $supplier->id);
+        } elseif ($request->hasData('supplier')) {
+            $queryMapper->where('supplier', $request->getDataInt('supplier'));
+        }
+
+        if ($request->hasData('price_unit')) {
+            $queryMapper->where('unit', $request->getDataInt('price_unit'));
+        }
+
+        $queryMapper->where('type', $request->getDataInt('price_type') ?? ($supplier->id === 0 ? PriceType::SALES : PriceType::PURCHASE));
+
+        if ($request->hasData('currency')) {
+            $queryMapper->where('currency', $request->getData('currency'));
+        }
 
         // @todo implement start and end
 
@@ -124,7 +217,8 @@ final class ApiPriceController extends Controller
         // Find base price
         $basePrice = null;
         foreach ($prices as $price) {
-            if ($price->priceNew > 0
+            if (/*$price->priceNew->value > 0 */ // Price could be 0
+                $price->id !== 0
                 && $price->item->id !== 0
                 && $price->itemsalesgroup->id === 0
                 && $price->itemproductgroup->id === 0
@@ -177,8 +271,8 @@ final class ApiPriceController extends Controller
             // 3. subtract bonus effect
 
             $newPrice -= $price->discount->value;
-            $newPrice = (int) ($newPrice - $price->bonus->value / 10000 * $price->priceNew->value / $quantity->value);
-            $newPrice = (int) ((1000000 - $price->discountPercentage->value) / 1000000 * $newPrice);
+            $newPrice = (int) ($newPrice - $price->bonus->value / FloatInt::DIVISOR * $price->priceNew->value / $quantity->value);
+            $newPrice = (int) (((FloatInt::DIVISOR * 100) - $price->discountPercentage->value) / (FloatInt::DIVISOR * 100) * $newPrice);
 
             // @todo If a customer receives 1+1 but purchases 2, then he gets 2+2 (if multiply === true) which is better than 1+1 with multiply false.
             // Same goes for amount discounts?
@@ -189,13 +283,13 @@ final class ApiPriceController extends Controller
             }
         }
 
-        if ($bestPrice->price->value === 0) {
+        if ($bestPrice->priceNew->value === 0) {
             $discounts[] = clone $bestPrice;
             $bestPrice   = $basePrice;
         }
 
         // Actual price calculation
-        $bestActualPriceValue = $bestPrice?->price->value ?? \PHP_INT_MAX;
+        $bestActualPriceValue = $bestPrice?->priceNew->value ?? \PHP_INT_MAX;
 
         $discountAmount     = $bestPrice->discount->value;
         $discountPercentage = $bestPrice->discountPercentage->value;
@@ -210,11 +304,12 @@ final class ApiPriceController extends Controller
         }
 
         $bestActualPriceValue -= $discountAmount;
-        $bestActualPriceValue = (int) \round((1000000 - $discountPercentage) / 1000000 * $bestActualPriceValue, 0);
+        $bestActualPriceValue = (int) \round(((FloatInt::DIVISOR * 100) - $discountPercentage) / (FloatInt::DIVISOR * 100) * $bestActualPriceValue, 0);
 
         return [
-            'basePrice'       => $basePrice->price,
-            'bestPrice'       => $bestPrice->price,
+            'basePrice'       => $basePrice->priceNew,
+            'bestPrice'       => $bestPrice->priceNew,
+            'supplier'        => $bestPrice->supplier->id,
             'bestActualPrice' => new FloatInt($bestActualPriceValue),
             'discounts'       => $discounts,
             'discountPercent' => new FloatInt($discountPercentage),
@@ -378,6 +473,8 @@ final class ApiPriceController extends Controller
         $new->name = $new->name !== 'default'
             ? ($request->getDataString('name') ?? $new->name)
             : $new->name;
+
+        $new->status = PriceStatus::tryFromValue($request->getDataInt('type')) ?? $new->status;
 
         $new->promocode = $request->getDataString('promocode') ?? $new->promocode;
 

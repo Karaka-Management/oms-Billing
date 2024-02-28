@@ -1,0 +1,26 @@
+{
+    "invoice_number": "INV0041-1",
+    "grossSales": 56283100,
+    "netSales": 52601000,
+    "tax_amount": 3939800,
+    "tax_rate": 70000,
+    "bill_date": "2022-02-20",
+    "delivery_date": "",
+    "service_date": "",
+    "due_date": "2022-02-27",
+    "vat_id": "",
+    "tax_id": "",
+    "address": {
+        "name": "Company ABC",
+        "address": "Some Street 4",
+        "city": "12345 Rome",
+        "country": ""
+    },
+    "iban": "",
+    "elements": [],
+    "language": "en",
+    "currency": "USD",
+    "email": "",
+    "website": "",
+    "phone": ""
+}

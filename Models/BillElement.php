@@ -19,6 +19,7 @@ use Modules\Finance\Models\TaxCode;
 use Modules\ItemManagement\Models\Container;
 use Modules\ItemManagement\Models\Item;
 use Modules\ItemManagement\Models\NullItem;
+use phpOMS\Localization\ISO4217DecimalEnum;
 use phpOMS\Stdlib\Base\FloatInt;
 use phpOMS\Stdlib\Base\SmartDateTime;
 
@@ -100,19 +101,11 @@ class BillElement implements \JsonSerializable
 
     public FloatInt $singlePurchasePriceNet;
 
-    public FloatInt $singlePurchasePriceGross;
-
     public FloatInt $totalPurchasePriceNet;
-
-    public FloatInt $totalPurchasePriceGross;
 
     public FloatInt $singleProfitNet;
 
-    public FloatInt $singleProfitGross;
-
     public FloatInt $totalProfitNet;
-
-    public FloatInt $totalProfitGross;
 
     public ?int $itemSegment = null;
 
@@ -178,7 +171,7 @@ class BillElement implements \JsonSerializable
     {
         $this->bill = new NullBill();
 
-        $this->quantity = new FloatInt();
+        $this->quantity = new FloatInt(FloatInt::DIVISOR);
 
         $this->singleListPriceNet   = new FloatInt();
         $this->singleListPriceGross = new FloatInt();
@@ -195,16 +188,10 @@ class BillElement implements \JsonSerializable
         $this->totalSalesPriceGross = new FloatInt();
 
         $this->singlePurchasePriceNet   = new FloatInt();
-        $this->singlePurchasePriceGross = new FloatInt();
-
         $this->totalPurchasePriceNet   = new FloatInt();
-        $this->totalPurchasePriceGross = new FloatInt();
 
         $this->singleProfitNet   = new FloatInt();
-        $this->singleProfitGross = new FloatInt();
-
         $this->totalProfitNet   = new FloatInt();
-        $this->totalProfitGross = new FloatInt();
 
         $this->singleDiscountP = new FloatInt();
         $this->totalDiscountP  = new FloatInt();
@@ -237,30 +224,95 @@ class BillElement implements \JsonSerializable
 
     public function recalculatePrices() : void
     {
-        $this->totalListPriceNet->value  = (int) \round(($this->quantity->getNormalizedValue() - $this->discountQ->getNormalizedValue()) * $this->singleListPriceNet->value, 0);
-        $this->totalSalesPriceNet->value = (int) \round(($this->quantity->getNormalizedValue() - $this->discountQ->getNormalizedValue()) * $this->singleListPriceNet->value, 0);
+        $rd = -FloatInt::MAX_DECIMALS + ISO4217DecimalEnum::getByName('_' . $this->bill->currency);
+
+        $this->totalListPriceNet->value  = (int) \round($this->quantity->getNormalizedValue() * $this->singleListPriceNet->value, $rd);
+        $this->totalSalesPriceNet->value = (int) \round(($this->quantity->getNormalizedValue() - $this->discountQ->getNormalizedValue()) * $this->singleListPriceNet->value, $rd);
 
         // @todo Check if this is correct, this should maybe happen after applying the discounts?!
         // This depends on if the single price is already discounted or not
         $this->singleProfitNet->value = $this->singleSalesPriceNet->value - $this->singlePurchasePriceNet->value;
         $this->totalProfitNet->value  = $this->totalSalesPriceNet->value - $this->totalPurchasePriceNet->value;
 
-        $this->taxP->value = (int) \round($this->taxR->value / 1000000 * $this->totalSalesPriceNet->value, 0);
+        $this->taxP->value = (int) \round($this->taxR->value / (FloatInt::DIVISOR * 100) * $this->totalSalesPriceNet->value, $rd);
 
-        $this->singleListPriceGross->value  = (int) \round($this->singleListPriceNet->value + $this->singleListPriceNet->value * $this->taxR->value / 10000, 0);
-        $this->totalListPriceGross->value   = (int) \round($this->totalListPriceNet->value + $this->totalListPriceNet->value * $this->taxR->value / 10000, 0);
-        $this->singleSalesPriceGross->value = (int) \round($this->singleSalesPriceNet->value + $this->singleSalesPriceNet->value * $this->taxR->value / 10000, 0);
-        $this->totalSalesPriceGross->value  = (int) \round($this->totalSalesPriceNet->value + $this->totalSalesPriceNet->value * $this->taxR->value / 10000, 0);
-
-        $this->singleProfitGross->value = $this->singleSalesPriceGross->value - $this->singlePurchasePriceGross->value;
-        $this->totalProfitGross->value  = (int) \round(($this->quantity->getNormalizedValue() - $this->discountQ->getNormalizedValue()) * ($this->totalSalesPriceGross->value - $this->totalPurchasePriceGross->value), 0);
+        $this->singleListPriceGross->value  = (int) \round($this->singleListPriceNet->value + $this->singleListPriceNet->value * $this->taxR->value / (FloatInt::DIVISOR * 100), $rd);
+        $this->totalListPriceGross->value   = (int) \round($this->totalListPriceNet->value + $this->totalListPriceNet->value * $this->taxR->value / (FloatInt::DIVISOR * 100), $rd);
+        $this->singleSalesPriceGross->value = (int) \round($this->singleSalesPriceNet->value + $this->singleSalesPriceNet->value * $this->taxR->value / (FloatInt::DIVISOR * 100), $rd);
+        $this->totalSalesPriceGross->value  = (int) \round($this->totalSalesPriceNet->value + $this->totalSalesPriceNet->value * $this->taxR->value / (FloatInt::DIVISOR * 100), $rd);
 
         $this->singleDiscountP->value = $this->quantity->value - $this->discountQ->value === 0
             ? 0
             : (int) \round($this->totalDiscountP->value / ($this->quantity->getNormalizedValue() - $this->discountQ->getNormalizedValue()));
 
         // important because the quantity includes $discountQ
-        $this->effectiveSingleSalesPriceNet->value = (int) \round($this->totalSalesPriceNet->value / ($this->quantity->value / 10000));
+        $this->effectiveSingleSalesPriceNet->value = (int) \round($this->totalSalesPriceNet->value / ($this->quantity->value / FloatInt::DIVISOR), $rd);
+    }
+
+    // @todo also consider rounding similarly to recalculatePrices
+    public function isValid() : bool
+    {
+        return $this->validateNetGross()
+            && $this->validateProfit()
+            && $this->validateTax()
+            && $this->validateTaxRate()
+            && $this->validateSingleTotal()
+            && $this->validateEffectiveSinglePrice()
+            && $this->validateTotalPrice();
+    }
+
+    public function validateNetGross() : bool
+    {
+        return $this->singleListPriceNet->value <= $this->singleListPriceGross->value
+            && $this->singleSalesPriceNet->value <= $this->singleSalesPriceGross->value
+            && $this->totalListPriceNet->value <= $this->totalListPriceGross->value
+            && $this->totalSalesPriceNet->value <= $this->totalSalesPriceGross->value;
+    }
+
+    public function validateProfit() : bool
+    {
+        return $this->totalSalesPriceNet->value - $this->totalPurchasePriceNet->value === $this->totalProfitNet->value;
+    }
+
+    public function validateTax() : bool
+    {
+        $paidQuantity = $this->quantity->value - $this->discountQ->value;
+
+        return \abs($this->singleListPriceNet->value + ((int) \round($this->taxP->value / ($paidQuantity / FloatInt::DIVISOR), 0)) - $this->singleListPriceGross->value) === 0
+            && \abs($this->singleSalesPriceNet->value + ((int) \round($this->taxP->value / ($paidQuantity / FloatInt::DIVISOR), 0)) - $this->singleSalesPriceGross->value) === 0
+            && \abs($this->totalListPriceNet->value +$this->taxP->value - $this->totalListPriceGross->value) === 0
+            && \abs($this->totalSalesPriceNet->value + $this->taxP->value - $this->totalSalesPriceGross->value) === 0;
+    }
+
+    public function validateTaxRate() : bool
+    {
+        return (($this->taxP->value === 0 && $this->taxR->value === 0)
+            || (\abs($this->taxP->value / $this->totalSalesPriceNet->value - $this->taxR->value / (FloatInt::DIVISOR * 100)) < 0.001)
+            && \abs($this->totalSalesPriceGross->value / $this->totalSalesPriceNet->value - 1.0 - $this->taxR->value / (FloatInt::DIVISOR * 100)) < 0.001);
+    }
+
+    public function validateSingleTotal() : bool
+    {
+        $paidQuantity = $this->quantity->value - $this->discountQ->value;
+
+        // Only possible for sales, costs may be different for different lots
+        return ((int) \round($this->singleListPriceNet->value * ($this->quantity->value / FloatInt::DIVISOR), 0)) === $this->totalListPriceNet->value
+            && ((int) \round($this->singleSalesPriceNet->value * ($paidQuantity / FloatInt::DIVISOR), 0)) === $this->totalSalesPriceNet->value
+            && ((int) \round($this->singleDiscountP->value * ($this->quantity->value / FloatInt::DIVISOR), 0)) === $this->totalDiscountP->value;
+    }
+
+    public function validateEffectiveSinglePrice() : bool
+    {
+        return $this->effectiveSingleSalesPriceNet->value === (int) \round($this->totalSalesPriceNet->value / ($this->quantity->value / FloatInt::DIVISOR));
+    }
+
+    public function validateTotalPrice() : bool
+    {
+        return ((int) \round($this->singleListPriceNet->value * ($this->quantity->value / FloatInt::DIVISOR)
+            - $this->singleListPriceNet->value * ($this->quantity->value / FloatInt::DIVISOR) * $this->singleDiscountR->value / (FloatInt::DIVISOR * 100)
+            - $this->totalDiscountP->value * ($this->quantity->value / FloatInt::DIVISOR)
+            - $this->singleListPriceNet->value * ($this->discountQ->value / FloatInt::DIVISOR), 0))
+            === $this->totalSalesPriceNet->value;
     }
 
     /**
@@ -292,7 +344,7 @@ class BillElement implements \JsonSerializable
     public static function fromItem(
         Item $item,
         TaxCombination $taxCombination,
-        int $quantity = 10000,
+        int $quantity = FloatInt::DIVISOR,
         Bill $bill = null,
         ?Container $container = null
     ) : self
@@ -313,9 +365,6 @@ class BillElement implements \JsonSerializable
         // @todo the purchase price is based on lot/sn/avg prices if available
         $element->singlePurchasePriceNet->value = $item->purchasePrice->value;
         $element->totalPurchasePriceNet->value  = (int) ($element->quantity->getNormalizedValue() * $item->purchasePrice->value);
-
-        $element->singlePurchasePriceGross->value = (int) \round($element->singlePurchasePriceNet->value + $element->singlePurchasePriceNet->value * $element->taxR->value / 10000, 0);
-        $element->totalPurchasePriceGross->value  = (int) \round($element->totalPurchasePriceNet->value + $element->totalPurchasePriceNet->value * $element->taxR->value / 10000, 0);
 
         if ($element->bill->id !== 0
             && $item->getAttribute('subscription')->value->getValue() === 1

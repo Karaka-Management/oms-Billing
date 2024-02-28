@@ -364,6 +364,10 @@ final class SalesBillMapper extends BillMapper
      */
     public static function getItemMonthlySalesCosts(array $items, \DateTime $start, \DateTime $end) : array
     {
+        if (empty($items)) {
+            return [];
+        }
+
         $item = \implode(',', $items);
 
         $sql = <<<SQL
@@ -391,11 +395,15 @@ final class SalesBillMapper extends BillMapper
 
     public static function getItemMonthlySalesQuantity(array $items, \DateTime $start, \DateTime $end) : array
     {
+        if (empty($items)) {
+            return [];
+        }
+
         $item = \implode(',', $items);
 
         $sql = <<<SQL
         SELECT
-            billing_bill_element_item,
+            billing_bill_element_item as item,
             SUM(billing_bill_element_quantity) as quantity,
             YEAR(billing_bill_performance_date) as year,
             MONTH(billing_bill_performance_date) as month
@@ -405,8 +413,8 @@ final class SalesBillMapper extends BillMapper
             billing_bill_element_item IN ({$item})
             AND billing_bill_performance_date >= '{$start->format('Y-m-d H:i:s')}'
             AND billing_bill_performance_date <= '{$end->format('Y-m-d H:i:s')}'
-        GROUP BY billing_bill_element_item, year, month
-        ORDER BY billing_bill_element_item, year ASC, month ASC;
+        GROUP BY item, year, month
+        ORDER BY item, year ASC, month ASC;
         SQL;
 
         $query  = new Builder(self::$db);

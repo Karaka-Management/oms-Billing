@@ -55,6 +55,8 @@ class Price implements \JsonSerializable
 
     public Item $item;
 
+    public int $status = PriceStatus::ACTIVE;
+
     public AttributeValue $itemsalesgroup;
 
     public AttributeValue $itemproductgroup;

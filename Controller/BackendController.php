@@ -22,12 +22,14 @@ use Modules\Billing\Models\BillTransferType;
 use Modules\Billing\Models\BillTypeMapper;
 use Modules\Billing\Models\PaymentTermL11nMapper;
 use Modules\Billing\Models\PaymentTermMapper;
+use Modules\Billing\Models\PermissionCategory;
 use Modules\Billing\Models\PurchaseBillMapper;
 use Modules\Billing\Models\SalesBillMapper;
 use Modules\Billing\Models\SettingsEnum;
 use Modules\Billing\Models\ShippingTermL11nMapper;
 use Modules\Billing\Models\ShippingTermMapper;
 use Modules\Billing\Models\StockBillMapper;
+use phpOMS\Account\PermissionType;
 use phpOMS\Contract\RenderableInterface;
 use phpOMS\DataStorage\Database\Query\OrderType;
 use phpOMS\Message\RequestAbstract;
@@ -71,6 +73,7 @@ final class BackendController extends Controller
             ->where('type/transferType', BillTransferType::SALES)
             ->where('type/l11n/language', $response->header->l11n->language)
             ->sort('id', OrderType::DESC)
+            ->where('unit', $this->app->unitId)
             ->limit(25);
 
         if ($request->getData('ptype') === 'p') {
@@ -131,25 +134,37 @@ final class BackendController extends Controller
 
         $view->data['billtypes'] = $billTypes;
 
-        /** @var \Modules\Auditor\Models\Audit[] $logsBill */
-        $logs = AuditMapper::getAll()
-            ->with('createdBy')
-            ->where('module', 'Billing')
-            ->where('type', StringUtils::intHash(BillMapper::class))
-            ->where('ref', $bill->id)
-            ->execute();
-
-        if (!empty($bill->elements)) {
-            /** @var \Modules\Auditor\Models\Audit[] $logsElements */
-            $logsElements = AuditMapper::getAll()
+        $logs = [];
+        if ($this->app->accountManager->get($request->header->account)->hasPermission(
+                PermissionType::READ,
+                $this->app->unitId,
+                null,
+                self::NAME,
+                PermissionCategory::BILL_LOG,
+            )
+        ) {
+            /** @var \Modules\Auditor\Models\Audit[] $logsBill */
+            $logs = AuditMapper::getAll()
                 ->with('createdBy')
                 ->where('module', 'Billing')
-                ->where('type', StringUtils::intHash(BillElementMapper::class))
-                ->where('ref', \array_keys($bill->elements), 'IN')
+                ->where('type', StringUtils::intHash(BillMapper::class))
+                ->where('ref', $bill->id)
                 ->execute();
 
-            $logs = \array_merge($logs, $logsElements);
+            if (!empty($bill->elements)) {
+                /** @var \Modules\Auditor\Models\Audit[] $logsElements */
+                $logsElements = AuditMapper::getAll()
+                    ->with('createdBy')
+                    ->where('module', 'Billing')
+                    ->where('type', StringUtils::intHash(BillElementMapper::class))
+                    ->where('ref', \array_keys($bill->elements), 'IN')
+                    ->execute();
+
+                $logs = \array_merge($logs, $logsElements);
+            }
         }
+
+
 
         $view->data['logs']         = $logs;
         $view->data['media-upload'] = new \Modules\Media\Theme\Backend\Components\Upload\BaseView($this->app->l11nManager, $request, $response);
@@ -255,6 +270,7 @@ final class BackendController extends Controller
             ->with('supplier')
             ->where('type/transferType', BillTransferType::PURCHASE)
             ->sort('id', OrderType::DESC)
+            ->where('unit', $this->app->unitId)
             ->limit(25);
 
         if ($request->getData('ptype') === 'p') {
@@ -313,32 +329,34 @@ final class BackendController extends Controller
             ->where('l11n/language', $request->header->l11n->language)
             ->execute();
 
-        /** @var \Model\Setting $originalType */
-        $originalType = $this->app->appSettings->get(
-            names: SettingsEnum::ORIGINAL_MEDIA_TYPE,
-            module: self::NAME
-        );
-
-        $view->data['originalType'] = (int) $originalType->content;
-
-        /** @var \Modules\Auditor\Models\Audit[] $logs */
-        $logs = AuditMapper::getAll()
-            ->with('createdBy')
-            ->where('module', 'Billing')
-            ->where('type', StringUtils::intHash(BillMapper::class))
-            ->where('ref', $view->data['bill']->id)
-            ->execute();
-
-        if (!empty($view->data['bill']->elements)) {
-            /** @var \Modules\Auditor\Models\Audit[] $logsElements */
-            $logsElements = AuditMapper::getAll()
+        $logs = [];
+        if ($this->app->accountManager->get($request->header->account)->hasPermission(
+                PermissionType::READ,
+                $this->app->unitId,
+                null,
+                self::NAME,
+                PermissionCategory::BILL_LOG,
+            )
+        ) {
+            /** @var \Modules\Auditor\Models\Audit[] $logs */
+            $logs = AuditMapper::getAll()
                 ->with('createdBy')
                 ->where('module', 'Billing')
-                ->where('type', StringUtils::intHash(BillElementMapper::class))
-                ->where('ref', \array_keys($view->data['bill']->elements), 'IN')
+                ->where('type', StringUtils::intHash(BillMapper::class))
+                ->where('ref', $view->data['bill']->id)
                 ->execute();
 
-            $logs = \array_merge($logs, $logsElements);
+            if (!empty($view->data['bill']->elements)) {
+                /** @var \Modules\Auditor\Models\Audit[] $logsElements */
+                $logsElements = AuditMapper::getAll()
+                    ->with('createdBy')
+                    ->where('module', 'Billing')
+                    ->where('type', StringUtils::intHash(BillElementMapper::class))
+                    ->where('ref', \array_keys($view->data['bill']->elements), 'IN')
+                    ->execute();
+
+                $logs = \array_merge($logs, $logsElements);
+            }
         }
 
         $view->data['logs']         = $logs;
@@ -366,11 +384,11 @@ final class BackendController extends Controller
         $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005106001, $request, $response);
 
         if ($request->getData('ptype') === 'p') {
-            $view->data['bills'] = StockBillMapper::getAll()->where('id', $request->getDataInt('id') ?? 0, '<')->limit(25)->execute();
+            $view->data['bills'] = StockBillMapper::getAll()->where('id', $request->getDataInt('id') ?? 0, '<')->where('unit', $this->app->unitId)->limit(25)->execute();
         } elseif ($request->getData('ptype') === 'n') {
-            $view->data['bills'] = StockBillMapper::getAll()->where('id', $request->getDataInt('id') ?? 0, '>')->limit(25)->execute();
+            $view->data['bills'] = StockBillMapper::getAll()->where('id', $request->getDataInt('id') ?? 0, '>')->where('unit', $this->app->unitId)->limit(25)->execute();
         } else {
-            $view->data['bills'] = StockBillMapper::getAll()->where('id', 0, '>')->limit(25)->execute();
+            $view->data['bills'] = StockBillMapper::getAll()->where('id', 0, '>')->where('unit', $this->app->unitId)->limit(25)->execute();
         }
 
         return $view;
@@ -459,7 +477,7 @@ final class BackendController extends Controller
     public function viewPrivatePurchaseBillDashboard(RequestAbstract $request, ResponseAbstract $response, array $data = []) : RenderableInterface
     {
         $view = new View($this->app->l11nManager, $request, $response);
-        $view->setTemplate('/Modules/Billing/Theme/Backend/user-purchase-bill-dashboard');
+        $view->setTemplate('/Modules/Billing/Theme/Backend/purchase-bill-list');
         $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005109001, $request, $response);
 
         $mapperQuery = PurchaseBillMapper::getAll()
@@ -469,6 +487,7 @@ final class BackendController extends Controller
             ->where('type/transferType', BillTransferType::PURCHASE)
             ->where('status', BillStatus::UNPARSED)
             ->sort('id', OrderType::DESC)
+            ->where('unit', $this->app->unitId)
             ->limit(25);
 
         if ($request->getData('ptype') === 'p') {
@@ -504,7 +523,7 @@ final class BackendController extends Controller
     public function viewPrivateBillingPurchaseInvoice(RequestAbstract $request, ResponseAbstract $response, array $data = []) : RenderableInterface
     {
         $view = new View($this->app->l11nManager, $request, $response);
-        $view->setTemplate('/Modules/Billing/Theme/Backend/user-purchase-bill');
+        $view->setTemplate('/Modules/Billing/Theme/Backend/purchase-bill');
         $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005109001, $request, $response);
 
         $bill = PurchaseBillMapper::get()
@@ -525,13 +544,13 @@ final class BackendController extends Controller
 
         $view->data['previewType'] = (int) $previewType->content;
 
-        /** @var \Model\Setting $originalType */
-        $originalType = $this->app->appSettings->get(
-            names: SettingsEnum::ORIGINAL_MEDIA_TYPE,
+        /** @var \Model\Setting $externalType */
+        $externalType = $this->app->appSettings->get(
+            names: SettingsEnum::EXTERNAL_MEDIA_TYPE,
             module: self::NAME
         );
 
-        $view->data['originalType'] = (int) $originalType->content;
+        $view->data['externalType'] = (int) $externalType->content;
         $view->data['media-upload'] = new \Modules\Media\Theme\Backend\Components\Upload\BaseView($this->app->l11nManager, $request, $response);
 
         return $view;

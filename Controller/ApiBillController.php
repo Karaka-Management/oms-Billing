@@ -55,7 +55,6 @@ use phpOMS\Localization\ISO4217CharEnum;
 use phpOMS\Localization\ISO639x1Enum;
 use phpOMS\Message\Http\HttpRequest;
 use phpOMS\Message\Http\RequestStatusCode;
-use phpOMS\Message\Mail\Email;
 use phpOMS\Message\NotificationLevel;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
@@ -92,6 +91,105 @@ final class ApiBillController extends Controller
         if ($this->app->moduleManager->isActive('Accounting')) {
             $this->app->eventManager->importFromFile(__DIR__ . '/../../Accounting/Admin/Hooks/Manual.php');
         }
+    }
+
+    public function apiBillEmail(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
+    {
+        $bill = $data['bill'] ?? BillMapper::get()
+            ->with('type')
+            ->with('files')
+            ->with('files/types')
+            ->where('id', $request->getDataInt('bill') ?? 0)
+            ->execute();
+
+        $media = $data['media'] ?? $bill->getFileByTypeName('internal');;
+
+        if ($bill->status === BillStatus::ARCHIVED
+            && $bill->type->email
+        ) {
+            $email = $request->getDataString('email');
+            $billingTemplate = null;
+
+            if (!empty($email)) {
+                /** @var \Model\Setting $billingTemplate */
+                $billingTemplate = $this->app->appSettings->get(
+                    names: SettingsEnum::BILLING_CUSTOMER_EMAIL_TEMPLATE,
+                    module: 'Billing'
+                );
+            } elseif (($bill->client?->id ?? 0) !== 0) {
+                $client = ClientMapper::get()
+                    ->with('account')
+                    ->with('attributes')
+                    ->with('attributes/type')
+                    ->with('attributes/value')
+                    ->where('id', $bill->client?->id ?? 0)
+                    ->where('attributes/type/name', ['bill_emails', 'bill_email_address'], 'IN')
+                    ->execute();
+
+                /** @var \Model\Setting $billingTemplate */
+                $billingTemplate = $this->app->appSettings->get(
+                    names: SettingsEnum::BILLING_CUSTOMER_EMAIL_TEMPLATE,
+                    module: 'Billing'
+                );
+
+                if ($client->getAttribute('bill_emails')->value->getValue() === 1) {
+                    // @todo should this really be a string or an ID for a contact element?
+                    $email ??= empty($tmp = $client->getAttribute('bill_email_address')->value->getValue())
+                        ? $client->account->email
+                        : (string) $tmp;
+                }
+            } elseif (($bill->supplier?->id ?? 0) !== 0) {
+                $supplier = SupplierMapper::get()
+                    ->with('account')
+                    ->with('attributes')
+                    ->with('attributes/type')
+                    ->with('attributes/value')
+                    ->where('id', $bill->supplier?->id ?? 0)
+                    ->where('attributes/type/name', ['bill_emails', 'bill_email_address'], 'IN')
+                    ->execute();
+
+                /** @var \Model\Setting $billingTemplate */
+                $billingTemplate = $this->app->appSettings->get(
+                    names: SettingsEnum::BILLING_SUPPLIER_EMAIL_TEMPLATE,
+                    module: 'Billing'
+                );
+
+                if ($supplier->getAttribute('bill_emails')->value->getValue() === 1) {
+                    // @todo should this really be a string or an ID for a contact element?
+                    $email ??= empty($tmp = $supplier->getAttribute('bill_email_address')->value->getValue())
+                        ? $supplier->account->email
+                        : (string) $tmp;
+                }
+            }
+
+            if (!empty($email)) {
+                $this->sendBillEmail($media, $email, (int) $billingTemplate->content, $bill->language);
+            }
+        }
+    }
+
+    public function apiBillFinalize(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
+    {
+        // Archive bill
+        /** @var \Modules\Billing\Models\Bill $bill */
+        $old = BillMapper::get()
+            ->with('type')
+            ->where('id', $request->getDataInt('bill') ?? 0)
+            ->execute();
+
+        $new = clone $old;
+        $new->status = BillStatus::ARCHIVED;
+
+        $this->updateModel($request->header->account, $old, $new, BillMapper::class, 'bill', $request->getOrigin());
+
+        // Create final pdf
+        $this->apiBillPdfArchiveCreate($request, $response, $data);
+        $media = $response->getDataArray($request->uri->__toString())['response'];
+
+        // Send bill via email
+        $this->apiBillEmail($request, $response, ['bill' => $old, 'media' => $media]);
+
+        $this->createStandardUpdateResponse($request, $response, $new);
     }
 
     /**
@@ -244,11 +342,8 @@ final class ApiBillController extends Controller
      *      Maybe needs to add a status when last validated, we don't want to validate every time
      *      https://github.com/Karaka-Management/oms-Billing/issues/44
      *
-     * @todo Use bill and shipping address instead of main address if available
-     *
-     * @todo Implement allowed invoice languages and a default invoice language if none match
-     *
-     * @todo Implement client invoice language (allowing for different invoice languages than invoice address)
+     * @todo Add custom tax id for bill to manually overwrite the client_sales_tax_code
+     *      https://github.com/Karaka-Management/oms-Billing/issues/65
      *
      * @since 1.0.0
      */
@@ -260,7 +355,7 @@ final class ApiBillController extends Controller
         $bill->billDate        = $request->getDataDateTime('bill_date') ?? new \DateTime('now');
         $bill->performanceDate = $request->getDataDateTime('performancedate') ?? new \DateTime('now');
         $bill->accountNumber   = $account->number;
-        $bill->externalReferral = $request->getDataString('externalreferral') ?? '';
+        $bill->external        = $request->getDataString('externalreferral') ?? '';
         $bill->status          = BillStatus::tryFromValue($request->getDataInt('status')) ?? BillStatus::DRAFT;
 
         $bill->shippingTerms = null;
@@ -272,6 +367,7 @@ final class ApiBillController extends Controller
         // @todo Handle payment due
         //      Careful, there can be multiple due dates
         //      Example: payment plan or discounted and none-discounted date
+        //      https://github.com/Karaka-Management/oms-Billing/issues/53
 
         if ($account instanceof Client) {
             $bill->client     = $account;
@@ -286,6 +382,7 @@ final class ApiBillController extends Controller
         }
 
         // @todo use bill and shipping address instead of main address if available
+        //      https://github.com/Karaka-Management/oms-Billing/issues/45
         $bill->billTo      = $request->getDataString('billto') ?? $account->account->name1;
         $bill->billAddress = $request->getDataString('billaddress') ?? $account->mainAddress->address;
         $bill->billCity    = $request->getDataString('billtocity') ?? $account->mainAddress->city;
@@ -294,6 +391,26 @@ final class ApiBillController extends Controller
 
         $bill->currency = ISO4217CharEnum::_EUR;
 
+        $bill->language = $this->findBillLanguage($account);
+
+        $typeMapper = BillTypeMapper::get()
+            ->with('l11n')
+            ->where('l11n/language', $bill->language)
+            ->limit(1);
+
+        if ($request->hasData('type')) {
+            $typeMapper->where('id', $request->getDataInt('type'));
+        } else {
+            $typeMapper->where('name', 'sales_invoice');
+        }
+
+        $bill->type = $typeMapper->execute();
+
+        return $bill;
+    }
+
+    private function findBillLanguage(Client|Supplier $account) : string
+    {
         /** @var \Model\Setting $settings */
         $settings = $this->app->appSettings->get(null,
             SettingsEnum::VALID_BILL_LANGUAGES,
@@ -328,29 +445,18 @@ final class ApiBillController extends Controller
             $billLanguage = $accountBillLanguage;
         } else {
             $accountLanguages = ISO639x1Enum::languageFromCountry($account->mainAddress->country);
-            $accountLanguage  = empty($accountLanguages) ? '' : $accountLanguages[0];
+            $accountLanguage  = '';
 
-            if (\in_array($accountLanguage, $validLanguages)) {
-                $billLanguage = $accountLanguage;
+            foreach ($accountLanguages as $accountLanguage) {
+                if (\in_array($accountLanguage, $validLanguages)) {
+                    $billLanguage = $accountLanguage;
+
+                    break;
+                }
             }
         }
 
-        $bill->language = $billLanguage;
-
-        $typeMapper = BillTypeMapper::get()
-            ->with('l11n')
-            ->where('l11n/language', $billLanguage)
-            ->limit(1);
-
-        if ($request->hasData('type')) {
-            $typeMapper->where('id', $request->getDataInt('type'));
-        } else {
-            $typeMapper->where('name', 'sales_invoice');
-        }
-
-        $bill->type = $typeMapper->execute();
-
-        return $bill;
+        return $billLanguage;
     }
 
     /**
@@ -424,7 +530,7 @@ final class ApiBillController extends Controller
         $element = BillElement::fromItem(
             $item,
             $taxCombination,
-            FloatInt::toInt($request->getDataString('quantity') ?? 1),
+            FloatInt::toInt($request->getDataString('quantity') ?? '1'),
             $bill,
             $container
         );
@@ -856,7 +962,7 @@ final class ApiBillController extends Controller
                 'sales_tax_code', 'purchase_tax_code', 'costcenter', 'costobject',
                 'default_purchase_container', 'default_sales_container',
             ], 'IN')
-            ->where('l11n/type/title', ['name1', 'name2', 'name3'], 'IN')
+            ->where('l11n/type/title', ['name1', 'name2'], 'IN')
             ->where('l11n/language', $bill->language)
             ->execute();
 
@@ -904,7 +1010,27 @@ final class ApiBillController extends Controller
      */
     public function apiMediaRender(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
-        // @todo check if has permission
+        if (!$this->app->accountManager->get($request->header->account)->hasPermission(
+                PermissionType::READ,
+                $this->app->unitId,
+                null,
+                self::NAME,
+                PermissionCategory::SALES_INVOICE
+            )
+            && !$this->app->accountManager->get($request->header->account)->hasPermission(
+                PermissionType::READ,
+                $this->app->unitId,
+                null,
+                self::NAME,
+                PermissionCategory::PURCHASE_INVOICE
+            )
+        ) {
+            $this->fillJsonResponse($request, $response, NotificationLevel::HIDDEN, '', '', []);
+            $response->header->status = RequestStatusCode::R_403;
+
+            return;
+        }
+
         $this->app->moduleManager->get('Media', 'Api')->apiMediaExport($request, $response, ['ignorePermission' => true]);
     }
 
@@ -923,6 +1049,27 @@ final class ApiBillController extends Controller
      */
     public function apiPreviewRender(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
+        if (!$this->app->accountManager->get($request->header->account)->hasPermission(
+                PermissionType::READ,
+                $this->app->unitId,
+                null,
+                self::NAME,
+                PermissionCategory::SALES_INVOICE
+            )
+            && !$this->app->accountManager->get($request->header->account)->hasPermission(
+                PermissionType::READ,
+                $this->app->unitId,
+                null,
+                self::NAME,
+                PermissionCategory::PURCHASE_INVOICE
+            )
+        ) {
+            $this->fillJsonResponse($request, $response, NotificationLevel::HIDDEN, '', '', []);
+            $response->header->status = RequestStatusCode::R_403;
+
+            return;
+        }
+
         Autoloader::addPath(__DIR__ . '/../../../Resources/');
 
         /** @var \Modules\Billing\Models\Bill $bill */
@@ -1068,10 +1215,33 @@ final class ApiBillController extends Controller
      */
     public function apiBillPdfArchiveCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
+        if (!$this->app->accountManager->get($request->header->account)->hasPermission(
+                PermissionType::READ,
+                $this->app->unitId,
+                null,
+                self::NAME,
+                PermissionCategory::SALES_INVOICE
+            )
+            && !$this->app->accountManager->get($request->header->account)->hasPermission(
+                PermissionType::READ,
+                $this->app->unitId,
+                null,
+                self::NAME,
+                PermissionCategory::PURCHASE_INVOICE
+            )
+        ) {
+            $this->fillJsonResponse($request, $response, NotificationLevel::HIDDEN, '', '', []);
+            $response->header->status = RequestStatusCode::R_403;
+
+            return;
+        }
+
         Autoloader::addPath(__DIR__ . '/../../../Resources/');
 
         /** @var \Modules\Billing\Models\Bill $bill */
         $bill = BillMapper::get()
+            ->with('files')
+            ->with('files/types')
             ->with('elements')
             ->with('elements/container')
             ->with('type')
@@ -1168,6 +1338,15 @@ final class ApiBillController extends Controller
             // @codeCoverageIgnoreEnd
         }
 
+        /** @var \Model\Setting $internalType */
+        $internalType = $this->app->appSettings->get(
+            names: SettingsEnum::INTERNAL_MEDIA_TYPE,
+            module: self::NAME
+        );
+
+        // @todo Check if old file exists -> update media
+        $oldFile = $bill->getFileByType((int) $internalType->content);
+
         $billFileName = ($bill->billDate?->format('Y-m-d') ?? '0') . '_' . $bill->number . '.pdf';
 
         \file_put_contents($pdfDir . '/' . $billFileName, $pdf);
@@ -1177,72 +1356,59 @@ final class ApiBillController extends Controller
             return;
         }
 
-        $media = $this->app->moduleManager->get('Media', 'Api')->createDbEntry(
-            status: [
-                'status'    => UploadStatus::OK,
-                'name'      => $billFileName,
-                'path'      => $pdfDir,
-                'filename'  => $billFileName,
-                'size'      => \filesize($pdfDir . '/' . $billFileName),
-                'extension' => 'pdf',
-            ],
-            account: $request->header->account,
-            virtualPath: $path,
-            ip: $request->getOrigin(),
-            app: $this->app,
-            readContent: true,
-            unit: $this->app->unitId
-        );
+        $media = null;
+        if ($oldFile->id === 0) {
+            $media = $this->app->moduleManager->get('Media', 'Api')->createDbEntry(
+                status: [
+                    'status'    => UploadStatus::OK,
+                    'name'      => $billFileName,
+                    'path'      => $pdfDir,
+                    'filename'  => $billFileName,
+                    'size'      => \filesize($pdfDir . '/' . $billFileName),
+                    'extension' => 'pdf',
+                ],
+                account: $request->header->account,
+                virtualPath: $path,
+                ip: $request->getOrigin(),
+                app: $this->app,
+                readContent: true,
+                unit: $this->app->unitId
+            );
 
-        // Send bill via email
-        // @bug Not all bills should be sent as email
-        //      Depends on bill type and status (i.e. draft, deleted)
-        //      https://github.com/Karaka-Management/oms-Billing/issues/50
-        $client = ClientMapper::get()
-            ->with('account')
-            ->with('attributes')
-            ->with('attributes/type')
-            ->with('attributes/value')
-            ->where('id', $bill->client?->id ?? 0)
-            ->where('attributes/type/name', ['bill_emails', 'bill_email_address'], 'IN')
-            ->execute();
+            // Add type to media
+            $this->createModelRelation(
+                $request->header->account,
+                $media->id,
+                (int) $internalType->content,
+                MediaMapper::class,
+                'types',
+                '',
+                $request->getOrigin()
+            );
 
-        if ($client->getAttribute('bill_emails')->value->getValue() === 1) {
-            // @todo should this really be a string or an ID for a contact element?
-            $email = empty($tmp = $client->getAttribute('bill_email_address')->value->getValue())
-                ? $client->account->email
-                : (string) $tmp;
+            // Add media to bill
+            $this->createModelRelation(
+                $request->header->account,
+                $bill->id,
+                $media->id,
+                BillMapper::class,
+                'files',
+                '',
+                $request->getOrigin()
+            );
+        } else {
+            $media = clone $oldFile;
+            if (\realpath($pdfDir . '/' . $billFileName) !== \realpath($oldFile->getAbsolutePath())) {
+                \unlink($oldFile->getAbsolutePath());
+            }
 
-            $this->sendBillEmail($media, $email, $response->header->l11n->language);
+
+            $media->setPath(\Modules\Media\Controller\ApiController::normalizeDbPath($pdfDir . '/' . $billFileName));
+            $media->setVirtualPath($path);
+            $media->size = \filesize($media->getAbsolutePath());
+
+            $this->updateModel($request->header->account, $oldFile, $media, MediaMapper::class, 'media', $request->getOrigin());
         }
-
-        // Add type to media
-        /** @var \Model\Setting $originalType */
-        $originalType = $this->app->appSettings->get(
-            names: SettingsEnum::ORIGINAL_MEDIA_TYPE,
-            module: self::NAME
-        );
-
-        $this->createModelRelation(
-            $request->header->account,
-            $media->id,
-            (int) $originalType->content,
-            MediaMapper::class,
-            'types',
-            '',
-            $request->getOrigin()
-        );
-
-        // Add media to bill
-        $this->createModelRelation(
-            $request->header->account,
-            $bill->id,
-            $media->id,
-            BillMapper::class,
-            'files',
-            '',
-            $request->getOrigin()
-        );
 
         $this->createStandardCreateResponse($request, $response, $media);
     }
@@ -1252,44 +1418,47 @@ final class ApiBillController extends Controller
      *
      * @param Media  $media    Media to send
      * @param string $email    Email address
+     * @param string $template Email template
      * @param string $language Message language
      *
      * @return void
      *
+     * @question Maybe we should move this entire function to the Messages module
+     *      There is nothing bill specific in here.
+     *
      * @since 1.0.0
      */
-    public function sendBillEmail(Media $media, string $email, string $language = 'en') : void
+    public function sendBillEmail(Media $media, string $email, int $template, string $language = 'en') : void
     {
         $handler = $this->app->moduleManager->get('Admin', 'Api')->setUpServerMailHandler();
 
-        /** @var \Model\Setting $emailFrom */
-        $emailFrom = $this->app->appSettings->get(
-            names: AdminSettingsEnum::MAIL_SERVER_ADDR,
-            module: 'Admin'
-        );
-
-        if (empty($emailFrom->content)) {
-            return;
-        }
-
-        /** @var \Model\Setting $billingTemplate */
-        $billingTemplate = $this->app->appSettings->get(
-            names: SettingsEnum::BILLING_CUSTOMER_EMAIL_TEMPLATE,
-            module: 'Billing'
-        );
-
         $mail = EmailMapper::get()
             ->with('l11n')
-            ->where('id', (int) $billingTemplate->content)
+            ->where('id', $template)
             ->where('l11n/language', $language)
             ->execute();
 
-        $mail = new Email();
-        $mail->setFrom($emailFrom->content);
+        $status = false;
+        if ($mail->id !== 0) {
+            $status = $this->app->moduleManager->get('Admin', 'Api')->setupEmailDefaults($mail, $language);
+        }
+
         $mail->addTo($email);
         $mail->addAttachment($media->getAbsolutePath(), $media->name);
 
-        $handler->send($mail);
+        if ($status) {
+            $status = $handler->send($mail);
+        }
+
+        if (!$status) {
+            \phpOMS\Log\FileLogger::getInstance()->error(
+                \phpOMS\Log\FileLogger::MSG_FULL, [
+                    'message' => 'Couldn\'t send bill media: ' . $media->id,
+                    'line'    => __LINE__,
+                    'file'    => self::class,
+                ]
+            );
+        }
     }
 
     /**

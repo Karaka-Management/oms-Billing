@@ -35,129 +35,216 @@
                 "Auftragsbestätigung"
             ]
         },
+        "purchase_offer": {
+            "en": [
+                "Offer"
+            ],
+            "de": [
+                "Angebot"
+            ]
+        },
         "purchase_reverse_invoice": {
             "en": [],
             "de": [
                 "Gutschrift"
             ]
+        },
+        "purchase_proforma_invoice": {
+            "en": [
+                "Proforma"
+            ],
+            "de": [
+                "Proforma"
+            ]
         }
     },
+    "tax_id": {
+        "en": [
+            "/(tax[\\. \\-]*id|tin|ssn|ein)(.*? {1,})(?<tax_id>(.{6,15}))( |$)/i",
+            "/(vat[\\. \\-]*id)(.*? {1,})(?<tax_id>([^a-zA-Z]{6,15}))( |$)/i"
+        ],
+        "de": [
+            "/(Steuern|Steuer[\\. \\-]*Nr|St[\\. \\-]*Nr)(.*? {1,})(?<tax_id>(.{8,15}))( |$)/i",
+            "/(USt[\\. \\-]*Id|Umsatzst.*?Id)(.*? {1,})(?<tax_id>([^a-zA-Z]{8,15}))( |$)/i"
+        ]
+    },
+    "vat_id": {
+        "en": [
+            "/(vat[\\. \\-]*id)(.*? {1,})(?<vat_id>([a-zA-Z]{2})(.*?){7,13})( |$)/i"
+        ],
+        "de": [
+            "/(USt[\\. \\-]*Id|Umsatzst.*?Id)(.*? {1,})(?<vat_id>([a-zA-Z]{2})(.*?){7,13})( |$)/i"
+        ]
+    },
+    "iban": ["/(IBAN)(.*? {1,})(?<iban>([a-zA-Z]{2,}[ 0-9]{14,}))( |$)/i"],
+    "email": ["/(^| )(?<email>([a-zA-Z0-9\\-]+@[a-zA-Z0-9\\-]+\\.[a-zA-Z]{2,}))( |$)/i"],
+    "website": ["/(^| )(?<website>(https:\\/\\/|www\\.)([a-zA-Z0-9\\-]+\\.[a-zA-Z]{2,}))( |$)/i"],
+    "phone": {
+        "en": [
+            "/(phone)(.*? {1,})(?<phone>([+0-9 \\/\\-\\(\\)]*[0-9]+[+0-9 \\/\\-\\(\\)]*){4,})(  |[^ 0-9\\/\\(\\)+\\-]|$)/i"
+        ],
+        "de": [
+            "/(Tel|Rufn)(.*? {1,})(?<phone>([+0-9 \\/\\-\\(\\)]*[0-9]+[+0-9 \\/\\-\\(\\)]*){4,})(  |[^ 0-9\\/\\(\\)+\\-]|$)/i"
+        ]
+    },
     "date_format": [
-        "Y-m-d",
-        "Y.m.d",
-        "Y/m/d",
-        "d-m-Y",
-        "d.m.Y",
-        "d/m/Y",
-        "m-d-Y",
-        "m.d.Y",
-        "m/d/Y",
-        "M. d.Y",
-        "M. d. Y",
-        "M. d Y",
-        "M. d,Y",
-        "M. d, Y",
-        "M d.Y",
-        "M d. Y",
-        "M d Y",
-        "M d,Y",
-        "M d, Y",
-        "M, d.Y",
-        "M, d. Y",
-        "M, d Y",
-        "M, d,Y",
-        "M, d, Y"
+        "Y-m-d", "Y.m.d", "Y/m/d",
+        "d-m-Y", "d.m.Y", "d/m/Y",
+        "m-d-Y", "m.d.Y", "m/d/Y",
+        "M. d.Y", "M. d. Y", "M. d Y",
+        "M. d,Y", "M. d, Y", "M d.Y",
+        "M d. Y", "M d Y", "M d,Y",
+        "M d, Y", "M, d.Y", "M, d. Y",
+        "M, d Y", "M, d,Y", "M, d, Y",
+        "d-m-y", "d.m.y", "d/m/y",
+        "m-d-y", "m.d.y", "m/d/y"
     ],
     "bill_no": {
         "en": [
-            "/(inv.*?)(no|\\s|,|:|\\.|#)+(?<bill_no>.*?)(  |$)/i",
-            "/(#)(?<bill_no>.*?)(  |$)/i"
+            "/(invoice|inv.*? no)(.*? {1,})(?<bill_no>\\S*?)(  |$)/i",
+            "/(#)(?<bill_no>\\S*?)(  |$)/i"
         ],
         "de": [
-            "/(rechnungsn.*?|beleg.*?)(?<bill_no>.*?)(  |$)/i"
+            "/(rechnungsn|rechnung n|belegn|beleg n)(.*? {1,})(?<bill_no>\\S*?)(  |$)/i"
         ]
     },
     "bill_date": {
         "en": [
-            "/(inv.*?)(date.*?)(\\s|,|:|\\.)+(?<bill_date>.*?)( |$)/i",
-            "/(date.*?)(\\s|,|:|\\.)+(?<bill_date>.*?)(  |$)/i"
+            "/(inv.*? )(date.*? )(?<bill_date>.{8,}?)( |$)/i",
+            "/(date.*? )(?<bill_date>.{8,}?)(  |$)/i"
         ],
         "de": [
-            "/(rechnungsdat.*?|belegdat.*?)(\\s|,|:|\\.)+(?<bill_date>.*?)( |$)/i"
+            "/(rechnungsdat|belegdat|datum)(.*? )(?<bill_date>\\S{8,}?)( |$)/i"
         ]
     },
     "bill_due": {
         "en": [
-            "/(due date.*?)(\\s|,|:|\\.)+(?<bill_due>.*?)( |$)/i",
-            "/(due.*?)(\\s|,|:|\\.)+(?<bill_due>.*?)( |$)/i"
+            "/(due date.*? )(?<bill_due>\\S{8,}?)( |$)/i",
+            "/(due.*? )(?<bill_due>\\S{8,}?)( |$)/i"
         ],
         "de": [
-            "/(fällig.*?)(\\s|,|:|\\.)+(?<bill_due>.*?)( |$)/i"
+            "/(fällig.*? )(?<bill_due>\\S{8,}?)( |$)/i"
         ]
     },
     "total_net": {
         "en": [
-            "/(subtotal.*?|net.*?)(?<total_net>([0-9]+,*\\.*)+)/i"
+            "/(subtotal|net)(.*? {1,})(?<total_net>([0-9]+,*\\.*)+)(?! *%)/i"
         ],
         "de": [
-            "/(netto.*?|zwischensumme.*?)(?<total_net>([0-9]+,*\\.*)+)/i"
+            "/(netto|zwischensumme|betrag exk)(.*? {1,})(?<total_net>([0-9]+,*\\.*)+)(?! *%)/i"
+        ]
+    },
+    "total_discount": {
+        "en": [
+            "/(discount)(.*? {1,})(?<total_discount>([0-9]+,*\\.*)+)(?! *%)/i"
+        ],
+        "de": [
+            "/(rabatt)(.*? {1,})(?<total_discount>([0-9]+,*\\.*)+)(?! *%)/i"
+        ]
+    },
+    "total_shipping": {
+        "en": [
+            "/(fuel|handling|fright|shipping)(.*? {1,})(?<total_shipping>([0-9]+,*\\.*)+)(?! *%)/i"
+        ],
+        "de": [
+            "/(versand|transport|fracht)(.*? {1,})(?<total_shipping>([0-9]+,*\\.*)+)(?! *%)/i"
+        ]
+    },
+    "total_customs": {
+        "en": [
+            "/(customs)(.*? {1,})(?<total_customs>([0-9]+,*\\.*)+)(?! *%)/i"
+        ],
+        "de": [
+            "/(Einfuhr)(\\S* )(?<total_customs>([0-9]+,*\\.*)+)(?! *%)/i"
+        ]
+    },
+    "total_insurance": {
+        "en": [
+            "/(insurance)(.*? {1,})(?<total_insurance>([0-9]+,*\\.*)+)(?! *%)/i"
+        ],
+        "de": [
+            "/(versicherung)(.*? {1,})(?<total_insurance>([0-9]+,*\\.*)+)(?! *%)/i"
+        ]
+    },
+    "total_surcharge": {
+        "en": [
+            "/(fee|surcharge)(.*? {1,})(?<total_surcharge>([0-9]+,*\\.*)+)(?! *%)/i"
+        ],
+        "de": [
+            "/(gebühr)(.*? {1,})(?<total_surcharge>([0-9]+,*\\.*)+)(?! *%)/i"
         ]
     },
     "total_tax": {
         "en": [
-            "/(tax.*?)(?<total_tax>([0-9]+,*\\.*)+)/i"
+            "/(VAT|tax)(.*? {1,})(?<total_tax>([0-9]+,*\\.*)+)(?! *%)/i"
         ],
         "de": [
-            "/(USt.*?|Mwst.*?|Umsatzsteuer.*?|Mehrwehrtsteuer.*?)(?<total_tax>([0-9]+,*\\.*)+)/i"
+            "/(USt|Mwst|Umsatzst|Mehrwertst)(.*? {1,})(?<total_tax>([0-9]+,*\\.*)+)(?! *%)/i",
+            "/( {1,})(USt|Mwst|Umsatzst|Mehrwertst)(?<total_tax>([0-9]+,*\\.*)+)(?! *%)/i"
+        ]
+    },
+    "tax_rate": {
+        "en": [
+            "/(VAT|tax)(.*? {1,})(?<tax_rate>([0-9]+,*\\.*)+)(?= *%)/i"
+        ],
+        "de": [
+            "/(USt|Mwst|Umsatzst|Mehrwertst)(.*? {1,})(?<tax_rate>([0-9]+,*\\.*)+)(?= *%)/i",
+            "/( {1,})(?<tax_rate>([0-9]+,*\\.*)+)(?= *%)(.*?)(USt|Mwst|Umsatzst|Mehrwertst)/i"
         ]
     },
     "total_gross": {
         "en": [
-            "/(total.*?|gross.*?)(?<total_gross>([0-9]+,*\\.*)+)/i"
+            "/(total|gross)(.*? {1,})(?<total_gross>([0-9]+,*\\.*)+)(?! *%)/i"
         ],
         "de": [
-            "/(betrag.*?|gesamt.*?|brutto|rechnungsbetrag.*?|summe.*?)(?<total_gross>([0-9]+,*\\.*)+)/i"
+            "/(betrag|gesamt|brutto|summe)(.*? {1,})(?<total_gross>([0-9]+,*\\.*)+)(?! *%)/i"
         ]
     },
     "item_table": {
         "en": {
             "headline": {
-                "order": ["no.", "#"],
-                "description": ["description", "name", "service", "product"],
-                "quantity": ["qty", "quantity"],
-                "price": ["price", "net", "gross"],
+                "order": ["no.", "#", "pos"],
+                "number": ["number"],
+                "description": ["description", "name", "service", "product", "item"],
+                "quantity": ["qty", "quantity", "hours"],
+                "price": ["price", "rate"],
                 "unit": ["unit"],
-                "total": ["amount", "total", "price", "net", "gross"],
+                "total": ["amount", "total", "gross"],
                 "tax": ["tax"]
             },
+            "parts": "/( *)(.+?)(\\s{3,}|$)/i",
             "row": {
-                "order": "\\d+",
-                "description": ".*?",
-                "quantity": "[+-]?([0-9]{1,3}([,\\.][0-9]{3})*(,\\.[0-9]+)?|\\d*[,\\.]\\d+|\\d+)",
-                "price": "[+-]?([0-9]{1,3}([,\\.][0-9]{3})*(,\\.[0-9]+)?|\\d*[,\\.]\\d+|\\d+)",
-                "unit": ".*?",
-                "total": "[+-]?([0-9]{1,3}([,\\.][0-9]{3})*(,\\.[0-9]+)?|\\d*[,\\.]\\d+|\\d+)",
-                "tax": "[+-]?([0-9]{1,3}([,\\.][0-9]{3})*(,\\.[0-9]+)?|\\d*[,\\.]\\d+|\\d+)"
+                "order": "/\\d+/i",
+                "number": "/.*/i",
+                "description": "/.*/i",
+                "quantity": "/[+-]?([0-9]+,*\\.*)+/i",
+                "price": "/[+-]?([0-9]+,*\\.*)+/i",
+                "unit": "/.*/i",
+                "total": "/[+-]?([0-9]+,*\\.*)+/i",
+                "tax": "/[+-]?([0-9]+,*\\.*)+/i"
             }
         },
         "de": {
             "headline": {
                 "order": ["Pos", "#", "Position"],
-                "description": ["Beschreibung", "Bez", "Bezeichnung", "Leistung", "Produkt"],
-                "quantity": ["Menge", "Anzahl"],
-                "price": ["Einzel", "Preis", "Netto", "Net", "Brutto"],
+                "number": ["Nr.", "Nummer"],
+                "description": ["Beschreibung", "Bez", "Bezeichnung", "Leistung", "Produkt", "Artikel", "Name"],
+                "quantity": ["Menge", "Anzahl", "Stunden"],
+                "price": ["Einzel", "Preis", "Preis pro"],
                 "unit": ["Einheit", "Einh"],
-                "total": ["Gesamt", "Preis", "Netto", "Net", "Brutto"],
-                "tax": ["MwSt", "USt"]
+                "total": ["Gesamt", "Brutto", "Summe"],
+                "tax": ["MwSt", "USt", "Steuer"]
             },
+            "parts": "/( *)(.+?)(\\s{2,}|$)/i",
             "row": {
-                "order": "\\d+",
-                "description": ".*?",
-                "quantity": "[+-]?([0-9]{1,3}([,\\.][0-9]{3})*(,\\.[0-9]+)?|\\d*[,\\.]\\d+|\\d+)",
-                "price": "[+-]?([0-9]{1,3}([,\\.][0-9]{3})*(,\\.[0-9]+)?|\\d*[,\\.]\\d+|\\d+)",
-                "unit": ".*?",
-                "total": "[+-]?([0-9]{1,3}([,\\.][0-9]{3})*(,\\.[0-9]+)?|\\d*[,\\.]\\d+|\\d+)",
-                "tax": "[+-]?([0-9]{1,3}([,\\.][0-9]{3})*(,\\.[0-9]+)?|\\d*[,\\.]\\d+|\\d+)"
+                "order": "/\\d+/i",
+                "number": "/.*/i",
+                "description": "/.*/i",
+                "quantity": "/[+-]?([0-9]+,*\\.*)+/i",
+                "price": "/[+-]?([0-9]+,*\\.*)+/i",
+                "unit": "/.*/i",
+                "total": "/[+-]?([0-9]+,*\\.*)+/i",
+                "tax": "/[+-]?([0-9]+,*\\.*)+/i"
             }
         }
     }

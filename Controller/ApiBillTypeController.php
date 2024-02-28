@@ -81,6 +81,7 @@ final class ApiBillTypeController extends Controller
         );
         $billType->numberFormat    = $request->getDataString('number_format') ?? '{id}';
         $billType->sign            = $request->getDataInt('sign') ?? 1;
+        $billType->email           = $request->getDataBool('email') ?? false;
         $billType->transferStock   = $request->getDataBool('transfer_stock') ?? false;
         $billType->isTemplate      = $request->getDataBool('is_template') ?? false;
         $billType->isAccounting    = $request->getDataBool('is_accounting') ?? false;

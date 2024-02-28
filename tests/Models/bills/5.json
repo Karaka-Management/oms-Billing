@@ -1,0 +1,26 @@
+{
+    "invoice_number": "323525",
+    "grossSales": 7809300,
+    "netSales": 6562400,
+    "tax_amount": 1246900,
+    "tax_rate": 190000,
+    "bill_date": "2022-08-10",
+    "delivery_date": "",
+    "service_date": "",
+    "due_date": "",
+    "vat_id": "DE101778899",
+    "tax_id": "200/100/10001",
+    "address": {
+        "name": "Handwerker Muster",
+        "address": "Musterstraße 1",
+        "city": "123456 Musterstadt",
+        "country": ""
+    },
+    "iban": "DE02345611110000100020",
+    "elements": [],
+    "language": "de",
+    "currency": "EUR",
+    "email": "",
+    "website": "",
+    "phone": "+49 123 456 789-0"
+}

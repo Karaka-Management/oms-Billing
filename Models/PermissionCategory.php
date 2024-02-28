@@ -43,4 +43,6 @@ abstract class PermissionCategory extends Enum
     public const PAYMENT_TERM = 9;
 
     public const SHIPPING_TERM = 10;
+
+    public const BILL_LOG = 101;
 }

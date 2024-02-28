@@ -65,6 +65,8 @@ class Bill implements \JsonSerializable
      */
     public string $number = '';
 
+    public string $external = '';
+
     /**
      * Bill type.
      *
@@ -247,8 +249,6 @@ class Bill implements \JsonSerializable
      */
     public Account $referral;
 
-    public string $externalReferral = '';
-
     /**
      * Net amount.
      *
@@ -258,28 +258,12 @@ class Bill implements \JsonSerializable
     public FloatInt $netProfit;
 
     /**
-     * Gross amount.
-     *
-     * @var FloatInt
-     * @since 1.0.0
-     */
-    public FloatInt $grossProfit;
-
-    /**
      * Costs in net.
      *
      * @var FloatInt
      * @since 1.0.0
      */
     public FloatInt $netCosts;
-
-    /**
-     * Profit in net.
-     *
-     * @var FloatInt
-     * @since 1.0.0
-     */
-    public FloatInt $grossCosts;
 
     /**
      * Costs in net.
@@ -304,14 +288,6 @@ class Bill implements \JsonSerializable
      * @since 1.0.0
      */
     public FloatInt $netDiscount;
-
-    /**
-     * Profit in net.
-     *
-     * @var FloatInt
-     * @since 1.0.0
-     */
-    public FloatInt $grossDiscount;
 
     /**
      * Tax amount
@@ -443,13 +419,10 @@ class Bill implements \JsonSerializable
     public function __construct()
     {
         $this->netProfit     = new FloatInt(0);
-        $this->grossProfit   = new FloatInt(0);
         $this->netCosts      = new FloatInt(0);
-        $this->grossCosts    = new FloatInt(0);
         $this->netSales      = new FloatInt(0);
         $this->grossSales    = new FloatInt(0);
         $this->netDiscount   = new FloatInt(0);
-        $this->grossDiscount = new FloatInt(0);
         $this->taxP          = new FloatInt(0);
 
         $this->billDate  = new \DateTime('now');
@@ -551,15 +524,92 @@ class Bill implements \JsonSerializable
         $this->elements[] = $element;
 
         $this->netProfit->value   += $element->totalProfitNet->value;
-        $this->grossProfit->value += $element->totalProfitGross->value;
         $this->netCosts->value    += $element->totalPurchasePriceNet->value;
-        $this->grossCosts->value  += $element->totalPurchasePriceGross->value;
         $this->netSales->value    += $element->totalSalesPriceNet->value;
         $this->grossSales->value  += $element->totalSalesPriceGross->value;
         $this->netDiscount->value += $element->totalDiscountP->value;
+    }
 
-        // @todo Discount might be in quantities
-        $this->grossDiscount->value += (int) ($element->taxR->value * $element->totalDiscountP->value / 10000);
+    // @todo also consider rounding similarly to recalculatePrices in elements
+    public function isValid() : bool
+    {
+        return $this->validateTaxAmountElements()
+            && $this->validateProfit()
+            && $this->validateGrossElements()
+            && $this->validatePriceQuantityElements()
+            && $this->validateNetElements()
+            && $this->validateNetGross()
+            && $this->areElementsValid();
+    }
+
+    public function areElementsValid() : bool
+    {
+        foreach ($this->elements as $element) {
+            if (!$element->isValid()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public function validateNetGross() : bool
+    {
+        return $this->netSales->value <= $this->grossSales->value;
+    }
+
+    public function validateProfit() : bool
+    {
+        return $this->netSales->value - $this->netCosts->value === $this->netProfit->value;
+    }
+
+    public function validateTax() : bool
+    {
+        return \abs($this->netSales->value + $this->taxP->value - $this->grossSales->value) === 0;
+    }
+
+    public function validateTaxAmountElements() : bool
+    {
+        $taxes = 0;
+        foreach ($this->elements as $element) {
+            $taxes += $element->taxP->value;
+        }
+
+        return $taxes === $this->taxP->value;
+    }
+
+    public function validateNetElements() : bool
+    {
+        $net = 0;
+        foreach ($this->elements as $element) {
+            $net += $element->totalSalesPriceNet->value;
+        }
+
+        return $net === $this->netSales->value;
+    }
+
+    public function validateGrossElements()
+    {
+        $gross = 0;
+        foreach ($this->elements as $element) {
+            $gross += $element->totalSalesPriceGross->value;
+        }
+
+        return $gross === $this->grossSales->value;
+    }
+
+    public function validatePriceQuantityElements()
+    {
+        foreach ($this->elements as $element) {
+            if ($element->discountQ->value === 0
+                && $element->totalDiscountP->value === 0
+                && ($element->quantity->value / FloatInt::DIVISOR) * $element->singleSalesPriceNet->value - $element->totalSalesPriceNet->value > 1.0
+            ) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -570,6 +620,7 @@ class Bill implements \JsonSerializable
         return [
             'id'          => $this->id,
             'number'      => $this->number,
+            'external'      => $this->external,
             'type'        => $this->type,
             'shipTo'      => $this->shipTo,
             'shipFAO'     => $this->shipFAO,

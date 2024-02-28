@@ -136,7 +136,7 @@ final class Installer extends InstallerAbstract
         $billAttrType = [];
 
         /** @var \Modules\Billing\Controller\ApiAttributeController $module */
-        $module = $app->moduleManager->getModuleInstance('Billing', 'ApiAttribute');
+        $module = $app->moduleManager->get('Billing', 'ApiAttribute');
 
         /** @var array $attribute */
         foreach ($attributes as $attribute) {
@@ -205,7 +205,7 @@ final class Installer extends InstallerAbstract
         $billAttrValue = [];
 
         /** @var \Modules\Billing\Controller\ApiAttributeController $module */
-        $module = $app->moduleManager->getModuleInstance('Billing', 'ApiAttribute');
+        $module = $app->moduleManager->get('Billing', 'ApiAttribute');
 
         foreach ($attributes as $attribute) {
             $billAttrValue[$attribute['name']] = [];
@@ -277,7 +277,7 @@ final class Installer extends InstallerAbstract
         $result = [];
 
         /** @var \Modules\Billing\Controller\ApiTaxController $module */
-        $module = $app->moduleManager->getModuleInstance('Billing', 'ApiTax');
+        $module = $app->moduleManager->get('Billing', 'ApiTax');
 
         /** @var \Modules\Attribute\Models\AttributeType $itemAttributeSales */
         $itemAttributeSales = ItemAttributeTypeMapper::get()
@@ -345,7 +345,7 @@ final class Installer extends InstallerAbstract
         $billTypes = [];
 
         /** @var \Modules\Billing\Controller\ApiBillTypeController $module */
-        $module = $app->moduleManager->getModuleInstance('Billing', 'ApiBillType');
+        $module = $app->moduleManager->get('Billing', 'ApiBillType');
 
         foreach ($types as $type) {
             $response = new HttpResponse();
@@ -357,6 +357,7 @@ final class Installer extends InstallerAbstract
             $request->setData('language', \array_keys($type['l11n'])[0] ?? 'en');
             $request->setData('number_format', $type['numberFormat'] ?? '{id}');
             $request->setData('sign', $type['sign'] ?? 1);
+            $request->setData('email', $type['email'] ?? false);
             $request->setData('transfer_stock', $type['transferStock'] ?? false);
             $request->setData('is_template', $type['isTemplate'] ?? false);
             $request->setData('is_accounting', $type['isAccounting'] ?? false);
@@ -414,7 +415,7 @@ final class Installer extends InstallerAbstract
         $paymentTerms = [];
 
         /** @var \Modules\Billing\Controller\ApiController $module */
-        $module = $app->moduleManager->getModuleInstance('Billing', 'Api');
+        $module = $app->moduleManager->get('Billing', 'Api');
 
         /** @var array $type */
         foreach ($types as $type) {
@@ -474,7 +475,7 @@ final class Installer extends InstallerAbstract
         $shippingTerms = [];
 
         /** @var \Modules\Billing\Controller\ApiController $module */
-        $module = $app->moduleManager->getModuleInstance('Billing', 'Api');
+        $module = $app->moduleManager->get('Billing', 'Api');
 
         /** @var array $type */
         foreach ($types as $type) {

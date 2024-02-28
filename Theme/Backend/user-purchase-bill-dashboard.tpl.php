@@ -44,6 +44,18 @@ echo $this->data['nav']->render(); ?>
                         <label>
                             <i class="filter g-icon">filter_alt</i>
                         </label>
+                    <td><?= $this->getHtml('External'); ?>
+                        <label for="billList-sort-1">
+                            <input type="radio" name="billList-sort" id="billList-sort-1">
+                            <i class="sort-asc g-icon">expand_less</i>
+                        </label>
+                        <label for="billList-sort-2">
+                            <input type="radio" name="billList-sort" id="billList-sort-2">
+                            <i class="sort-desc g-icon">expand_more</i>
+                        </label>
+                        <label>
+                            <i class="filter g-icon">filter_alt</i>
+                        </label>
                     <td><?= $this->getHtml('Type'); ?>
                         <label for="billList-sort-3">
                             <input type="radio" name="billList-sort" id="billList-sort-3">
@@ -164,6 +176,7 @@ echo $this->data['nav']->render(); ?>
                                     <span class="checkmark"></span>
                                 </label>
                         <td><a href="<?= $url; ?>"><?= $value->getNumber(); ?></a>
+                        <td><a href="<?= $url; ?>"><?= $value->external; ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->type->getL11n(); ?></a>
                         <td><a class="content" href="<?= $supplier = UriFactory::build('purchase/supplier/view?{?}&id=' . $value->supplier->id); ?>"><?= $value->supplier->number; ?></a>
                         <td><a class="content" href="<?= $supplier; ?>"><?= $this->printHtml($value->billTo); ?></a>
@@ -176,7 +189,7 @@ echo $this->data['nav']->render(); ?>
                             : ISO3166NameEnum::getByName(
                                     ISO3166TwoEnum::getName($value->billCountry)
                                 ); ?></a>
-                        <td><a href="<?= $url; ?>"><?= $value->grossCosts->getAmount(); ?></a>
+                        <td><a href="<?= $url; ?>"><?= $value->grossSales->getAmount(); ?></a>
                         <td><a href="<?= $url; ?>"><?= $value->billDate?->format('Y-m-d'); ?></a>
                 <?php endforeach; ?>
                 <?php if ($count === 0) : ?>

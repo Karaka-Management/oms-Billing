@@ -1,0 +1,26 @@
+{
+    "invoice_number": "",
+    "grossSales": 20440000,
+    "netSales": 0,
+    "tax_amount": 0,
+    "tax_rate": 0,
+    "bill_date": "",
+    "delivery_date": "",
+    "service_date": "",
+    "due_date": "",
+    "vat_id": "",
+    "tax_id": "",
+    "address": {
+        "name": "",
+        "address": "",
+        "city": "",
+        "country": ""
+    },
+    "iban": "",
+    "elements": [],
+    "language": "de",
+    "currency": "EUR",
+    "email": "",
+    "website": "",
+    "phone": ""
+}

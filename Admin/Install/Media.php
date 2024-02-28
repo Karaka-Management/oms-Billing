@@ -54,8 +54,15 @@ class Media
                     ],
                     [
                         'type'    => 'setting',
-                        'name'    => SettingsEnum::ORIGINAL_MEDIA_TYPE,
+                        'name'    => SettingsEnum::INTERNAL_MEDIA_TYPE,
                         'content' => (string) $media['type'][1]['id'],
+                        'pattern' => '\\d+',
+                        'module'  => 'Billing',
+                    ],
+                    [
+                        'type'    => 'setting',
+                        'name'    => SettingsEnum::EXTERNAL_MEDIA_TYPE,
+                        'content' => (string) $media['type'][2]['id'],
                         'pattern' => '\\d+',
                         'module'  => 'Billing',
                     ],
