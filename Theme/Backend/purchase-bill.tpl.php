@@ -331,11 +331,11 @@ echo $this->data['nav']->render(); ?>
                                         </button><input name="item_number" type="text" autocomplete="off"></span>
                                     <td><textarea name="item_description" autocomplete="off"></textarea>
                                     <td><input name="item_quantity" type="number" step="any" value="" autocomplete="off">
-                                    <td><input name="item_discountp" type="number" step="0.01" value="" autocomplete="off">
+                                    <td><input name="item_discountp" type="number" step="any" value="" autocomplete="off">
                                     <td><input name="item_discountr" type="number" min="-100" max="100" step="0.01" value="" autocomplete="off">
-                                    <td><input name="item_bonus" type="number" step="0.01" value="" autocomplete="off">
-                                    <td><input name="item_price" type="number" step="0.01" value="" autocomplete="off">
-                                    <td><input name="item_taxr" type="number" step="0.01" value="" autocomplete="off">
+                                    <td><input name="item_bonus" type="number" step="any" value="" autocomplete="off">
+                                    <td><input name="item_price" type="number" step="any" value="" autocomplete="off">
+                                    <td><input name="item_taxr" type="number" step="any" value="" autocomplete="off">
                                     <td>
                                     <td>
                                 </tr>
@@ -354,11 +354,11 @@ echo $this->data['nav']->render(); ?>
                                         </button><input name="item_number" autocomplete="off" type="text" value="<?= $element->itemNumber; ?>"<?= $disabled; ?>></span>
                                     <td><textarea name="item_description" autocomplete="off"<?= $disabled; ?>><?= $element->itemName; ?></textarea>
                                     <td><input name="item_quantity" autocomplete="off" type="number" step="any" value="<?= $element->quantity->sub($element->discountQ)->getAmount($element->container->quantityDecimals); ?>"<?= $disabled; ?>>
-                                    <td><input name="item_discountp" autocomplete="off" type="number" step="0.01" value="<?= $element->singleDiscountP->getAmount(); ?>"<?= $disabled; ?>>
-                                    <td><input name="item_discountr" autocomplete="off" type="number" step="0.01" value="<?= $element->singleDiscountR->getAmount(); ?>"<?= $disabled; ?>>
+                                    <td><input name="item_discountp" autocomplete="off" type="number" step="any" value="<?= $element->singleDiscountP->getAmount(); ?>"<?= $disabled; ?>>
+                                    <td><input name="item_discountr" autocomplete="off" type="number" step="any" value="<?= $element->singleDiscountR->getAmount(); ?>"<?= $disabled; ?>>
                                     <td><input name="item_bonus" autocomplete="off" type="number" min="-100" max="100" step="0.01" value="<?= $element->discountQ->getAmount($element->container->quantityDecimals); ?>"<?= $disabled; ?>>
-                                    <td><input name="item_price" autocomplete="off" type="number" step="0.01" value="<?= $element->singleSalesPriceNet->getFloat(); ?>"<?= $disabled; ?>>
-                                    <td><input name="item_taxr" autocomplete="off" type="number" step="0.01" value="<?= $element->taxR->getAmount(); ?>"<?= $disabled; ?>>
+                                    <td><input name="item_price" autocomplete="off" type="number" step="any" value="<?= $element->singleSalesPriceNet->getFloat(); ?>"<?= $disabled; ?>>
+                                    <td><input name="item_taxr" autocomplete="off" type="number" step="any" value="<?= $element->taxR->getAmount(); ?>"<?= $disabled; ?>>
                                     <td><?= $this->getCurrency($element->totalSalesPriceNet, symbol: ''); ?>
                                     <td><?= \number_format($element->totalSalesPriceNet->value === 0 ? 0 : (1 - $element->totalPurchasePriceNet->value / $element->totalSalesPriceNet->value) * 100, 2); ?>%
                                 <?php endforeach; ?>
@@ -372,11 +372,11 @@ echo $this->data['nav']->render(); ?>
                                             <i class="g-icon">book</i></button><input name="item_number" type="text" autocomplete="off"></span>
                                     <td><textarea name="item_description" autocomplete="off"></textarea>
                                     <td><input name="item_quantity" type="number" step="any" value="" autocomplete="off">
-                                    <td><input name="item_discountp" type="number" step="0.01" value="" autocomplete="off">
+                                    <td><input name="item_discountp" type="number" step="any" value="" autocomplete="off">
                                     <td><input name="item_discountr" type="number" min="-100" max="100" step="0.01" value="" autocomplete="off">
-                                    <td><input name="item_bonus" type="number" step="0.01" value="" autocomplete="off">
-                                    <td><input name="item_price" type="number" step="0.01" value="" autocomplete="off">
-                                    <td><input name="item_taxr" type="number" step="0.01" value="" autocomplete="off">
+                                    <td><input name="item_bonus" type="number" step="any" value="" autocomplete="off">
+                                    <td><input name="item_price" type="number" step="any" value="" autocomplete="off">
+                                    <td><input name="item_taxr" type="number" step="any" value="" autocomplete="off">
                                     <td>
                                     <td>
                             <?php endif; ?>

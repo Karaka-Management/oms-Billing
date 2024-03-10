@@ -49,9 +49,23 @@ class TaxCombination implements \JsonSerializable
 
     public string $account = '';
 
+    // Tax accounts can be defined in:
+    //      1. Account (gross postings are automatically split)
+    //      2. Tax code
+    //      3. Tax combination
+    public string $taxAccount1 = '';
+
+    public string $taxAccount2 = '';
+
     public string $refundAccount = '';
 
     public string $discountAccount = '';
+
+    public string $cashbackAccount = '';
+
+    public string $overpaymentAccount = '';
+
+    public string $underpaymentAccount = '';
 
     public ?int $minPrice = null;
 

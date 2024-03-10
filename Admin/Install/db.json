@@ -355,6 +355,18 @@
                 "null": false,
                 "default": null
             },
+            "billing_tax_tax1_account": {
+                "name": "billing_tax_tax1_account",
+                "type": "VARCHAR(10)",
+                "null": false,
+                "default": null
+            },
+            "billing_tax_tax2_account": {
+                "name": "billing_tax_tax2_account",
+                "type": "VARCHAR(10)",
+                "null": false,
+                "default": null
+            },
             "billing_tax_refund_account": {
                 "name": "billing_tax_refund_account",
                 "type": "VARCHAR(10)",
@@ -363,6 +375,24 @@
             },
             "billing_tax_discount_account": {
                 "name": "billing_tax_discount_account",
+                "type": "VARCHAR(10)",
+                "null": false,
+                "default": null
+            },
+            "billing_tax_cashback_account": {
+                "name": "billing_tax_cashback_account",
+                "type": "VARCHAR(10)",
+                "null": false,
+                "default": null
+            },
+            "billing_tax_overpayment_account": {
+                "name": "billing_tax_overpayment_account",
+                "type": "VARCHAR(10)",
+                "null": false,
+                "default": null
+            },
+            "billing_tax_underpayment_account": {
+                "name": "billing_tax_underpayment_account",
                 "type": "VARCHAR(10)",
                 "null": false,
                 "default": null

@@ -70,6 +70,54 @@ final class BackendController extends Controller
             ->with('type')
             ->with('type/l11n')
             ->with('client')
+            ->where('status', BillStatus::DRAFT)
+            ->where('type/transferType', BillTransferType::SALES)
+            ->where('type/l11n/language', $response->header->l11n->language)
+            ->sort('id', OrderType::DESC)
+            ->where('unit', $this->app->unitId)
+            ->limit(25);
+
+        if ($request->getData('ptype') === 'p') {
+            $view->data['bills'] = $mapperQuery
+                    ->where('id', $request->getDataInt('id') ?? 0, '<')
+                    ->where('client', null, '!=')
+                    ->execute();
+        } elseif ($request->getData('ptype') === 'n') {
+            $view->data['bills'] = $mapperQuery->where('id', $request->getDataInt('id') ?? 0, '>')
+                    ->where('client', null, '!=')
+                    ->execute();
+        } else {
+            $view->data['bills'] = $mapperQuery->where('id', 0, '>')
+                    ->where('client', null, '!=')
+                    ->execute();
+        }
+
+        return $view;
+    }
+
+    /**
+     * Routing end-point for application behavior.
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param array            $data     Generic data
+     *
+     * @return RenderableInterface
+     *
+     * @since 1.0.0
+     * @codeCoverageIgnore
+     */
+    public function viewBillingSalesArchive(RequestAbstract $request, ResponseAbstract $response, array $data = []) : RenderableInterface
+    {
+        $view = new View($this->app->l11nManager, $request, $response);
+        $view->setTemplate('/Modules/Billing/Theme/Backend/sales-bill-list');
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response);
+
+        $mapperQuery = SalesBillMapper::getAll()
+            ->with('type')
+            ->with('type/l11n')
+            ->with('client')
+            ->where('status', BillStatus::DRAFT, '!=')
             ->where('type/transferType', BillTransferType::SALES)
             ->where('type/l11n/language', $response->header->l11n->language)
             ->sort('id', OrderType::DESC)

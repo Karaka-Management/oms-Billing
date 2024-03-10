@@ -170,6 +170,27 @@ final class ApiBillController extends Controller
 
     public function apiBillFinalize(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
+        if (!$this->app->accountManager->get($request->header->account)->hasPermission(
+                PermissionType::READ,
+                $this->app->unitId,
+                null,
+                self::NAME,
+                PermissionCategory::SALES_INVOICE
+            )
+            && !$this->app->accountManager->get($request->header->account)->hasPermission(
+                PermissionType::READ,
+                $this->app->unitId,
+                null,
+                self::NAME,
+                PermissionCategory::PURCHASE_INVOICE
+            )
+        ) {
+            $this->fillJsonResponse($request, $response, NotificationLevel::HIDDEN, '', '', []);
+            $response->header->status = RequestStatusCode::R_403;
+
+            return;
+        }
+
         // Archive bill
         /** @var \Modules\Billing\Models\Bill $bill */
         $old = BillMapper::get()
@@ -182,22 +203,22 @@ final class ApiBillController extends Controller
 
         $this->updateModel($request->header->account, $old, $new, BillMapper::class, 'bill', $request->getOrigin());
 
-        $this->app->eventManager->triggerSimilar('PRE:Module:' . self::NAME . '-bill-finalize', '', [
-            $request->header->account,
-            null, $bill,
-            null, self::NAME . '-bill-finalize',
-            self::NAME,
-            (string) $bill->id,
-            null,
-            $request->getOrigin(),
-        ]);
-
         // Create final pdf
         $this->apiBillPdfArchiveCreate($request, $response, $data);
         $media = $response->getDataArray($request->uri->__toString())['response'];
 
+        $this->app->eventManager->triggerSimilar('PRE:Module:' . self::NAME . '-bill-finalize', '', [
+            $request->header->account,
+            null, $new,
+            null, self::NAME . '-bill-finalize',
+            self::NAME,
+            (string) $new->id,
+            null,
+            $request->getOrigin(),
+        ]);
+
         // Send bill via email
-        $this->apiBillEmail($request, $response, ['bill' => $old, 'media' => $media]);
+        $this->apiBillEmail($request, $response, ['bill' => $new, 'media' => $media]);
 
         $this->createStandardUpdateResponse($request, $response, $new);
     }
@@ -1334,6 +1355,14 @@ final class ApiBillController extends Controller
             $response->set($request->uri->__toString(), new FormValidation(['status' => $status]));
             $response->header->status = RequestStatusCode::R_400;
 
+            \phpOMS\Log\FileLogger::getInstance()->error(
+                \phpOMS\Log\FileLogger::MSG_FULL, [
+                    'message' => 'Couldn\'t create bill path: ' . $bill->id,
+                    'line'    => __LINE__,
+                    'file'    => self::class,
+                ]
+            );
+
             return;
             // @codeCoverageIgnoreEnd
         }
@@ -1352,12 +1381,22 @@ final class ApiBillController extends Controller
         \file_put_contents($pdfDir . '/' . $billFileName, $pdf);
         if (!\is_file($pdfDir . '/' . $billFileName)) {
             $response->header->status = RequestStatusCode::R_400;
+            $response->set($request->uri->__toString(), []);
+
+            \phpOMS\Log\FileLogger::getInstance()->error(
+                \phpOMS\Log\FileLogger::MSG_FULL, [
+                    'message' => 'Couldn\'t render bill pdf: ' . $bill->id,
+                    'line'    => __LINE__,
+                    'file'    => self::class,
+                ]
+            );
 
             return;
         }
 
         $media = null;
         if ($oldFile->id === 0) {
+            // Creating new bill archive pdf
             $media = $this->app->moduleManager->get('Media', 'Api')->createDbEntry(
                 status: [
                     'status'    => UploadStatus::OK,
@@ -1397,11 +1436,11 @@ final class ApiBillController extends Controller
                 $request->getOrigin()
             );
         } else {
+            // Updating existing bill archive pdf
             $media = clone $oldFile;
             if (\realpath($pdfDir . '/' . $billFileName) !== \realpath($oldFile->getAbsolutePath())) {
                 \unlink($oldFile->getAbsolutePath());
             }
-
 
             $media->setPath(\Modules\Media\Controller\ApiController::normalizeDbPath($pdfDir . '/' . $billFileName));
             $media->setVirtualPath($path);

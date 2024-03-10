@@ -40,6 +40,17 @@ return [
             ],
         ],
     ],
+    '^.*/sales/bill/archive(\?.*$|$)' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingSalesArchive',
+            'verb'       => RouteVerb::GET,
+            'permission' => [
+                'module' => BackendController::NAME,
+                'type'   => PermissionType::READ,
+                'state'  => PermissionCategory::SALES_INVOICE,
+            ],
+        ],
+    ],
     '^.*/sales/bill(\?.*$|$)' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingSalesInvoice',
@@ -66,6 +77,17 @@ return [
     '^.*/purchase/bill/list(\?.*$|$)' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingPurchaseList',
+            'verb'       => RouteVerb::GET,
+            'permission' => [
+                'module' => BackendController::NAME,
+                'type'   => PermissionType::READ,
+                'state'  => PermissionCategory::PURCHASE_INVOICE,
+            ],
+        ],
+    ],
+    '^.*/purchase/bill/archive(\?.*$|$)' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingPurchaseArchive',
             'verb'       => RouteVerb::GET,
             'permission' => [
                 'module' => BackendController::NAME,
@@ -111,6 +133,17 @@ return [
     '^.*/warehouse/bill/list(\?.*$|$)' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingStockList',
+            'verb'       => RouteVerb::GET,
+            'permission' => [
+                'module' => BackendController::NAME,
+                'type'   => PermissionType::READ,
+                'state'  => PermissionCategory::PURCHASE_INVOICE,
+            ],
+        ],
+    ],
+    '^.*/warehouse/bill/archive(\?.*$|$)' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingStockArchive',
             'verb'       => RouteVerb::GET,
             'permission' => [
                 'module' => BackendController::NAME,
