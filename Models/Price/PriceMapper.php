@@ -60,7 +60,7 @@ final class PriceMapper extends DataMapperFactory
         'billing_price_supplier'         => ['name' => 'billing_price_supplier',      'type' => 'int',      'internal' => 'supplier'],
         'billing_price_unit'             => ['name' => 'billing_price_unit',          'type' => 'int',      'internal' => 'unit'],
         'billing_price_type'             => ['name' => 'billing_price_type',          'type' => 'int',      'internal' => 'type'],
-        'billing_price_status'             => ['name' => 'billing_price_status',          'type' => 'int',      'internal' => 'status'],
+        'billing_price_status'           => ['name' => 'billing_price_status',          'type' => 'int',      'internal' => 'status'],
         'billing_price_quantity'         => ['name' => 'billing_price_quantity',      'type' => 'Serializable',      'internal' => 'quantity'],
         'billing_price_price'            => ['name' => 'billing_price_price',         'type' => 'Serializable',      'internal' => 'price'],
         'billing_price_price_new'        => ['name' => 'billing_price_price_new',         'type' => 'Serializable',      'internal' => 'priceNew'],

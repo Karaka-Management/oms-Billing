@@ -16,11 +16,12 @@ namespace Modules\Billing\Controller;
 
 use Modules\Attribute\Models\AttributeValue;
 use Modules\Attribute\Models\NullAttributeValue;
+use Modules\Billing\Models\Tax\NullTaxCombination;
 use Modules\Billing\Models\Tax\TaxCombination;
 use Modules\Billing\Models\Tax\TaxCombinationMapper;
 use Modules\ClientManagement\Models\Attribute\ClientAttributeTypeMapper;
 use Modules\ClientManagement\Models\Client;
-use Modules\Finance\Models\TaxCode;
+use Modules\Finance\Models\NullTaxCode;
 use Modules\Finance\Models\TaxCodeMapper;
 use Modules\ItemManagement\Models\Item;
 use Modules\Organization\Models\UnitMapper;
@@ -46,16 +47,26 @@ final class ApiTaxController extends Controller
     /**
      * Get tax code from client and item.
      *
-     * @param Item   $item           Item to get tax code from
-     * @param Client $client         Client to get tax code from
-     * @param string $defaultCountry default country to use if no valid tax code could be found and if the unit country code shouldn't be used
+     * @param Item          $item           Item to get tax code from
+     * @param null|Client   $client         Client to get tax code from
+     * @param null|Supplier $supplier       Supplier to get tax code from
+     * @param string        $defaultCountry Default country to use if no valid tax code could be found
+     *                                      and if the unit country code shouldn't be used
      *
      * @return TaxCombination
      *
      * @since 1.0.0
      */
-    public function getTaxForPerson(Item $item, ?Client $client = null, ?Supplier $supplier = null, string $defaultCountry = '') : TaxCombination
+    public function getTaxForPerson(
+        Item $item,
+        ?Client $client = null, ?Supplier $supplier = null,
+        string $defaultCountry = ''
+    ) : TaxCombination
     {
+        if ($client === null && $supplier === null) {
+            return new NullTaxCombination();
+        }
+
         // @todo define default sales tax code if none available?!
         $itemCode        = 0;
         $accountCode     = 0;
@@ -146,6 +157,7 @@ final class ApiTaxController extends Controller
         $tax->taxType       = $request->getDataInt('tax_type') ?? 1;
         $tax->taxCode->abbr = (string) $request->getData('tax_code');
         $tax->itemCode      = new NullAttributeValue((int) $request->getData('item_code'));
+        $tax->account       = $request->getDataString('account') ?? '';
 
         if ($tax->taxType === 1) {
             $tax->clientCode = new NullAttributeValue((int) $request->getData('account_code'));
@@ -217,25 +229,23 @@ final class ApiTaxController extends Controller
         } elseif (\in_array($taxOfficeAddress->country, ISO3166TwoEnum::getRegion('eu'))) {
             // None EU company but we are EU company
             return $codes->getDefaultByValue('INT');
-        } else {
-            // None EU company and we are also none EU company
-            return $codes->getDefaultByValue('INT');
         }
 
-        return $taxCode;
+        // None EU company and we are also none EU company
+        return $codes->getDefaultByValue('INT');
     }
 
     /**
-     * Get the client's tax code based on their country and tax office address
+     * Get the supplier's tax code based on their country and tax office address
      *
-     * @param Supplier $client           The client to get the tax code for
+     * @param Supplier $supplier         The supplier to get the tax code for
      * @param Address  $taxOfficeAddress The tax office address used to determine the tax code
      *
-     * @return AttributeValue The client's tax code
+     * @return AttributeValue The supplier's tax code
      *
      * @since 1.0.0
      */
-    public function getSupplierTaxCode(Supplier $client, Address $taxOfficeAddress) : AttributeValue
+    public function getSupplierTaxCode(Supplier $supplier, Address $taxOfficeAddress) : AttributeValue
     {
         /** @var \Modules\Attribute\Models\AttributeType $codes */
         $codes = SupplierAttributeTypeMapper::get()
@@ -247,28 +257,26 @@ final class ApiTaxController extends Controller
 
         // @todo need to consider own tax id as well
         // @todo consider delivery & invoice location (Reihengeschaeft)
-        if ($taxOfficeAddress->country === $client->mainAddress->country) {
+        if ($taxOfficeAddress->country === $supplier->mainAddress->country) {
             // Same country as we (= local tax code)
-            return $codes->getDefaultByValue($client->mainAddress->country);
+            return $codes->getDefaultByValue($supplier->mainAddress->country);
         } elseif (\in_array($taxOfficeAddress->country, ISO3166TwoEnum::getRegion('eu'))
-            && \in_array($client->mainAddress->country, ISO3166TwoEnum::getRegion('eu'))
+            && \in_array($supplier->mainAddress->country, ISO3166TwoEnum::getRegion('eu'))
         ) {
-            if (!empty($client->getAttribute('vat_id')->value->getValue())) {
+            if (!empty($supplier->getAttribute('vat_id')->value->getValue())) {
                 // Is EU company and we are EU company
                 return $codes->getDefaultByValue('EU');
             } else {
                 // Is EU private customer and we are EU company
-                return $codes->getDefaultByValue($client->mainAddress->country);
+                return $codes->getDefaultByValue($supplier->mainAddress->country);
             }
         } elseif (\in_array($taxOfficeAddress->country, ISO3166TwoEnum::getRegion('eu'))) {
             // None EU company but we are EU company
             return $codes->getDefaultByValue('INT');
-        } else {
-            // None EU company and we are also none EU company
-            return $codes->getDefaultByValue('INT');
         }
 
-        return $taxCode;
+        // None EU company and we are also none EU company
+        return $codes->getDefaultByValue('INT');
     }
 
     /**
@@ -399,7 +407,7 @@ final class ApiTaxController extends Controller
     public function updateTaxCombinationFromRequest(RequestAbstract $request, TaxCombination $new) : TaxCombination
     {
         $new->taxType  = $request->getDataInt('tax_type') ?? $new->taxType;
-        $new->taxCode  = $request->getDataString('tax_code') ?? $new->taxCode;
+        $new->taxCode  = $request->hasData('tax_code') ? new NullTaxCode((int) $request->getData('tax_code')) : $new->taxCode;
         $new->itemCode = $request->hasData('item_code') ? new NullAttributeValue((int) $request->getData('item_code')) : $new->itemCode;
 
         if ($new->taxType === 1) {

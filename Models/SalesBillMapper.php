@@ -39,6 +39,7 @@ final class SalesBillMapper extends BillMapper
 
     /**
      * Placeholder
+     * @todo Implement
      */
     public static function getSalesBeforePivot(
         mixed $pivot,
@@ -58,6 +59,7 @@ final class SalesBillMapper extends BillMapper
 
     /**
      * Placeholder
+     * @todo Implement
      */
     public static function getSalesAfterPivot(
         mixed $pivot,
@@ -77,6 +79,7 @@ final class SalesBillMapper extends BillMapper
 
     /**
      * Placeholder
+     * @todo Implement
      */
     public static function getSalesByItemId(int $id, \DateTime $start, \DateTime $end) : FloatInt
     {
@@ -98,6 +101,7 @@ final class SalesBillMapper extends BillMapper
 
     /**
      * Placeholder
+     * @todo Implement
      */
     public static function getSalesByClientId(int $id, \DateTime $start, \DateTime $end) : FloatInt
     {
@@ -117,6 +121,7 @@ final class SalesBillMapper extends BillMapper
 
     /**
      * Placeholder
+     * @todo Implement
      */
     public static function getItemAvgSalesPrice(int $item, \DateTime $start, \DateTime $end) : FloatInt
     {
@@ -133,7 +138,7 @@ final class SalesBillMapper extends BillMapper
         SQL;
 
         $query  = new Builder(self::$db);
-        $result = $query->raw($sql)->execute()->fetchAll(\PDO::FETCH_ASSOC);
+        $result = $query->raw($sql)->execute()?->fetchAll(\PDO::FETCH_ASSOC) ?? [];
 
         return isset($result[0]['net_count'])
             ? new FloatInt((int) ($result[0]['net_sales'] ?? 0) / ($result[0]['net_count']))
@@ -142,6 +147,7 @@ final class SalesBillMapper extends BillMapper
 
     /**
      * Placeholder
+     * @todo Implement
      */
     public static function getLastOrderDateByItemId(int $id) : ?\DateTimeImmutable
     {
@@ -164,6 +170,7 @@ final class SalesBillMapper extends BillMapper
 
     /**
      * Placeholder
+     * @todo Implement
      */
     public static function getLastOrderDateByClientId(int $id) : ?\DateTimeImmutable
     {
@@ -184,6 +191,7 @@ final class SalesBillMapper extends BillMapper
 
     /**
      * Placeholder
+     * @todo Implement
      */
     public static function getItemRetentionRate(int $id, \DateTime $start, \DateTime $end) : float
     {
@@ -192,6 +200,7 @@ final class SalesBillMapper extends BillMapper
 
     /**
      * Placeholder
+     * @todo Implement
      */
     public static function getItemLivetimeValue(int $id, \DateTime $start, \DateTime $end) : FloatInt
     {
@@ -200,6 +209,7 @@ final class SalesBillMapper extends BillMapper
 
     /**
      * Placeholder
+     * @todo Implement
      */
     public static function getNewestItemInvoices(int $id, int $limit = 10) : array
     {
@@ -221,6 +231,7 @@ final class SalesBillMapper extends BillMapper
 
     /**
      * Placeholder
+     * @todo Implement
      */
     public static function getNewestClientInvoices(int $id, int $limit = 10) : array
     {
@@ -240,6 +251,7 @@ final class SalesBillMapper extends BillMapper
 
     /**
      * Placeholder
+     * @todo Implement
      */
     public static function getItemTopClients(int $id, \DateTime $start, \DateTime $end, int $limit = 10) : array
     {
@@ -280,6 +292,7 @@ final class SalesBillMapper extends BillMapper
 
     /**
      * Placeholder
+     * @todo Implement
      */
     public static function getItemBills(int $id, \DateTime $start, \DateTime $end) : array
     {
@@ -308,6 +321,7 @@ final class SalesBillMapper extends BillMapper
 
     /**
      * Placeholder
+     * @todo Implement
      */
     public static function getClientBills(int $id, string $language, \DateTime $start, \DateTime $end) : array
     {
@@ -323,6 +337,7 @@ final class SalesBillMapper extends BillMapper
 
     /**
      * Placeholder
+     * @todo Implement
      */
     public static function getClientItem(int $client, \DateTime $start, \DateTime $end) : array
     {
@@ -336,6 +351,7 @@ final class SalesBillMapper extends BillMapper
 
     /**
      * Placeholder
+     * @todo Implement
      */
     public static function getItemCountrySales(int $id, \DateTime $start, \DateTime $end, int $limit = 10) : array
     {
@@ -361,6 +377,7 @@ final class SalesBillMapper extends BillMapper
 
     /**
      * Placeholder
+     * @todo Implement
      */
     public static function getItemMonthlySalesCosts(array $items, \DateTime $start, \DateTime $end) : array
     {
@@ -388,11 +405,15 @@ final class SalesBillMapper extends BillMapper
         SQL;
 
         $query  = new Builder(self::$db);
-        $result = $query->raw($sql)->execute()->fetchAll(\PDO::FETCH_ASSOC);
+        $result = $query->raw($sql)->execute()?->fetchAll(\PDO::FETCH_ASSOC) ?? [];
 
         return $result ?? [];
     }
 
+    /**
+     * Placeholder
+     * @todo Implement
+     */
     public static function getItemMonthlySalesQuantity(array $items, \DateTime $start, \DateTime $end) : array
     {
         if (empty($items)) {
@@ -418,13 +439,14 @@ final class SalesBillMapper extends BillMapper
         SQL;
 
         $query  = new Builder(self::$db);
-        $result = $query->raw($sql)->execute()->fetchAll(\PDO::FETCH_ASSOC);
+        $result = $query->raw($sql)->execute()?->fetchAll(\PDO::FETCH_ASSOC) ?? [];
 
         return $result ?? [];
     }
 
     /**
      * Placeholder
+     * @todo Implement
      */
     public static function getClientMonthlySalesCosts(int $client, \DateTime $start, \DateTime $end) : array
     {
@@ -444,11 +466,15 @@ final class SalesBillMapper extends BillMapper
         SQL;
 
         $query  = new Builder(self::$db);
-        $result = $query->raw($sql)->execute()->fetchAll(\PDO::FETCH_ASSOC);
+        $result = $query->raw($sql)->execute()?->fetchAll(\PDO::FETCH_ASSOC) ?? [];
 
         return $result ?? [];
     }
 
+    /**
+     * Placeholder
+     * @todo Implement
+     */
     public static function getItemNetSales(int $item, \DateTime $start, \DateTime $end) : FloatInt
     {
         $sql = <<<SQL
@@ -462,11 +488,15 @@ final class SalesBillMapper extends BillMapper
         SQL;
 
         $query  = new Builder(self::$db);
-        $result = $query->raw($sql)->execute()->fetchAll(\PDO::FETCH_ASSOC);
+        $result = $query->raw($sql)->execute()?->fetchAll(\PDO::FETCH_ASSOC) ?? [];
 
         return new FloatInt((int) ($result[0]['net_sales'] ?? 0));
     }
 
+    /**
+     * Placeholder
+     * @todo Implement
+     */
     public static function getILVHistoric(int $item) : FloatInt
     {
         $sql = <<<SQL
@@ -477,16 +507,24 @@ final class SalesBillMapper extends BillMapper
         SQL;
 
         $query  = new Builder(self::$db);
-        $result = $query->raw($sql)->execute()->fetchAll(\PDO::FETCH_ASSOC);
+        $result = $query->raw($sql)->execute()?->fetchAll(\PDO::FETCH_ASSOC) ?? [];
 
         return new FloatInt((int) ($result[0]['net_sales'] ?? 0));
     }
 
+    /**
+     * Placeholder
+     * @todo Implement
+     */
     public static function getItemMRR() : FloatInt
     {
         return new FloatInt(0);
     }
 
+    /**
+     * Placeholder
+     * @todo Implement
+     */
     public static function getItemLastOrder(int $item) : ?\DateTime
     {
         $sql = <<<SQL
@@ -499,13 +537,17 @@ final class SalesBillMapper extends BillMapper
         SQL;
 
         $query  = new Builder(self::$db);
-        $result = $query->raw($sql)->execute()->fetchAll(\PDO::FETCH_ASSOC);
+        $result = $query->raw($sql)->execute()?->fetchAll(\PDO::FETCH_ASSOC) ?? [];
 
         return isset($result[0]['billing_bill_created_at'])
             ? new \DateTime(($result[0]['billing_bill_created_at']))
             : null;
     }
 
+    /**
+     * Placeholder
+     * @todo Implement
+     */
     public static function getClientNetSales(int $client, \DateTime $start, \DateTime $end) : FloatInt
     {
         $sql = <<<SQL
@@ -518,11 +560,15 @@ final class SalesBillMapper extends BillMapper
         SQL;
 
         $query  = new Builder(self::$db);
-        $result = $query->raw($sql)->execute()->fetchAll(\PDO::FETCH_ASSOC);
+        $result = $query->raw($sql)->execute()?->fetchAll(\PDO::FETCH_ASSOC) ?? [];
 
         return new FloatInt((int) ($result[0]['net_sales'] ?? 0));
     }
 
+    /**
+     * Placeholder
+     * @todo Implement
+     */
     public static function getCLVHistoric(int $client) : FloatInt
     {
         $sql = <<<SQL
@@ -532,16 +578,24 @@ final class SalesBillMapper extends BillMapper
         SQL;
 
         $query  = new Builder(self::$db);
-        $result = $query->raw($sql)->execute()->fetchAll(\PDO::FETCH_ASSOC);
+        $result = $query->raw($sql)->execute()?->fetchAll(\PDO::FETCH_ASSOC) ?? [];
 
         return new FloatInt((int) ($result[0]['net_sales'] ?? 0));
     }
 
+    /**
+     * Placeholder
+     * @todo Implement
+     */
     public static function getClientMRR() : FloatInt
     {
         return new FloatInt(0);
     }
 
+    /**
+     * Placeholder
+     * @todo Implement
+     */
     public static function getClientLastOrder(int $client) : ?\DateTime
     {
         $sql = <<<SQL
@@ -553,7 +607,7 @@ final class SalesBillMapper extends BillMapper
         SQL;
 
         $query  = new Builder(self::$db);
-        $result = $query->raw($sql)->execute()->fetchAll(\PDO::FETCH_ASSOC);
+        $result = $query->raw($sql)->execute()?->fetchAll(\PDO::FETCH_ASSOC) ?? [];
 
         return isset($result[0]['billing_bill_created_at'])
             ? new \DateTime(($result[0]['billing_bill_created_at']))

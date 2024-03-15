@@ -40,24 +40,24 @@ final class TaxCombinationMapper extends DataMapperFactory
      * @since 1.0.0
      */
     public const COLUMNS = [
-        'billing_tax_id'               => ['name' => 'billing_tax_id',                          'type' => 'int',    'internal' => 'id'],
-        'billing_tax_client_code'      => ['name' => 'billing_tax_client_code',           'type' => 'int', 'internal' => 'clientCode'],
-        'billing_tax_supplier_code'    => ['name' => 'billing_tax_supplier_code',       'type' => 'int', 'internal' => 'supplierCode'],
-        'billing_tax_item_code'        => ['name' => 'billing_tax_item_code',               'type' => 'int', 'internal' => 'itemCode'],
-        'billing_tax_code'             => ['name' => 'billing_tax_code',                         'type' => 'string', 'internal' => 'taxCode'],
-        'billing_tax_type'             => ['name' => 'billing_tax_type',                         'type' => 'int', 'internal' => 'taxType'],
-        'billing_tax_account'          => ['name' => 'billing_tax_account',                   'type' => 'string', 'internal' => 'account'],
-        'billing_tax_tax1_account'   => ['name' => 'billing_tax_tax1_account',     'type' => 'string', 'internal' => 'taxAccount1'],
-        'billing_tax_tax2_account'   => ['name' => 'billing_tax_tax2_account',     'type' => 'string', 'internal' => 'taxAccount2'],
-        'billing_tax_refund_account'   => ['name' => 'billing_tax_refund_account',     'type' => 'string', 'internal' => 'refundAccount'],
-        'billing_tax_discount_account' => ['name' => 'billing_tax_discount_account', 'type' => 'string', 'internal' => 'discountAccount'],
-        'billing_tax_cashback_account' => ['name' => 'billing_tax_cashback_account', 'type' => 'string', 'internal' => 'cashbackAccount'],
-        'billing_tax_overpayment_account' => ['name' => 'billing_tax_overpayment_account', 'type' => 'string', 'internal' => 'overpaymentAccount'],
+        'billing_tax_id'                   => ['name' => 'billing_tax_id',                          'type' => 'int',    'internal' => 'id'],
+        'billing_tax_client_code'          => ['name' => 'billing_tax_client_code',           'type' => 'int', 'internal' => 'clientCode'],
+        'billing_tax_supplier_code'        => ['name' => 'billing_tax_supplier_code',       'type' => 'int', 'internal' => 'supplierCode'],
+        'billing_tax_item_code'            => ['name' => 'billing_tax_item_code',               'type' => 'int', 'internal' => 'itemCode'],
+        'billing_tax_code'                 => ['name' => 'billing_tax_code',                         'type' => 'string', 'internal' => 'taxCode'],
+        'billing_tax_type'                 => ['name' => 'billing_tax_type',                         'type' => 'int', 'internal' => 'taxType'],
+        'billing_tax_account'              => ['name' => 'billing_tax_account',                   'type' => 'string', 'internal' => 'account'],
+        'billing_tax_tax1_account'         => ['name' => 'billing_tax_tax1_account',     'type' => 'string', 'internal' => 'taxAccount1'],
+        'billing_tax_tax2_account'         => ['name' => 'billing_tax_tax2_account',     'type' => 'string', 'internal' => 'taxAccount2'],
+        'billing_tax_refund_account'       => ['name' => 'billing_tax_refund_account',     'type' => 'string', 'internal' => 'refundAccount'],
+        'billing_tax_discount_account'     => ['name' => 'billing_tax_discount_account', 'type' => 'string', 'internal' => 'discountAccount'],
+        'billing_tax_cashback_account'     => ['name' => 'billing_tax_cashback_account', 'type' => 'string', 'internal' => 'cashbackAccount'],
+        'billing_tax_overpayment_account'  => ['name' => 'billing_tax_overpayment_account', 'type' => 'string', 'internal' => 'overpaymentAccount'],
         'billing_tax_underpayment_account' => ['name' => 'billing_tax_underpayment_account', 'type' => 'string', 'internal' => 'underpaymentAccount'],
-        'billing_tax_min_price'        => ['name' => 'billing_tax_min_price',               'type' => 'int', 'internal' => 'minPrice'],
-        'billing_tax_max_price'        => ['name' => 'billing_tax_max_price',               'type' => 'int', 'internal' => 'maxPrice'],
-        'billing_tax_start'            => ['name' => 'billing_tax_start',                       'type' => 'DateTime', 'internal' => 'start'],
-        'billing_tax_end'              => ['name' => 'billing_tax_end',                           'type' => 'DateTime', 'internal' => 'end'],
+        'billing_tax_min_price'            => ['name' => 'billing_tax_min_price',               'type' => 'int', 'internal' => 'minPrice'],
+        'billing_tax_max_price'            => ['name' => 'billing_tax_max_price',               'type' => 'int', 'internal' => 'maxPrice'],
+        'billing_tax_start'                => ['name' => 'billing_tax_start',                       'type' => 'DateTime', 'internal' => 'start'],
+        'billing_tax_end'                  => ['name' => 'billing_tax_end',                           'type' => 'DateTime', 'internal' => 'end'],
     ];
 
     /**
@@ -83,7 +83,6 @@ final class TaxCombinationMapper extends DataMapperFactory
             'mapper'   => TaxCodeMapper::class,
             'external' => 'billing_tax_code',
             'by'       => 'abbr',
-            'column'   => 'abbr',
         ],
     ];
 

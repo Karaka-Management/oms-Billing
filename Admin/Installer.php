@@ -311,6 +311,7 @@ final class Installer extends InstallerAbstract
             $request->setData('tax_code', $tax['tax_code']);
             $request->setData('item_code', $itemValue->id);
             $request->setData('account_code', $accountValue->id);
+            $request->setData('account', $tax['account'] ?? null);
 
             $module->apiTaxCombinationCreate($request, $response);
 

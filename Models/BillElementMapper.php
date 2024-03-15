@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Models;
 
+use Modules\Billing\Models\Tax\TaxCombinationMapper;
 use Modules\ItemManagement\Models\ContainerMapper;
 use Modules\ItemManagement\Models\ItemMapper;
 use phpOMS\DataStorage\Database\Mapper\DataMapperFactory;
@@ -58,16 +59,17 @@ final class BillElementMapper extends DataMapperFactory
         'billing_bill_element_total_netsalesprice'           => ['name' => 'billing_bill_element_total_netsalesprice',      'type' => 'Serializable',    'internal' => 'totalSalesPriceNet'],
         'billing_bill_element_total_grosssalesprice'         => ['name' => 'billing_bill_element_total_grosssalesprice',      'type' => 'Serializable',    'internal' => 'totalSalesPriceGross'],
 
-        'billing_bill_element_single_netprofit'   => ['name' => 'billing_bill_element_single_netprofit',      'type' => 'Serializable',    'internal' => 'singleProfitNet'],
-        'billing_bill_element_total_netprofit'    => ['name' => 'billing_bill_element_total_netprofit',      'type' => 'Serializable',    'internal' => 'totalProfitNet'],
+        'billing_bill_element_single_netprofit' => ['name' => 'billing_bill_element_single_netprofit',      'type' => 'Serializable',    'internal' => 'singleProfitNet'],
+        'billing_bill_element_total_netprofit'  => ['name' => 'billing_bill_element_total_netprofit',      'type' => 'Serializable',    'internal' => 'totalProfitNet'],
 
-        'billing_bill_element_single_netpurchaseprice'   => ['name' => 'billing_bill_element_single_netpurchaseprice',      'type' => 'Serializable',    'internal' => 'singlePurchasePriceNet'],
-        'billing_bill_element_total_netpurchaseprice'    => ['name' => 'billing_bill_element_total_netpurchaseprice',      'type' => 'Serializable',    'internal' => 'totalPurchasePriceNet'],
-        'billing_bill_element_bill'                      => ['name' => 'billing_bill_element_bill',      'type' => 'int',    'internal' => 'bill'],
+        'billing_bill_element_single_netpurchaseprice' => ['name' => 'billing_bill_element_single_netpurchaseprice',      'type' => 'Serializable',    'internal' => 'singlePurchasePriceNet'],
+        'billing_bill_element_total_netpurchaseprice'  => ['name' => 'billing_bill_element_total_netpurchaseprice',      'type' => 'Serializable',    'internal' => 'totalPurchasePriceNet'],
+        'billing_bill_element_bill'                    => ['name' => 'billing_bill_element_bill',      'type' => 'int',    'internal' => 'bill'],
 
-        'billing_bill_element_tax_type'       => ['name' => 'billing_bill_element_tax_type',      'type' => 'string',    'internal' => 'taxCode'],
-        'billing_bill_element_tax_price'      => ['name' => 'billing_bill_element_tax_price',      'type' => 'Serializable',    'internal' => 'taxP'],
-        'billing_bill_element_tax_percentage' => ['name' => 'billing_bill_element_tax_percentage',      'type' => 'Serializable',    'internal' => 'taxR'],
+        'billing_bill_element_tax_combination' => ['name' => 'billing_bill_element_tax_combination',      'type' => 'int',    'internal' => 'taxCombination'],
+        'billing_bill_element_tax_type'        => ['name' => 'billing_bill_element_tax_type',      'type' => 'string',    'internal' => 'taxCode'],
+        'billing_bill_element_tax_price'       => ['name' => 'billing_bill_element_tax_price',      'type' => 'Serializable',    'internal' => 'taxP'],
+        'billing_bill_element_tax_percentage'  => ['name' => 'billing_bill_element_tax_percentage',      'type' => 'Serializable',    'internal' => 'taxR'],
 
         'billing_bill_element_segment'      => ['name' => 'billing_bill_element_segment',      'type' => 'int',    'internal' => 'itemSegment'],
         'billing_bill_element_section'      => ['name' => 'billing_bill_element_section',      'type' => 'int',    'internal' => 'itemSection'],
@@ -111,6 +113,10 @@ final class BillElementMapper extends DataMapperFactory
         'container' => [
             'mapper'   => ContainerMapper::class,
             'external' => 'billing_bill_element_container',
+        ],
+        'taxCombination' => [
+            'mapper'   => TaxCombinationMapper::class,
+            'external' => 'billing_bill_element_tax_combination',
         ],
     ];
 

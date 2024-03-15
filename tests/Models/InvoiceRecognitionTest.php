@@ -336,7 +336,7 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
 
             $element = [
                 __DIR__ . '/bills/' . \implode('', $parts) . '.json',
-                $content
+                $content,
             ];
 
             self::$billList[] = $element;

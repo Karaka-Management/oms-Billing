@@ -191,7 +191,7 @@ final class BackendController extends Controller
                 PermissionCategory::BILL_LOG,
             )
         ) {
-            /** @var \Modules\Auditor\Models\Audit[] $logsBill */
+            /** @var \Modules\Auditor\Models\Audit[] $logs */
             $logs = AuditMapper::getAll()
                 ->with('createdBy')
                 ->where('module', 'Billing')
@@ -211,8 +211,6 @@ final class BackendController extends Controller
                 $logs = \array_merge($logs, $logsElements);
             }
         }
-
-
 
         $view->data['logs']         = $logs;
         $view->data['media-upload'] = new \Modules\Media\Theme\Backend\Components\Upload\BaseView($this->app->l11nManager, $request, $response);

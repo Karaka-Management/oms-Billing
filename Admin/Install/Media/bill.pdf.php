@@ -145,7 +145,7 @@ $pdf->MultiCell(
 );
 $pdf->Ln();
 
-$tempY = $pdf->getY();
+$tempY  = $pdf->getY();
 $height = 0;
 $pdf->setY($tempY - 20);
 
@@ -211,7 +211,7 @@ foreach($bill->elements as $line) {
     if ($line->quantity->value === 0) {
         $pdf->MultiCell($w[1] + $w[2] + $w[3], $height, '', 0, 'L', $fill, 0, 15 + $w[0], $tempY, true, 0, false, true, 0, 'M', true);
     } else {
-        $pdf->MultiCell($w[1], $height, (string) $line->quantity->getAmount($line->container->quantityDecimals), 0, 'L', $fill, 0, 15 + $w[0], $tempY, true, 0, false, true, 0, 'M', true);
+        $pdf->MultiCell($w[1], $height, (string) $line->quantity->getAmount($line->container?->quantityDecimals ?? 0), 0, 'L', $fill, 0, 15 + $w[0], $tempY, true, 0, false, true, 0, 'M', true);
         $pdf->MultiCell($w[2], $height, $singleListPriceNet->getCurrency(2, symbol: ''), 0, 'L', $fill, 0, 15 + $w[0] + $w[1], $tempY, true, 0, false, true, 0, 'M', true);
         $pdf->MultiCell($w[3], $height, $totalSalesPriceNet->getCurrency(2, symbol: ''), 0, 'L', $fill, 1, 15 + $w[0] + $w[1] + $w[2], $tempY, true, 0, false, true, 0, 'M', true);
     }

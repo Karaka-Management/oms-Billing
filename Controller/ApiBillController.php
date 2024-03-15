@@ -93,7 +93,17 @@ final class ApiBillController extends Controller
         }
     }
 
-    public function apiBillEmail(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
+    /**
+     * Create email for/from bill
+     *
+     * @param RequestAbstract $request Request
+     * @param array           $data    Data
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
+    public function apiBillEmail(RequestAbstract $request, array $data = []) : void
     {
         $bill = $data['bill'] ?? BillMapper::get()
             ->with('type')
@@ -102,12 +112,12 @@ final class ApiBillController extends Controller
             ->where('id', $request->getDataInt('bill') ?? 0)
             ->execute();
 
-        $media = $data['media'] ?? $bill->getFileByTypeName('internal');;
+        $media = $data['media'] ?? $bill->getFileByTypeName('internal');
 
         if ($bill->status === BillStatus::ARCHIVED
             && $bill->type->email
         ) {
-            $email = $request->getDataString('email');
+            $email           = $request->getDataString('email');
             $billingTemplate = null;
 
             if (!empty($email)) {
@@ -134,7 +144,7 @@ final class ApiBillController extends Controller
 
                 if ($client->getAttribute('bill_emails')->value->getValue() === 1) {
                     // @todo should this really be a string or an ID for a contact element?
-                    $email ??= empty($tmp = $client->getAttribute('bill_email_address')->value->getValue())
+                    $email ??= empty($tmp = $client->getAttribute('bill_email_address')->value->valueStr)
                         ? $client->account->email
                         : (string) $tmp;
                 }
@@ -156,18 +166,34 @@ final class ApiBillController extends Controller
 
                 if ($supplier->getAttribute('bill_emails')->value->getValue() === 1) {
                     // @todo should this really be a string or an ID for a contact element?
-                    $email ??= empty($tmp = $supplier->getAttribute('bill_email_address')->value->getValue())
+                    $email ??= empty($tmp = $supplier->getAttribute('bill_email_address')->value->valueStr)
                         ? $supplier->account->email
                         : (string) $tmp;
                 }
             }
 
-            if (!empty($email)) {
+            if (!empty($email) && $billingTemplate !== null) {
                 $this->sendBillEmail($media, $email, (int) $billingTemplate->content, $bill->language);
             }
         }
     }
 
+    /**
+     * Api method to finalize a bill
+     *
+     * Finalization creates an archive and possibly sends the bill via email.
+     * Additionally, it triggers the event Billing-bill-finalize event which also finalizes the stock changes and possibly accounting postings
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param array            $data     Generic data
+     *
+     * @return void
+     *
+     * @api
+     *
+     * @since 1.0.0
+     */
     public function apiBillFinalize(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!$this->app->accountManager->get($request->header->account)->hasPermission(
@@ -192,13 +218,13 @@ final class ApiBillController extends Controller
         }
 
         // Archive bill
-        /** @var \Modules\Billing\Models\Bill $bill */
+        /** @var \Modules\Billing\Models\Bill $old */
         $old = BillMapper::get()
             ->with('type')
             ->where('id', $request->getDataInt('bill') ?? 0)
             ->execute();
 
-        $new = clone $old;
+        $new         = clone $old;
         $new->status = BillStatus::ARCHIVED;
 
         $this->updateModel($request->header->account, $old, $new, BillMapper::class, 'bill', $request->getOrigin());
@@ -218,7 +244,7 @@ final class ApiBillController extends Controller
         ]);
 
         // Send bill via email
-        $this->apiBillEmail($request, $response, ['bill' => $new, 'media' => $media]);
+        $this->apiBillEmail($request, ['bill' => $new, 'media' => $media]);
 
         $this->createStandardUpdateResponse($request, $response, $new);
     }
@@ -440,6 +466,15 @@ final class ApiBillController extends Controller
         return $bill;
     }
 
+    /**
+     * Find bill language.
+     *
+     * @param Client|Supplier $account Account (with attributes!!!)
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
     private function findBillLanguage(Client|Supplier $account) : string
     {
         /** @var \Model\Setting $settings */
@@ -516,10 +551,13 @@ final class ApiBillController extends Controller
         $attr->type     = $attrType;
         $attr->value    = $attrValue;
 
-        $container = $request->hasData('container') ? new NullContainer($request->getDataInt('container')) : null;
-        $attr      = new NullAttribute();
+        $container = $request->hasData('container')
+            ? new NullContainer((int) $request->getData('container'))
+            : null;
 
-        if ($bill->type->transferType === BillTransferType::PURCHASE) {
+        $attr = new NullAttribute();
+
+        if ($bill->type->transferType === BillTransferType::PURCHASE && $bill->supplier !== null) {
             $bill->supplier->attributes[] = $attr;
 
             if ($container === null) {
@@ -534,7 +572,7 @@ final class ApiBillController extends Controller
                         ->execute();
                 }
             }
-        } else {
+        } elseif ($bill->client !== null) {
             $bill->client->attributes[] = $attr;
 
             if ($container === null) {
@@ -552,7 +590,7 @@ final class ApiBillController extends Controller
         }
 
         $container = $container === null && $attr->id !== 0
-            ? new NullContainer($attr->value->getValue())
+            ? new NullContainer($attr->value->valueInt ?? 0)
             : $container;
 
         $taxCombination = $this->app->moduleManager->get('Billing', 'ApiTax')
@@ -561,8 +599,8 @@ final class ApiBillController extends Controller
         $element = BillElement::fromItem(
             $item,
             $taxCombination,
-            FloatInt::toInt($request->getDataString('quantity') ?? '1'),
             $bill,
+            FloatInt::toInt($request->getDataString('quantity') ?? '1'),
             $container
         );
 
@@ -1278,7 +1316,7 @@ final class ApiBillController extends Controller
             ->with('type')
             ->with('type/l11n')
             ->where('id', $request->getDataInt('bill') ?? 0)
-            ->where('type/l11n/language', new ColumnName(BillMapper::getColumnByMember('language')))
+            ->where('type/l11n/language', new ColumnName(BillMapper::getColumnByMember('language') ?? ''))
             ->execute();
 
         // Handle PDF generation
@@ -1444,7 +1482,7 @@ final class ApiBillController extends Controller
 
             $media->setPath(\Modules\Media\Controller\ApiController::normalizeDbPath($pdfDir . '/' . $billFileName));
             $media->setVirtualPath($path);
-            $media->size = \filesize($media->getAbsolutePath());
+            $media->size = (int) \filesize($media->getAbsolutePath());
 
             $this->updateModel($request->header->account, $oldFile, $media, MediaMapper::class, 'media', $request->getOrigin());
         }
@@ -1457,7 +1495,7 @@ final class ApiBillController extends Controller
      *
      * @param Media  $media    Media to send
      * @param string $email    Email address
-     * @param string $template Email template
+     * @param int    $template Email template
      * @param string $language Message language
      *
      * @return void

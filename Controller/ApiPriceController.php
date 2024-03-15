@@ -46,15 +46,31 @@ use phpOMS\Stdlib\Base\FloatInt;
  */
 final class ApiPriceController extends Controller
 {
-    public function findBestPrice(RequestAbstract $request, ?Item $item = null, ?Client $client = null, ?Supplier $supplier = null)
+    /**
+     * Find the best price for a client/supplier and an item
+     *
+     * @param RequestAbstract $request  Request
+     * @param null|Item       $item     Item to find the price for (alternatively, price_item in request)
+     * @param null|Client     $client   Client to find the price for (alternatively, client in request)
+     * @param null|Supplier   $supplier Supplier to find the price for (alternatively, supplier in request)
+     *
+     * @return array
+     *
+     * @since 1.0.0
+     */
+    public function findBestPrice(
+        RequestAbstract $request,
+        ?Item $item = null,
+        ?Client $client = null, ?Supplier $supplier = null
+    ) : array
     {
-        $item ??= new NullItem();
-        $client ??= new NullClient();
+        $item     ??= new NullItem();
+        $client   ??= new NullClient();
         $supplier ??= new NullSupplier();
 
         // Get item
         if ($item->id === 0 && $request->hasData('price_item')) {
-            /** @var null|\Modules\ItemManagement\Models\Item $item */
+            /** @var \Modules\ItemManagement\Models\Item $item */
             $item = ItemMapper::get()
                 ->with('attributes')
                 ->with('attributes/type')
@@ -84,7 +100,7 @@ final class ApiPriceController extends Controller
                 ->execute();
         }
 
-        $quantity = new FloatInt($request->getDataString('price_quantity') ?? FloatInt::DIVISOR);
+        $quantity        = new FloatInt($request->getDataString('price_quantity') ?? FloatInt::DIVISOR);
         $quantity->value = $quantity->value === 0 ? FloatInt::DIVISOR : $quantity->value;
 
         // Get all relevant prices
@@ -442,7 +458,7 @@ final class ApiPriceController extends Controller
             && $old->priceNew->value !== $new->priceNew->value
         ) {
             /** @var \Modules\ItemManagement\Models\Item $item */
-            $item = ItemMapper::get()->where('id', $new->item)->execute();
+            $item    = ItemMapper::get()->where('id', $new->item)->execute();
             $itemNew = clone $item;
 
             if ($new->type === PriceType::SALES) {
@@ -492,14 +508,16 @@ final class ApiPriceController extends Controller
 
         $new->supplier           = $request->hasData('supplier') ? new NullSupplier((int) $request->getData('supplier')) : $new->supplier;
         $new->unit               = $request->getDataInt('unit') ?? $new->unit;
-        $new->quantity           = $request->getDataInt('quantity') ?? $new->quantity;
-        $new->price              = $new->priceNew;
-        $new->priceNew           = $request->hasData('price_new') ? new FloatInt((int) $request->getData('price_new')) :
-        $new->discount           = $request->getDataInt('discount') ?? $new->discount;
-        $new->discountPercentage = $request->getDataInt('discountPercentage') ?? $new->discountPercentage;
-        $new->bonus              = $request->getDataInt('bonus') ?? $new->bonus;
+
+        $new->quantity           = new FloatInt($request->getDataString('quantity') ?? $new->quantity->value);
+        $new->price              = new FloatInt($request->getDataString('price') ?? $new->price->value);
+        $new->priceNew           = new FloatInt($request->getDataString('price_new') ?? $new->priceNew->value);
+        $new->discount           = new FloatInt($request->getDataString('discount') ?? $new->discount->value);
+        $new->discountPercentage = new FloatInt($request->getDataString('discountPercentage') ?? $new->discountPercentage->value);
+        $new->bonus              = new FloatInt($request->getDataString('bonus') ?? $new->bonus->value);
+
         $new->multiply           = $request->getDataBool('multiply') ?? $new->multiply;
-        $new->currency           = $request->getDataString('currency') ?? $new->currency;
+        $new->currency           = ISO4217CharEnum::tryFromValue($request->getDataString('currency')) ?? $new->currency;
         $new->start              = $request->getDataDateTime('start') ?? $new->start;
         $new->end                = $request->getDataDateTime('end') ?? $new->end;
 

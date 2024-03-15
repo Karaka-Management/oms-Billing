@@ -1152,6 +1152,14 @@
                 "null": true,
                 "default": null
             },
+            "billing_bill_element_tax_combination": {
+                "name": "billing_bill_element_tax_combination",
+                "type": "INT",
+                "null": true,
+                "default": null,
+                "foreignTable": "billing_tax",
+                "foreignKey": "billing_tax_id"
+            },
             "billing_bill_element_tax_type": {
                 "name": "billing_bill_element_tax_type",
                 "type": "VARCHAR(10)",

@@ -48,7 +48,7 @@ class BillMapper extends DataMapperFactory
         'billing_bill_id'                => ['name' => 'billing_bill_id',      'type' => 'int',    'internal' => 'id'],
         'billing_bill_sequence'          => ['name' => 'billing_bill_sequence',      'type' => 'int',    'internal' => 'sequence'],
         'billing_bill_number'            => ['name' => 'billing_bill_number',      'type' => 'string',    'internal' => 'number'],
-        'billing_bill_external'            => ['name' => 'billing_bill_external',      'type' => 'string',    'internal' => 'external'],
+        'billing_bill_external'          => ['name' => 'billing_bill_external',      'type' => 'string',    'internal' => 'external'],
         'billing_bill_type'              => ['name' => 'billing_bill_type',      'type' => 'int',    'internal' => 'type'],
         'billing_bill_template'          => ['name' => 'billing_bill_template',      'type' => 'bool',    'internal' => 'isTemplate'],
         'billing_bill_archived'          => ['name' => 'billing_bill_archived',      'type' => 'bool',    'internal' => 'isArchived'],

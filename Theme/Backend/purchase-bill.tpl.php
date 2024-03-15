@@ -441,7 +441,7 @@ echo $this->data['nav']->render(); ?>
                         action="<?= UriFactory::build('{/api}bill/parse?id=' . $bill->id . '&async=0'); ?>"
                         method="post"
                         data-redirect="<?= UriFactory::build('{%}'); ?>">
-                        <input type="submit" value="<?= $this->getHtml('Parse') ?>">
+                        <input type="submit" value="<?= $this->getHtml('Parse'); ?>">
                     </form>
                 </div>
             </div>

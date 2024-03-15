@@ -138,14 +138,14 @@ final class CliController extends Controller
             $bill->billCountry = InvoiceRecognition::findCountry($lines, $identifiers, $language);
         }
 
-        $currency = InvoiceRecognition::findCurrency($lines);
+        $currency        = InvoiceRecognition::findCurrency($lines);
         $countryCurrency = ISO4217CharEnum::currencyFromCountry($bill->billCountry);
 
         // Identified currency has to be country currency or one of the top globally used currencies
         if ($currency !== \in_array($currency, [
                 $countryCurrency, ISO4217CharEnum::_USD, ISO4217CharEnum::_EUR, ISO4217CharEnum::_JPY,
                 ISO4217CharEnum::_GBP, ISO4217CharEnum::_AUD, ISO4217CharEnum::_CAD, ISO4217CharEnum::_CHF,
-                ISO4217CharEnum::_CNH, ISO4217CharEnum::_CNY
+                ISO4217CharEnum::_CNH, ISO4217CharEnum::_CNY,
             ])
         ) {
             $currency = $countryCurrency;
@@ -156,7 +156,7 @@ final class CliController extends Controller
         $rd = -FloatInt::MAX_DECIMALS + ISO4217DecimalEnum::getByName('_' . $bill->currency);
 
         /* Type */
-        $type = $this->findSupplierInvoiceType($content, $identifiers['type'], $language);
+        $type = InvoiceRecognition::findSupplierInvoiceType($content, $identifiers['type'], $language);
 
         /** @var \Modules\Billing\Models\BillType $billType */
         $billType = BillTypeMapper::get()
@@ -166,7 +166,7 @@ final class CliController extends Controller
         $bill->type = new NullBillType($billType->id);
 
         /* Number */
-        $billNumber   = InvoiceRecognition::findBillNumber($lines, $identifiers['bill_no'][$language]);
+        $billNumber     = InvoiceRecognition::findBillNumber($lines, $identifiers['bill_no'][$language]);
         $bill->external = $billNumber;
 
         /* Reference / PO */
@@ -185,7 +185,7 @@ final class CliController extends Controller
 
         /* Total */
         $totalGross = InvoiceRecognition::findBillGross($lines, $identifiers['total_gross'][$language]);
-        $totalNet = InvoiceRecognition::findBillNet($lines, $identifiers['total_net'][$language]);
+        $totalNet   = InvoiceRecognition::findBillNet($lines, $identifiers['total_net'][$language]);
 
         // The number format needs to be corrected:
         //      Languages don't always respect the l11n number format
@@ -194,11 +194,11 @@ final class CliController extends Controller
 
         if ($format !== null) {
             $l11n->thousands = $format['thousands'];
-            $l11n->decimal = $format['decimal'];
+            $l11n->decimal   = $format['decimal'];
         }
 
         $bill->grossSales = new FloatInt($totalGross, $l11n->thousands, $l11n->decimal);
-        $bill->netSales = new FloatInt($totalNet, $l11n->thousands, $l11n->decimal);
+        $bill->netSales   = new FloatInt($totalNet, $l11n->thousands, $l11n->decimal);
 
         /* Total Tax */
         // @todo taxes depend on local tax id (if company in Germany but invoice from US -> only gross amount important, there is no net)
@@ -238,7 +238,7 @@ final class CliController extends Controller
             foreach ($itemLines as $line => $itemLine) {
                 $itemLineEnd = $line;
 
-                $billElement = new BillElement();
+                $billElement       = new BillElement();
                 $billElement->bill = $bill;
 
                 $billElement->taxR->value = $taxRates;
@@ -255,14 +255,14 @@ final class CliController extends Controller
                 if (isset($itemLine['price'])) {
                     $billElement->singleListPriceNet = new FloatInt($itemLine['price'], $l11n->thousands, $l11n->decimal);
 
-                    $billElement->singleSalesPriceNet = $billElement->singleListPriceNet;
+                    $billElement->singleSalesPriceNet    = $billElement->singleListPriceNet;
                     $billElement->singlePurchasePriceNet = $billElement->singleSalesPriceNet;
 
                     if ($billElement->taxR->value > 0) {
                         $billElement->singleListPriceGross->value = $billElement->singleListPriceNet->value + ((int) \round($billElement->singleSalesPriceNet->value * $billElement->taxR->value / (FloatInt::DIVISOR * 100), $rd));
-                        $billElement->singleSalesPriceGross = $billElement->singleListPriceGross;
+                        $billElement->singleSalesPriceGross       = $billElement->singleListPriceGross;
                     } else {
-                        $billElement->singleListPriceGross = $billElement->singleListPriceNet;
+                        $billElement->singleListPriceGross  = $billElement->singleListPriceNet;
                         $billElement->singleSalesPriceGross = $billElement->singleListPriceGross;
                     }
                 }
@@ -271,14 +271,14 @@ final class CliController extends Controller
                 if (isset($itemLine['total'])) {
                     $billElement->totalListPriceNet = new FloatInt($itemLine['total'], $l11n->thousands, $l11n->decimal);
 
-                    $billElement->totalSalesPriceNet = $billElement->totalListPriceNet;
+                    $billElement->totalSalesPriceNet    = $billElement->totalListPriceNet;
                     $billElement->totalPurchasePriceNet = $billElement->totalSalesPriceNet;
 
                     if ($billElement->taxR->value > 0) {
                         $billElement->totalListPriceGross->value = $billElement->totalListPriceNet->value + ((int) \round($billElement->totalSalesPriceNet->value * $billElement->taxR->value / (FloatInt::DIVISOR * 100), $rd));
-                        $billElement->totalSalesPriceGross = $billElement->totalListPriceGross;
+                        $billElement->totalSalesPriceGross       = $billElement->totalListPriceGross;
                     } else {
-                        $billElement->totalListPriceGross = $billElement->totalListPriceNet;
+                        $billElement->totalListPriceGross  = $billElement->totalListPriceNet;
                         $billElement->totalSalesPriceGross = $billElement->totalListPriceGross;
                     }
                 }
@@ -305,21 +305,21 @@ final class CliController extends Controller
 
                 $key = \str_replace('total_', '', $key);
 
-                $billElement = new BillElement();
+                $billElement       = new BillElement();
                 $billElement->bill = $bill;
 
                 $billElement->taxR->value = $taxRates;
 
-                $internalRequest = new HttpRequest();
+                $internalRequest  = new HttpRequest();
                 $internalResponse = new HttpResponse();
 
                 $internalRequest->header->account = $request->header->account;
-                $internalRequest->header->l11n = $request->header->l11n;
+                $internalRequest->header->l11n    = $request->header->l11n;
 
                 $internalRequest->setData('search', $key);
                 $internalRequest->setData('limit', 1);
 
-                $internalResponse->header->l11n = clone $response->header->l11n;
+                $internalResponse->header->l11n           = clone $response->header->l11n;
                 $internalResponse->header->l11n->language = $bill->language;
 
                 $this->app->moduleManager->get('ItemManagement', 'Api')->apiItemFind($internalRequest, $internalResponse);
@@ -328,9 +328,9 @@ final class CliController extends Controller
                 $billElement->itemName = $key;
 
                 if ($item->id !== 0) {
-                    $billElement->item = $item;
+                    $billElement->item       = $item;
                     $billElement->itemNumber = $item->number;
-                    $billElement->itemName = $item->getL11n('name1')->content;
+                    $billElement->itemName   = $item->getL11n('name1')->content;
                 }
 
                 $billElement->quantity->value = FloatInt::DIVISOR;
@@ -338,23 +338,23 @@ final class CliController extends Controller
                 // Unit
                 $billElement->singleListPriceNet = new FloatInt($amount, $l11n->thousands, $l11n->decimal);
 
-                $billElement->singleSalesPriceNet = $billElement->singleListPriceNet;
+                $billElement->singleSalesPriceNet    = $billElement->singleListPriceNet;
                 $billElement->singlePurchasePriceNet = $billElement->singleSalesPriceNet;
 
                 if ($billElement->taxR->value > 0) {
                     $billElement->singleListPriceGross->value = $billElement->singleListPriceNet->value + ((int) \round($billElement->singleSalesPriceNet->value * $billElement->taxR->value / (FloatInt::DIVISOR * 100), $rd));
-                    $billElement->singleSalesPriceGross = $billElement->singleListPriceGross;
+                    $billElement->singleSalesPriceGross       = $billElement->singleListPriceGross;
                 } else {
-                    $billElement->singleListPriceGross = $billElement->singleListPriceNet;
+                    $billElement->singleListPriceGross  = $billElement->singleListPriceNet;
                     $billElement->singleSalesPriceGross = $billElement->singleListPriceGross;
                 }
 
                 // Total
-                $billElement->totalListPriceNet = $billElement->singleListPriceNet;
-                $billElement->totalSalesPriceNet = $billElement->singleSalesPriceNet;
+                $billElement->totalListPriceNet     = $billElement->singleListPriceNet;
+                $billElement->totalSalesPriceNet    = $billElement->singleSalesPriceNet;
                 $billElement->totalPurchasePriceNet = $billElement->singlePurchasePriceNet;
-                $billElement->totalListPriceGross = $billElement->singleListPriceGross;
-                $billElement->totalSalesPriceGross = $billElement->singleSalesPriceGross;
+                $billElement->totalListPriceGross   = $billElement->singleListPriceGross;
+                $billElement->totalSalesPriceGross  = $billElement->singleSalesPriceGross;
 
                 $billElement->taxP->value = $billElement->totalSalesPriceGross->value - $billElement->totalSalesPriceNet->value;
 
@@ -367,40 +367,40 @@ final class CliController extends Controller
 
         if (!empty($bill->elements)) {
             // Calculate totals from elements
-            $totalNet = 0;
+            $totalNet   = 0;
             $totalGross = 0;
             foreach ($bill->elements as $element) {
-                $totalNet += $element->totalSalesPriceNet->value;
+                $totalNet   += $element->totalSalesPriceNet->value;
                 $totalGross += $element->totalSalesPriceGross->value;
             }
 
             $bill->grossSales = new FloatInt($totalGross);
-            $bill->netCosts = new FloatInt($totalNet);
-            $bill->netSales = $bill->netCosts;
+            $bill->netCosts   = new FloatInt($totalNet);
+            $bill->netSales   = $bill->netCosts;
         }
 
         $bill->taxP->value = $bill->grossSales->value - $bill->netSales->value;
 
         // No elements could be identified -> make total a bill element
         if (empty($itemLines) && empty($bill->elements)) {
-            $billElement = new BillElement();
+            $billElement       = new BillElement();
             $billElement->bill = $bill;
 
             // List price
             $billElement->singleListPriceNet->value = $bill->netSales->value;
-            $billElement->totalListPriceNet->value = $bill->netSales->value;
+            $billElement->totalListPriceNet->value  = $bill->netSales->value;
 
             $billElement->singleListPriceGross->value = $bill->grossSales->value;
-            $billElement->totalListPriceGross->value = $bill->grossSales->value;
+            $billElement->totalListPriceGross->value  = $bill->grossSales->value;
 
             // Unit price
-            $billElement->singleSalesPriceNet->value = $bill->netSales->value;
+            $billElement->singleSalesPriceNet->value    = $bill->netSales->value;
             $billElement->singlePurchasePriceNet->value = $bill->netSales->value;
 
             $billElement->singleSalesPriceGross->value = $bill->grossSales->value;
 
             // Total
-            $billElement->totalSalesPriceNet->value = $bill->netSales->value;
+            $billElement->totalSalesPriceNet->value    = $bill->netSales->value;
             $billElement->totalPurchasePriceNet->value = $bill->netSales->value;
 
             $billElement->totalSalesPriceGross->value = $bill->grossSales->value;
@@ -415,16 +415,16 @@ final class CliController extends Controller
         }
 
         // Re-calculate totals from elements due to change
-        $totalNet = 0;
+        $totalNet   = 0;
         $totalGross = 0;
         foreach ($bill->elements as $element) {
-            $totalNet += $element->totalSalesPriceNet->value;
+            $totalNet   += $element->totalSalesPriceNet->value;
             $totalGross += $element->totalSalesPriceGross->value;
         }
 
         $bill->grossSales = new FloatInt($totalGross);
-        $bill->netCosts = new FloatInt($totalNet);
-        $bill->netSales = $bill->netCosts;
+        $bill->netCosts   = new FloatInt($totalNet);
+        $bill->netSales   = $bill->netCosts;
 
         $bill->taxP->value = $bill->grossSales->value - $bill->netSales->value;
 
@@ -440,37 +440,6 @@ final class CliController extends Controller
         $this->app->moduleManager->get('Billing', 'ApiBill')->apiBillPdfArchiveCreate($request, $billResponse);
 
         return $view;
-    }
-
-
-    /**
-     * Detect the supplier bill type
-     *
-     * @param string $content  String to analyze
-     * @param array  $types    Possible bill types
-     * @param string $language Bill language
-     *
-     * @return string
-     *
-     * @since 1.0.0
-     */
-    private function findSupplierInvoiceType(string $content, array $types, string $language) : string
-    {
-        $bestPos   = \strlen($content);
-        $bestMatch = '';
-
-        foreach ($types as $name => $type) {
-            foreach ($type[$language] as $l11n) {
-                $found = \stripos($content, \strtolower($l11n));
-
-                if ($found !== false && $found < $bestPos) {
-                    $bestPos   = $found;
-                    $bestMatch = $name;
-                }
-            }
-        }
-
-        return empty($bestMatch) ? 'purchase_invoice' : $bestMatch;
     }
 
     /**

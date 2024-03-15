@@ -84,7 +84,9 @@ final class ApiPurchaseController extends Controller
     /**
      * Method to create item attribute from request.
      *
-     * @param RequestAbstract $request Request
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param array            $data     Generic data
      *
      * @return array
      *
@@ -123,7 +125,7 @@ final class ApiPurchaseController extends Controller
 
             $this->app->moduleManager->get('Billing', 'ApiBill')->apiBillCreate($billRequest, $billResponse, $data);
 
-            $billId = $billResponse->getDataArray('')['response']->id;
+            $billId  = $billResponse->getDataArray('')['response']->id;
             $bills[] = $billId;
 
             // Upload and assign document to bill

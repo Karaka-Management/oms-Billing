@@ -35,9 +35,19 @@ use phpOMS\Validation\Finance\IbanEnum;
  */
 class InvoiceRecognition
 {
-    public static function detect(Bill $bill, string $content)
+    /**
+     * Detect bill components
+     *
+     * @param Bill   $bill    Bill
+     * @param string $content Bill content
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
+    public static function detect(Bill $bill, string $content) : void
     {
-        $content = \strtolower($content ?? '');
+        $content = \strtolower($content);
         $lines   = \explode("\n", $content);
         foreach ($lines as $line => $value) {
             if (empty(\trim($value))) {
@@ -64,16 +74,16 @@ class InvoiceRecognition
         /** @var array $identifiers */
         $identifiers = \json_decode($identifierContent, true);
 
-        $bill->billCountry = InvoiceRecognition::findCountry($lines, $identifiers, $language);
+        $bill->billCountry = self::findCountry($lines, $identifiers, $language);
 
-        $currency = self::findCurrency($lines);
+        $currency        = self::findCurrency($lines);
         $countryCurrency = ISO4217CharEnum::currencyFromCountry($bill->billCountry);
 
         // Identified currency has to be country currency or one of the top globally used currencies
         if ($currency !== \in_array($currency, [
                 $countryCurrency, ISO4217CharEnum::_USD, ISO4217CharEnum::_EUR, ISO4217CharEnum::_JPY,
                 ISO4217CharEnum::_GBP, ISO4217CharEnum::_AUD, ISO4217CharEnum::_CAD, ISO4217CharEnum::_CHF,
-                ISO4217CharEnum::_CNH, ISO4217CharEnum::_CNY
+                ISO4217CharEnum::_CNH, ISO4217CharEnum::_CNY,
             ])
         ) {
             $currency = $countryCurrency;
@@ -86,8 +96,8 @@ class InvoiceRecognition
         /* Type */
         $type = self::findSupplierInvoiceType($content, $identifiers['type'], $language);
 
-        /** @var \Modules\Billing\Models\BillType $billType */
         /*
+        @var \Modules\Billing\Models\BillType $billType
         $billType = BillTypeMapper::get()
             ->where('name', $type)
             ->execute();
@@ -96,7 +106,7 @@ class InvoiceRecognition
         */
 
         /* Number */
-        $billNumber   = self::findBillNumber($lines, $identifiers['bill_no'][$language]);
+        $billNumber     = self::findBillNumber($lines, $identifiers['bill_no'][$language]);
         $bill->external = $billNumber;
 
         /* Reference / PO */
@@ -115,7 +125,7 @@ class InvoiceRecognition
 
         /* Total */
         $totalGross = self::findBillGross($lines, $identifiers['total_gross'][$language]);
-        $totalNet = self::findBillNet($lines, $identifiers['total_net'][$language]);
+        $totalNet   = self::findBillNet($lines, $identifiers['total_net'][$language]);
 
         // The number format needs to be corrected:
         //      Languages don't always respect the l11n number format
@@ -124,11 +134,11 @@ class InvoiceRecognition
 
         if ($format !== null) {
             $l11n->thousands = $format['thousands'];
-            $l11n->decimal = $format['decimal'];
+            $l11n->decimal   = $format['decimal'];
         }
 
         $bill->grossSales = new FloatInt($totalGross, $l11n->thousands, $l11n->decimal);
-        $bill->netSales = new FloatInt($totalNet, $l11n->thousands, $l11n->decimal);
+        $bill->netSales   = new FloatInt($totalNet, $l11n->thousands, $l11n->decimal);
 
         /* Total Tax */
         // @todo taxes depend on local tax id (if company in Germany but invoice from US -> only gross amount important, there is no net)
@@ -166,7 +176,7 @@ class InvoiceRecognition
             foreach ($itemLines as $line => $itemLine) {
                 $itemLineEnd = $line;
 
-                $billElement = new BillElement();
+                $billElement       = new BillElement();
                 $billElement->bill = $bill;
 
                 $billElement->taxR->value = $taxRates;
@@ -183,14 +193,14 @@ class InvoiceRecognition
                 if (isset($itemLine['price'])) {
                     $billElement->singleListPriceNet = new FloatInt($itemLine['price'], $l11n->thousands, $l11n->decimal);
 
-                    $billElement->singleSalesPriceNet = $billElement->singleListPriceNet;
+                    $billElement->singleSalesPriceNet    = $billElement->singleListPriceNet;
                     $billElement->singlePurchasePriceNet = $billElement->singleSalesPriceNet;
 
                     if ($billElement->taxR->value > 0) {
                         $billElement->singleListPriceGross->value = $billElement->singleListPriceNet->value + ((int) \round($billElement->singleSalesPriceNet->value * $billElement->taxR->value / (FloatInt::DIVISOR * 100), $rd));
-                        $billElement->singleSalesPriceGross = $billElement->singleListPriceGross;
+                        $billElement->singleSalesPriceGross       = $billElement->singleListPriceGross;
                     } else {
-                        $billElement->singleListPriceGross = $billElement->singleListPriceNet;
+                        $billElement->singleListPriceGross  = $billElement->singleListPriceNet;
                         $billElement->singleSalesPriceGross = $billElement->singleListPriceGross;
                     }
                 }
@@ -199,14 +209,14 @@ class InvoiceRecognition
                 if (isset($itemLine['total'])) {
                     $billElement->totalListPriceNet = new FloatInt($itemLine['total'], $l11n->thousands, $l11n->decimal);
 
-                    $billElement->totalSalesPriceNet = $billElement->totalListPriceNet;
+                    $billElement->totalSalesPriceNet    = $billElement->totalListPriceNet;
                     $billElement->totalPurchasePriceNet = $billElement->totalSalesPriceNet;
 
                     if ($billElement->taxR->value > 0) {
                         $billElement->totalListPriceGross->value = $billElement->totalListPriceNet->value + ((int) \round($billElement->totalSalesPriceNet->value * $billElement->taxR->value / (FloatInt::DIVISOR * 100), $rd));
-                        $billElement->totalSalesPriceGross = $billElement->totalListPriceGross;
+                        $billElement->totalSalesPriceGross       = $billElement->totalListPriceGross;
                     } else {
-                        $billElement->totalListPriceGross = $billElement->totalListPriceNet;
+                        $billElement->totalListPriceGross  = $billElement->totalListPriceNet;
                         $billElement->totalSalesPriceGross = $billElement->totalListPriceGross;
                     }
                 }
@@ -231,7 +241,7 @@ class InvoiceRecognition
 
                 $key = \str_replace('total_', '', $key);
 
-                $billElement = new BillElement();
+                $billElement       = new BillElement();
                 $billElement->bill = $bill;
 
                 $billElement->taxR->value = $taxRates;
@@ -241,23 +251,23 @@ class InvoiceRecognition
                 // Unit
                 $billElement->singleListPriceNet = new FloatInt($amount, $l11n->thousands, $l11n->decimal);
 
-                $billElement->singleSalesPriceNet = $billElement->singleListPriceNet;
+                $billElement->singleSalesPriceNet    = $billElement->singleListPriceNet;
                 $billElement->singlePurchasePriceNet = $billElement->singleSalesPriceNet;
 
                 if ($billElement->taxR->value > 0) {
                     $billElement->singleListPriceGross->value = $billElement->singleListPriceNet->value + ((int) \round($billElement->singleSalesPriceNet->value * $billElement->taxR->value / (FloatInt::DIVISOR * 100), $rd));
-                    $billElement->singleSalesPriceGross = $billElement->singleListPriceGross;
+                    $billElement->singleSalesPriceGross       = $billElement->singleListPriceGross;
                 } else {
-                    $billElement->singleListPriceGross = $billElement->singleListPriceNet;
+                    $billElement->singleListPriceGross  = $billElement->singleListPriceNet;
                     $billElement->singleSalesPriceGross = $billElement->singleListPriceGross;
                 }
 
                 // Total
-                $billElement->totalListPriceNet = $billElement->singleListPriceNet;
-                $billElement->totalSalesPriceNet = $billElement->singleSalesPriceNet;
+                $billElement->totalListPriceNet     = $billElement->singleListPriceNet;
+                $billElement->totalSalesPriceNet    = $billElement->singleSalesPriceNet;
                 $billElement->totalPurchasePriceNet = $billElement->singlePurchasePriceNet;
-                $billElement->totalListPriceGross = $billElement->singleListPriceGross;
-                $billElement->totalSalesPriceGross = $billElement->singleSalesPriceGross;
+                $billElement->totalListPriceGross   = $billElement->singleListPriceGross;
+                $billElement->totalSalesPriceGross  = $billElement->singleSalesPriceGross;
 
                 $billElement->taxP->value = $billElement->totalSalesPriceGross->value - $billElement->totalSalesPriceNet->value;
 
@@ -268,41 +278,40 @@ class InvoiceRecognition
 
         if (!empty($bill->elements)) {
             // Calculate totals from elements
-            $totalNet = 0;
+            $totalNet   = 0;
             $totalGross = 0;
             foreach ($bill->elements as $element) {
-                $totalNet += $element->totalSalesPriceNet->value;
+                $totalNet   += $element->totalSalesPriceNet->value;
                 $totalGross += $element->totalSalesPriceGross->value;
             }
 
-
             $bill->grossSales = new FloatInt($totalGross);
-            $bill->netCosts = new FloatInt($totalNet);
-            $bill->netSales = $bill->netCosts;
+            $bill->netCosts   = new FloatInt($totalNet);
+            $bill->netSales   = $bill->netCosts;
         }
 
         $bill->taxP->value = $bill->grossSales->value - $bill->netSales->value;
 
         // No elements could be identified -> make total a bill element
         if (empty($bill->elements)) {
-            $billElement = new BillElement();
+            $billElement       = new BillElement();
             $billElement->bill = $bill;
 
             // List price
             $billElement->singleListPriceNet->value = $bill->netSales->value;
-            $billElement->totalListPriceNet->value = $bill->netSales->value;
+            $billElement->totalListPriceNet->value  = $bill->netSales->value;
 
             $billElement->singleListPriceGross->value = $bill->grossSales->value;
-            $billElement->totalListPriceGross->value = $bill->grossSales->value;
+            $billElement->totalListPriceGross->value  = $bill->grossSales->value;
 
             // Unit price
-            $billElement->singleSalesPriceNet->value = $bill->netSales->value;
+            $billElement->singleSalesPriceNet->value    = $bill->netSales->value;
             $billElement->singlePurchasePriceNet->value = $bill->netSales->value;
 
             $billElement->singleSalesPriceGross->value = $bill->grossSales->value;
 
             // Total
-            $billElement->totalSalesPriceNet->value = $bill->netSales->value;
+            $billElement->totalSalesPriceNet->value    = $bill->netSales->value;
             $billElement->totalPurchasePriceNet->value = $bill->netSales->value;
 
             $billElement->totalSalesPriceGross->value = $bill->grossSales->value;
@@ -315,16 +324,16 @@ class InvoiceRecognition
         }
 
         // Re-calculate totals from elements due to change
-        $totalNet = 0;
+        $totalNet   = 0;
         $totalGross = 0;
         foreach ($bill->elements as $element) {
-            $totalNet += $element->totalSalesPriceNet->value;
+            $totalNet   += $element->totalSalesPriceNet->value;
             $totalGross += $element->totalSalesPriceGross->value;
         }
 
         $bill->grossSales = new FloatInt($totalGross);
-        $bill->netCosts = new FloatInt($totalNet);
-        $bill->netSales = $bill->netCosts;
+        $bill->netCosts   = new FloatInt($totalNet);
+        $bill->netSales   = $bill->netCosts;
 
         $bill->taxP->value = $bill->grossSales->value - $bill->netSales->value;
     }
@@ -572,7 +581,7 @@ class InvoiceRecognition
      * @param string[] $lines   Bill lines
      * @param array    $matches Net match patterns
      *
-     * @return int
+     * @return string
      *
      * @bug Issue with net/discount/gross in one line
      *
@@ -582,7 +591,7 @@ class InvoiceRecognition
      */
     public static function findBillNet(array $lines, array $matches) : string
     {
-        $bestMatch = 0;
+        $bestMatch    = 0;
         $bestMatchStr = '';
 
         $found = [];
@@ -605,7 +614,7 @@ class InvoiceRecognition
                         : FloatInt::DIVISOR);
 
                     if ($net > $bestMatch) {
-                        $bestMatch = $net;
+                        $bestMatch    = $net;
                         $bestMatchStr = $temp;
                     }
                 }
@@ -629,7 +638,7 @@ class InvoiceRecognition
      */
     public static function findBillGross(array $lines, array $matches) : string
     {
-        $bestMatch = 0;
+        $bestMatch    = 0;
         $bestMatchStr = '';
 
         $found = [];
@@ -652,7 +661,7 @@ class InvoiceRecognition
                         : FloatInt::DIVISOR);
 
                     if ($gross > $bestMatch) {
-                        $bestMatch = $gross;
+                        $bestMatch    = $gross;
                         $bestMatchStr = $temp;
                     }
                 }
@@ -678,9 +687,7 @@ class InvoiceRecognition
     {
         // Find discounts
         $bestDiscount = 0;
-        $found = [];
-
-        $discountLine = 0;
+        $found        = [];
 
         foreach ($matches['total_discount'][$language] as $match) {
             foreach ($lines as $idx => $line) {
@@ -715,7 +722,7 @@ class InvoiceRecognition
 
         // Find shipping
         $bestShipping = 0;
-        $found = [];
+        $found        = [];
 
         $shippingLine = 0;
 
@@ -750,7 +757,7 @@ class InvoiceRecognition
 
         // Find customs
         $bestCustoms = 0;
-        $found = [];
+        $found       = [];
 
         $customsLine = 0;
 
@@ -785,7 +792,7 @@ class InvoiceRecognition
 
         // Find insurance
         $bestInsurance = 0;
-        $found = [];
+        $found         = [];
 
         $insuranceLine = 0;
 
@@ -820,9 +827,7 @@ class InvoiceRecognition
 
         // Find surcharge
         $bestSurcharge = 0;
-        $found = [];
-
-        $surchargeLine = 0;
+        $found         = [];
 
         foreach ($matches['total_surcharge'][$language] as $match) {
             foreach ($lines as $idx => $line) {
@@ -849,7 +854,6 @@ class InvoiceRecognition
 
                     if ($surcharge > $bestSurcharge) {
                         $bestSurcharge = $surcharge;
-                        $surchargeLine = $idx;
 
                         break;
                     }
@@ -858,9 +862,9 @@ class InvoiceRecognition
         }
 
         return [
-            'total_discount' => -1 * $bestDiscount,
-            'total_shipping' => $bestShipping,
-            'total_customs' => $bestCustoms,
+            'total_discount'  => -1 * $bestDiscount,
+            'total_shipping'  => $bestShipping,
+            'total_customs'   => $bestCustoms,
             'total_insurance' => $bestInsurance,
             'total_surcharge' => $bestSurcharge,
         ];
@@ -926,9 +930,9 @@ class InvoiceRecognition
         $rows = [];
 
         // Get item list until end of item list/table is reached
-        $found = [];
+        $found          = [];
         $structureCount = \count($headlineStructure);
-        $linesSkipped = 0;
+        $linesSkipped   = 0;
 
         foreach ($lines as $l => $line) {
             // @todo find better way to identify end of item table
@@ -950,7 +954,7 @@ class InvoiceRecognition
             $linesSkipped = 0;
 
             $temp = [];
-            $c = 0;
+            $c    = 0;
             foreach ($headlineStructure as $idx => $_) {
                 $subFound = [];
 
@@ -970,8 +974,8 @@ class InvoiceRecognition
     /**
      * Create DateTime from date string
      *
-     * @param string   $date     Date string
-     * @param string[] $formats  Date formats
+     * @param string   $date    Date string
+     * @param string[] $formats Date formats
      *
      * @return null|\DateTime
      *
@@ -981,14 +985,14 @@ class InvoiceRecognition
     {
         if ((!empty($supplierFormat))) {
             $dt = \DateTime::createFromFormat(
-                $supplierFormat ?? '',
+                $supplierFormat,
                 $date
             );
 
             return $dt === false ? new \DateTime('1970-01-01') : $dt;
         }
 
-        $now = new \DateTime('now');
+        $now       = new \DateTime('now');
         $bestMatch = null;
 
         foreach ($formats as $format) {
@@ -1137,8 +1141,8 @@ class InvoiceRecognition
         if (\stripos($bestMatch, 'S') > 1
             || \stripos($bestMatch, 'O') > 1
         ) {
-            $subIban = \substr($bestMatch, 2);
-            $subIban = \str_replace(['S', 'O'], ['5', '0'], $subIban);
+            $subIban   = \substr($bestMatch, 2);
+            $subIban   = \str_replace(['S', 'O'], ['5', '0'], $subIban);
             $bestMatch = \substr($bestMatch, 0, 2) . $subIban;
         }
 
@@ -1221,9 +1225,10 @@ class InvoiceRecognition
         if (\stripos($bestMatch, 'S') > 1
             || \stripos($bestMatch, 'O') > 1
         ) {
-            $format = IbanEnum::getByName('_' . \substr($bestMatch, 0, 2));
+            /** @var string $format */
+            $format = IbanEnum::getByName('_' . \substr($bestMatch, 0, 2)) ?? '';
 
-            $len = \strlen($bestMatch);
+            $len       = \strlen($bestMatch);
             $formatLen = \strlen($format);
 
             for ($i = 0; $i < $len; ++$i) {
@@ -1245,12 +1250,18 @@ class InvoiceRecognition
                     $bestMatch[$i] = '5';
                 }
             }
-
         }
 
         return \trim($bestMatch);
     }
 
+    /**
+     * Find country from bill
+     *
+     * @param string[] $lines    Lines
+     * @param array    $matches  Match patterns
+     * @param string   $language Bill language
+     */
     public static function findCountry(array $lines, array $matches, string $language) : string
     {
         $iban = self::findIban($lines, $matches['iban']);
@@ -1267,7 +1278,7 @@ class InvoiceRecognition
             return \strtoupper(\substr($vatId, 0, 2));
         }
 
-        $email = self::findEmail($lines, $matches['email']);
+        $email   = self::findEmail($lines, $matches['email']);
         $country = \strtoupper(\substr($email, \strrpos($email, '.') + 1));
 
         if (ISO3166TwoEnum::isValidValue($country)) {
@@ -1286,9 +1297,18 @@ class InvoiceRecognition
         return empty($countries) ? 'US' : \reset($countries);
     }
 
+    /**
+     * Find currency
+     *
+     * @param string[] $lines Lines
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
     public static function findCurrency(array $lines) : string
     {
-        $symbols = ISO4217SymbolEnum::getConstants();
+        $symbols  = ISO4217SymbolEnum::getConstants();
         $currency = '';
 
         foreach ($lines as $line) {
@@ -1299,8 +1319,11 @@ class InvoiceRecognition
                 }
 
                 if (\strpos($line, $match) !== false) {
+                    /** @var string $currency */
                     $currency = ISO4217SymbolEnum::getName($symbol);
-                    $currency = ISO4217CharEnum::getByName($currency);
+
+                    /** @var string $currency */
+                    $currency = ISO4217CharEnum::getByName($currency) ?? '';
 
                     break;
                 }

@@ -411,6 +411,8 @@ class Bill implements \JsonSerializable
 
     public ?string $fiAccount = null;
 
+    // @todo Implement reason for bill (especially useful for credit notes, warehouse bookings)
+
     /**
      * Constructor.
      *
@@ -418,12 +420,12 @@ class Bill implements \JsonSerializable
      */
     public function __construct()
     {
-        $this->netProfit     = new FloatInt(0);
-        $this->netCosts      = new FloatInt(0);
-        $this->netSales      = new FloatInt(0);
-        $this->grossSales    = new FloatInt(0);
-        $this->netDiscount   = new FloatInt(0);
-        $this->taxP          = new FloatInt(0);
+        $this->netProfit   = new FloatInt(0);
+        $this->netCosts    = new FloatInt(0);
+        $this->netSales    = new FloatInt(0);
+        $this->grossSales  = new FloatInt(0);
+        $this->netDiscount = new FloatInt(0);
+        $this->taxP        = new FloatInt(0);
 
         $this->billDate  = new \DateTime('now');
         $this->createdAt = new \DateTimeImmutable();
@@ -530,7 +532,15 @@ class Bill implements \JsonSerializable
         $this->netDiscount->value += $element->totalDiscountP->value;
     }
 
-    // @todo also consider rounding similarly to recalculatePrices in elements
+    /**
+     * Validate the correctness of the bill
+     *
+     * @return bool
+     *
+     * @todo also consider rounding similarly to recalculatePrices in elements
+     *
+     * @since 1.0.0
+     */
     public function isValid() : bool
     {
         return $this->validateTaxAmountElements()
@@ -542,6 +552,13 @@ class Bill implements \JsonSerializable
             && $this->areElementsValid();
     }
 
+    /**
+     * Validate the correctness of the bill elements
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
     public function areElementsValid() : bool
     {
         foreach ($this->elements as $element) {
@@ -553,21 +570,49 @@ class Bill implements \JsonSerializable
         return true;
     }
 
+    /**
+     * Validate the correctness of the net and gross values
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
     public function validateNetGross() : bool
     {
         return $this->netSales->value <= $this->grossSales->value;
     }
 
+    /**
+     * Validate the correctness of the profit
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
     public function validateProfit() : bool
     {
         return $this->netSales->value - $this->netCosts->value === $this->netProfit->value;
     }
 
+    /**
+     * Validate the correctness of the taxes
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
     public function validateTax() : bool
     {
         return \abs($this->netSales->value + $this->taxP->value - $this->grossSales->value) === 0;
     }
 
+    /**
+     * Validate the correctness of the taxes for the elements
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
     public function validateTaxAmountElements() : bool
     {
         $taxes = 0;
@@ -578,6 +623,13 @@ class Bill implements \JsonSerializable
         return $taxes === $this->taxP->value;
     }
 
+    /**
+     * Validate the correctness of the net of the elements
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
     public function validateNetElements() : bool
     {
         $net = 0;
@@ -588,6 +640,13 @@ class Bill implements \JsonSerializable
         return $net === $this->netSales->value;
     }
 
+    /**
+     * Validate the correctness of the gross of the elements
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
     public function validateGrossElements()
     {
         $gross = 0;
@@ -598,6 +657,13 @@ class Bill implements \JsonSerializable
         return $gross === $this->grossSales->value;
     }
 
+    /**
+     * Validate the correctness of the quantities and total price
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
     public function validatePriceQuantityElements()
     {
         foreach ($this->elements as $element) {
@@ -620,7 +686,7 @@ class Bill implements \JsonSerializable
         return [
             'id'          => $this->id,
             'number'      => $this->number,
-            'external'      => $this->external,
+            'external'    => $this->external,
             'type'        => $this->type,
             'shipTo'      => $this->shipTo,
             'shipFAO'     => $this->shipFAO,
