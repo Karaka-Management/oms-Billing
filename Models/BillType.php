@@ -50,7 +50,11 @@ class BillType implements \JsonSerializable
 
     public bool $transferStock = true;
 
+    public bool $isAccounting = false;
+
     public int $sign = 1;
+
+    public bool $email = false;
 
     /**
      * Localization
@@ -88,13 +92,13 @@ class BillType implements \JsonSerializable
         if ($l11n instanceof BaseStringL11n) {
             $this->l11n = $l11n;
         } elseif (isset($this->l11n) && $this->l11n instanceof BaseStringL11n) {
-            $this->l11n->content = $l11n;
-            $this->l11n->setLanguage($lang);
+            $this->l11n->content  = $l11n;
+            $this->l11n->language = $lang;
         } else {
-            $this->l11n          = new BaseStringL11n();
-            $this->l11n->content = $l11n;
-            $this->l11n->ref     = $this->id;
-            $this->l11n->setLanguage($lang);
+            $this->l11n           = new BaseStringL11n();
+            $this->l11n->content  = $l11n;
+            $this->l11n->ref      = $this->id;
+            $this->l11n->language = $lang;
         }
     }
 
@@ -144,9 +148,9 @@ class BillType implements \JsonSerializable
     public function toArray() : array
     {
         return [
-            'id'             => $this->id,
-            'numberFormat'   => $this->numberFormat,
-            'transferType'   => $this->transferType,
+            'id'           => $this->id,
+            'numberFormat' => $this->numberFormat,
+            'transferType' => $this->transferType,
         ];
     }
 

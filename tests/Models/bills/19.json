@@ -1,0 +1,26 @@
+{
+    "invoice_number": "2019-1001",
+    "grossSales": 357000,
+    "netSales": 300000,
+    "tax_amount": 57000,
+    "tax_rate": 190000,
+    "bill_date": "2019-01-01",
+    "delivery_date": "",
+    "service_date": "",
+    "due_date": "",
+    "vat_id": "DE24324567",
+    "tax_id": "",
+    "address": {
+        "name": "Musterfirma GmbH",
+        "address": "Musterstraße 23",
+        "city": "12345 Musterhausen",
+        "country": ""
+    },
+    "iban": "DE3423456234356765",
+    "elements": [],
+    "language": "de",
+    "currency": "EUR",
+    "email": "info@muster.de",
+    "website": "www.firma.de",
+    "phone": "+40 (0)30 12345678"
+}

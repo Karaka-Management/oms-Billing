@@ -63,15 +63,6 @@ final class SalesBillMapperTest extends \PHPUnit\Framework\TestCase
      * @covers Modules\Billing\Models\SalesBillMapper
      * @group module
      */
-    public function testGetAvgSalesPriceByItemIdInvalid() : void
-    {
-        self::assertEquals(0, SalesBillMapper::getAvgSalesPriceByItemId(99999, new \DateTime('now'), new \DateTime('now'))->getInt());
-    }
-
-    /**
-     * @covers Modules\Billing\Models\SalesBillMapper
-     * @group module
-     */
     public function testGetLastOrderDateByItemIdInvalid() : void
     {
         self::assertNull(SalesBillMapper::getLastOrderDateByItemId(99999));
@@ -146,7 +137,7 @@ final class SalesBillMapperTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetItemMonthlySalesCostsInvalid() : void
     {
-        self::assertEquals([], SalesBillMapper::getItemMonthlySalesCosts(99999, new \DateTime('now'), new \DateTime('now')));
+        self::assertEquals([], SalesBillMapper::getItemMonthlySalesCosts([99999], new \DateTime('now'), new \DateTime('now')));
     }
 
     /**

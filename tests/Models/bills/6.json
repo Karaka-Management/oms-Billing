@@ -1,0 +1,26 @@
+{
+    "invoice_number": "2021010",
+    "grossSales": 22848000,
+    "netSales": 19200000,
+    "tax_amount": 3648000,
+    "tax_rate": 190000,
+    "bill_date": "2021-03-29",
+    "delivery_date": "",
+    "service_date": "",
+    "due_date": "2021-04-28",
+    "vat_id": "DE123456789",
+    "tax_id": "",
+    "address": {
+        "name": "Invoice Office GmbH",
+        "address": "Inge-Meysel Str. 8a",
+        "city": "85053 Ingolstadt",
+        "country": ""
+    },
+    "iban": "DE20000111122223332103",
+    "elements": [],
+    "language": "de",
+    "currency": "EUR",
+    "email": "demo@invoiceoffice.de",
+    "website": "",
+    "phone": "0049123456789"
+}

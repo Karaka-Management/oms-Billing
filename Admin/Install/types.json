@@ -1,8 +1,11 @@
 [
 	{
 		"name": "sales_offer",
-		"numberFormat": "{y}-{sequence}",
+		"numberFormat": "{y}{type}-{m}{sequence}",
 		"transferType": 1,
+		"sign": 1,
+		"email": true,
+		"isAccounting": false,
 		"transferStock": false,
 		"isTemplate": false,
 		"l11n": {
@@ -12,8 +15,11 @@
 	},
 	{
 		"name": "sales_order_confirmation",
-		"numberFormat": "{y}-{sequence}",
+		"numberFormat": "{y}{type}-{m}{sequence}",
 		"transferType": 1,
+		"sign": 1,
+		"email": true,
+		"isAccounting": false,
 		"transferStock": false,
 		"isTemplate": false,
 		"l11n": {
@@ -23,8 +29,11 @@
 	},
 	{
 		"name": "sales_delivery_note",
-		"numberFormat": "{y}-{sequence}",
+		"numberFormat": "{y}{type}-{m}{sequence}",
 		"transferType": 1,
+		"sign": 1,
+		"email": false,
+		"isAccounting": false,
 		"transferStock": true,
 		"isTemplate": false,
 		"l11n": {
@@ -34,8 +43,11 @@
 	},
 	{
 		"name": "sales_invoice",
-		"numberFormat": "{y}-{sequence}",
+		"numberFormat": "{y}{type}-{m}{sequence}",
 		"transferType": 1,
+		"sign": 1,
+		"email": true,
+		"isAccounting": true,
 		"transferStock": false,
 		"isTemplate": false,
 		"l11n": {
@@ -45,8 +57,11 @@
 	},
 	{
 		"name": "sales_proforma_invoice",
-		"numberFormat": "{y}-{sequence}",
+		"numberFormat": "{y}{type}-{m}{sequence}",
 		"transferType": 1,
+		"sign": 1,
+		"email": true,
+		"isAccounting": false,
 		"transferStock": false,
 		"isTemplate": false,
 		"l11n": {
@@ -56,8 +71,11 @@
 	},
 	{
 		"name": "sales_credit_note",
-		"numberFormat": "{y}-{sequence}",
+		"numberFormat": "{y}{type}-{m}{sequence}",
 		"transferType": 1,
+		"sign": -1,
+		"email": true,
+		"isAccounting": true,
 		"transferStock": false,
 		"isTemplate": false,
 		"l11n": {
@@ -67,8 +85,11 @@
 	},
 	{
 		"name": "sales_reverse_invoice",
-		"numberFormat": "{y}-{sequence}",
+		"numberFormat": "{y}{type}-{m}{sequence}",
 		"transferType": 1,
+		"sign": -1,
+		"email": true,
+		"isAccounting": true,
 		"transferStock": false,
 		"isTemplate": false,
 		"l11n": {
@@ -78,8 +99,11 @@
 	},
 	{
 		"name": "purchase_offer",
-		"numberFormat": "{y}-{sequence}",
+		"numberFormat": "{y}{type}-{m}{sequence}",
 		"transferType": 2,
+		"sign": -1,
+		"email": false,
+		"isAccounting": false,
 		"transferStock": false,
 		"isTemplate": false,
 		"l11n": {
@@ -88,9 +112,26 @@
 		}
 	},
 	{
-		"name": "purchase_order_confirmation",
-		"numberFormat": "{y}-{sequence}",
+		"name": "purchase_order",
+		"numberFormat": "{y}{type}-{m}{sequence}",
 		"transferType": 2,
+		"sign": -1,
+		"email": true,
+		"isAccounting": false,
+		"transferStock": false,
+		"isTemplate": false,
+		"l11n": {
+			"en": "Order",
+			"de": "Bestellung"
+		}
+	},
+	{
+		"name": "purchase_order_confirmation",
+		"numberFormat": "{y}{type}-{m}{sequence}",
+		"transferType": 2,
+		"sign": -1,
+		"email": false,
+		"isAccounting": false,
 		"transferStock": false,
 		"isTemplate": false,
 		"l11n": {
@@ -100,8 +141,11 @@
 	},
 	{
 		"name": "purchase_delivery_note",
-		"numberFormat": "{y}-{sequence}",
+		"numberFormat": "{y}{type}-{m}{sequence}",
 		"transferType": 2,
+		"sign": -1,
+		"email": false,
+		"isAccounting": false,
 		"transferStock": true,
 		"isTemplate": false,
 		"l11n": {
@@ -111,8 +155,11 @@
 	},
 	{
 		"name": "purchase_invoice",
-		"numberFormat": "{y}-{sequence}",
+		"numberFormat": "{y}{type}-{m}{sequence}",
 		"transferType": 2,
+		"sign": -1,
+		"email": false,
+		"isAccounting": true,
 		"transferStock": false,
 		"isTemplate": false,
 		"l11n": {
@@ -122,8 +169,11 @@
 	},
 	{
 		"name": "purchase_proforma_invoice",
-		"numberFormat": "{y}-{sequence}",
+		"numberFormat": "{y}{type}-{m}{sequence}",
 		"transferType": 2,
+		"sign": -1,
+		"email": false,
+		"isAccounting": false,
 		"transferStock": false,
 		"isTemplate": false,
 		"l11n": {
@@ -133,8 +183,11 @@
 	},
 	{
 		"name": "purchase_credit_note",
-		"numberFormat": "{y}-{sequence}",
+		"numberFormat": "{y}{type}-{m}{sequence}",
 		"transferType": 2,
+		"sign": 1,
+		"email": false,
+		"isAccounting": true,
 		"transferStock": false,
 		"isTemplate": false,
 		"l11n": {
@@ -144,8 +197,11 @@
 	},
 	{
 		"name": "purchase_reverse_invoice",
-		"numberFormat": "{y}-{sequence}",
+		"numberFormat": "{y}{type}-{m}{sequence}",
 		"transferType": 2,
+		"sign": 1,
+		"email": false,
+		"isAccounting": true,
 		"transferStock": false,
 		"isTemplate": false,
 		"l11n": {
@@ -155,8 +211,10 @@
 	},
 	{
 		"name": "stock_movement",
-		"numberFormat": "{y}-{sequence}",
+		"numberFormat": "{y}{type}-{m}{sequence}",
 		"transferType": 4,
+		"sign": 1,
+		"isAccounting": false,
 		"transferStock": false,
 		"isTemplate": false,
 		"l11n": {
@@ -165,20 +223,37 @@
 		}
 	},
 	{
-		"name": "stock_scrapping",
-		"numberFormat": "{y}-{sequence}",
+		"name": "stock_decrease",
+		"numberFormat": "{y}{type}-{m}{sequence}",
 		"transferType": 4,
-		"transferStock": false,
+		"sign": -1,
+		"isAccounting": false,
+		"transferStock": true,
 		"isTemplate": false,
 		"l11n": {
-			"en": "Scrapping",
-			"de": "Verschrottung"
+			"en": "Stock Decrease",
+			"de": "Lagerausbuchung"
 		}
 	},
 	{
-		"name": "sales_subscritpion",
-		"numberFormat": "{y}-{sequence}",
+		"name": "stock_increase",
+		"numberFormat": "{y}{type}-{m}{sequence}",
+		"transferType": 4,
+		"sign": 1,
+		"isAccounting": false,
+		"transferStock": true,
+		"isTemplate": false,
+		"l11n": {
+			"en": "Stock Increase",
+			"de": "Lagereinbuchung"
+		}
+	},
+	{
+		"name": "sales_subscription",
+		"numberFormat": "{y}{type}-{m}{sequence}",
 		"transferType": 1,
+		"sign": 1,
+		"isAccounting": true,
 		"transferStock": false,
 		"isTemplate": false,
 		"l11n": {
@@ -187,36 +262,16 @@
 		}
 	},
 	{
-		"name": "sales_template",
-		"numberFormat": "{y}-{sequence}",
-		"transferType": 1,
-		"transferStock": false,
-		"isTemplate": true,
-		"l11n": {
-			"en": "Template",
-			"de": "Vorlage"
-		}
-	},
-	{
-		"name": "purchase_subscritpion",
-		"numberFormat": "{y}-{sequence}",
+		"name": "purchase_subscription",
+		"numberFormat": "{y}{type}-{m}{sequence}",
 		"transferType": 2,
+		"sign": -1,
+		"isAccounting": true,
 		"transferStock": false,
 		"isTemplate": false,
 		"l11n": {
 			"en": "Subscription",
 			"de": "Abonnement"
-		}
-	},
-	{
-		"name": "purchase_template",
-		"numberFormat": "{y}-{sequence}",
-		"transferType": 2,
-		"transferStock": false,
-		"isTemplate": true,
-		"l11n": {
-			"en": "Template",
-			"de": "Vorlage"
 		}
 	}
 ]

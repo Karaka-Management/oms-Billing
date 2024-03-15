@@ -17,7 +17,7 @@ namespace Modules\Billing\Models;
 use phpOMS\Stdlib\Base\Enum;
 
 /**
- * Permision state enum.
+ * Permission category enum.
  *
  * @package Modules\Billing\Models
  * @license OMS License 2.0
@@ -35,4 +35,14 @@ abstract class PermissionCategory extends Enum
     public const PRIVATE_DASHBOARD = 5;
 
     public const PRIVATE_BILL_UPLOAD = 6;
+
+    public const BILL_NOTE = 7;
+
+    public const PRICE = 8;
+
+    public const PAYMENT_TERM = 9;
+
+    public const SHIPPING_TERM = 10;
+
+    public const BILL_LOG = 101;
 }

@@ -23,7 +23,7 @@ final class NullBillTypeTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @covers Modules\Billing\Models\NullBillType
-     * @group framework
+     * @group module
      */
     public function testNull() : void
     {
@@ -32,11 +32,21 @@ final class NullBillTypeTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @covers Modules\Billing\Models\NullBillType
-     * @group framework
+     * @group module
      */
     public function testId() : void
     {
         $null = new NullBillType(2);
         self::assertEquals(2, $null->id);
+    }
+
+    /**
+     * @covers Modules\Billing\Models\NullBillType
+     * @group module
+     */
+    public function testJsonSerialize() : void
+    {
+        $null = new NullBillType(2);
+        self::assertEquals(['id' => 2], $null->jsonSerialize());
     }
 }

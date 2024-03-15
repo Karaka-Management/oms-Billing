@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Jingga
  *
@@ -15,18 +14,19 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Controller;
 
+use Modules\Billing\Models\BillMapper;
 use Modules\Billing\Models\BillStatus;
 use Modules\Billing\Models\BillTransferType;
 use Modules\Billing\Models\BillTypeMapper;
 use Modules\Billing\Models\SettingsEnum;
 use phpOMS\Message\Http\HttpRequest;
 use phpOMS\Message\Http\HttpResponse;
+use phpOMS\Message\Http\RequestStatusCode;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
 use phpOMS\System\OperatingSystem;
 use phpOMS\System\SystemType;
 use phpOMS\System\SystemUtils;
-use phpOMS\Uri\HttpUri;
 
 /**
  * Billing class.
@@ -51,17 +51,56 @@ final class ApiPurchaseController extends Controller
      *
      * @throws \Exception
      *
+     * apiSupplierBillUpload
+     *   -> apiBillCreate
+     *      -> [createBill]
+     *   -> apiMediaAddToBill
+     *   -> apiInvoiceParse
+     *       -> cliParseSupplierBill
+     *           -> [updateBill]
+     *           -> apiBillPdfArchiveCreate
+     *               -> eventBillArchive
+     *
      * @since 1.0.0
      */
     public function apiSupplierBillUpload(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
+        if (!empty($val = $this->validateSupplierBillUpload($request))) {
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidCreateResponse($request, $response, $val);
+
+            return;
+        }
+
+        $bills = $this->createSupplierBillUploadFromRequest($request, $response, $data);
+        if (empty($bills)) {
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidCreateResponse($request, $response, $val);
+        }
+
+        $this->createStandardCreateResponse($request, $response, $bills);
+    }
+
+    /**
+     * Method to create item attribute from request.
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param array            $data     Generic data
+     *
+     * @return array
+     *
+     * @since 1.0.0
+     */
+    private function createSupplierBillUploadFromRequest(RequestAbstract $request, ResponseAbstract $response, $data) : array
+    {
         /** @var \Model\Setting $setting */
         $setting = $this->app->appSettings->get(
-            names: SettingsEnum::ORIGINAL_MEDIA_TYPE,
+            names: SettingsEnum::EXTERNAL_MEDIA_TYPE,
             module: self::NAME
         );
 
-        $originalType = $request->getDataInt('type') ?? ((int) $setting->content);
+        $internalType = $request->getDataInt('type') ?? ((int) $setting->content);
 
         /** @var \Modules\Billing\Models\BillType $purchaseTransferType */
         $purchaseTransferType = BillTypeMapper::get()
@@ -69,10 +108,12 @@ final class ApiPurchaseController extends Controller
             ->limit(1)
             ->execute();
 
-        $files = $request->files;
+        $bills = [];
+
+        $files = \array_merge($request->files, $request->getDataJson('media'));
         foreach ($files as $file) {
             // Create default bill
-            $billRequest                  = new HttpRequest(new HttpUri(''));
+            $billRequest                  = new HttpRequest();
             $billRequest->header->account = $request->header->account;
             $billRequest->header->l11n    = $request->header->l11n;
             $billRequest->setData('supplier', 0);
@@ -82,61 +123,150 @@ final class ApiPurchaseController extends Controller
             $billResponse               = new HttpResponse();
             $billResponse->header->l11n = $response->header->l11n;
 
-            $this->app->moduleManager->get('Billing', 'Api')->apiBillCreate($billRequest, $billResponse, $data);
+            $this->app->moduleManager->get('Billing', 'ApiBill')->apiBillCreate($billRequest, $billResponse, $data);
 
-            $billId = $billResponse->getDataArray('')['response']->id;
+            $billId  = $billResponse->getDataArray('')['response']->id;
+            $bills[] = $billId;
 
             // Upload and assign document to bill
-            $mediaRequest                  = new HttpRequest();
-            $mediaRequest->header->account = $request->header->account;
-            $mediaRequest->header->l11n    = $request->header->l11n;
-            $mediaRequest->addFile($file);
+            $mediaResponse = new HttpResponse();
+            $mediaRequest  = new HttpRequest();
 
-            $mediaResponse               = new HttpResponse();
             $mediaResponse->header->l11n = $response->header->l11n;
 
+            $mediaRequest->header->account = $request->header->account;
+            $mediaRequest->header->l11n    = $request->header->l11n;
+
+            if (\is_array($file)) {
+                $mediaRequest->addFile($file);
+            } else {
+                $mediaRequest->setData('media', \json_encode($file));
+            }
+
             $mediaRequest->setData('bill', $billId);
-            $mediaRequest->setData('type', $originalType);
+            $mediaRequest->setData('type', $internalType);
             $mediaRequest->setData('parse_content', true, true);
-            $this->app->moduleManager->get('Billing', 'Api')->apiMediaAddToBill($mediaRequest, $mediaResponse, $data);
+            $this->app->moduleManager->get('Billing', 'ApiBill')->apiMediaAddToBill($mediaRequest, $mediaResponse, $data);
 
-            /** @var \Modules\Media\Models\Media[] $uploaded */
-            $uploaded = $mediaResponse->getDataArray('')['response']['upload'];
-            if (empty($uploaded)) {
-                throw new \Exception();
+            if (\is_array($file)) {
+                /** @var \Modules\Media\Models\Media[] $uploaded */
+                $uploaded = $mediaResponse->getDataArray('')['response']['upload'];
+                if (empty($uploaded)) {
+                    return [];
+                }
+
+                $in = \reset($uploaded)->getAbsolutePath();
+                if (!\is_file($in)) {
+                    return [];
+                }
             }
 
-            $in = \reset($uploaded)->getAbsolutePath(); // pdf parsed content is available in $in->content
-            if (!\is_file($in)) {
-                throw new \Exception();
-            }
+            $request->setData('id', $billId, true);
+            $request->setData('bill', $billId, true);
 
-            // Create internal document
-            $billResponse = new HttpResponse();
-            $billRequest  = new HttpRequest(new HttpUri(''));
-
-            $billRequest->header->account = $request->header->account;
-            $billRequest->setData('bill', $billId);
-
-            $this->app->moduleManager->get('Billing', 'Api')->apiBillPdfArchiveCreate($billRequest, $billResponse);
-
-            // Offload bill parsing to cli
-            $cliPath = \realpath(__DIR__ . '/../../../cli.php');
-            if ($cliPath === false) {
-                return;
-            }
-
-            try {
-                SystemUtils::runProc(
-                    OperatingSystem::getSystem() === SystemType::WIN ? 'php.exe' : 'php',
-                    \escapeshellarg($cliPath)
-                        . ' /billing/bill/purchase/parse '
-                        . '-i ' . \escapeshellarg((string) $billId),
-                    true
-                );
-            } catch (\Throwable $t) {
-                $this->app->logger->error($t->getMessage());
-            }
+            $this->apiInvoiceParse($request, $response, $data);
         }
+
+        return $bills;
+    }
+
+    /**
+     * Validate item attribute create request
+     *
+     * @param RequestAbstract $request Request
+     *
+     * @return array<string, bool>
+     *
+     * @since 1.0.0
+     */
+    private function validateSupplierBillUpload(RequestAbstract $request) : array
+    {
+        $val = [];
+        if (($val['files'] = empty($request->files))) {
+            return $val;
+        }
+
+        return [];
+    }
+
+    /**
+     * Api method to create bill files
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param array            $data     Generic data
+     *
+     * @return void
+     *
+     * @api
+     *
+     * @throws \Exception
+     *
+     * @since 1.0.0
+     */
+    public function apiInvoiceParse(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
+    {
+        if (!empty($val = $this->validateInvoiceParse($request))) {
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidCreateResponse($request, $response, $val);
+
+            return;
+        }
+
+        $bill = BillMapper::get()
+            ->where('id', (int) $request->getData('id'))
+            ->execute();
+
+        // After a bill is "closed" its values shouldn't change
+        if ($bill->status !== BillStatus::DRAFT
+            && $bill->status !== BillStatus::UNPARSED
+            && $bill->status !== BillStatus::ACTIVE
+        ) {
+            $response->header->status = RequestStatusCode::R_423;
+            $this->createInvalidCreateResponse($request, $response, $val);
+
+            return;
+        }
+
+        // Offload bill parsing to cli
+        $cliPath = \realpath(__DIR__ . '/../../../cli.php');
+        if ($cliPath === false) {
+            return;
+        }
+
+        try {
+            SystemUtils::runProc(
+                OperatingSystem::getSystem() === SystemType::WIN ? 'php.exe' : 'php',
+                    '-dxdebug.remote_enable=1 -dxdebug.start_with_request=yes -dxdebug.mode=coverage,develop,debug ' .
+                    \escapeshellarg($cliPath)
+                    . ' /billing/bill/purchase/parse '
+                    . '-i ' . \escapeshellarg((string) $bill->id),
+                $request->getDataBool('async') ?? true
+            );
+        } catch (\Throwable $t) {
+            $response->header->status = RequestStatusCode::R_400;
+            $this->app->logger->error($t->getMessage());
+        }
+
+        $this->createStandardUpdateResponse($request, $response, $bill);
+    }
+
+    /**
+     * Validate item attribute create request
+     *
+     * @param RequestAbstract $request Request
+     *
+     * @return array<string, bool>
+     *
+     * @since 1.0.0
+     */
+    private function validateInvoiceParse(RequestAbstract $request) : array
+    {
+        $val = [];
+        if (($val['id'] = !$request->hasData('id'))) {
+            return $val;
+        }
+
+        return [];
     }
 }

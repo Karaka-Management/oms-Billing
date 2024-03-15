@@ -16,6 +16,8 @@ namespace Modules\Billing\tests\Controller;
 
 use Model\CoreSettings;
 use Modules\Admin\Models\AccountPermission;
+use Modules\Billing\tests\Controller\Api\ApiBillControllerTrait;
+use Modules\Billing\tests\Controller\Api\ApiPurchaseControllerTrait;
 use phpOMS\Account\Account;
 use phpOMS\Account\AccountManager;
 use phpOMS\Account\PermissionType;
@@ -23,14 +25,9 @@ use phpOMS\Application\ApplicationAbstract;
 use phpOMS\Dispatcher\Dispatcher;
 use phpOMS\Event\EventManager;
 use phpOMS\Localization\L11nManager;
-use phpOMS\Message\Http\HttpRequest;
-use phpOMS\Message\Http\HttpResponse;
-use phpOMS\Message\Http\RequestStatusCode;
 use phpOMS\Module\ModuleAbstract;
 use phpOMS\Module\ModuleManager;
 use phpOMS\Router\WebRouter;
-use phpOMS\Uri\HttpUri;
-use phpOMS\Utils\RnG\DateTime;
 use phpOMS\Utils\TestUtils;
 
 /**
@@ -48,6 +45,11 @@ final class ApiControllerTest extends \PHPUnit\Framework\TestCase
     protected ModuleAbstract $module;
 
     /**
+     * @var \Modules\Billing\Controller\ApiController
+     */
+    protected ModuleAbstract $modulePurchase;
+
+    /**
      * {@inheritdoc}
      */
     protected function setUp() : void
@@ -57,14 +59,14 @@ final class ApiControllerTest extends \PHPUnit\Framework\TestCase
             protected string $appName = 'Api';
         };
 
-        $this->app->dbPool          = $GLOBALS['dbpool'];
-        $this->app->unitId          = 1;
-        $this->app->accountManager  = new AccountManager($GLOBALS['session']);
-        $this->app->appSettings     = new CoreSettings();
-        $this->app->moduleManager   = new ModuleManager($this->app, __DIR__ . '/../../../../Modules/');
-        $this->app->dispatcher      = new Dispatcher($this->app);
-        $this->app->eventManager    = new EventManager($this->app->dispatcher);
-        $this->app->l11nManager     = new L11nManager();
+        $this->app->dbPool         = $GLOBALS['dbpool'];
+        $this->app->unitId         = 1;
+        $this->app->accountManager = new AccountManager($GLOBALS['session']);
+        $this->app->appSettings    = new CoreSettings();
+        $this->app->moduleManager  = new ModuleManager($this->app, __DIR__ . '/../../../../Modules/');
+        $this->app->dispatcher     = new Dispatcher($this->app);
+        $this->app->eventManager   = new EventManager($this->app->dispatcher);
+        $this->app->l11nManager    = new L11nManager();
         $this->app->eventManager->importFromFile(__DIR__ . '/../../../../Web/Api/Hooks.php');
 
         $account = new Account();
@@ -86,192 +88,13 @@ final class ApiControllerTest extends \PHPUnit\Framework\TestCase
         $this->app->accountManager->add($account);
         $this->app->router = new WebRouter();
 
-        $this->module = $this->app->moduleManager->get('Billing');
+        $this->module         = $this->app->moduleManager->get('Billing', 'ApiBill');
+        $this->modulePurchase = $this->app->moduleManager->get('Billing', 'ApiPurchase');
 
         TestUtils::setMember($this->module, 'app', $this->app);
+        TestUtils::setMember($this->modulePurchase, 'app', $this->app);
     }
 
-    /**
-     * Tests bill, bill element and bill pdf archive create
-     *
-     * @covers Modules\Billing\Controller\ApiController
-     * @group module
-     */
-    /*
-    public function testBillClientCreate() : void
-    {
-        $response = new HttpResponse();
-        $request  = new HttpRequest(new HttpUri(''));
-
-        $request->header->account = 1;
-
-        $request->setData('client', 1);
-        $request->setData('address', null);
-        $request->setData('type', 1);
-        $request->setData('status', null); // null = system settings, value = individual input
-        $request->setData('performancedate', DateTime::generateDateTime(new \DateTime('2015-01-01'), new \DateTime('now'))->format('Y-m-d H:i:s'));
-        $request->setData('sales_referral', null); // who these sales belong to
-        $request->setData('shipping_terms', 1); // e.g. incoterms
-        $request->setData('shipping_type', 1);
-        $request->setData('shipping_cost', null);
-        $request->setData('insurance_type', 1);
-        $request->setData('insurance_cost', null); // null = system settings, value = individual input
-        $request->setData('info', null); // null = system settings, value = individual input
-        $request->setData('currency', null); // null = system settings, value = individual input
-        $request->setData('payment', null); // null = system settings, value = individual input
-        $request->setData('payment_terms', null); // null = system settings, value = individual input
-
-        $this->module->apiBillCreate($request, $response);
-
-        $bId = $response->getDataArray('')['response']->id;
-        self::assertGreaterThan(0, $bId);
-
-        for ($k = 0; $k < 10; ++$k) {
-            $response = new HttpResponse();
-            $request  = new HttpRequest(new HttpUri(''));
-
-            $request->header->account = 1;
-
-            $iId = \mt_rand(0, 10);
-
-            $request->setData('bill', $bId);
-            $request->setData('item', $iId === 0 ? null : $iId);
-
-            if ($iId === 0) {
-                // @todo: add text
-            }
-
-            $request->setData('quantity', \mt_rand(1, 11));
-            $request->setData('tax', null);
-            $request->setData('text', $iId === 0 ? 'Some test text' : null);
-
-            // discounts
-            if (\mt_rand(1, 100) < 31) {
-                $request->setData('discount_percentage', \mt_rand(5, 30));
-            }
-
-            $this->module->apiBillElementCreate($request, $response);
-            self::assertGreaterThan(0, $response->getDataArray('')['response']->id);
-        }
-
-        $response = new HttpResponse();
-        $request  = new HttpRequest(new HttpUri(''));
-
-        $request->header->account = 1;
-        $request->setData('bill', $bId);
-
-        $this->module->apiBillPdfArchiveCreate($request, $response);
-
-        $result = $response->getData('');
-        self::assertGreaterThan(0, $result === null ? -1 : $result['response']?->id);
-    }
-    */
-
-    /**
-     * Tests bill, bill element and bill pdf archive create
-     *
-     * @covers Modules\Billing\Controller\ApiController
-     * @group module
-     */
-    /*
-    public function testBillSupplierCreate() : void
-    {
-        $response = new HttpResponse();
-        $request  = new HttpRequest(new HttpUri(''));
-
-        $request->header->account = 1;
-
-        $request->setData('supplier', 1);
-        $request->setData('address', null);
-        $request->setData('type', 1);
-        $request->setData('status', null); // null = system settings, value = individual input
-        $request->setData('performancedate', DateTime::generateDateTime(new \DateTime('2015-01-01'), new \DateTime('now'))->format('Y-m-d H:i:s'));
-        $request->setData('sales_referral', null); // who these sales belong to
-        $request->setData('shipping_terms', 1); // e.g. incoterms
-        $request->setData('shipping_type', 1);
-        $request->setData('shipping_cost', null);
-        $request->setData('insurance_type', 1);
-        $request->setData('insurance_cost', null); // null = system settings, value = individual input
-        $request->setData('info', null); // null = system settings, value = individual input
-        $request->setData('currency', null); // null = system settings, value = individual input
-        $request->setData('payment', null); // null = system settings, value = individual input
-        $request->setData('payment_terms', null); // null = system settings, value = individual input
-
-        $this->module->apiBillCreate($request, $response);
-
-        $bId = $response->getDataArray('')['response']->id;
-        self::assertGreaterThan(0, $bId);
-
-        for ($k = 0; $k < 10; ++$k) {
-            $response = new HttpResponse();
-            $request  = new HttpRequest(new HttpUri(''));
-
-            $request->header->account = 1;
-
-            $iId = \mt_rand(0, 10);
-
-            $request->setData('bill', $bId);
-            $request->setData('item', $iId === 0 ? null : $iId);
-
-            if ($iId === 0) {
-                // @todo: add text
-            }
-
-            $request->setData('quantity', \mt_rand(1, 11));
-            $request->setData('tax', null);
-            $request->setData('text', $iId === 0 ? 'Some test text' : null);
-
-            // discounts
-            if (\mt_rand(1, 100) < 31) {
-                $request->setData('discount_percentage', \mt_rand(5, 30));
-            }
-
-            $this->module->apiBillElementCreate($request, $response);
-            self::assertGreaterThan(0, $response->getDataArray('')['response']->id);
-        }
-
-        $response = new HttpResponse();
-        $request  = new HttpRequest(new HttpUri(''));
-
-        $request->header->account = 1;
-        $request->setData('bill', $bId);
-
-        $this->module->apiBillPdfArchiveCreate($request, $response);
-
-        $result = $response->getData('');
-        self::assertGreaterThan(0, $result === null ? -1 : $result['response']?->id);
-    }
-    */
-
-    /**
-     * @covers Modules\Billing\Controller\ApiController
-     * @group module
-     */
-    public function testBillCreateInvalidData() : void
-    {
-        $response = new HttpResponse();
-        $request  = new HttpRequest(new HttpUri(''));
-
-        $request->header->account = 1;
-        $request->setData('invalid', '1');
-
-        $this->module->apiBillCreate($request, $response);
-        self::assertEquals(RequestStatusCode::R_400, $response->header->status);
-    }
-
-    /**
-     * @covers Modules\Billing\Controller\ApiController
-     * @group module
-     */
-    public function testBillElementCreateInvalidData() : void
-    {
-        $response = new HttpResponse();
-        $request  = new HttpRequest(new HttpUri(''));
-
-        $request->header->account = 1;
-        $request->setData('invalid', '1');
-
-        $this->module->apiBillElementCreate($request, $response);
-        self::assertEquals(RequestStatusCode::R_400, $response->header->status);
-    }
+    use ApiBillControllerTrait;
+    use ApiPurchaseControllerTrait;
 }

@@ -1,0 +1,26 @@
+{
+    "invoice_number": "DE-001",
+    "grossSales": 1654100,
+    "netSales": 1390000,
+    "tax_amount": 264100,
+    "tax_rate": 190000,
+    "bill_date": "2019-01-29",
+    "delivery_date": "",
+    "service_date": "",
+    "due_date": "2019-01-29",
+    "vat_id": "",
+    "tax_id": "",
+    "address": {
+        "name": "European Auto Parts",
+        "address": "Schillingbrücke 58",
+        "city": "73111 Berlin",
+        "country": ""
+    },
+    "iban": "DE9112345678",
+    "elements": [],
+    "language": "de",
+    "currency": "EUR",
+    "email": "",
+    "website": "",
+    "phone": ""
+}

@@ -1,0 +1,26 @@
+{
+    "invoice_number": "01234",
+    "grossSales": 21420000,
+    "netSales": 18000000,
+    "tax_amount": 3420000,
+    "tax_rate": 190000,
+    "bill_date": "2024-08-13",
+    "delivery_date": "",
+    "service_date": "",
+    "due_date": "2024-09-15",
+    "vat_id": "",
+    "tax_id": "0123 4567 8901",
+    "address": {
+        "name": "Werbeagentur Kluger",
+        "address": "Jede Straße 123",
+        "city": "12345 Jede Stadt",
+        "country": ""
+    },
+    "iban": "",
+    "elements": [],
+    "language": "de",
+    "currency": "EUR",
+    "email": "hallo@superduperseite.de",
+    "website": "",
+    "phone": "(0221) 1234-56"
+}

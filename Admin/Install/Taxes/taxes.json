@@ -1,6 +1,209 @@
 [
     {
         "type": 1,
+        "item_code": "GENERAL",
+        "account_code": "EU",
+        "tax_code": "EU_S0",
+        "account": "8400"
+    },
+    {
+        "type": 1,
+        "item_code": "GENERAL",
+        "account_code": "AT",
+        "tax_code": "AT_S20"
+    },
+    {
+        "type": 1,
+        "item_code": "GENERAL",
+        "account_code": "BE",
+        "tax_code": "BE_S21"
+    },
+    {
+        "type": 1,
+        "item_code": "GENERAL",
+        "account_code": "BG",
+        "tax_code": "BG_S20"
+    },
+    {
+        "type": 1,
+        "item_code": "GENERAL",
+        "account_code": "HR",
+        "tax_code": "HR_S25"
+    },
+    {
+        "type": 1,
+        "item_code": "GENERAL",
+        "account_code": "CY",
+        "tax_code": "CY_S19"
+    },
+    {
+        "type": 1,
+        "item_code": "GENERAL",
+        "account_code": "CZ",
+        "tax_code": "CZ_S21"
+    },
+    {
+        "type": 1,
+        "item_code": "GENERAL",
+        "account_code": "DK",
+        "tax_code": "DK_S25"
+    },
+    {
+        "type": 1,
+        "item_code": "GENERAL",
+        "account_code": "EE",
+        "tax_code": "EE_S20"
+    },
+    {
+        "type": 1,
+        "item_code": "GENERAL",
+        "account_code": "FI",
+        "tax_code": "FI_S24"
+    },
+    {
+        "type": 1,
+        "item_code": "GENERAL",
+        "account_code": "FR",
+        "tax_code": "FR_S20"
+    },
+    {
+        "type": 1,
+        "item_code": "GENERAL",
+        "account_code": "DE",
+        "tax_code": "DE_M19",
+        "account": "8400"
+    },
+    {
+        "type": 2,
+        "item_code": "GENERAL",
+        "account_code": "DE",
+        "tax_code": "DE_V19",
+        "account": "3400"
+    },
+    {
+        "type": 1,
+        "item_code": "GENERAL",
+        "account_code": "DE_0",
+        "tax_code": "SBIZ_0",
+        "account": "8195"
+    },
+    {
+        "type": 2,
+        "item_code": "GENERAL",
+        "account_code": "DE_0",
+        "tax_code": "SBIZ_0",
+        "account": "3349"
+    },
+    {
+        "type": 1,
+        "item_code": "GENERAL",
+        "account_code": "GR",
+        "tax_code": "GR_S24"
+    },
+    {
+        "type": 1,
+        "item_code": "GENERAL",
+        "account_code": "HU",
+        "tax_code": "HU_S27"
+    },
+    {
+        "type": 1,
+        "item_code": "GENERAL",
+        "account_code": "IE",
+        "tax_code": "IE_S23"
+    },
+    {
+        "type": 1,
+        "item_code": "GENERAL",
+        "account_code": "IT",
+        "tax_code": "IT_S22"
+    },
+    {
+        "type": 1,
+        "item_code": "GENERAL",
+        "account_code": "LV",
+        "tax_code": "LV_S21"
+    },
+    {
+        "type": 1,
+        "item_code": "GENERAL",
+        "account_code": "LT",
+        "tax_code": "LT_S21"
+    },
+    {
+        "type": 1,
+        "item_code": "GENERAL",
+        "account_code": "LU",
+        "tax_code": "LU_S17"
+    },
+    {
+        "type": 1,
+        "item_code": "GENERAL",
+        "account_code": "MT",
+        "tax_code": "MT_S18"
+    },
+    {
+        "type": 1,
+        "item_code": "GENERAL",
+        "account_code": "NL",
+        "tax_code": "NL_S21"
+    },
+    {
+        "type": 1,
+        "item_code": "GENERAL",
+        "account_code": "PL",
+        "tax_code": "PL_S23"
+    },
+    {
+        "type": 1,
+        "item_code": "GENERAL",
+        "account_code": "PT",
+        "tax_code": "PT_S23"
+    },
+    {
+        "type": 1,
+        "item_code": "GENERAL",
+        "account_code": "RO",
+        "tax_code": "RO_S19"
+    },
+    {
+        "type": 1,
+        "item_code": "GENERAL",
+        "account_code": "SK",
+        "tax_code": "SK_S20"
+    },
+    {
+        "type": 1,
+        "item_code": "GENERAL",
+        "account_code": "SI",
+        "tax_code": "SI_S22"
+    },
+    {
+        "type": 1,
+        "item_code": "GENERAL",
+        "account_code": "ES",
+        "tax_code": "ES_S21"
+    },
+    {
+        "type": 1,
+        "item_code": "GENERAL",
+        "account_code": "SE",
+        "tax_code": "SE_S25"
+    },
+    {
+        "type": 1,
+        "item_code": "GENERAL",
+        "account_code": "GB",
+        "tax_code": "GB_S20"
+    },
+    {
+        "type": 1,
+        "item_code": "GENERAL",
+        "account_code": "INT",
+        "tax_code": "S0"
+    },
+    {
+        "type": 1,
         "item_code": "SOFTWARE",
         "account_code": "EU",
         "tax_code": "EU_S0"
@@ -69,7 +272,29 @@
         "type": 1,
         "item_code": "SOFTWARE",
         "account_code": "DE",
-        "tax_code": "DE_S19"
+        "tax_code": "DE_M19",
+        "account": "8400"
+    },
+    {
+        "type": 2,
+        "item_code": "SOFTWARE",
+        "account_code": "DE",
+        "tax_code": "DE_V19",
+        "account": "3400"
+    },
+    {
+        "type": 1,
+        "item_code": "SOFTWARE",
+        "account_code": "DE_0",
+        "tax_code": "SBIZ_0",
+        "account": "8195"
+    },
+    {
+        "type": 2,
+        "item_code": "SOFTWARE",
+        "account_code": "DE_0",
+        "tax_code": "SBIZ_0",
+        "account": "3349"
     },
     {
         "type": 1,
@@ -249,7 +474,29 @@
         "type": 1,
         "item_code": "SERVICE",
         "account_code": "DE",
-        "tax_code": "DE_S19"
+        "tax_code": "DE_M19",
+        "account": "8400"
+    },
+    {
+        "type": 2,
+        "item_code": "SERVICE",
+        "account_code": "DE",
+        "tax_code": "DE_V19",
+        "account": "3400"
+    },
+    {
+        "type": 1,
+        "item_code": "SERVICE",
+        "account_code": "DE_0",
+        "tax_code": "SBIZ_0",
+        "account": "8195"
+    },
+    {
+        "type": 2,
+        "item_code": "SERVICE",
+        "account_code": "DE_0",
+        "tax_code": "SBIZ_0",
+        "account": "3349"
     },
     {
         "type": 1,

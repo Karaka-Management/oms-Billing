@@ -36,14 +36,28 @@
     },
     {
         "type": "type",
-        "name": "original",
+        "name": "internal",
         "l11n": [
             {
-                "title": "Original",
+                "title": "Internal",
                 "lang": "en"
             },
             {
-                "title": "Original",
+                "title": "Intern",
+                "lang": "de"
+            }
+        ]
+    },
+    {
+        "type": "type",
+        "name": "external",
+        "l11n": [
+            {
+                "title": "External",
+                "lang": "en"
+            },
+            {
+                "title": "Extern",
                 "lang": "de"
             }
         ]

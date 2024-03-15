@@ -41,7 +41,7 @@ final class SubscriptionMapper extends DataMapperFactory
         'billing_subscription_start'     => ['name' => 'billing_subscription_start',      'type' => 'DateTime',    'internal' => 'start'],
         'billing_subscription_end'       => ['name' => 'billing_subscription_end',      'type' => 'DateTime',    'internal' => 'end'],
         'billing_subscription_price'     => ['name' => 'billing_subscription_price',      'type' => 'Serializable',    'internal' => 'price'],
-        'billing_subscription_quantity'  => ['name' => 'billing_subscription_quantity',      'type' => 'int',    'internal' => 'quantity'],
+        'billing_subscription_quantity'  => ['name' => 'billing_subscription_quantity',      'type' => 'Serializable',    'internal' => 'quantity'],
         'billing_subscription_bill'      => ['name' => 'billing_subscription_bill',      'type' => 'int',    'internal' => 'bill'],
         'billing_subscription_item'      => ['name' => 'billing_subscription_item',      'type' => 'int',    'internal' => 'item'],
         'billing_subscription_autorenew' => ['name' => 'billing_subscription_autorenew',      'type' => 'bool',    'internal' => 'autoRenew'],

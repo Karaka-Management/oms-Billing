@@ -61,7 +61,26 @@ final class ApiAttributeController extends Controller
             return;
         }
 
-        $type      = BillAttributeTypeMapper::get()->with('defaults')->where('id', (int) $request->getData('type'))->execute();
+        $type = BillAttributeTypeMapper::get()
+            ->with('defaults')
+            ->where('id', (int) $request->getData('type'))
+            ->execute();
+
+        if (!$type->repeatable) {
+            $attr = BillAttributeMapper::count()
+                ->with('type')
+                ->where('type/id', $type->id)
+                ->where('ref', (int) $request->getData('ref'))
+                ->executeCount();
+
+            if ($attr > 0) {
+                $response->header->status = RequestStatusCode::R_409;
+                $this->createInvalidCreateResponse($request, $response, $val);
+
+                return;
+            }
+        }
+
         $attribute = $this->createAttributeFromRequest($request, $type);
         $this->createModel($request->header->account, $attribute, BillAttributeMapper::class, 'attribute', $request->getOrigin());
         $this->createStandardCreateResponse($request, $response, $attribute);
@@ -148,13 +167,20 @@ final class ApiAttributeController extends Controller
             ->where('id', $request->getDataInt('type') ?? 0)
             ->execute();
 
+        if ($type->isInternal) {
+            $response->header->status = RequestStatusCode::R_403;
+            $this->createInvalidCreateResponse($request, $response, $val);
+
+            return;
+        }
+
         $attrValue = $this->createAttributeValueFromRequest($request, $type);
         $this->createModel($request->header->account, $attrValue, BillAttributeValueMapper::class, 'attr_value', $request->getOrigin());
 
         if ($attrValue->isDefault) {
             $this->createModelRelation(
                 $request->header->account,
-                (int) $request->getData('type'),
+                $type->id,
                 $attrValue->id,
                 BillAttributeTypeMapper::class, 'defaults', '', $request->getOrigin()
             );
@@ -377,7 +403,7 @@ final class ApiAttributeController extends Controller
      *
      * @api
      *
-     * @todo: implement
+     * @todo Implement API function
      *
      * @since 1.0.0
      */
@@ -448,7 +474,7 @@ final class ApiAttributeController extends Controller
      */
     public function apiBillAttributeValueDelete(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
-        // @todo: I don't think values can be deleted? Only Attributes
+        // @todo I don't think values can be deleted? Only Attributes
         // However, It should be possible to remove UNUSED default values
         // either here or other function?
         // if (!empty($val = $this->validateAttributeValueDelete($request))) {

@@ -1,0 +1,26 @@
+{
+    "invoice_number": "1234",
+    "grossSales": 36533000,
+    "netSales": 30700000,
+    "tax_amount": 5833000,
+    "tax_rate": 190000,
+    "bill_date": "2020-01-01",
+    "delivery_date": "",
+    "service_date": "",
+    "due_date": "",
+    "vat_id": "DE123456789",
+    "tax_id": "",
+    "address": {
+        "name": "pixa",
+        "address": "Musterstraße 1",
+        "city": "12345 Berlin",
+        "country": ""
+    },
+    "iban": "DE07123412341234123412",
+    "elements": [],
+    "language": "de",
+    "currency": "EUR",
+    "email": "mail@example.com",
+    "website": "",
+    "phone": "+49 123 456789"
+}

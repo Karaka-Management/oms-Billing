@@ -39,10 +39,10 @@ final class StockBillMapper extends BillMapper
      */
     public static function getStockBeforePivot(
         mixed $pivot,
-        string $column = null,
+        ?string $column = null,
         int $limit = 50,
         int $depth = 3,
-        Builder $query = null
+        ?Builder $query = null
     ) : array
     {
         return self::getAll()
@@ -58,10 +58,10 @@ final class StockBillMapper extends BillMapper
      */
     public static function getStockAfterPivot(
         mixed $pivot,
-        string $column = null,
+        ?string $column = null,
         int $limit = 50,
         int $depth = 3,
-        Builder $query = null
+        ?Builder $query = null
     ) : array
     {
         return self::getAll()

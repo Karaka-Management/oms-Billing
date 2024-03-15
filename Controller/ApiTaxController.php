@@ -14,22 +14,25 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Controller;
 
-use Modules\Admin\Models\Address;
 use Modules\Attribute\Models\AttributeValue;
 use Modules\Attribute\Models\NullAttributeValue;
+use Modules\Billing\Models\Tax\NullTaxCombination;
 use Modules\Billing\Models\Tax\TaxCombination;
 use Modules\Billing\Models\Tax\TaxCombinationMapper;
 use Modules\ClientManagement\Models\Attribute\ClientAttributeTypeMapper;
 use Modules\ClientManagement\Models\Client;
-use Modules\Finance\Models\TaxCode;
+use Modules\Finance\Models\NullTaxCode;
 use Modules\Finance\Models\TaxCodeMapper;
 use Modules\ItemManagement\Models\Item;
 use Modules\Organization\Models\UnitMapper;
-use phpOMS\Localization\ISO3166CharEnum;
+use Modules\SupplierManagement\Models\Attribute\SupplierAttributeTypeMapper;
+use Modules\SupplierManagement\Models\Supplier;
+use phpOMS\Localization\ISO3166TwoEnum;
 use phpOMS\Message\Http\RequestStatusCode;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
 use phpOMS\Security\Guard;
+use phpOMS\Stdlib\Base\Address;
 
 /**
  * Billing class.
@@ -44,32 +47,49 @@ final class ApiTaxController extends Controller
     /**
      * Get tax code from client and item.
      *
-     * @param Client $client         Client to get tax code from
-     * @param Item   $item           Item toget tax code from
-     * @param string $defaultCountry default country to use if no valid tax code could be found and if the unit country code shouldn't be used
+     * @param Item          $item           Item to get tax code from
+     * @param null|Client   $client         Client to get tax code from
+     * @param null|Supplier $supplier       Supplier to get tax code from
+     * @param string        $defaultCountry Default country to use if no valid tax code could be found
+     *                                      and if the unit country code shouldn't be used
      *
-     * @return TaxCode
+     * @return TaxCombination
      *
      * @since 1.0.0
      */
-    public function getTaxCodeFromClientItem(Client $client, Item $item, string $defaultCountry = '') : TaxCode
+    public function getTaxForPerson(
+        Item $item,
+        ?Client $client = null, ?Supplier $supplier = null,
+        string $defaultCountry = ''
+    ) : TaxCombination
     {
-        // @todo: define default sales tax code if none available?!
-        // @todo: consider to actually use a ownsOne reference instead of only a string, this way the next line with the TaxCodeMapper can be removed
+        if ($client === null && $supplier === null) {
+            return new NullTaxCombination();
+        }
+
+        // @todo define default sales tax code if none available?!
+        $itemCode        = 0;
+        $accountCode     = 0;
+        $combinationType = 'clientCode';
+
+        if ($client !== null) {
+            $itemCode    = $item->getAttribute('sales_tax_code')->value->id;
+            $accountCode = $client->getAttribute('sales_tax_code')->value->id;
+        } else {
+            $itemCode        = $item->getAttribute('purchase_tax_code')->value->id;
+            $accountCode     = $supplier->getAttribute('purchase_tax_code')->value->id;
+            $combinationType = 'supplierCode';
+        }
 
         /** @var \Modules\Billing\Models\Tax\TaxCombination $taxCombination */
         $taxCombination = TaxCombinationMapper::get()
-            ->where('itemCode', $item->getAttribute('sales_tax_code')->value->id)
-            ->where('clientCode', $client->getAttribute('sales_tax_code')->value->id)
+            ->with('taxCode')
+            ->where('itemCode', $itemCode)
+            ->where($combinationType, $accountCode)
             ->execute();
 
-        /** @var \Modules\Finance\Models\TaxCode $taxCode */
-        $taxCode = TaxCodeMapper::get()
-            ->where('abbr', $taxCombination->taxCode)
-            ->execute();
-
-        if ($taxCode->id !== 0) {
-            return $taxCode;
+        if ($taxCombination->taxCode->id !== 0) {
+            return $taxCombination;
         }
 
         /** @var \Modules\Organization\Models\Unit $unit */
@@ -78,28 +98,23 @@ final class ApiTaxController extends Controller
             ->where('id', $this->app->unitId)
             ->execute();
 
-        // Create dummy client
-        $client              = new Client();
-        $client->mainAddress =  $unit->mainAddress;
+        // Create dummy
+        $account              = $client !== null ? new Client() : new Supplier();
+        $account->mainAddress = $unit->mainAddress;
 
         if (!empty($defaultCountry)) {
-            $client->mainAddress->setCountry($defaultCountry);
+            $account->mainAddress->setCountry($defaultCountry);
         }
 
-        $taxCodeAttribute = $this->getClientTaxCode($client,  $unit->mainAddress);
+        $taxCodeAttribute = $client !== null
+            ? $this->getClientTaxCode($account,  $unit->mainAddress)
+            : $this->getSupplierTaxCode($account,  $unit->mainAddress);
 
-        /** @var \Modules\Billing\Models\Tax\TaxCombination $taxCombination */
-        $taxCombination = TaxCombinationMapper::get()
-            ->where('itemCode', $item->getAttribute('sales_tax_code')->value->id)
-            ->where('clientCode', $taxCodeAttribute->id)
+        return TaxCombinationMapper::get()
+            ->with('taxCode')
+            ->where('itemCode', $itemCode)
+            ->where($combinationType, $taxCodeAttribute->id)
             ->execute();
-
-        /** @var \Modules\Finance\Models\TaxCode $taxCode */
-        $taxCode = TaxCodeMapper::get()
-            ->where('abbr', $taxCombination->taxCode)
-            ->execute();
-
-        return $taxCode;
     }
 
     /**
@@ -138,10 +153,11 @@ final class ApiTaxController extends Controller
      */
     private function createTaxCombinationFromRequest(RequestAbstract $request) : TaxCombination
     {
-        $tax           = new TaxCombination();
-        $tax->taxType  = $request->getDataInt('tax_type') ?? 1;
-        $tax->taxCode  = (string) $request->getData('tax_code');
-        $tax->itemCode = new NullAttributeValue((int) $request->getData('item_code'));
+        $tax                = new TaxCombination();
+        $tax->taxType       = $request->getDataInt('tax_type') ?? 1;
+        $tax->taxCode->abbr = (string) $request->getData('tax_code');
+        $tax->itemCode      = new NullAttributeValue((int) $request->getData('item_code'));
+        $tax->account       = $request->getDataString('account') ?? '';
 
         if ($tax->taxType === 1) {
             $tax->clientCode = new NullAttributeValue((int) $request->getData('account_code'));
@@ -195,28 +211,72 @@ final class ApiTaxController extends Controller
 
         $taxCode = new NullAttributeValue();
 
-        // @todo: need to consider own tax id as well
-        if ($taxOfficeAddress->getCountry() === $client->mainAddress->getCountry()) {
-            $taxCode = $codes->getDefaultByValue($client->mainAddress->getCountry());
-        } elseif (\in_array($taxOfficeAddress->getCountry(), ISO3166CharEnum::getRegion('eu'))
-            && \in_array($client->mainAddress->getCountry(), ISO3166CharEnum::getRegion('eu'))
+        // @todo need to consider own tax id as well
+        // @todo consider delivery & invoice location (Reihengeschaeft)
+        if ($taxOfficeAddress->country === $client->mainAddress->country) {
+            // Same country as we (= local tax code)
+            return $codes->getDefaultByValue($client->mainAddress->country);
+        } elseif (\in_array($taxOfficeAddress->country, ISO3166TwoEnum::getRegion('eu'))
+            && \in_array($client->mainAddress->country, ISO3166TwoEnum::getRegion('eu'))
         ) {
             if (!empty($client->getAttribute('vat_id')->value->getValue())) {
-                // Is EU company
-                $taxCode = $codes->getDefaultByValue('EU');
+                // Is EU company and we are EU company
+                return $codes->getDefaultByValue('EU');
             } else {
-                // Is EU private customer
-                $taxCode = $codes->getDefaultByValue($client->mainAddress->getCountry());
+                // Is EU private customer and we are EU company
+                return $codes->getDefaultByValue($client->mainAddress->country);
             }
-        } elseif (\in_array($taxOfficeAddress->getCountry(), ISO3166CharEnum::getRegion('eu'))) {
+        } elseif (\in_array($taxOfficeAddress->country, ISO3166TwoEnum::getRegion('eu'))) {
             // None EU company but we are EU company
-            $taxCode = $codes->getDefaultByValue('INT');
-        } else {
-            // None EU company and we are also none EU company
-            $taxCode = $codes->getDefaultByValue('INT');
+            return $codes->getDefaultByValue('INT');
         }
 
-        return $taxCode;
+        // None EU company and we are also none EU company
+        return $codes->getDefaultByValue('INT');
+    }
+
+    /**
+     * Get the supplier's tax code based on their country and tax office address
+     *
+     * @param Supplier $supplier         The supplier to get the tax code for
+     * @param Address  $taxOfficeAddress The tax office address used to determine the tax code
+     *
+     * @return AttributeValue The supplier's tax code
+     *
+     * @since 1.0.0
+     */
+    public function getSupplierTaxCode(Supplier $supplier, Address $taxOfficeAddress) : AttributeValue
+    {
+        /** @var \Modules\Attribute\Models\AttributeType $codes */
+        $codes = SupplierAttributeTypeMapper::get()
+            ->with('defaults')
+            ->where('name', 'purchase_tax_code')
+            ->execute();
+
+        $taxCode = new NullAttributeValue();
+
+        // @todo need to consider own tax id as well
+        // @todo consider delivery & invoice location (Reihengeschaeft)
+        if ($taxOfficeAddress->country === $supplier->mainAddress->country) {
+            // Same country as we (= local tax code)
+            return $codes->getDefaultByValue($supplier->mainAddress->country);
+        } elseif (\in_array($taxOfficeAddress->country, ISO3166TwoEnum::getRegion('eu'))
+            && \in_array($supplier->mainAddress->country, ISO3166TwoEnum::getRegion('eu'))
+        ) {
+            if (!empty($supplier->getAttribute('vat_id')->value->getValue())) {
+                // Is EU company and we are EU company
+                return $codes->getDefaultByValue('EU');
+            } else {
+                // Is EU private customer and we are EU company
+                return $codes->getDefaultByValue($supplier->mainAddress->country);
+            }
+        } elseif (\in_array($taxOfficeAddress->country, ISO3166TwoEnum::getRegion('eu'))) {
+            // None EU company but we are EU company
+            return $codes->getDefaultByValue('INT');
+        }
+
+        // None EU company and we are also none EU company
+        return $codes->getDefaultByValue('INT');
     }
 
     /**
@@ -307,7 +367,7 @@ final class ApiTaxController extends Controller
             $old = \reset($old);
 
             $new          = clone $old;
-            $new->taxCode = $combination['tax_code'] ?? '';
+            $new->taxCode = TaxCodeMapper::get()->where('abbr', $combination['tax_code'] ?? '')->execute();
 
             $this->updateModel($request->header->account, $old, $new, TaxCombinationMapper::class, 'tax_combination', $request->getOrigin());
         }
@@ -347,7 +407,7 @@ final class ApiTaxController extends Controller
     public function updateTaxCombinationFromRequest(RequestAbstract $request, TaxCombination $new) : TaxCombination
     {
         $new->taxType  = $request->getDataInt('tax_type') ?? $new->taxType;
-        $new->taxCode  = $request->getDataString('tax_code') ?? $new->taxCode;
+        $new->taxCode  = $request->hasData('tax_code') ? new NullTaxCode((int) $request->getData('tax_code')) : $new->taxCode;
         $new->itemCode = $request->hasData('item_code') ? new NullAttributeValue((int) $request->getData('item_code')) : $new->itemCode;
 
         if ($new->taxType === 1) {
@@ -412,8 +472,6 @@ final class ApiTaxController extends Controller
      * @param RequestAbstract $request Request
      *
      * @return array<string, bool>
-     *
-     * @todo: implement
      *
      * @since 1.0.0
      */

@@ -32,6 +32,12 @@ use phpOMS\Stdlib\Base\FloatInt;
  * @license OMS License 2.0
  * @link    https://jingga.app
  * @since   1.0.0
+ *
+ * @todo Find a way to handle references to the total invoice amount and other items
+ *      Example: If total invoice > $X no shipping expenses
+ *          Maybe additional column referencing total value
+ *      Example: If item Y quantity > Z no costs for item A (e.g. service fee)
+ *          Maybe by referencing another price (i.e. if other price triggered than this is triggered as well)
  */
 class Price implements \JsonSerializable
 {
@@ -49,7 +55,11 @@ class Price implements \JsonSerializable
 
     public Item $item;
 
-    public AttributeValue $itemgroup;
+    public int $status = PriceStatus::ACTIVE;
+
+    public AttributeValue $itemsalesgroup;
+
+    public AttributeValue $itemproductgroup;
 
     public AttributeValue $itemsegment;
 
@@ -75,19 +85,21 @@ class Price implements \JsonSerializable
 
     public int $type = PriceType::SALES;
 
-    public int $quantity = 0;
+    public FloatInt $quantity;
 
     public FloatInt $price;
 
-    public int $priceNew = 0;
+    public FloatInt $priceNew;
 
-    public int $discount = 0;
+    public FloatInt $discount;
 
-    public int $discountPercentage = 0;
+    public FloatInt $discountPercentage;
 
-    public int $bonus = 0;
+    public FloatInt $bonus;
 
     public bool $multiply = false;
+
+    public bool $isAdditive = false;
 
     public string $currency = ISO4217CharEnum::_EUR;
 
@@ -102,11 +114,12 @@ class Price implements \JsonSerializable
      */
     public function __construct()
     {
-        $this->item        = new NullItem();
-        $this->itemgroup   = new NullAttributeValue();
-        $this->itemsegment = new NullAttributeValue();
-        $this->itemsection = new NullAttributeValue();
-        $this->itemtype    = new NullAttributeValue();
+        $this->item             = new NullItem();
+        $this->itemsalesgroup   = new NullAttributeValue();
+        $this->itemproductgroup = new NullAttributeValue();
+        $this->itemsegment      = new NullAttributeValue();
+        $this->itemsection      = new NullAttributeValue();
+        $this->itemtype         = new NullAttributeValue();
 
         $this->client        = new NullClient();
         $this->clientgroup   = new NullAttributeValue();
@@ -116,19 +129,12 @@ class Price implements \JsonSerializable
 
         $this->supplier = new NullSupplier();
 
-        $this->price = new FloatInt();
-    }
-
-    /**
-     * Get id.
-     *
-     * @return int Model id
-     *
-     * @since 1.0.0
-     */
-    public function getId() : int
-    {
-        return $this->id;
+        $this->price              = new FloatInt();
+        $this->quantity           = new FloatInt();
+        $this->priceNew           = new FloatInt();
+        $this->discount           = new FloatInt();
+        $this->discountPercentage = new FloatInt();
+        $this->bonus              = new FloatInt();
     }
 
     /**

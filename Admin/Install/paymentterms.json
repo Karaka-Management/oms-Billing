@@ -1,0 +1,149 @@
+[
+    {
+        "name": "PORI",
+        "l11n": {
+            "en" : "Payment on receipt of invoice",
+            "de" : "Zahlung fällig sofort nach Rechnungserhalt"
+        }
+    },
+    {
+        "name": "Net 10",
+        "l11n": {
+            "en" : "Payment is due 10 days after the invoice date",
+            "de" : "Zahlung fällig 10 Tage nach Rechnungsdatum"
+        }
+    },
+    {
+        "name": "Net 15",
+        "l11n": {
+            "en" : "Payment is due 15 days after the invoice date",
+            "de" : "Zahlung fällig 15 Tage nach Rechnungsdatum"
+        }
+    },
+    {
+        "name": "Net 30",
+        "l11n": {
+            "en" : "Payment is due 30 days after the invoice date",
+            "de" : "Zahlung fällig 30 Tage nach Rechnungsdatum"
+        }
+    },
+    {
+        "name": "Net 60",
+        "l11n": {
+            "en" : "Payment is due 60 days after the invoice date",
+            "de" : "Zahlung fällig 60 Tage nach Rechnungsdatum"
+        }
+    },
+    {
+        "name": "Net 90",
+        "l11n": {
+            "en" : "Payment is due 90 days after the invoice date",
+            "de" : "Zahlung fällig 90 Tage nach Rechnungsdatum"
+        }
+    },
+    {
+        "name": "COD",
+        "l11n": {
+            "en" : "Payment is made at the time of delivery",
+            "de" : "Zahlung fällig bei Lieferung"
+        }
+    },
+    {
+        "name": "CWO",
+        "l11n": {
+            "en" : "Cash with order",
+            "de" : "Zahlung fällig bei Bestellung"
+        }
+    },
+    {
+        "name": "CBS",
+        "l11n": {
+            "en" : "Cash before shipment",
+            "de" : "Zahlung fällig vor Lieferung"
+        }
+    },
+    {
+        "name": "Monthly",
+        "l11n": {
+            "en" : "Due at the end of the month",
+            "de" : "Zahlung fällig zum Monatsende des Rechnungsdatums"
+        }
+    },
+    {
+        "name": "PIA",
+        "l11n": {
+            "en" : "Payment in advance (pay-as-you-use)",
+            "de" : "Vorauszahlung (Pay-as-you-use)"
+        }
+    },
+    {
+        "name": "2/10 Net 30",
+        "l11n": {
+            "en" : "2% discount for payment within 10 days after invoice date; otherwise, the full amount is due in 30 days after invoice date",
+            "de" : "2% Skonto innerhalb von 10 Tagen nach Rechnungsdatum, andernfalls fällig zum vollen Betrag nach 30 Tagen nach Rechnungsdatum"
+        }
+    },
+    {
+        "name": "3/10 Net 30",
+        "l11n": {
+            "en" : "3% discount for payment within 10 days after invoice date; otherwise, the full amount is due in 30 days after invoice date",
+            "de" : "3% Skonto innerhalb von 10 Tagen nach Rechnungsdatum, andernfalls fällig zum vollen Betrag nach 30 Tagen nach Rechnungsdatum"
+        }
+    },
+    {
+        "name": "2/15 Net 30",
+        "l11n": {
+            "en" : "2% discount for payment within 15 days after invoice date; otherwise, the full amount is due in 30 days after invoice date",
+            "de" : "2% Skonto innerhalb von 15 Tagen nach Rechnungsdatum, andernfalls fällig zum vollen Betrag nach 30 Tagen nach Rechnungsdatum"
+        }
+    },
+    {
+        "name": "3/15 Net 30",
+        "l11n": {
+            "en" : "3% discount for payment within 15 days after invoice date; otherwise, the full amount is due in 30 days after invoice date",
+            "de" : "3% Skonto innerhalb von 15 Tagen nach Rechnungsdatum, andernfalls fällig zum vollen Betrag nach 30 Tagen nach Rechnungsdatum"
+        }
+    },
+    {
+        "name": "Escrow",
+        "l11n": {
+            "en" : "Payment is held by a third party until certain conditions are met (Escrow)",
+            "de" : "Die Zahlung wird von einer dritten Partei zurückgehalten, bis bestimmte Bedingungen erfüllt sind (Escrow)"
+        }
+    },
+    {
+        "name": "Open account",
+        "l11n": {
+            "en" : "There is a credit agreement and payment is expected within the agreed period",
+            "de" : "Es besteht eine Kreditvereinbarung, und die Zahlung wird innerhalb der vereinbarten Frist erwartet"
+        }
+    },
+    {
+        "name": "Installment payments",
+        "l11n": {
+            "en" : "Payments are divided into installments over a defined period",
+            "de" : "Die Zahlungen werden in Raten über einen bestimmten Zeitraum verteilt"
+        }
+    },
+    {
+        "name": "LC",
+        "l11n": {
+            "en" : "Payment is guaranteed by a bank upon presentation of specified documents",
+            "de" : "Die Zahlung wird von einer Bank gegen Vorlage bestimmter Dokumente garantiert"
+        }
+    },
+    {
+        "name": "Consignment",
+        "l11n": {
+            "en" : "Payment is made only after the goods are sold by the buyer",
+            "de" : "Die Zahlung erfolgt erst nach dem Verkauf der Ware durch den Käufer"
+        }
+    },
+    {
+        "name": "Retainer",
+        "l11n": {
+            "en" : "A partial upfront payment to secure services",
+            "de" : "Eine teilweise Vorauszahlung zur Sicherung der Dienstleistungen"
+        }
+    }
+]

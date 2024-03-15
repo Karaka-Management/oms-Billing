@@ -18,7 +18,6 @@ use Modules\Billing\Models\SettingsEnum;
 use phpOMS\Application\ApplicationAbstract;
 use phpOMS\Message\Http\HttpRequest;
 use phpOMS\Message\Http\HttpResponse;
-use phpOMS\Uri\HttpUri;
 
 /**
  * Media class.
@@ -54,10 +53,16 @@ class Messages
                 'content' => (string) $messages['email_template'][0]['id'],
                 'module'  => 'Billing',
             ],
+            [
+                'id'      => null,
+                'name'    => SettingsEnum::BILLING_SUPPLIER_EMAIL_TEMPLATE,
+                'content' => (string) $messages['email_template'][1]['id'],
+                'module'  => 'Billing',
+            ],
         ];
 
         $response = new HttpResponse();
-        $request  = new HttpRequest(new HttpUri(''));
+        $request  = new HttpRequest();
 
         $request->header->account = 1;
         $request->setData('settings', \json_encode($settings));

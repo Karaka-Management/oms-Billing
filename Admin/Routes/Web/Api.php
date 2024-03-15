@@ -18,7 +18,7 @@ use phpOMS\Account\PermissionType;
 use phpOMS\Router\RouteVerb;
 
 return [
-    '^.*/bill/render.*$' => [
+    '^.*/bill/render(\?.*$|$)' => [
         [
             'dest'       => '\Modules\Billing\Controller\ApiBillController:apiMediaRender',
             'verb'       => RouteVerb::GET,
@@ -26,6 +26,39 @@ return [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::CREATE,
                 'state'  => PermissionCategory::SALES_INVOICE,
+            ],
+        ],
+    ],
+    '^.*/bill/render/preview(\?.*$|$)' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\ApiBillController:apiPreviewRender',
+            'verb'       => RouteVerb::GET,
+            'permission' => [
+                'module' => BackendController::NAME,
+                'type'   => PermissionType::CREATE,
+                'state'  => PermissionCategory::SALES_INVOICE,
+            ],
+        ],
+    ],
+    '^.*/bill/price(\?.*$|$)' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\ApiPriceController:apiPriceCreate',
+            'verb'       => RouteVerb::GET,
+            'permission' => [
+                'module' => BackendController::NAME,
+                'type'   => PermissionType::CREATE,
+                'state'  => PermissionCategory::PRICE,
+            ],
+        ],
+    ],
+    '^.*/bill/parse(\?.*$|$)' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\ApiPurchaseController:apiInvoiceParse',
+            'verb'       => RouteVerb::SET,
+            'permission' => [
+                'module' => BackendController::NAME,
+                'type'   => PermissionType::MODIFY,
+                'state'  => PermissionCategory::PURCHASE_INVOICE,
             ],
         ],
     ],

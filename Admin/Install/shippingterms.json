@@ -1,0 +1,79 @@
+[
+    {
+        "name": "EXW",
+        "l11n": {
+            "en": "Incoterms 2020 Ex Works",
+            "de": "Incotemrs 2020 Ex Works"
+        }
+    },
+    {
+        "name": "FCA",
+        "l11n": {
+            "en": "Incoterms 2020 Free Carrier",
+            "de": "Incotemrs 2020 Free Carrier"
+        }
+    },
+    {
+        "name": "CPT",
+        "l11n": {
+            "en": "Incoterms 2020 Carriage Paid to",
+            "de": "Incotemrs 2020 Carriage Paid to"
+        }
+    },
+    {
+        "name": "CIP",
+        "l11n": {
+            "en": "Incoterms 2020 Carriage and Insurance Paid To",
+            "de": "Incotemrs 2020 Carriage and Insurance Paid To"
+        }
+    },
+    {
+        "name": "DAP",
+        "l11n": {
+            "en": "Incoterms 2020 Delivered at Place",
+            "de": "Incotemrs 2020 Delivered at Place"
+        }
+    },
+    {
+        "name": "DPU",
+        "l11n": {
+            "en": "Incoterms 2020 Delivered at Place Unloaded",
+            "de": "Incotemrs 2020 Delivered at Place Unloaded"
+        }
+    },
+    {
+        "name": "DDP",
+        "l11n": {
+            "en": "Incoterms 2020 Delivered Duty Paid",
+            "de": "Incotemrs 2020 Delivered Duty Paid"
+        }
+    },
+    {
+        "name": "FAS",
+        "l11n": {
+            "en": "Incoterms 2020 Free Alongside Ship",
+            "de": "Incotemrs 2020 Free Alongside Ship"
+        }
+    },
+    {
+        "name": "FOB",
+        "l11n": {
+            "en": "Incoterms 2020 Free on Board",
+            "de": "Incotemrs 2020 Free on Board"
+        }
+    },
+    {
+        "name": "CFR",
+        "l11n": {
+            "en": "Incoterms 2020 Cost and Freight",
+            "de": "Incotemrs 2020 Cost and Freight"
+        }
+    },
+    {
+        "name": "CIF",
+        "l11n": {
+            "en": "Incoterms 2020 Cost Insurance and Freight",
+            "de": "Incotemrs 2020 Cost Insurance and Freight"
+        }
+    }
+]

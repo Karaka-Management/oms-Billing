@@ -1,0 +1,26 @@
+{
+    "invoice_number": "12345",
+    "grossSales": 16838500,
+    "netSales": 14150000,
+    "tax_amount": 2688500,
+    "tax_rate": 190000,
+    "bill_date": "2022-01-01",
+    "delivery_date": "",
+    "service_date": "",
+    "due_date": "2022-01-15",
+    "vat_id": "",
+    "tax_id": "123456789",
+    "address": {
+        "name": "Vorname Name",
+        "address": "Musterstraße 123",
+        "city": "12345 Musterstadt",
+        "country": ""
+    },
+    "iban": "",
+    "elements": [],
+    "language": "de",
+    "currency": "EUR",
+    "email": "hallo@superduperseite.de",
+    "website": "www.superduperseite.de",
+    "phone": ""
+}

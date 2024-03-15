@@ -17,7 +17,6 @@ namespace Modules\Billing\Models;
 use Modules\Admin\Models\Account;
 use Modules\Admin\Models\NullAccount;
 use Modules\ClientManagement\Models\Client;
-use Modules\Media\Models\Collection;
 use Modules\SupplierManagement\Models\Supplier;
 use phpOMS\Localization\ISO4217CharEnum;
 use phpOMS\Localization\ISO639x1Enum;
@@ -66,6 +65,8 @@ class Bill implements \JsonSerializable
      */
     public string $number = '';
 
+    public string $external = '';
+
     /**
      * Bill type.
      *
@@ -74,7 +75,9 @@ class Bill implements \JsonSerializable
      */
     public BillType $type;
 
-    public ?Collection $template = null;
+    public bool $isTemplate = false;
+
+    public bool $isArchived = false;
 
     /**
      * Bill status.
@@ -239,14 +242,12 @@ class Bill implements \JsonSerializable
     public string $billEmail = '';
 
     /**
-     * Person refering for this order.
+     * Person referring for this order.
      *
      * @var Account
      * @since 1.0.0
      */
     public Account $referral;
-
-    public string $referralName = '';
 
     /**
      * Net amount.
@@ -257,28 +258,12 @@ class Bill implements \JsonSerializable
     public FloatInt $netProfit;
 
     /**
-     * Gross amount.
-     *
-     * @var FloatInt
-     * @since 1.0.0
-     */
-    public FloatInt $grossProfit;
-
-    /**
      * Costs in net.
      *
      * @var FloatInt
      * @since 1.0.0
      */
     public FloatInt $netCosts;
-
-    /**
-     * Profit in net.
-     *
-     * @var FloatInt
-     * @since 1.0.0
-     */
-    public FloatInt $grossCosts;
 
     /**
      * Costs in net.
@@ -305,28 +290,14 @@ class Bill implements \JsonSerializable
     public FloatInt $netDiscount;
 
     /**
-     * Profit in net.
+     * Tax amount
      *
      * @var FloatInt
      * @since 1.0.0
      */
-    public FloatInt $grossDiscount;
+    public FloatInt $taxP;
 
-    /**
-     * Insurance fees in net.
-     *
-     * @var FloatInt
-     * @since 1.0.0
-     */
-    public FloatInt $insurance;
-
-    /**
-     * Freight in net.
-     *
-     * @var FloatInt
-     * @since 1.0.0
-     */
-    public FloatInt $freight;
+    public ?int $accTaxCode = null;
 
     /**
      * Currency.
@@ -360,12 +331,6 @@ class Bill implements \JsonSerializable
      */
     public string $info = '';
 
-    /**
-     * Payment type.
-     *
-     * @var int
-     * @since 1.0.0
-     */
     public int $payment = 0;
 
     /**
@@ -384,6 +349,10 @@ class Bill implements \JsonSerializable
      */
     public int $terms = 0;
 
+    public ?int $paymentTerms = null;
+
+    public ?int $shippingTerms = null;
+
     /**
      * Terms text.
      *
@@ -391,14 +360,6 @@ class Bill implements \JsonSerializable
      * @since 1.0.0
      */
     public string $termsText = '';
-
-    /**
-     * Shipping.
-     *
-     * @var int
-     * @since 1.0.0
-     */
-    public int $shipping = 0;
 
     /**
      * Shipping text.
@@ -440,6 +401,18 @@ class Bill implements \JsonSerializable
      */
     public int $reference = 0;
 
+    public ?int $accSegment = null;
+
+    public ?int $accSection = null;
+
+    public ?int $accGroup = null;
+
+    public ?int $accType = null;
+
+    public ?string $fiAccount = null;
+
+    // @todo Implement reason for bill (especially useful for credit notes, warehouse bookings)
+
     /**
      * Constructor.
      *
@@ -447,32 +420,18 @@ class Bill implements \JsonSerializable
      */
     public function __construct()
     {
-        $this->netProfit     = new FloatInt(0);
-        $this->grossProfit   = new FloatInt(0);
-        $this->netCosts      = new FloatInt(0);
-        $this->grossCosts    = new FloatInt(0);
-        $this->netSales      = new FloatInt(0);
-        $this->grossSales    = new FloatInt(0);
-        $this->netDiscount   = new FloatInt(0);
-        $this->grossDiscount = new FloatInt(0);
+        $this->netProfit   = new FloatInt(0);
+        $this->netCosts    = new FloatInt(0);
+        $this->netSales    = new FloatInt(0);
+        $this->grossSales  = new FloatInt(0);
+        $this->netDiscount = new FloatInt(0);
+        $this->taxP        = new FloatInt(0);
 
         $this->billDate  = new \DateTime('now');
         $this->createdAt = new \DateTimeImmutable();
         $this->createdBy = new NullAccount();
         $this->referral  = new NullAccount();
         $this->type      = new NullBillType();
-    }
-
-    /**
-     * Get id.
-     *
-     * @return int Model id
-     *
-     * @since 1.0.0
-     */
-    public function getId() : int
-    {
-        return $this->id;
     }
 
     /**
@@ -492,6 +451,9 @@ class Bill implements \JsonSerializable
                 '{id}',
                 '{sequence}',
                 '{type}',
+                '{unit}',
+                '{account}',
+                '{country}',
             ],
             [
                 $this->createdAt->format('Y'),
@@ -500,6 +462,9 @@ class Bill implements \JsonSerializable
                 $this->id,
                 $this->sequence,
                 $this->type->id,
+                $this->unit,
+                $this->accountNumber,
+                $this->billCountry,
             ],
             $this->type->numberFormat
         );
@@ -519,32 +484,6 @@ class Bill implements \JsonSerializable
         }
 
         return $this->number;
-    }
-
-    /**
-     * Get status
-     *
-     * @return int
-     *
-     * @since 1.0.0
-     */
-    public function getStatus() : int
-    {
-        return $this->status;
-    }
-
-    /**
-     * Set status
-     *
-     * @param int $status Status
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function setStatus(int $status) : void
-    {
-        $this->status = $status;
     }
 
     /**
@@ -574,96 +513,6 @@ class Bill implements \JsonSerializable
     }
 
     /**
-     * Set currency.
-     *
-     * @param string $currency Currency
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function setCurrency(string $currency) : void
-    {
-        $this->currency = $currency;
-    }
-
-    /**
-     * Get currency.
-     *
-     * @return string
-     *
-     * @since 1.0.0
-     */
-    public function getCurrency() : string
-    {
-        return $this->currency;
-    }
-
-    /**
-     * Get vouchers.
-     *
-     * @return array
-     *
-     * @since 1.0.0
-     */
-    public function getVouchers() : array
-    {
-        return $this->vouchers;
-    }
-
-    /**
-     * Add voucher.
-     *
-     * @param string $voucher Voucher code
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function addVoucher(string $voucher) : void
-    {
-        $this->vouchers[] = $voucher;
-    }
-
-    /**
-     * Get tracking ids for shipment.
-     *
-     * @return array
-     *
-     * @since 1.0.0
-     */
-    public function getTrackings() : array
-    {
-        return $this->trackings;
-    }
-
-    /**
-     * Add tracking id.
-     *
-     * @param string $tracking Tracking id
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function addTracking(string $tracking) : void
-    {
-        $this->trackings[] = $tracking;
-    }
-
-    /**
-     * Get Bill elements.
-     *
-     * @return BillElement[]
-     *
-     * @since 1.0.0
-     */
-    public function getElements() : array
-    {
-        return $this->elements;
-    }
-
-    /**
      * Add Bill element.
      *
      * @param BillElement $element Bill element
@@ -676,16 +525,157 @@ class Bill implements \JsonSerializable
     {
         $this->elements[] = $element;
 
-        $this->netProfit->add($element->totalProfitNet->getInt());
-        $this->grossProfit->add($element->totalProfitGross->getInt());
-        $this->netCosts->add($element->totalPurchasePriceNet->getInt());
-        $this->grossCosts->add($element->totalPurchasePriceGross->getInt());
-        $this->netSales->add($element->totalSalesPriceNet->getInt());
-        $this->grossSales->add($element->totalSalesPriceGross->getInt());
-        $this->netDiscount->add($element->totalDiscountP->getInt());
+        $this->netProfit->value   += $element->totalProfitNet->value;
+        $this->netCosts->value    += $element->totalPurchasePriceNet->value;
+        $this->netSales->value    += $element->totalSalesPriceNet->value;
+        $this->grossSales->value  += $element->totalSalesPriceGross->value;
+        $this->netDiscount->value += $element->totalDiscountP->value;
+    }
 
-        // @todo: Discount might be in quantities
-        $this->grossDiscount->add((int) ($element->taxR->getInt() * $element->totalDiscountP->getInt() / 10000));
+    /**
+     * Validate the correctness of the bill
+     *
+     * @return bool
+     *
+     * @todo also consider rounding similarly to recalculatePrices in elements
+     *
+     * @since 1.0.0
+     */
+    public function isValid() : bool
+    {
+        return $this->validateTaxAmountElements()
+            && $this->validateProfit()
+            && $this->validateGrossElements()
+            && $this->validatePriceQuantityElements()
+            && $this->validateNetElements()
+            && $this->validateNetGross()
+            && $this->areElementsValid();
+    }
+
+    /**
+     * Validate the correctness of the bill elements
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
+    public function areElementsValid() : bool
+    {
+        foreach ($this->elements as $element) {
+            if (!$element->isValid()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Validate the correctness of the net and gross values
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
+    public function validateNetGross() : bool
+    {
+        return $this->netSales->value <= $this->grossSales->value;
+    }
+
+    /**
+     * Validate the correctness of the profit
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
+    public function validateProfit() : bool
+    {
+        return $this->netSales->value - $this->netCosts->value === $this->netProfit->value;
+    }
+
+    /**
+     * Validate the correctness of the taxes
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
+    public function validateTax() : bool
+    {
+        return \abs($this->netSales->value + $this->taxP->value - $this->grossSales->value) === 0;
+    }
+
+    /**
+     * Validate the correctness of the taxes for the elements
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
+    public function validateTaxAmountElements() : bool
+    {
+        $taxes = 0;
+        foreach ($this->elements as $element) {
+            $taxes += $element->taxP->value;
+        }
+
+        return $taxes === $this->taxP->value;
+    }
+
+    /**
+     * Validate the correctness of the net of the elements
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
+    public function validateNetElements() : bool
+    {
+        $net = 0;
+        foreach ($this->elements as $element) {
+            $net += $element->totalSalesPriceNet->value;
+        }
+
+        return $net === $this->netSales->value;
+    }
+
+    /**
+     * Validate the correctness of the gross of the elements
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
+    public function validateGrossElements()
+    {
+        $gross = 0;
+        foreach ($this->elements as $element) {
+            $gross += $element->totalSalesPriceGross->value;
+        }
+
+        return $gross === $this->grossSales->value;
+    }
+
+    /**
+     * Validate the correctness of the quantities and total price
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
+    public function validatePriceQuantityElements()
+    {
+        foreach ($this->elements as $element) {
+            if ($element->discountQ->value === 0
+                && $element->totalDiscountP->value === 0
+                && ($element->quantity->value / FloatInt::DIVISOR) * $element->singleSalesPriceNet->value - $element->totalSalesPriceNet->value > 1.0
+            ) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -694,21 +684,22 @@ class Bill implements \JsonSerializable
     public function toArray() : array
     {
         return [
-            'id'           => $this->id,
-            'number'       => $this->number,
-            'type'         => $this->type,
-            'shipTo'       => $this->shipTo,
-            'shipFAO'      => $this->shipFAO,
-            'shipAddress'  => $this->shipAddress,
-            'shipCity'     => $this->shipCity,
-            'shipZip'      => $this->shipZip,
-            'shipCountry'  => $this->shipCountry,
-            'billTo'       => $this->billTo,
-            'billFAO'      => $this->billFAO,
-            'billAddress'  => $this->billAddress,
-            'billCity'     => $this->billCity,
-            'billZip'      => $this->billZip,
-            'billCountry'  => $this->billCountry,
+            'id'          => $this->id,
+            'number'      => $this->number,
+            'external'    => $this->external,
+            'type'        => $this->type,
+            'shipTo'      => $this->shipTo,
+            'shipFAO'     => $this->shipFAO,
+            'shipAddress' => $this->shipAddress,
+            'shipCity'    => $this->shipCity,
+            'shipZip'     => $this->shipZip,
+            'shipCountry' => $this->shipCountry,
+            'billTo'      => $this->billTo,
+            'billFAO'     => $this->billFAO,
+            'billAddress' => $this->billAddress,
+            'billCity'    => $this->billCity,
+            'billZip'     => $this->billZip,
+            'billCountry' => $this->billCountry,
         ];
     }
 

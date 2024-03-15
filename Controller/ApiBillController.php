@@ -16,38 +16,50 @@ namespace Modules\Billing\Controller;
 
 use Modules\Admin\Models\NullAccount;
 use Modules\Admin\Models\SettingsEnum as AdminSettingsEnum;
+use Modules\Attribute\Models\NullAttribute;
+use Modules\Attribute\Models\NullAttributeType;
+use Modules\Attribute\Models\NullAttributeValue;
 use Modules\Billing\Models\Bill;
 use Modules\Billing\Models\BillElement;
 use Modules\Billing\Models\BillElementMapper;
 use Modules\Billing\Models\BillMapper;
 use Modules\Billing\Models\BillStatus;
+use Modules\Billing\Models\BillTransferType;
 use Modules\Billing\Models\BillTypeMapper;
 use Modules\Billing\Models\NullBill;
 use Modules\Billing\Models\NullBillElement;
+use Modules\Billing\Models\PermissionCategory;
 use Modules\Billing\Models\SettingsEnum;
 use Modules\ClientManagement\Models\Client;
 use Modules\ClientManagement\Models\ClientMapper;
+use Modules\ItemManagement\Models\Attribute\ItemAttributeMapper;
 use Modules\ItemManagement\Models\Item;
 use Modules\ItemManagement\Models\ItemMapper;
+use Modules\ItemManagement\Models\NullContainer;
 use Modules\Media\Models\CollectionMapper;
 use Modules\Media\Models\Media;
+use Modules\Media\Models\MediaClass;
 use Modules\Media\Models\MediaMapper;
+use Modules\Media\Models\NullCollection;
 use Modules\Media\Models\PathSettings;
 use Modules\Media\Models\UploadStatus;
 use Modules\Messages\Models\EmailMapper;
 use Modules\SupplierManagement\Models\NullSupplier;
 use Modules\SupplierManagement\Models\Supplier;
 use Modules\SupplierManagement\Models\SupplierMapper;
+use phpOMS\Account\PermissionType;
 use phpOMS\Application\ApplicationAbstract;
 use phpOMS\Autoloader;
+use phpOMS\DataStorage\Database\Query\ColumnName;
 use phpOMS\Localization\ISO4217CharEnum;
 use phpOMS\Localization\ISO639x1Enum;
+use phpOMS\Message\Http\HttpRequest;
 use phpOMS\Message\Http\RequestStatusCode;
-use phpOMS\Message\Mail\Email;
 use phpOMS\Message\NotificationLevel;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
 use phpOMS\Model\Message\FormValidation;
+use phpOMS\Stdlib\Base\FloatInt;
 use phpOMS\System\MimeType;
 use phpOMS\Views\View;
 
@@ -68,13 +80,173 @@ final class ApiBillController extends Controller
      *
      * @since 1.0.0
      */
-    public function __construct(ApplicationAbstract $app = null)
+    public function __construct(?ApplicationAbstract $app = null)
     {
         parent::__construct($app);
 
         if ($this->app->moduleManager->isActive('WarehouseManagement')) {
             $this->app->eventManager->importFromFile(__DIR__ . '/../../WarehouseManagement/Admin/Hooks/Manual.php');
         }
+
+        if ($this->app->moduleManager->isActive('Accounting')) {
+            $this->app->eventManager->importFromFile(__DIR__ . '/../../Accounting/Admin/Hooks/Manual.php');
+        }
+    }
+
+    /**
+     * Create email for/from bill
+     *
+     * @param RequestAbstract $request Request
+     * @param array           $data    Data
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
+    public function apiBillEmail(RequestAbstract $request, array $data = []) : void
+    {
+        $bill = $data['bill'] ?? BillMapper::get()
+            ->with('type')
+            ->with('files')
+            ->with('files/types')
+            ->where('id', $request->getDataInt('bill') ?? 0)
+            ->execute();
+
+        $media = $data['media'] ?? $bill->getFileByTypeName('internal');
+
+        if ($bill->status === BillStatus::ARCHIVED
+            && $bill->type->email
+        ) {
+            $email           = $request->getDataString('email');
+            $billingTemplate = null;
+
+            if (!empty($email)) {
+                /** @var \Model\Setting $billingTemplate */
+                $billingTemplate = $this->app->appSettings->get(
+                    names: SettingsEnum::BILLING_CUSTOMER_EMAIL_TEMPLATE,
+                    module: 'Billing'
+                );
+            } elseif (($bill->client?->id ?? 0) !== 0) {
+                $client = ClientMapper::get()
+                    ->with('account')
+                    ->with('attributes')
+                    ->with('attributes/type')
+                    ->with('attributes/value')
+                    ->where('id', $bill->client?->id ?? 0)
+                    ->where('attributes/type/name', ['bill_emails', 'bill_email_address'], 'IN')
+                    ->execute();
+
+                /** @var \Model\Setting $billingTemplate */
+                $billingTemplate = $this->app->appSettings->get(
+                    names: SettingsEnum::BILLING_CUSTOMER_EMAIL_TEMPLATE,
+                    module: 'Billing'
+                );
+
+                if ($client->getAttribute('bill_emails')->value->getValue() === 1) {
+                    // @todo should this really be a string or an ID for a contact element?
+                    $email ??= empty($tmp = $client->getAttribute('bill_email_address')->value->valueStr)
+                        ? $client->account->email
+                        : (string) $tmp;
+                }
+            } elseif (($bill->supplier?->id ?? 0) !== 0) {
+                $supplier = SupplierMapper::get()
+                    ->with('account')
+                    ->with('attributes')
+                    ->with('attributes/type')
+                    ->with('attributes/value')
+                    ->where('id', $bill->supplier?->id ?? 0)
+                    ->where('attributes/type/name', ['bill_emails', 'bill_email_address'], 'IN')
+                    ->execute();
+
+                /** @var \Model\Setting $billingTemplate */
+                $billingTemplate = $this->app->appSettings->get(
+                    names: SettingsEnum::BILLING_SUPPLIER_EMAIL_TEMPLATE,
+                    module: 'Billing'
+                );
+
+                if ($supplier->getAttribute('bill_emails')->value->getValue() === 1) {
+                    // @todo should this really be a string or an ID for a contact element?
+                    $email ??= empty($tmp = $supplier->getAttribute('bill_email_address')->value->valueStr)
+                        ? $supplier->account->email
+                        : (string) $tmp;
+                }
+            }
+
+            if (!empty($email) && $billingTemplate !== null) {
+                $this->sendBillEmail($media, $email, (int) $billingTemplate->content, $bill->language);
+            }
+        }
+    }
+
+    /**
+     * Api method to finalize a bill
+     *
+     * Finalization creates an archive and possibly sends the bill via email.
+     * Additionally, it triggers the event Billing-bill-finalize event which also finalizes the stock changes and possibly accounting postings
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param array            $data     Generic data
+     *
+     * @return void
+     *
+     * @api
+     *
+     * @since 1.0.0
+     */
+    public function apiBillFinalize(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
+    {
+        if (!$this->app->accountManager->get($request->header->account)->hasPermission(
+                PermissionType::READ,
+                $this->app->unitId,
+                null,
+                self::NAME,
+                PermissionCategory::SALES_INVOICE
+            )
+            && !$this->app->accountManager->get($request->header->account)->hasPermission(
+                PermissionType::READ,
+                $this->app->unitId,
+                null,
+                self::NAME,
+                PermissionCategory::PURCHASE_INVOICE
+            )
+        ) {
+            $this->fillJsonResponse($request, $response, NotificationLevel::HIDDEN, '', '', []);
+            $response->header->status = RequestStatusCode::R_403;
+
+            return;
+        }
+
+        // Archive bill
+        /** @var \Modules\Billing\Models\Bill $old */
+        $old = BillMapper::get()
+            ->with('type')
+            ->where('id', $request->getDataInt('bill') ?? 0)
+            ->execute();
+
+        $new         = clone $old;
+        $new->status = BillStatus::ARCHIVED;
+
+        $this->updateModel($request->header->account, $old, $new, BillMapper::class, 'bill', $request->getOrigin());
+
+        // Create final pdf
+        $this->apiBillPdfArchiveCreate($request, $response, $data);
+        $media = $response->getDataArray($request->uri->__toString())['response'];
+
+        $this->app->eventManager->triggerSimilar('PRE:Module:' . self::NAME . '-bill-finalize', '', [
+            $request->header->account,
+            null, $new,
+            null, self::NAME . '-bill-finalize',
+            self::NAME,
+            (string) $new->id,
+            null,
+            $request->getOrigin(),
+        ]);
+
+        // Send bill via email
+        $this->apiBillEmail($request, ['bill' => $new, 'media' => $media]);
+
+        $this->createStandardUpdateResponse($request, $response, $new);
     }
 
     /**
@@ -101,6 +273,16 @@ final class ApiBillController extends Controller
 
         /** @var \Modules\Billing\Models\Bill $old */
         $old = BillMapper::get()->where('id', (int) $request->getData('bill'))->execute();
+
+        // @feature Allow to update internal statistical fields
+        //      Example: Referral account
+        if ($old->status === BillStatus::ARCHIVED) {
+            $response->header->status = RequestStatusCode::R_423;
+            $this->createInvalidUpdateResponse($request, $response, $val);
+
+            return;
+        }
+
         $new = $this->updateBillFromRequest($request, clone $old);
 
         $this->updateModel($request->header->account, $old, $new, BillMapper::class, 'bill', $request->getOrigin());
@@ -201,51 +383,100 @@ final class ApiBillController extends Controller
     /**
      * Create a base Bill object with default values
      *
+     * Client attributes required:
+     *      'segment', 'section', 'client_group', 'client_type',
+     *      'sales_tax_code'
+     *
+     * Supplier attributes required:
+     *      'purchase_tax_code'
+     *
      * @param Client|Supplier $account The client or supplier object for whom the bill is being created
      * @param RequestAbstract $request The request object that contains the header account
      *
      * @return Bill The new Bill object with default values
      *
-     * @todo Validate VAT before creation (maybe need to add a status when last validated, we don't want to validate every time)
-     * @todo Set the correct date of payment
-     * @todo Use bill and shipping address instead of main address if available
-     * @todo Implement allowed invoice languages and a default invoice language if none match
-     * @todo Implement client invoice language (allowing for different invoice languages than invoice address)
+     * @todo Validate VAT before creation
+     *      Maybe needs to add a status when last validated, we don't want to validate every time
+     *      https://github.com/Karaka-Management/oms-Billing/issues/44
+     *
+     * @todo Add custom tax id for bill to manually overwrite the client_sales_tax_code
+     *      https://github.com/Karaka-Management/oms-Billing/issues/65
      *
      * @since 1.0.0
      */
     public function createBaseBill(Client | Supplier $account, RequestAbstract $request) : Bill
     {
-        // @todo: validate vat before creation for clients
         $bill                  = new Bill();
         $bill->createdBy       = new NullAccount($request->header->account);
         $bill->unit            = $account->unit ?? $this->app->unitId;
-        $bill->billDate        = new \DateTime('now'); // @todo: Date of payment
-        $bill->performanceDate = $request->getDataDateTime('performancedate') ?? new \DateTime('now'); // @todo: Date of payment
+        $bill->billDate        = $request->getDataDateTime('bill_date') ?? new \DateTime('now');
+        $bill->performanceDate = $request->getDataDateTime('performancedate') ?? new \DateTime('now');
         $bill->accountNumber   = $account->number;
-        $bill->setStatus($request->getDataInt('status') ?? BillStatus::DRAFT);
+        $bill->external        = $request->getDataString('externalreferral') ?? '';
+        $bill->status          = BillStatus::tryFromValue($request->getDataInt('status')) ?? BillStatus::DRAFT;
 
-        $bill->shipping     = 0;
-        $bill->shippingText = '';
+        $bill->shippingTerms = null;
+        $bill->shippingText  = '';
 
-        $bill->payment     = 0;
-        $bill->paymentText = '';
+        $bill->paymentTerms = null;
+        $bill->paymentText  = '';
+
+        // @todo Handle payment due
+        //      Careful, there can be multiple due dates
+        //      Example: payment plan or discounted and none-discounted date
+        //      https://github.com/Karaka-Management/oms-Billing/issues/53
 
         if ($account instanceof Client) {
-            $bill->client = $account;
+            $bill->client     = $account;
+            $bill->accTaxCode = empty($temp = $bill->client->getAttribute('sales_tax_code')->value->id) ? null : $temp;
+            $bill->accSegment = empty($temp = $bill->client->getAttribute('segment')->value->id) ? null : $temp;
+            $bill->accSection = empty($temp = $bill->client->getAttribute('section')->value->id) ? null : $temp;
+            $bill->accGroup   = empty($temp = $bill->client->getAttribute('client_group')->value->id) ? null : $temp;
+            $bill->accType    = empty($temp = $bill->client->getAttribute('client_type')->value->id) ? null : $temp;
         } else {
-            $bill->supplier = $account;
+            $bill->supplier   = $account;
+            $bill->accTaxCode = empty($temp = $bill->supplier->getAttribute('purchase_tax_code')->value->id) ? null : $temp;
         }
 
-        // @todo: use bill and shipping address instead of main address if available
+        // @todo use bill and shipping address instead of main address if available
+        //      https://github.com/Karaka-Management/oms-Billing/issues/45
         $bill->billTo      = $request->getDataString('billto') ?? $account->account->name1;
         $bill->billAddress = $request->getDataString('billaddress') ?? $account->mainAddress->address;
         $bill->billCity    = $request->getDataString('billtocity') ?? $account->mainAddress->city;
         $bill->billZip     = $request->getDataString('billtopostal') ?? $account->mainAddress->postal;
-        $bill->billCountry = $request->getDataString('billtocountry') ?? $account->mainAddress->getCountry();
+        $bill->billCountry = $request->getDataString('billtocountry') ?? $account->mainAddress->country;
 
-        $bill->setCurrency(ISO4217CharEnum::_EUR);
+        $bill->currency = ISO4217CharEnum::_EUR;
 
+        $bill->language = $this->findBillLanguage($account);
+
+        $typeMapper = BillTypeMapper::get()
+            ->with('l11n')
+            ->where('l11n/language', $bill->language)
+            ->limit(1);
+
+        if ($request->hasData('type')) {
+            $typeMapper->where('id', $request->getDataInt('type'));
+        } else {
+            $typeMapper->where('name', 'sales_invoice');
+        }
+
+        $bill->type = $typeMapper->execute();
+
+        return $bill;
+    }
+
+    /**
+     * Find bill language.
+     *
+     * @param Client|Supplier $account Account (with attributes!!!)
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
+    private function findBillLanguage(Client|Supplier $account) : string
+    {
         /** @var \Model\Setting $settings */
         $settings = $this->app->appSettings->get(null,
             SettingsEnum::VALID_BILL_LANGUAGES,
@@ -256,7 +487,7 @@ final class ApiBillController extends Controller
         if (empty($settings)) {
             /** @var \Model\Setting $settings */
             $settings = $this->app->appSettings->get(null,
-            SettingsEnum::VALID_BILL_LANGUAGES,
+                SettingsEnum::VALID_BILL_LANGUAGES,
                 unit: null,
                 module: 'Admin'
             );
@@ -279,36 +510,29 @@ final class ApiBillController extends Controller
         if (!empty($accountBillLanguage) && \in_array($accountBillLanguage, $validLanguages)) {
             $billLanguage = $accountBillLanguage;
         } else {
-            $accountLanguages = ISO639x1Enum::languageFromCountry($account->mainAddress->getCountry());
-            $accountLanguage  = empty($accountLanguages) ? '' : $accountLanguages[0];
+            $accountLanguages = ISO639x1Enum::languageFromCountry($account->mainAddress->country);
+            $accountLanguage  = '';
 
-            if (\in_array($accountLanguage, $validLanguages)) {
-                $billLanguage = $accountLanguage;
+            foreach ($accountLanguages as $accountLanguage) {
+                if (\in_array($accountLanguage, $validLanguages)) {
+                    $billLanguage = $accountLanguage;
+
+                    break;
+                }
             }
         }
 
-        $bill->language = $billLanguage;
-
-        $typeMapper = BillTypeMapper::get()
-            ->with('l11n')
-            ->where('l11n/langauge', $billLanguage)
-            ->limit(1);
-
-        if ($request->hasData('type')) {
-            $typeMapper->where('id', $request->getDataInt('type'));
-        } else {
-            $typeMapper->where('name', 'sales_invoice');
-        }
-
-        $bill->type = $typeMapper->execute();
-
-        return $bill;
+        return $billLanguage;
     }
 
     /**
      * Create a base BillElement object with default values
      *
-     * @param Client          $client  The client object for whom the bill is being created
+     * Item attributes required:
+     *      'segment', 'section', 'sales_group', 'product_group', 'product_type',
+     *      'sales_tax_code', 'purchase_tax_code', 'costcenter', 'costobject',
+     *      'default_purchase_container', 'default_sales_container',
+     *
      * @param Item            $item    The item object for which the bill element is being created
      * @param Bill            $bill    The bill object for which the bill element is being created
      * @param RequestAbstract $request The request object that contains the header account
@@ -317,17 +541,95 @@ final class ApiBillController extends Controller
      *
      * @since 1.0.0
      */
-    public function createBaseBillElement(Client $client, Item $item, Bill $bill, RequestAbstract $request) : BillElement
+    public function createBaseBillElement(Item $item, Bill $bill, RequestAbstract $request) : BillElement
     {
-        $taxCode = $this->app->moduleManager->get('Billing', 'ApiTax')
-            ->getTaxCodeFromClientItem($client, $item, $request->header->l11n->country);
+        // Handle person tax code for finding tax combination below
+        $attr           = new NullAttribute();
+        $attrType       = new NullAttributeType();
+        $attrType->name = $bill->client !== null ? 'sales_tax_code' : 'purchase_tax_code';
+        $attrValue      = new NullAttributeValue($bill->accTaxCode ?? 0);
+        $attr->type     = $attrType;
+        $attr->value    = $attrValue;
 
-        return BillElement::fromItem(
+        $container = $request->hasData('container')
+            ? new NullContainer((int) $request->getData('container'))
+            : null;
+
+        $attr = new NullAttribute();
+
+        if ($bill->type->transferType === BillTransferType::PURCHASE && $bill->supplier !== null) {
+            $bill->supplier->attributes[] = $attr;
+
+            if ($container === null) {
+                $attr = $item->getAttribute('default_purchase_container');
+                if ($attr->id === 0) {
+                    /** @var \Modules\Attribute\Models\Attribute $attr */
+                    $attr = ItemAttributeMapper::get()
+                        ->with('type')
+                        ->with('value')
+                        ->where('ref', $item->id)
+                        ->where('type/name', 'default_purchase_container')
+                        ->execute();
+                }
+            }
+        } elseif ($bill->client !== null) {
+            $bill->client->attributes[] = $attr;
+
+            if ($container === null) {
+                $attr = $item->getAttribute('default_sales_container');
+                if ($attr->id === 0) {
+                    /** @var \Modules\Attribute\Models\Attribute $attr */
+                    $attr = ItemAttributeMapper::get()
+                        ->with('type')
+                        ->with('value')
+                        ->where('ref', $item->id)
+                        ->where('type/name', 'default_sales_container')
+                        ->execute();
+                }
+            }
+        }
+
+        $container = $container === null && $attr->id !== 0
+            ? new NullContainer($attr->value->valueInt ?? 0)
+            : $container;
+
+        $taxCombination = $this->app->moduleManager->get('Billing', 'ApiTax')
+            ->getTaxForPerson($item, $bill->client, $bill->supplier, $request->header->l11n->country);
+
+        $element = BillElement::fromItem(
             $item,
-            $taxCode,
-            $request->getDataInt('quantity') ?? 1,
-            $bill->id
+            $taxCombination,
+            $bill,
+            FloatInt::toInt($request->getDataString('quantity') ?? '1'),
+            $container
         );
+
+        $element->itemSegment      = empty($temp = $item->getAttribute('segment')->value->id) ? null : $temp;
+        $element->itemSection      = empty($temp = $item->getAttribute('section')->value->id) ? null : $temp;
+        $element->itemSalesGroup   = empty($temp = $item->getAttribute('sales_group')->value->id) ? null : $temp;
+        $element->itemProductGroup = empty($temp = $item->getAttribute('product_group')->value->id) ? null : $temp;
+        $element->itemType         = empty($temp = $item->getAttribute('product_type')->value->id) ? null : $temp;
+
+        $internalRequest                  = new HttpRequest($request->uri);
+        $internalRequest->header->account = $request->header->account;
+
+        $price = $this->app->moduleManager->get('Billing', 'ApiPrice')->findBestPrice($internalRequest, $item, $bill->client, $bill->supplier);
+
+        $element->singleListPriceNet->value = $price['bestPrice']->value === 0
+            ? $item->salesPrice->value
+            : $price['bestPrice']->value;
+
+        $element->singleSalesPriceNet->value = $price['bestActualPrice']->value === 0
+            ? $item->salesPrice->value
+            : $price['bestActualPrice']->value;
+
+        $element->totalDiscountP  = new FloatInt($request->getDataString('discount_amount') ?? $price['discountAmount']->value);
+        $element->singleDiscountR = new FloatInt($request->getDataString('discount_percentage') ?? $price['discountPercent']->value);
+        $element->discountQ       = new FloatInt($request->getDataString('bonus') ?? $price['bonus']->value);
+
+        $element->recalculatePrices();
+
+        return $element;
     }
 
     /**
@@ -350,7 +652,14 @@ final class ApiBillController extends Controller
             $account = ClientMapper::get()
                 ->with('account')
                 ->with('mainAddress')
+                ->with('attributes')
+                ->with('attributes/type')
+                ->with('attributes/value')
                 ->where('id', (int) $request->getData('client'))
+                ->where('attributes/type/name', [
+                    'segment', 'section', 'client_group', 'client_type',
+                    'sales_tax_code',
+                ], 'IN')
                 ->execute();
         } elseif (($request->getDataInt('supplier') ?? -1) === 0) {
             /** @var \Modules\SupplierManagement\Models\Supplier $account */
@@ -360,7 +669,13 @@ final class ApiBillController extends Controller
             $account = SupplierMapper::get()
                 ->with('account')
                 ->with('mainAddress')
+                ->with('attributes')
+                ->with('attributes/type')
+                ->with('attributes/value')
                 ->where('id', (int) $request->getData('supplier'))
+                ->where('attributes/type/name', [
+                    'purchase_tax_code',
+                ], 'IN')
                 ->execute();
         }
 
@@ -419,7 +734,7 @@ final class ApiBillController extends Controller
 
         $uploaded = [];
         if (!empty($uploadedFiles = $request->files)) {
-            $uploaded = $this->app->moduleManager->get('Media')->uploadFiles(
+            $uploaded = $this->app->moduleManager->get('Media', 'Api')->uploadFiles(
                 names: [],
                 fileNames: [],
                 files: $uploadedFiles,
@@ -482,20 +797,20 @@ final class ApiBillController extends Controller
             }
         }
 
-        if (!empty($mediaFiles = $request->getDataJson('media'))) {
-            foreach ($mediaFiles as $media) {
-                $this->createModelRelation(
-                    $request->header->account,
-                    $bill->id,
-                    (int) $media,
-                    BillMapper::class,
-                    'files',
-                    '',
-                    $request->getOrigin()
-                );
-            }
+        $mediaFiles = $request->getDataJson('media');
+        foreach ($mediaFiles as $media) {
+            $this->createModelRelation(
+                $request->header->account,
+                $bill->id,
+                (int) $media,
+                BillMapper::class,
+                'files',
+                '',
+                $request->getOrigin()
+            );
         }
 
+        // @todo media should be an array of NullMedia elements
         $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Media', 'Media added to bill.', [
             'upload' => $uploaded,
             'media'  => $mediaFiles,
@@ -517,7 +832,6 @@ final class ApiBillController extends Controller
      */
     public function apiMediaRemoveFromBill(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
-        // @todo: check that it is not system generated media!
         if (!empty($val = $this->validateMediaRemoveFromBill($request))) {
             $response->header->status = RequestStatusCode::R_400;
             $this->createInvalidDeleteResponse($request, $response, $val);
@@ -531,20 +845,35 @@ final class ApiBillController extends Controller
         /** @var \Modules\Billing\Models\Bill $bill */
         $bill = BillMapper::get()->where('id', (int) $request->getData('bill'))->execute();
 
-        $path = $this->createBillDir($bill);
+        // Cannot delete system generated bill
+        if (\stripos($media->name, $bill->number) !== false) {
+            $response->header->status = RequestStatusCode::R_423;
+            $this->createInvalidDeleteResponse($request, $response, $media);
 
-        /** @var \Modules\Media\Models\Collection[] */
-        $billCollection = CollectionMapper::getAll()
-            ->where('virtual', $path)
-            ->execute();
-
-        if (\count($billCollection) !== 1) {
-            // @todo: For some reason there are multiple collections with the same virtual path?
-            // @todo: check if this is the correct way to handle it or if we need to make sure that it is a collection
             return;
         }
 
-        $collection = \reset($billCollection);
+        $path = \dirname($this->createBillDir($bill));
+
+        /** @var \Modules\Media\Models\Collection $collection */
+        $collection = CollectionMapper::get()
+            ->where('name', (string) $bill->id)
+            ->where('virtual', $path)
+            ->where('class', MediaClass::COLLECTION)
+            ->limit(1)
+            ->execute();
+
+        if ($collection->id !== 0) {
+            $this->deleteModelRelation(
+                $request->header->account,
+                $collection->id,
+                $media->id,
+                CollectionMapper::class,
+                'sources',
+                '',
+                $request->getOrigin()
+            );
+        }
 
         $this->deleteModelRelation(
             $request->header->account,
@@ -556,23 +885,9 @@ final class ApiBillController extends Controller
             $request->getOrigin()
         );
 
-        $this->deleteModelRelation(
-            $request->header->account,
-            $collection->id,
-            $media->id,
-            CollectionMapper::class,
-            'sources',
-            '',
-            $request->getOrigin()
-        );
-
+        // Check if media referenced by other media except the parent collection
         $referenceCount = MediaMapper::countInternalReferences($media->id);
-
-        if ($referenceCount === 0) {
-            // Is not used anywhere else -> remove from db and file system
-
-            // @todo: remove media types from media
-
+        if ($referenceCount === 1) {
             $this->deleteModel($request->header->account, $media, MediaMapper::class, 'bill_media', $request->getOrigin());
 
             if (\is_dir($media->getAbsolutePath())) {
@@ -669,25 +984,21 @@ final class ApiBillController extends Controller
         /** @var \Modules\Billing\Models\Bill $old */
         $old = BillMapper::get()
             ->with('client')
-            ->with('client/attributes')
-            ->with('client/attributes/type')
-            ->with('client/attributes/value')
+            ->with('supplier')
             ->where('id', $request->getDataInt('bill') ?? 0)
             ->execute();
 
         $element = $this->createBillElementFromRequest($request, $response, $old, $data);
         $this->createModel($request->header->account, $element, BillElementMapper::class, 'bill_element', $request->getOrigin());
 
-        // @todo: handle stock transaction here
-        // @todo: if transaction fails don't update below and send warning to user
-        // @todo: however mark transaction as reserved and only update when bill is finalized!!!
-
-        // @todo: in BillElementUpdate do the same
+        // @todo Handle stock transaction here
+        //      If the transaction fails don't perform the update below
+        //      The same goes for BillElementUpdate
 
         $new = clone $old;
         $new->addElement($element);
 
-        $this->updateModel($request->header->account, $old, $new, BillMapper::class, 'bill_element', $request->getOrigin());
+        $this->updateModel($request->header->account, $old, $new, BillMapper::class, 'bill', $request->getOrigin());
         $this->createStandardCreateResponse($request, $response, $element);
     }
 
@@ -705,6 +1016,8 @@ final class ApiBillController extends Controller
      */
     private function createBillElementFromRequest(RequestAbstract $request, ResponseAbstract $response, Bill $bill, $data = null) : BillElement
     {
+        // @todo handle text element
+
         /** @var \Modules\ItemManagement\Models\Item $item */
         $item = ItemMapper::get()
             ->with('attributes')
@@ -713,7 +1026,12 @@ final class ApiBillController extends Controller
             ->with('l11n')
             ->with('l11n/type')
             ->where('id', $request->getDataInt('item') ?? 0)
-            ->where('l11n/type/title', ['name1', 'name2', 'name3'], 'IN')
+            ->where('attributes/type/name', [
+                'segment', 'section', 'sales_group', 'product_group', 'product_type',
+                'sales_tax_code', 'purchase_tax_code', 'costcenter', 'costobject',
+                'default_purchase_container', 'default_sales_container',
+            ], 'IN')
+            ->where('l11n/type/title', ['name1', 'name2'], 'IN')
             ->where('l11n/language', $bill->language)
             ->execute();
 
@@ -721,15 +1039,8 @@ final class ApiBillController extends Controller
             return new NullBillElement();
         }
 
-        $element       = $this->createBaseBillElement($bill->client, $item, $bill, $request);
+        $element       = $this->createBaseBillElement($item, $bill, $request);
         $element->bill = new NullBill($bill->id);
-
-        // discounts
-        // @todo: implement a addDiscount function
-        /*
-        if ($request->getData('discount_percentage') !== null) {
-        }
-        */
 
         return $element;
     }
@@ -768,7 +1079,27 @@ final class ApiBillController extends Controller
      */
     public function apiMediaRender(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
-        // @todo: check if has permission
+        if (!$this->app->accountManager->get($request->header->account)->hasPermission(
+                PermissionType::READ,
+                $this->app->unitId,
+                null,
+                self::NAME,
+                PermissionCategory::SALES_INVOICE
+            )
+            && !$this->app->accountManager->get($request->header->account)->hasPermission(
+                PermissionType::READ,
+                $this->app->unitId,
+                null,
+                self::NAME,
+                PermissionCategory::PURCHASE_INVOICE
+            )
+        ) {
+            $this->fillJsonResponse($request, $response, NotificationLevel::HIDDEN, '', '', []);
+            $response->header->status = RequestStatusCode::R_403;
+
+            return;
+        }
+
         $this->app->moduleManager->get('Media', 'Api')->apiMediaExport($request, $response, ['ignorePermission' => true]);
     }
 
@@ -787,49 +1118,53 @@ final class ApiBillController extends Controller
      */
     public function apiPreviewRender(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
-        /** @var \Modules\Billing\Models\Bill $bill */
-        $bill = BillMapper::get()
-            ->with('type')
-            ->with('type/l11n')
-            ->with('elements')
-            ->where('id', $request->getDataInt('bill') ?? 0)
-            ->execute();
+        if (!$this->app->accountManager->get($request->header->account)->hasPermission(
+                PermissionType::READ,
+                $this->app->unitId,
+                null,
+                self::NAME,
+                PermissionCategory::SALES_INVOICE
+            )
+            && !$this->app->accountManager->get($request->header->account)->hasPermission(
+                PermissionType::READ,
+                $this->app->unitId,
+                null,
+                self::NAME,
+                PermissionCategory::PURCHASE_INVOICE
+            )
+        ) {
+            $this->fillJsonResponse($request, $response, NotificationLevel::HIDDEN, '', '', []);
+            $response->header->status = RequestStatusCode::R_403;
+
+            return;
+        }
 
         Autoloader::addPath(__DIR__ . '/../../../Resources/');
 
-        $templateId = $request->getData('bill_template', 'int');
-        if ($templateId === null) {
-            $billTypeId = $request->getData('bill_type', 'int');
-
-            if (empty($billTypeId)) {
-                $billTypeId = $bill->type->id;
-            }
-
-            if (empty($billTypeId)) {
-                return;
-            }
-
-            /** @var \Modules\Billing\Models\BillType $billType */
-            $billType = BillTypeMapper::get()
-                ->with('defaultTemplate')
-                ->where('id', $billTypeId)
-                ->execute();
-
-            $templateId = $billType->defaultTemplate?->id;
-        }
-
-        /** @var \Modules\Media\Models\Collection $template */
-        $template = CollectionMapper::get()
-            ->with('sources')
-            ->where('id', $templateId)
+        /** @var \Modules\Billing\Models\Bill $bill */
+        $bill = BillMapper::get()
+            ->with('elements')
+            ->with('elements/container')
+            ->where('id', $request->getDataInt('bill') ?? 0)
             ->execute();
 
-        require_once __DIR__ . '/../../../Resources/tcpdf/TCPDF.php';
+        // Load bill type
+        $billTypeId = $request->getDataInt('bill_type') ?? $bill->type->id;
+        if (empty($billTypeId)) {
+            return;
+        }
 
-        $response->header->set('Content-Type', MimeType::M_PDF, true);
+        /** @var \Modules\Billing\Models\BillType $billType */
+        $billType = BillTypeMapper::get()
+            ->with('l11n')
+            ->where('id', $billTypeId)
+            ->where('l11n/language', $bill->language)
+            ->execute();
 
-        $view = new View($this->app->l11nManager, $request, $response);
-        $view->setTemplate('/' . \substr($template->getSourceByName('bill.pdf.php')->getPath(), 0, -8), 'pdf.php');
+        $templateId = $request->getDataInt('bill_template') ?? $billType->defaultTemplate?->id ?? 0;
+
+        // Overriding actual bill type
+        $bill->type = $billType;
 
         /** @var \Model\Setting[] $settings */
         $settings = $this->app->appSettings->get(null,
@@ -853,17 +1188,36 @@ final class ApiBillController extends Controller
             );
         }
 
-        /** @var \Modules\Media\Models\Collection $defaultTemplates */
-        $defaultTemplates = CollectionMapper::get()
+        $template         = new NullCollection();
+        $defaultTemplates = new NullCollection();
+        $defaultAssets    = new NullCollection();
+
+        /** @var \Modules\Media\Models\Collection[] $collections */
+        $collections = CollectionMapper::get()
             ->with('sources')
-            ->where('id', (int) $settings[AdminSettingsEnum::DEFAULT_TEMPLATES]->content)
+            ->where('id', [
+                (int) $settings[AdminSettingsEnum::DEFAULT_TEMPLATES]->content,
+                (int) $settings[AdminSettingsEnum::DEFAULT_ASSETS]->content,
+                $templateId,
+            ], 'IN')
             ->execute();
 
-        /** @var \Modules\Media\Models\Collection $defaultAssets */
-        $defaultAssets = CollectionMapper::get()
-            ->with('sources')
-            ->where('id', (int) $settings[AdminSettingsEnum::DEFAULT_ASSETS]->content)
-            ->execute();
+        foreach ($collections as $collection) {
+            if ($collection->id === $templateId) {
+                $template = $collection;
+            } elseif ($collection->id === (int) $settings[AdminSettingsEnum::DEFAULT_TEMPLATES]->content) {
+                $defaultTemplates = $collection;
+            } elseif ($collection->id === (int) $settings[AdminSettingsEnum::DEFAULT_ASSETS]->content) {
+                $defaultAssets = $collection;
+            }
+        }
+
+        require_once __DIR__ . '/../../../Resources/tcpdf/TCPDF.php';
+
+        $response->header->set('Content-Type', MimeType::M_PDF, true);
+
+        $view = new View($this->app->l11nManager, $request, $response);
+        $view->setTemplate('/' . \substr($template->getSourceByName('bill.pdf.php')->getPath(), 0, -8), 'pdf.php');
 
         $view->data['defaultTemplates'] = $defaultTemplates;
         $view->data['defaultAssets']    = $defaultAssets;
@@ -890,7 +1244,7 @@ final class ApiBillController extends Controller
         $view->data['bill_taxes']         = $request->getDataString('bill_taxes');
         $view->data['bill_currency']      = $request->getDataString('bill_currency');
 
-        // Unit specifc settings
+        // Unit specific settings
         $view->data['bill_logo_name']       = $request->getDataString('bill_logo_name');
         $view->data['bill_slogan']          = $request->getDataString('bill_slogan');
         $view->data['legal_company_name']   = $request->getDataString('legal_company_name');
@@ -930,46 +1284,49 @@ final class ApiBillController extends Controller
      */
     public function apiBillPdfArchiveCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
+        if (!$this->app->accountManager->get($request->header->account)->hasPermission(
+                PermissionType::READ,
+                $this->app->unitId,
+                null,
+                self::NAME,
+                PermissionCategory::SALES_INVOICE
+            )
+            && !$this->app->accountManager->get($request->header->account)->hasPermission(
+                PermissionType::READ,
+                $this->app->unitId,
+                null,
+                self::NAME,
+                PermissionCategory::PURCHASE_INVOICE
+            )
+        ) {
+            $this->fillJsonResponse($request, $response, NotificationLevel::HIDDEN, '', '', []);
+            $response->header->status = RequestStatusCode::R_403;
+
+            return;
+        }
+
         Autoloader::addPath(__DIR__ . '/../../../Resources/');
 
         /** @var \Modules\Billing\Models\Bill $bill */
         $bill = BillMapper::get()
-            ->where('id', $request->getDataInt('bill') ?? 0)
-            ->execute();
-
-        // @todo: This is stupid to do twice but I need to get the langauge.
-        // For the future it should just be a join on the bill langauge!!!
-        // The problem is the where here is a model where and not a query
-        // builder where meaning it is always considered a value and not a column.
-
-        /** @var \Modules\Billing\Models\Bill $bill */
-        $bill = BillMapper::get()
+            ->with('files')
+            ->with('files/types')
+            ->with('elements')
+            ->with('elements/container')
             ->with('type')
             ->with('type/l11n')
-            ->with('type/defaultTemplate')
-            ->with('elements')
             ->where('id', $request->getDataInt('bill') ?? 0)
-            ->where('type/l11n/language', $bill->language)
+            ->where('type/l11n/language', new ColumnName(BillMapper::getColumnByMember('language') ?? ''))
             ->execute();
 
-        $templateId = $request->getDataInt('bill_template');
-        if ($templateId === null) {
-            $templateId = $bill->type->defaultTemplate?->id;
-        }
+        // Handle PDF generation
+        $templateId = $request->getDataInt('bill_template') ?? $bill->type->defaultTemplate?->id ?? 0;
 
-        /** @var \Modules\Media\Models\Collection $template */
-        $template = CollectionMapper::get()
-            ->with('sources')
-            ->where('id', $templateId)
-            ->execute();
-
-        require_once __DIR__ . '/../../../Resources/tcpdf/TCPDF.php';
-
-        $view = new View($this->app->l11nManager, $request, $response);
-        $view->setTemplate('/' . \substr($template->getSourceByName('bill.pdf.php')->getPath(), 0, -8), 'pdf.php');
-
-        /** @var \Model\Setting[] $settings */
-        $settings = $this->app->appSettings->get(null,
+        // @todo It would be nice if we could somehow make the two settings calls below in one go.
+        //          Maybe always make with unit if defined AND with null (maybe also with app?)
+        //          Then return none-empty strictest match
+         /** @var \Model\Setting[] $settings */
+         $settings = $this->app->appSettings->get(null,
             [
                 AdminSettingsEnum::DEFAULT_TEMPLATES,
                 AdminSettingsEnum::DEFAULT_ASSETS,
@@ -990,23 +1347,40 @@ final class ApiBillController extends Controller
             );
         }
 
-        /** @var \Modules\Media\Models\Collection $defaultTemplates */
-        $defaultTemplates = CollectionMapper::get()
+        $template         = new NullCollection();
+        $defaultTemplates = new NullCollection();
+        $defaultAssets    = new NullCollection();
+
+        /** @var \Modules\Media\Models\Collection[] $collections */
+        $collections = CollectionMapper::get()
             ->with('sources')
-            ->where('id', (int) $settings[AdminSettingsEnum::DEFAULT_TEMPLATES]->content)
+            ->where('id', [
+                (int) $settings[AdminSettingsEnum::DEFAULT_TEMPLATES]->content,
+                (int) $settings[AdminSettingsEnum::DEFAULT_ASSETS]->content,
+                $templateId,
+            ], 'IN')
             ->execute();
 
-        /** @var \Modules\Media\Models\Collection $defaultAssets */
-        $defaultAssets = CollectionMapper::get()
-            ->with('sources')
-            ->where('id', (int) $settings[AdminSettingsEnum::DEFAULT_ASSETS]->content)
-            ->execute();
+        foreach ($collections as $collection) {
+            if ($collection->id === $templateId) {
+                $template = $collection;
+            } elseif ($collection->id === (int) $settings[AdminSettingsEnum::DEFAULT_TEMPLATES]->content) {
+                $defaultTemplates = $collection;
+            } elseif ($collection->id === (int) $settings[AdminSettingsEnum::DEFAULT_ASSETS]->content) {
+                $defaultAssets = $collection;
+            }
+        }
+
+        require_once __DIR__ . '/../../../Resources/tcpdf/TCPDF.php';
+
+        $view = new View($this->app->l11nManager, $request, $response);
+        $view->setTemplate('/' . \substr($template->getSourceByName('bill.pdf.php')->getPath(), 0, -8), 'pdf.php');
 
         $view->data['defaultTemplates'] = $defaultTemplates;
         $view->data['defaultAssets']    = $defaultAssets;
         $view->data['bill']             = $bill;
 
-        // @todo: add bill data such as company name bank information, ..., etc.
+        // @todo add bill data such as company name bank information, ..., etc.
 
         $pdf = $view->render();
 
@@ -1019,82 +1393,99 @@ final class ApiBillController extends Controller
             $response->set($request->uri->__toString(), new FormValidation(['status' => $status]));
             $response->header->status = RequestStatusCode::R_400;
 
+            \phpOMS\Log\FileLogger::getInstance()->error(
+                \phpOMS\Log\FileLogger::MSG_FULL, [
+                    'message' => 'Couldn\'t create bill path: ' . $bill->id,
+                    'line'    => __LINE__,
+                    'file'    => self::class,
+                ]
+            );
+
             return;
             // @codeCoverageIgnoreEnd
         }
+
+        /** @var \Model\Setting $internalType */
+        $internalType = $this->app->appSettings->get(
+            names: SettingsEnum::INTERNAL_MEDIA_TYPE,
+            module: self::NAME
+        );
+
+        // @todo Check if old file exists -> update media
+        $oldFile = $bill->getFileByType((int) $internalType->content);
 
         $billFileName = ($bill->billDate?->format('Y-m-d') ?? '0') . '_' . $bill->number . '.pdf';
 
         \file_put_contents($pdfDir . '/' . $billFileName, $pdf);
         if (!\is_file($pdfDir . '/' . $billFileName)) {
             $response->header->status = RequestStatusCode::R_400;
+            $response->set($request->uri->__toString(), []);
+
+            \phpOMS\Log\FileLogger::getInstance()->error(
+                \phpOMS\Log\FileLogger::MSG_FULL, [
+                    'message' => 'Couldn\'t render bill pdf: ' . $bill->id,
+                    'line'    => __LINE__,
+                    'file'    => self::class,
+                ]
+            );
 
             return;
         }
 
-        $media = $this->app->moduleManager->get('Media', 'Api')->createDbEntry(
-            status: [
-                'status'    => UploadStatus::OK,
-                'name'      => $billFileName,
-                'path'      => $pdfDir,
-                'filename'  => $billFileName,
-                'size'      => \filesize($pdfDir . '/' . $billFileName),
-                'extension' => 'pdf',
-            ],
-            account: $request->header->account,
-            virtualPath: $path,
-            ip: $request->getOrigin(),
-            app: $this->app,
-            readContent: true,
-            unit: $this->app->unitId
-        );
+        $media = null;
+        if ($oldFile->id === 0) {
+            // Creating new bill archive pdf
+            $media = $this->app->moduleManager->get('Media', 'Api')->createDbEntry(
+                status: [
+                    'status'    => UploadStatus::OK,
+                    'name'      => $billFileName,
+                    'path'      => $pdfDir,
+                    'filename'  => $billFileName,
+                    'size'      => \filesize($pdfDir . '/' . $billFileName),
+                    'extension' => 'pdf',
+                ],
+                account: $request->header->account,
+                virtualPath: $path,
+                ip: $request->getOrigin(),
+                app: $this->app,
+                readContent: true,
+                unit: $this->app->unitId
+            );
 
-        // Send bill via email
-        // @todo: maybe not all bill types, and bill status (e.g. deleted should not be sent)
-        $client = ClientMapper::get()
-            ->with('account')
-            ->with('attributes')
-            ->with('attributes/type')
-            ->with('attributes/value')
-            ->where('id', $bill->client?->id ?? 0)
-            ->where('attributes/type/name', ['bill_emails', 'bill_email_address'], 'IN')
-            ->execute();
+            // Add type to media
+            $this->createModelRelation(
+                $request->header->account,
+                $media->id,
+                (int) $internalType->content,
+                MediaMapper::class,
+                'types',
+                '',
+                $request->getOrigin()
+            );
 
-        if ($client->getAttribute('bill_emails')->value->getValue() === 1) {
-            $email = empty($tmp = $client->getAttribute('bill_email_address')->value->getValue())
-                ? (string) $tmp
-                : $client->account->getEmail();
+            // Add media to bill
+            $this->createModelRelation(
+                $request->header->account,
+                $bill->id,
+                $media->id,
+                BillMapper::class,
+                'files',
+                '',
+                $request->getOrigin()
+            );
+        } else {
+            // Updating existing bill archive pdf
+            $media = clone $oldFile;
+            if (\realpath($pdfDir . '/' . $billFileName) !== \realpath($oldFile->getAbsolutePath())) {
+                \unlink($oldFile->getAbsolutePath());
+            }
 
-            $this->sendBillEmail($media, $email, $response->header->l11n->language);
+            $media->setPath(\Modules\Media\Controller\ApiController::normalizeDbPath($pdfDir . '/' . $billFileName));
+            $media->setVirtualPath($path);
+            $media->size = (int) \filesize($media->getAbsolutePath());
+
+            $this->updateModel($request->header->account, $oldFile, $media, MediaMapper::class, 'media', $request->getOrigin());
         }
-
-        // Add type to media
-        /** @var \Model\Setting $originalType */
-        $originalType = $this->app->appSettings->get(
-            names: SettingsEnum::ORIGINAL_MEDIA_TYPE,
-            module: self::NAME
-        );
-
-        $this->createModelRelation(
-            $request->header->account,
-            $media->id,
-            (int) $originalType->content,
-            MediaMapper::class,
-            'types',
-            '',
-            $request->getOrigin()
-        );
-
-        // Add media to bill
-        $this->createModelRelation(
-            $request->header->account,
-            $bill->id,
-            $media->id,
-            BillMapper::class,
-            'files',
-            '',
-            $request->getOrigin()
-        );
 
         $this->createStandardCreateResponse($request, $response, $media);
     }
@@ -1104,42 +1495,47 @@ final class ApiBillController extends Controller
      *
      * @param Media  $media    Media to send
      * @param string $email    Email address
+     * @param int    $template Email template
      * @param string $language Message language
      *
      * @return void
      *
+     * @question Maybe we should move this entire function to the Messages module
+     *      There is nothing bill specific in here.
+     *
      * @since 1.0.0
      */
-    public function sendBillEmail(Media $media, string $email, string $language = 'en') : void
+    public function sendBillEmail(Media $media, string $email, int $template, string $language = 'en') : void
     {
         $handler = $this->app->moduleManager->get('Admin', 'Api')->setUpServerMailHandler();
 
-        /** @var \Model\Setting $emailFrom */
-        $emailFrom = $this->app->appSettings->get(
-            names: AdminSettingsEnum::MAIL_SERVER_ADDR,
-            module: 'Admin'
-        );
-
-        /** @var \Model\Setting $billingTemplate */
-        $billingTemplate = $this->app->appSettings->get(
-            names: SettingsEnum::BILLING_CUSTOMER_EMAIL_TEMPLATE,
-            module: 'Billing'
-        );
-
         $mail = EmailMapper::get()
             ->with('l11n')
-            ->where('id', (int) $billingTemplate->content)
+            ->where('id', $template)
             ->where('l11n/language', $language)
             ->execute();
 
-        $mail = new Email();
-        $mail->setFrom($emailFrom->content);
+        $status = false;
+        if ($mail->id !== 0) {
+            $status = $this->app->moduleManager->get('Admin', 'Api')->setupEmailDefaults($mail, $language);
+        }
+
         $mail->addTo($email);
         $mail->addAttachment($media->getAbsolutePath(), $media->name);
 
-        $handler->send($mail);
+        if ($status) {
+            $status = $handler->send($mail);
+        }
 
-        $this->app->moduleManager->get('Billing', 'Api')->sendMail($mail);
+        if (!$status) {
+            \phpOMS\Log\FileLogger::getInstance()->error(
+                \phpOMS\Log\FileLogger::MSG_FULL, [
+                    'message' => 'Couldn\'t send bill media: ' . $media->id,
+                    'line'    => __LINE__,
+                    'file'    => self::class,
+                ]
+            );
+        }
     }
 
     /**
@@ -1176,7 +1572,7 @@ final class ApiBillController extends Controller
 
         /** @var \Modules\Editor\Models\EditorDoc $model */
         $model = $response->getDataArray($request->uri->__toString())['response'];
-        $this->createModelRelation($request->header->account, $request->getDataInt('id'), $model->id, BillMapper::class, 'bill_note', '', $request->getOrigin());
+        $this->createModelRelation($request->header->account, $request->getDataInt('id'), $model->id, BillMapper::class, 'notes', '', $request->getOrigin());
     }
 
     /**
@@ -1223,8 +1619,8 @@ final class ApiBillController extends Controller
         /** @var \Modules\Billing\Models\Bill $old */
         $old = BillMapper::get()->where('id', (int) $request->getData('id'))->execute();
 
-        // @todo: check if bill can be deleted
-        // @todo: adjust stock transfer
+        // @todo check if bill can be deleted
+        // @todo adjust stock transfer
 
         $new = $this->deleteBillFromRequest($request, clone $old);
         $this->updateModel($request->header->account, $old, $new, BillMapper::class, 'bill', $request->getOrigin());
@@ -1254,8 +1650,6 @@ final class ApiBillController extends Controller
      * @param RequestAbstract $request Request
      *
      * @return array<string, bool>
-     *
-     * @todo: implement
      *
      * @since 1.0.0
      */
@@ -1292,10 +1686,20 @@ final class ApiBillController extends Controller
         }
 
         /** @var BillElement $old */
-        $old = BillElementMapper::get()->where('id', (int) $request->getData('id'))->execute();
+        $old = BillElementMapper::get()
+            ->with('bill')
+            ->where('id', (int) $request->getData('id'))
+            ->execute();
 
-        // @todo: can be edited?
-        // @todo: adjust transfer protocolls
+        if ($old->bill->status === BillStatus::ARCHIVED) {
+            $response->header->status = RequestStatusCode::R_423;
+            $this->createInvalidUpdateResponse($request, $response, $old);
+
+            return;
+        }
+
+        // @todo can be edited?
+        // @todo adjust transfer protocols
 
         $new = $this->updateBillElementFromRequest($request, clone $old);
 
@@ -1311,7 +1715,7 @@ final class ApiBillController extends Controller
      *
      * @return BillElement
      *
-     * @todo: implement
+     * @todo Implement API update function
      *
      * @since 1.0.0
      */
@@ -1327,7 +1731,7 @@ final class ApiBillController extends Controller
      *
      * @return array<string, bool>
      *
-     * @todo: implement
+     * @todo Implement API validation function
      *
      * @since 1.0.0
      */
@@ -1363,8 +1767,8 @@ final class ApiBillController extends Controller
             return;
         }
 
-        // @todo: check if can be deleted
-        // @todo: handle transactions and bill update
+        // @todo check if can be deleted
+        // @todo handle transactions and bill update
 
         /** @var \Modules\Billing\Models\BillElement $billElement */
         $billElement = BillElementMapper::get()->where('id', (int) $request->getData('id'))->execute();
@@ -1406,8 +1810,17 @@ final class ApiBillController extends Controller
      */
     public function apiNoteUpdate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
-        // @todo: check permissions
-        $this->app->moduleManager->get('Editor', 'Api')->apiEditorDocUpdate($request, $response, $data);
+        $accountId = $request->header->account;
+        if (!$this->app->accountManager->get($accountId)->hasPermission(
+            PermissionType::MODIFY, $this->app->unitId, $this->app->appId, self::NAME, PermissionCategory::BILL_NOTE, $request->getDataInt('id'))
+        ) {
+            $this->fillJsonResponse($request, $response, NotificationLevel::HIDDEN, '', '', []);
+            $response->header->status = RequestStatusCode::R_403;
+
+            return;
+        }
+
+        $this->app->moduleManager->get('Editor', 'Api')->apiEditorUpdate($request, $response, $data);
     }
 
     /**
@@ -1425,7 +1838,16 @@ final class ApiBillController extends Controller
      */
     public function apiNoteDelete(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
-        // @todo: check permissions
-        $this->app->moduleManager->get('Editor', 'Api')->apiEditorDocDelete($request, $response, $data);
+        $accountId = $request->header->account;
+        if (!$this->app->accountManager->get($accountId)->hasPermission(
+            PermissionType::DELETE, $this->app->unitId, $this->app->appId, self::NAME, PermissionCategory::BILL_NOTE, $request->getDataInt('id'))
+        ) {
+            $this->fillJsonResponse($request, $response, NotificationLevel::HIDDEN, '', '', []);
+            $response->header->status = RequestStatusCode::R_403;
+
+            return;
+        }
+
+        $this->app->moduleManager->get('Editor', 'Api')->apiEditorDelete($request, $response, $data);
     }
 }

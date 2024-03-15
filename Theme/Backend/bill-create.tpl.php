@@ -20,10 +20,10 @@ use phpOMS\Localization\ISO4217Enum;
 use phpOMS\Localization\ISO639Enum;
 use phpOMS\Uri\UriFactory;
 
-$countryCodes    = ISO3166TwoEnum::getConstants();
-$countries       = ISO3166NameEnum::getConstants();
-$languages       = ISO639Enum::getConstants();
-$currencies      = ISO4217Enum::getConstants();
+$countryCodes = ISO3166TwoEnum::getConstants();
+$countries    = ISO3166NameEnum::getConstants();
+$languages    = ISO639Enum::getConstants();
+$currencies   = ISO4217Enum::getConstants();
 
 /**
  * @var \phpOMS\Views\View $this
@@ -32,30 +32,59 @@ $media = $this->data['media'] ?? [];
 
 /** @var \Modules\Billing\Models\Bill $bill */
 $bill     = $this->getData('bill') ?? new NullBill();
-$elements = $bill->getElements();
+$elements = $bill->elements;
 
 $billTypes = $this->data['billtypes'] ?? [];
 
-$archive = $bill->getFileByTypeName('original');
+$archive = $bill->getFileByTypeName('internal');
 
 /** @var \Modules\Auditor\Models\Audit */
 $logs = $this->data['logs'] ?? [];
 
-$editable = $bill->id === 0 || \in_array($bill->getStatus(), [BillStatus::DRAFT, BillStatus::UNPARSED]);
+$editable = $bill->id === 0 || \in_array($bill->status, [BillStatus::DRAFT, BillStatus::UNPARSED]);
 $disabled = $editable  ? '' : ' disabled';
 
+$isNew = $archive->id === 0;
+
 echo $this->data['nav']->render(); ?>
+<?php if (!$bill->isValid()) : ?>
+<div class="row">
+    <div class="col-xs-12">
+        <section class="portlet hl-1">
+            <article class="hl-1">
+                <ul>
+                <?php if (!$bill->areElementsValid()) : ?>
+                    <li><?= $this->getHtml('E_bill_items'); ?></li>
+                <?php endif; ?>
+                <?php if (!$bill->validateTaxAmountElements()) : ?>
+                    <li><?= $this->getHtml('E_bill_taxes'); ?></li>
+                <?php endif; ?>
+                <?php if (!$bill->validateNetElements()) : ?>
+                    <li><?= $this->getHtml('E_bill_net'); ?></li>
+                <?php endif; ?>
+                <?php if (!$bill->validateGrossElements()) : ?>
+                    <li><?= $this->getHtml('E_bill_gross'); ?></li>
+                <?php endif; ?>
+                <?php if (!$bill->validatePriceQuantityElements()) : ?>
+                    <li><?= $this->getHtml('E_bill_unit'); ?></li>
+                <?php endif; ?>
+                </ul>
+            </article>
+        </section>
+    </div>
+</div>
+<?php endif; ?>
 
 <div class="tabview tab-2 col-simple">
     <div class="box">
         <ul class="tab-links">
-            <li><label for="c-tab-1"><?= $this->getHtml('Invoice'); ?></label></li>
-            <li><label for="c-tab-2"><?= $this->getHtml('Items'); ?></label></li>
-            <li><label for="c-tab-3"><?= $this->getHtml('Preview'); ?></label></li>
-            <li><label for="c-tab-4"><?= $this->getHtml('Archive'); ?></label></li>
-            <li><label for="c-tab-5"><?= $this->getHtml('Payment'); ?></label></li>
-            <li><label for="c-tab-6"><?= $this->getHtml('Media'); ?></label></li>
-            <li><label for="c-tab-7"><?= $this->getHtml('Logs'); ?></label></li>
+            <li><label for="c-tab-1"><?= $this->getHtml('Invoice'); ?></label>
+            <li><label for="c-tab-2"><?= $this->getHtml('Items'); ?></label>
+            <li><label for="c-tab-3"><?= $this->getHtml('Preview'); ?></label>
+            <?php if (!$isNew) : ?><li><label for="c-tab-4"><?= $this->getHtml('Archive'); ?></label><?php endif; ?>
+            <!--<li><label for="c-tab-5"><?= $this->getHtml('Payment'); ?></label>-->
+            <li><label for="c-tab-6"><?= $this->getHtml('Files'); ?></label>
+            <?php if (!$isNew && !empty($logs)) : ?><li><label for="c-tab-7"><?= $this->getHtml('Logs'); ?></label><?php endif; ?>
         </ul>
     </div>
     <div class="tab-content col-simple">
@@ -80,7 +109,7 @@ echo $this->data['nav']->render(); ?>
                                     <label for="iCurrency"><?= $this->getHtml('Currency'); ?></label>
                                     <select id="iCurrency" name="bill_currency"<?= $disabled; ?>>
                                         <?php foreach ($currencies as $code => $currency) : $code = \substr($code, 1); ?>
-                                        <option value="<?= $this->printHtml($code); ?>"<?= $code === $bill->getCurrency() ? ' selected' : ''; ?>><?= $this->printHtml($currency); ?>
+                                        <option value="<?= $this->printHtml($code); ?>"<?= $code === $bill->currency ? ' selected' : ''; ?>><?= $this->printHtml($currency); ?>
                                             <?php endforeach; ?>
                                     </select>
                                 </div>
@@ -89,7 +118,7 @@ echo $this->data['nav']->render(); ?>
                                     <label for="iSource"><?= $this->getHtml('Source'); ?></label>
                                     <span class="input">
                                         <button type="button" formaction="">
-                                            <i class="fa fa-book"></i>
+                                            <i class="g-icon">book</i>
                                         </button>
                                         <input type="text" id="iSource" name="bill_source"<?= $disabled; ?>>
                                     </span>
@@ -99,7 +128,7 @@ echo $this->data['nav']->render(); ?>
                                     <label for="iBillType"><?= $this->getHtml('Type'); ?></label>
                                     <select id="iBillType" name="bill_type"<?= $disabled; ?>>
                                         <?php foreach ($billTypes as $type) : ?>
-                                        <option value="<?= $type->id; ?>"><?= $this->printHtml($type->getL11n()); ?>
+                                        <option value="<?= $type->id; ?>"<?= $type->id === $bill->type->id ? ' selected' : ''; ?>><?= $this->printHtml($type->getL11n()); ?>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
@@ -110,14 +139,14 @@ echo $this->data['nav']->render(); ?>
                                         <div class="ipt-first">
                                             <span class="input">
                                                 <button type="button" formaction="">
-                                                    <i class="fa fa-book"></i>
+                                                    <i class="g-icon">book</i>
                                                 </button>
                                                 <input type="text" id="iClient" name="bill_client" value="<?= $bill->client?->number ?? $bill->supplier?->number; ?>"<?= $disabled; ?>>
                                             </span>
                                         </div>
                                         <?php if (($bill->client?->id ?? 0) > 0) : ?>
                                         <div class="ipt-second">
-                                             <a class="button" href="<?= UriFactory::build('{/app}/sales/client/profile?id=' . $bill->client->id); ?>"><?= $this->getHtml('Client'); ?></a>
+                                             <a class="button" href="<?= UriFactory::build('{/base}/sales/client/view?id=' . $bill->client->id); ?>"><?= $this->getHtml('Client'); ?></a>
                                         </div>
                                         <?php endif; ?>
                                     </div>
@@ -266,44 +295,50 @@ echo $this->data['nav']->render(); ?>
             <div class="row">
                 <div class="col-xs-12">
                     <section class="portlet">
-                        <div class="portlet-head"><?= $this->getHtml('Invoice'); ?><i class="lni lni-download download btn end-xs"></i></div>
+                        <div class="portlet-head"><?= $this->getHtml('Invoice'); ?><i class="g-icon download btn end-xs">download</i></div>
+                        <div class="slider">
                         <table
                             id="invoiceElements"
                             class="default sticky"
+                            data-action="<?= \phpOMS\Uri\UriFactory::build('{/api}billing/bill/element?{?}&csrf={$CSRF}'); ?>"
                             data-tag="form"
                             data-ui-container="tbody"
                             data-ui-element="tr"
+                            data-on-change="1"
                             data-add-tpl=".oms-invoice-add">
                             <thead>
                             <tr>
                                 <td>
-                                <td><?= $this->getHtml('Item'); ?>
-                                <td class="wf-100"><?= $this->getHtml('Name'); ?>
-                                <td><?= $this->getHtml('Quantity'); ?>
+                                <td style="min-width:150px"><?= $this->getHtml('Item'); ?>
+                                <td class="wf-100" style="min-width:150px"><?= $this->getHtml('Name'); ?>
+                                <td style="min-width:75px"><?= $this->getHtml('Quantity'); ?>
                                 <td style="min-width:90px"><?= $this->getHtml('Discount'); ?>
                                 <td style="min-width:90px"><?= $this->getHtml('DiscountP'); ?>
-                                <td style="min-width:90px"><?= $this->getHtml('Bonus'); ?>
-                                <td style="min-width:90px"><?= $this->getHtml('Tax'); ?>
+                                <td style="min-width:75px"><?= $this->getHtml('Bonus'); ?>
                                 <td style="min-width:90px"><?= $this->getHtml('Price'); ?>
+                                <td style="min-width:75px"><?= $this->getHtml('TaxP'); ?>
                                 <td><?= $this->getHtml('Net'); ?>
+                                <td><?= $this->getHtml('Margin'); ?>
                             <tbody class="oms-ordercontainer">
                             <?php if ($editable) : ?>
                             <template class="oms-invoice-add">
                                 <tr data-id="">
                                     <td>
-                                        <i class="fa fa-chevron-up order-up"></i>
-                                        <i class="fa fa-chevron-down order-down"></i>
-                                        <i class="fa fa-times btn remove-form"></i>
+                                        <i class="g-icon order-up">expand_less</i>
+                                        <i class="g-icon order-down">expand_more</i>
+                                        <i class="g-icon btn remove-form">close</i>
                                     <td><span class="input">
                                         <button type="button" formaction="">
-                                            <label><i class="fa fa-book"></i></label>
-                                        </button><input type="text" autocomplete="off"></span>
-                                    <td><textarea autocomplete="off"></textarea>
-                                    <td><input type="number" step="any" value="" autocomplete="off">
-                                    <td><input type="number" step="0.01" value="" autocomplete="off">
-                                    <td><input type="number" min="-100" max="100" step="0.01" value="" autocomplete="off">
-                                    <td><input type="number" step="0.01" value="" autocomplete="off">
-                                    <td><input type="number" step="0.01" value="" autocomplete="off">
+                                            <label><i class="g-icon">book</i></label>
+                                        </button><input name="item_number" type="text" autocomplete="off"></span>
+                                    <td><textarea name="item_description" autocomplete="off"></textarea>
+                                    <td><input name="item_quantity" type="number" step="any" value="" autocomplete="off">
+                                    <td><input name="item_discountp" type="number" step="any" value="" autocomplete="off">
+                                    <td><input name="item_discountr" type="number" min="-100" max="100" step="0.01" value="" autocomplete="off">
+                                    <td><input name="item_bonus" type="number" step="any" value="" autocomplete="off">
+                                    <td><input name="item_price" type="number" step="any" value="" autocomplete="off">
+                                    <td><input name="item_taxr" type="number" step="any" value="" autocomplete="off">
+                                    <td>
                                     <td>
                                 </tr>
                             </template>
@@ -311,42 +346,60 @@ echo $this->data['nav']->render(); ?>
                                 <?php foreach ($elements as $element) : ?>
                                 <tr>
                                     <td><?php if ($editable) : ?>
-                                        <i class="fa fa-chevron-up order-up"></i>
-                                        <i class="fa fa-chevron-down order-down"></i>
-                                        <i class="fa fa-times btn remove-form"></i>
+                                        <i class="g-icon order-up">expand_less</i>
+                                        <i class="g-icon order-down">expand_more</i>
+                                        <i class="g-icon btn remove-form">close</i>
                                         <?php endif; ?>
-                                    <td><span class="input"><button type="button" formaction=""><i class="fa fa-book"></i></button><input name="" type="text" value="<?= $element->itemNumber; ?>" required<?= $disabled; ?>></span>
-                                    <td><textarea required<?= $disabled; ?>><?= $element->itemName; ?></textarea>
-                                    <td><input name="" type="number" step="any" value="<?= $element->getQuantity(); ?>" required<?= $disabled; ?>>
-                                    <td><input name="" type="number" step="0.01"<?= $disabled; ?>>
-                                    <td><input name="" type="number" step="0.01"<?= $disabled; ?>>
-                                    <td><input name="" type="number" min="-100" max="100" step="0.01"<?= $disabled; ?>>
-                                    <td><input name="" type="number" step="0.01"<?= $disabled; ?>>
-                                    <td><input name="" type="number" step="0.01" value="<?= $element->singleSalesPriceNet->getFloat(); ?>"<?= $disabled; ?>>
-                                    <td><?= $this->getCurrency($element->totalSalesPriceNet); ?>
+                                    <td><span class="input">
+                                        <button type="button" formaction="">
+                                            <i class="g-icon">book</i>
+                                        </button><input name="item_number" autocomplete="off" type="text" value="<?= $element->itemNumber; ?>"<?= $disabled; ?>></span>
+                                    <td><textarea name="item_description" autocomplete="off"<?= $disabled; ?>><?= $element->itemName; ?></textarea>
+                                    <td><input name="item_quantity" autocomplete="off" type="number" step="any" value="<?= $element->quantity->sub($element->discountQ)->getAmount($element->container->quantityDecimals); ?>"<?= $disabled; ?>>
+                                    <td><input name="item_discountp" autocomplete="off" type="number" step="any" value="<?= $element->singleDiscountP->getAmount(); ?>"<?= $disabled; ?>>
+                                    <td><input name="item_discountr" autocomplete="off" type="number" step="any" value="<?= $element->singleDiscountR->getAmount(); ?>"<?= $disabled; ?>>
+                                    <td><input name="item_bonus" autocomplete="off" type="number" min="-100" max="100" step="0.01" value="<?= $element->discountQ->getAmount($element->container->quantityDecimals); ?>"<?= $disabled; ?>>
+                                    <td><input name="item_price" autocomplete="off" type="number" step="any" value="<?= $element->singleSalesPriceNet->getFloat(); ?>"<?= $disabled; ?>>
+                                    <td><input name="item_taxr" autocomplete="off" type="number" step="any" value="<?= $element->taxR->getAmount(); ?>"<?= $disabled; ?>>
+                                    <td><?= $this->getCurrency($element->totalSalesPriceNet, symbol: ''); ?>
+                                    <td><?= \number_format($element->totalSalesPriceNet->value === 0 ? 0 : (1 - $element->totalPurchasePriceNet->value / $element->totalSalesPriceNet->value) * 100, 2); ?>%
                                 <?php endforeach; ?>
                             <?php if ($editable) : ?>
                                 <tr data-id="0">
-                                    <td><i class="fa fa-chevron-up order-up"></i>
-                                        <i class="fa fa-chevron-down order-down"></i>
-                                        <i class="fa fa-times btn remove-form"></i>
-                                    <td><span class="input"><button type="button" formaction=""><i class="fa fa-book"></i></button><input type="text" autocomplete="off"></span>
-                                    <td><textarea autocomplete="off"></textarea>
-                                    <td><input type="number" step="any" value="" autocomplete="off">
-                                    <td><input type="number" step="0.01" value="" autocomplete="off">
-                                    <td><input type="number" min="-100" max="100" step="0.01" value="" autocomplete="off">
-                                    <td><input type="number" step="0.01" value="" autocomplete="off">
-                                    <td><input type="number" step="0.01" value="" autocomplete="off">
-                                    <td><input type="number" step="0.01" value="" autocomplete="off">
+                                    <td><i class="g-icon order-up">expand_less</i>
+                                        <i class="g-icon order-down">expand_more</i>
+                                        <i class="g-icon btn remove-form">close</i>
+                                    <td><span class="input">
+                                        <button type="button" formaction="">
+                                            <i class="g-icon">book</i></button><input name="item_number" type="text" autocomplete="off"></span>
+                                    <td><textarea name="item_description" autocomplete="off"></textarea>
+                                    <td><input name="item_quantity" type="number" step="any" value="" autocomplete="off">
+                                    <td><input name="item_discountp" type="number" step="0.01" value="" autocomplete="off">
+                                    <td><input name="item_discountr" type="number" min="-100" max="100" step="0.01" value="" autocomplete="off">
+                                    <td><input name="item_bonus" type="number" step="0.01" value="" autocomplete="off">
+                                    <td><input name="item_price" type="number" step="0.01" value="" autocomplete="off">
+                                    <td><input name="item_taxr" type="number" step="0.01" value="" autocomplete="off">
+                                    <td>
                                     <td>
                             <?php endif; ?>
+                            <tfoot>
+                                <tr class="hl-2">
+                                    <td colspan="3"><?= $this->getHtml('Total'); ?>
+                                    <td>
+                                    <td><?= $bill->netDiscount->getAmount(2); ?>
+                                    <td><?= \number_format($bill->netDiscount->value === 0 ? 0 : ($bill->netDiscount->value / ($bill->netSales->value + $bill->netDiscount->value)) * 100, 2); ?>%
+                                    <td>
+                                    <td>
+                                    <td><?= $bill->taxP->getAmount(2); ?>
+                                    <td><?= $bill->netSales->getAmount(2); ?>
+                                    <td><?= \number_format($bill->netSales->value === 0 ? 0 : (1 - $bill->netCosts->value / $bill->netSales->value) * 100, 2); ?>%
                         </table>
-
+                        </div>
                     </section>
 
                     <?php if ($editable) : ?>
                     <div class="box">
-                        <input type="submit" class="add-form" value="Add" form="invoiceElements">
+                        <input type="submit" class="add-form" value="<?= $this->getHtml('Add', '0', '0'); ?>" form="invoiceElements">
                     </div>
                     <?php endif; ?>
                 </div>
@@ -356,9 +409,10 @@ echo $this->data['nav']->render(); ?>
         <div class="tab col-simple">
             <div>
                 <div class="col-xs-12 col-sm-3 box">
-                    <select id="iBillPreviewType" name="bill_preview_type">>
+                    <select id="iBillPreviewType" name="bill_preview_type"
+                    data-action='[{"listener": "change", "action": [{"key": 1, "type": "dom.reload", "src": "iPreviewBill"}]}]'>
                         <?php foreach ($billTypes as $type) : ?>
-                        <option value="<?= $type->id; ?>"><?= $this->printHtml($type->getL11n()); ?>
+                        <option value="<?= $type->id; ?>"<?= $type->id === $bill->type->id ? ' selected' : ''; ?>><?= $this->printHtml($type->getL11n()); ?>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -368,12 +422,14 @@ echo $this->data['nav']->render(); ?>
                 <div class="col-xs-12 col-simple">
                     <section id="mediaFile" class="portlet col-simple">
                         <div class="portlet-body col-simple">
-                            <iframe class="col-simple" id="iHelperFrame" src="" loading="lazy" allowfullscreen></iframe>
+                            <iframe class="col-simple" id="iPreviewBill" data-src="Resources/mozilla/Pdf/web/viewer.html?file=<?= \urlencode(UriFactory::build('{/api}bill/render/preview?bill=' . $bill->id) . '&bill_type='); ?>{#iBillPreviewType}" loading="lazy" allowfullscreen></iframe>
                         </div>
                     </section>
                 </div>
             </div>
         </div>
+
+        <?php if (!$isNew) : ?>
         <input type="radio" id="c-tab-4" name="tabular-2">
         <div class="tab col-simple">
             <div class="col-simple">
@@ -386,6 +442,9 @@ echo $this->data['nav']->render(); ?>
                 </div>
             </div>
         </div>
+        <?php endif; ?>
+
+        <!--
         <input type="radio" id="c-tab-5" name="tabular-2">
         <div class="tab">
             <div class="row">
@@ -465,9 +524,9 @@ echo $this->data['nav']->render(); ?>
                             <template class="oms-payment-add">
                                 <tr data-id="">
                                     <td><?php if ($editable) : ?>
-                                        <i class="fa fa-chevron-up order-up"></i>
-                                        <i class="fa fa-chevron-down order-down"></i>
-                                        <i class="fa fa-times btn remove-form"></i>
+                                        <i class="g-icon order-up">expand_less</i>
+                                        <i class="g-icon order-down">expand_more</i>
+                                        <i class="g-icon btn remove-form">close</i>
                                         <?php endif; ?>
                                     <td><input type="datetime-local" autocomplete="off" required>
                                     <td><input type="number" value="" autocomplete="off" required>
@@ -478,86 +537,60 @@ echo $this->data['nav']->render(); ?>
 
                     <?php if ($editable) : ?>
                     <div class="box">
-                        <input type="submit" class="add-form" value="Add" form="paymentPlan">
+                        <input type="submit" class="add-payment-form" value="<?= $this->getHtml('Add', '0', '0'); ?>" form="paymentPlan">
                     </div>
                     <?php endif; ?>
                 </div>
             </div>
         </div>
+        -->
+
         <input type="radio" id="c-tab-6" name="tabular-2">
-        <div class="tab">
-            <div class="row">
-                <div class="col-xs-12 col-md-6 col-lg-4">
-                    <section class="portlet">
-                        <div class="portlet-head"><?= $this->getHtml('Media'); ?></div>
-                        <div class="portlet-body">
-                            <form>
-                                <div class="form-group">
-                                    <label for="iMedia"><?= $this->getHtml('Media'); ?></label>
-                                    <div class="ipt-first">
-                                        <input type="text" id="iMedia" placeholder="&#xf15b; File">
-                                    </div>
-                                    <div class="ipt-second"><button><?= $this->getHtml('Select'); ?></button></div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="iUpload"><?= $this->getHtml('Upload'); ?></label>
-                                    <input type="file" id="iUpload" form="fTask"><input form="fTask" type="hidden" name="type">
-                                </div>
-                            </form>
-                        </div>
-                    </section>
-                </div>
-
-                <div class="col-xs-12 col-md-6 col-lg-8">
-                    <?= $this->getData('medialist')?->render($media); ?>
-                </div>
-            </div>
+        <div class="tab col-simple">
+            <?= $this->data['media-upload']->render('bill-file', 'files', '', $media); ?>
         </div>
+
+        <?php if (!$isNew && !empty($bill)) : ?>
         <input type="radio" id="c-tab-7" name="tabular-2">
         <div class="tab">
-            <?php
-            $footerView = new \phpOMS\Views\PaginationView($this->l11nManager, $this->request, $this->response);
-            $footerView->setTemplate('/Web/Templates/Lists/Footer/PaginationBig');
-            $footerView->setPages(20);
-            $footerView->setPage(1);
-            ?>
             <div class="row">
                 <div class="col-xs-12">
                     <div class="portlet">
-                        <div class="portlet-head"><?= $this->getHtml('Logs'); ?><i class="lni lni-download download btn end-xs"></i></div>
-                        <table class="default">
+                        <div class="portlet-head"><?= $this->getHtml('Logs'); ?><i class="g-icon download btn end-xs">download</i></div>
+                        <table class="default sticky">
                             <thead>
                             <tr>
                                 <td><?= $this->getHtml('ID', '0', '0'); ?>
-                                <td><?= $this->getHtml('Trigger', 'Auditor', 'Backend'); ?>
                                 <td><?= $this->getHtml('Action', 'Auditor', 'Backend'); ?>
+                                <td class="wf-100"><?= $this->getHtml('Trigger', 'Auditor', 'Backend'); ?>
                                 <td><?= $this->getHtml('CreatedBy', 'Auditor', 'Backend'); ?>
                                 <td><?= $this->getHtml('CreatedAt', 'Auditor', 'Backend'); ?>
                             <tbody>
                             <?php
                             foreach ($logs as $audit) :
-                                $url = UriFactory::build('{/base}/admin/audit/single?id=' . $audit->id);
+                                $url = UriFactory::build('{/base}/admin/audit/view?id=' . $audit->id);
                             ?>
                             <tr data-href="<?= $url; ?>">
                                 <td><a href="<?= $url; ?>"><?= $audit->id; ?></a>
-                                <td><a href="<?= $url; ?>"><?= $audit->trigger; ?></a>
                                 <td><?php if ($audit->old === null) : echo $this->getHtml('CREATE', 'Auditor', 'Backend'); ?>
                                     <?php elseif ($audit->old !== null && $audit->new !== null) : echo $this->getHtml('UPDATE', 'Auditor', 'Backend'); ?>
                                     <?php elseif ($audit->new === null) : echo $this->getHtml('DELETE', 'Auditor', 'Backend'); ?>
                                     <?php else : echo $this->getHtml('UNKNOWN', 'Auditor', 'Backend'); ?>
                                     <?php endif; ?>
+                                <td><a href="<?= $url; ?>"><?= $audit->trigger; ?></a>
                                 <td><a class="content"
                                     href="<?= UriFactory::build('{/base}/admin/account/settings?id=' . $audit->createdBy->id); ?>"><?= $this->printHtml(
                                     $this->renderUserName('%3$s %2$s %1$s', [$audit->createdBy->name1, $audit->createdBy->name2, $audit->createdBy->name3, $audit->createdBy->login])
                                 ); ?></a>
-                                <td><a href="<?= $url; ?>"><?= $audit->createdAt->format('Y-m-d'); ?></a>
+                                <td><a href="<?= $url; ?>"><?= $audit->createdAt->format('Y-m-d H:i'); ?></a>
                             <?php endforeach; ?>
                         </table>
                     </div>
                 </div>
             </div>
         </div>
+        <?php endif; ?>
+
     </div>
 </div>
 

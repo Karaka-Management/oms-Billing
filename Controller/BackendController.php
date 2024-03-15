@@ -20,15 +20,18 @@ use Modules\Billing\Models\BillMapper;
 use Modules\Billing\Models\BillStatus;
 use Modules\Billing\Models\BillTransferType;
 use Modules\Billing\Models\BillTypeMapper;
+use Modules\Billing\Models\PaymentTermL11nMapper;
+use Modules\Billing\Models\PaymentTermMapper;
+use Modules\Billing\Models\PermissionCategory;
 use Modules\Billing\Models\PurchaseBillMapper;
 use Modules\Billing\Models\SalesBillMapper;
 use Modules\Billing\Models\SettingsEnum;
+use Modules\Billing\Models\ShippingTermL11nMapper;
+use Modules\Billing\Models\ShippingTermMapper;
 use Modules\Billing\Models\StockBillMapper;
-use phpOMS\Asset\AssetType;
+use phpOMS\Account\PermissionType;
 use phpOMS\Contract\RenderableInterface;
 use phpOMS\DataStorage\Database\Query\OrderType;
-use phpOMS\Localization\ISO3166CharEnum;
-use phpOMS\Localization\ISO3166NameEnum;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
 use phpOMS\Utils\StringUtils;
@@ -46,7 +49,7 @@ use phpOMS\Views\View;
 final class BackendController extends Controller
 {
     /**
-     * Routing end-point for application behaviour.
+     * Routing end-point for application behavior.
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
@@ -67,9 +70,11 @@ final class BackendController extends Controller
             ->with('type')
             ->with('type/l11n')
             ->with('client')
+            ->where('status', BillStatus::DRAFT)
             ->where('type/transferType', BillTransferType::SALES)
             ->where('type/l11n/language', $response->header->l11n->language)
             ->sort('id', OrderType::DESC)
+            ->where('unit', $this->app->unitId)
             ->limit(25);
 
         if ($request->getData('ptype') === 'p') {
@@ -91,7 +96,54 @@ final class BackendController extends Controller
     }
 
     /**
-     * Routing end-point for application behaviour.
+     * Routing end-point for application behavior.
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param array            $data     Generic data
+     *
+     * @return RenderableInterface
+     *
+     * @since 1.0.0
+     * @codeCoverageIgnore
+     */
+    public function viewBillingSalesArchive(RequestAbstract $request, ResponseAbstract $response, array $data = []) : RenderableInterface
+    {
+        $view = new View($this->app->l11nManager, $request, $response);
+        $view->setTemplate('/Modules/Billing/Theme/Backend/sales-bill-list');
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response);
+
+        $mapperQuery = SalesBillMapper::getAll()
+            ->with('type')
+            ->with('type/l11n')
+            ->with('client')
+            ->where('status', BillStatus::DRAFT, '!=')
+            ->where('type/transferType', BillTransferType::SALES)
+            ->where('type/l11n/language', $response->header->l11n->language)
+            ->sort('id', OrderType::DESC)
+            ->where('unit', $this->app->unitId)
+            ->limit(25);
+
+        if ($request->getData('ptype') === 'p') {
+            $view->data['bills'] = $mapperQuery
+                    ->where('id', $request->getDataInt('id') ?? 0, '<')
+                    ->where('client', null, '!=')
+                    ->execute();
+        } elseif ($request->getData('ptype') === 'n') {
+            $view->data['bills'] = $mapperQuery->where('id', $request->getDataInt('id') ?? 0, '>')
+                    ->where('client', null, '!=')
+                    ->execute();
+        } else {
+            $view->data['bills'] = $mapperQuery->where('id', 0, '>')
+                    ->where('client', null, '!=')
+                    ->execute();
+        }
+
+        return $view;
+    }
+
+    /**
+     * Routing end-point for application behavior.
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
@@ -112,6 +164,7 @@ final class BackendController extends Controller
         $bill = SalesBillMapper::get()
             ->with('client')
             ->with('elements')
+            ->with('elements/container')
             ->with('files')
             ->with('files/types')
             ->with('notes')
@@ -120,31 +173,53 @@ final class BackendController extends Controller
 
         $view->data['bill'] = $bill;
 
-        /** @var \Modules\Auditor\Models\Audit[] $logsBill */
-        $logsBill = AuditMapper::getAll()
-            ->with('createdBy')
-            ->where('module', 'Billing')
-            ->where('type', StringUtils::intHash(BillMapper::class))
-            ->where('ref', $bill->id)
+        $billTypes = BillTypeMapper::getAll()
+            ->with('l11n')
+            ->where('isTemplate', false)
+            ->where('transferType', BillTransferType::SALES)
+            ->where('l11n/language', $request->header->l11n->language)
             ->execute();
 
-        /** @var \Modules\Auditor\Models\Audit[] $logsElements */
-        $logsElements = AuditMapper::getAll()
-            ->with('createdBy')
-            ->where('module', 'Billing')
-            ->where('type', StringUtils::intHash(BillElementMapper::class))
-            ->where('ref', \array_keys($bill->getElements()), 'IN')
-            ->execute();
+        $view->data['billtypes'] = $billTypes;
 
-        $logs = \array_merge($logsBill, $logsElements);
+        $logs = [];
+        if ($this->app->accountManager->get($request->header->account)->hasPermission(
+                PermissionType::READ,
+                $this->app->unitId,
+                null,
+                self::NAME,
+                PermissionCategory::BILL_LOG,
+            )
+        ) {
+            /** @var \Modules\Auditor\Models\Audit[] $logs */
+            $logs = AuditMapper::getAll()
+                ->with('createdBy')
+                ->where('module', 'Billing')
+                ->where('type', StringUtils::intHash(BillMapper::class))
+                ->where('ref', $bill->id)
+                ->execute();
 
-        $view->data['logs'] = $logs;
+            if (!empty($bill->elements)) {
+                /** @var \Modules\Auditor\Models\Audit[] $logsElements */
+                $logsElements = AuditMapper::getAll()
+                    ->with('createdBy')
+                    ->where('module', 'Billing')
+                    ->where('type', StringUtils::intHash(BillElementMapper::class))
+                    ->where('ref', \array_keys($bill->elements), 'IN')
+                    ->execute();
+
+                $logs = \array_merge($logs, $logsElements);
+            }
+        }
+
+        $view->data['logs']         = $logs;
+        $view->data['media-upload'] = new \Modules\Media\Theme\Backend\Components\Upload\BaseView($this->app->l11nManager, $request, $response);
 
         return $view;
     }
 
     /**
-     * Routing end-point for application behaviour.
+     * Routing end-point for application behavior.
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
@@ -170,15 +245,13 @@ final class BackendController extends Controller
 
         $view->data['billtypes'] = $billTypes;
 
-        $mediaListView = new \Modules\Media\Theme\Backend\Components\Media\ListView($this->app->l11nManager, $request, $response);
-        $mediaListView->setTemplate('/Modules/Media/Theme/Backend/Components/Media/list');
-        $view->data['medialist'] = $mediaListView;
+        $view->data['media-upload'] = new \Modules\Media\Theme\Backend\Components\Upload\BaseView($this->app->l11nManager, $request, $response);
 
         return $view;
     }
 
     /**
-     * Routing end-point for application behaviour.
+     * Routing end-point for application behavior.
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
@@ -199,7 +272,7 @@ final class BackendController extends Controller
     }
 
     /**
-     * Routing end-point for application behaviour.
+     * Routing end-point for application behavior.
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
@@ -220,7 +293,7 @@ final class BackendController extends Controller
     }
 
     /**
-     * Routing end-point for application behaviour.
+     * Routing end-point for application behavior.
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
@@ -243,6 +316,7 @@ final class BackendController extends Controller
             ->with('supplier')
             ->where('type/transferType', BillTransferType::PURCHASE)
             ->sort('id', OrderType::DESC)
+            ->where('unit', $this->app->unitId)
             ->limit(25);
 
         if ($request->getData('ptype') === 'p') {
@@ -267,7 +341,7 @@ final class BackendController extends Controller
     }
 
     /**
-     * Routing end-point for application behaviour.
+     * Routing end-point for application behavior.
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
@@ -284,37 +358,61 @@ final class BackendController extends Controller
         $view->setTemplate('/Modules/Billing/Theme/Backend/purchase-bill');
         $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005105001, $request, $response);
 
-        $bill = PurchaseBillMapper::get()
+        $view->data['bill'] = PurchaseBillMapper::get()
+            ->with('supplier')
             ->with('elements')
+            ->with('elements/container')
             ->with('files')
             ->with('files/types')
             ->with('notes')
             ->where('id', (int) $request->getData('id'))
             ->execute();
 
-        $view->data['bill'] = $bill;
+        $view->data['billtypes'] = BillTypeMapper::getAll()
+            ->with('l11n')
+            ->where('isTemplate', false)
+            ->where('transferType', BillTransferType::PURCHASE)
+            ->where('l11n/language', $request->header->l11n->language)
+            ->execute();
 
-        /** @var \Model\Setting $previewType */
-        $previewType = $this->app->appSettings->get(
-            names: SettingsEnum::PREVIEW_MEDIA_TYPE,
-            module: self::NAME
-        );
+        $logs = [];
+        if ($this->app->accountManager->get($request->header->account)->hasPermission(
+                PermissionType::READ,
+                $this->app->unitId,
+                null,
+                self::NAME,
+                PermissionCategory::BILL_LOG,
+            )
+        ) {
+            /** @var \Modules\Auditor\Models\Audit[] $logs */
+            $logs = AuditMapper::getAll()
+                ->with('createdBy')
+                ->where('module', 'Billing')
+                ->where('type', StringUtils::intHash(BillMapper::class))
+                ->where('ref', $view->data['bill']->id)
+                ->execute();
 
-        $view->data['previewType'] = (int) $previewType->content;
+            if (!empty($view->data['bill']->elements)) {
+                /** @var \Modules\Auditor\Models\Audit[] $logsElements */
+                $logsElements = AuditMapper::getAll()
+                    ->with('createdBy')
+                    ->where('module', 'Billing')
+                    ->where('type', StringUtils::intHash(BillElementMapper::class))
+                    ->where('ref', \array_keys($view->data['bill']->elements), 'IN')
+                    ->execute();
 
-        /** @var \Model\Setting $originalType */
-        $originalType = $this->app->appSettings->get(
-            names: SettingsEnum::ORIGINAL_MEDIA_TYPE,
-            module: self::NAME
-        );
+                $logs = \array_merge($logs, $logsElements);
+            }
+        }
 
-        $view->data['originalType'] = (int) $originalType->content;
+        $view->data['logs']         = $logs;
+        $view->data['media-upload'] = new \Modules\Media\Theme\Backend\Components\Upload\BaseView($this->app->l11nManager, $request, $response);
 
         return $view;
     }
 
     /**
-     * Routing end-point for application behaviour.
+     * Routing end-point for application behavior.
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
@@ -332,18 +430,18 @@ final class BackendController extends Controller
         $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005106001, $request, $response);
 
         if ($request->getData('ptype') === 'p') {
-            $view->data['bills'] = StockBillMapper::getAll()->where('id', $request->getDataInt('id') ?? 0, '<')->limit(25)->execute();
+            $view->data['bills'] = StockBillMapper::getAll()->where('id', $request->getDataInt('id') ?? 0, '<')->where('unit', $this->app->unitId)->limit(25)->execute();
         } elseif ($request->getData('ptype') === 'n') {
-            $view->data['bills'] = StockBillMapper::getAll()->where('id', $request->getDataInt('id') ?? 0, '>')->limit(25)->execute();
+            $view->data['bills'] = StockBillMapper::getAll()->where('id', $request->getDataInt('id') ?? 0, '>')->where('unit', $this->app->unitId)->limit(25)->execute();
         } else {
-            $view->data['bills'] = StockBillMapper::getAll()->where('id', 0, '>')->limit(25)->execute();
+            $view->data['bills'] = StockBillMapper::getAll()->where('id', 0, '>')->where('unit', $this->app->unitId)->limit(25)->execute();
         }
 
         return $view;
     }
 
     /**
-     * Routing end-point for application behaviour.
+     * Routing end-point for application behavior.
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
@@ -362,13 +460,14 @@ final class BackendController extends Controller
 
         $bill = StockBillMapper::get()->where('id', (int) $request->getData('id'))->execute();
 
-        $view->data['bill'] = $bill;
+        $view->data['bill']         = $bill;
+        $view->data['media-upload'] = new \Modules\Media\Theme\Backend\Components\Upload\BaseView($this->app->l11nManager, $request, $response);
 
         return $view;
     }
 
     /**
-     * Routing end-point for application behaviour.
+     * Routing end-point for application behavior.
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
@@ -389,7 +488,7 @@ final class BackendController extends Controller
     }
 
     /**
-     * Routing end-point for application behaviour.
+     * Routing end-point for application behavior.
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
@@ -410,7 +509,7 @@ final class BackendController extends Controller
     }
 
     /**
-     * Routing end-point for application behaviour.
+     * Routing end-point for application behavior.
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
@@ -424,7 +523,7 @@ final class BackendController extends Controller
     public function viewPrivatePurchaseBillDashboard(RequestAbstract $request, ResponseAbstract $response, array $data = []) : RenderableInterface
     {
         $view = new View($this->app->l11nManager, $request, $response);
-        $view->setTemplate('/Modules/Billing/Theme/Backend/user-purchase-bill-dashboard');
+        $view->setTemplate('/Modules/Billing/Theme/Backend/purchase-bill-list');
         $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005109001, $request, $response);
 
         $mapperQuery = PurchaseBillMapper::getAll()
@@ -434,6 +533,7 @@ final class BackendController extends Controller
             ->where('type/transferType', BillTransferType::PURCHASE)
             ->where('status', BillStatus::UNPARSED)
             ->sort('id', OrderType::DESC)
+            ->where('unit', $this->app->unitId)
             ->limit(25);
 
         if ($request->getData('ptype') === 'p') {
@@ -455,7 +555,7 @@ final class BackendController extends Controller
     }
 
     /**
-     * Routing end-point for application behaviour.
+     * Routing end-point for application behavior.
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
@@ -469,7 +569,7 @@ final class BackendController extends Controller
     public function viewPrivateBillingPurchaseInvoice(RequestAbstract $request, ResponseAbstract $response, array $data = []) : RenderableInterface
     {
         $view = new View($this->app->l11nManager, $request, $response);
-        $view->setTemplate('/Modules/Billing/Theme/Backend/user-purchase-bill');
+        $view->setTemplate('/Modules/Billing/Theme/Backend/purchase-bill');
         $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005109001, $request, $response);
 
         $bill = PurchaseBillMapper::get()
@@ -490,13 +590,138 @@ final class BackendController extends Controller
 
         $view->data['previewType'] = (int) $previewType->content;
 
-        /** @var \Model\Setting $originalType */
-        $originalType = $this->app->appSettings->get(
-            names: SettingsEnum::ORIGINAL_MEDIA_TYPE,
+        /** @var \Model\Setting $externalType */
+        $externalType = $this->app->appSettings->get(
+            names: SettingsEnum::EXTERNAL_MEDIA_TYPE,
             module: self::NAME
         );
 
-        $view->data['originalType'] = (int) $originalType->content;
+        $view->data['externalType'] = (int) $externalType->content;
+        $view->data['media-upload'] = new \Modules\Media\Theme\Backend\Components\Upload\BaseView($this->app->l11nManager, $request, $response);
+
+        return $view;
+    }
+
+    /**
+     * Routing end-point for application behavior.
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param array            $data     Generic data
+     *
+     * @return RenderableInterface
+     *
+     * @since 1.0.0
+     * @codeCoverageIgnore
+     */
+    public function viewPaymentList(RequestAbstract $request, ResponseAbstract $response, array $data = []) : RenderableInterface
+    {
+        $view = new View($this->app->l11nManager, $request, $response);
+        $view->setTemplate('/Modules/Billing/Theme/Backend/payment-type-list');
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1002901101, $request, $response);
+
+        $view->data['types'] = PaymentTermMapper::getAll()
+            ->with('l11n')
+            ->where('l11n/language', $response->header->l11n->language)
+            ->execute();
+
+        return $view;
+    }
+
+    /**
+     * Routing end-point for application behavior.
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param array            $data     Generic data
+     *
+     * @return RenderableInterface
+     *
+     * @since 1.0.0
+     * @codeCoverageIgnore
+     */
+    public function viewPaymentView(RequestAbstract $request, ResponseAbstract $response, array $data = []) : RenderableInterface
+    {
+        $view = new View($this->app->l11nManager, $request, $response);
+        $view->setTemplate('/Modules/Billing/Theme/Backend/payment-view');
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1002901101, $request, $response);
+
+        $view->data['type'] = PaymentTermMapper::get()
+            ->with('l11n')
+            ->where('id', (int) $request->getData('id'))
+            ->where('l11n/language', $response->header->l11n->language)
+            ->execute();
+
+        $view->data['l11nView'] = new \Web\Backend\Views\L11nView($this->app->l11nManager, $request, $response);
+
+        /** @var \phpOMS\Localization\BaseStringL11n[] $l11nValues */
+        $l11nValues = PaymentTermL11nMapper::getAll()
+            ->where('ref', $view->data['type']->id)
+            ->execute();
+
+        $view->data['l11nValues'] = $l11nValues;
+
+        return $view;
+    }
+
+    /**
+     * Routing end-point for application behavior.
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param array            $data     Generic data
+     *
+     * @return RenderableInterface
+     *
+     * @since 1.0.0
+     * @codeCoverageIgnore
+     */
+    public function viewShippingList(RequestAbstract $request, ResponseAbstract $response, array $data = []) : RenderableInterface
+    {
+        $view = new View($this->app->l11nManager, $request, $response);
+        $view->setTemplate('/Modules/Billing/Theme/Backend/shipping-type-list');
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1002901101, $request, $response);
+
+        $view->data['types'] = ShippingTermMapper::getAll()
+            ->with('l11n')
+            ->where('l11n/language', $response->header->l11n->language)
+            ->execute();
+
+        return $view;
+    }
+
+    /**
+     * Routing end-point for application behavior.
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param array            $data     Generic data
+     *
+     * @return RenderableInterface
+     *
+     * @since 1.0.0
+     * @codeCoverageIgnore
+     */
+    public function viewShippingView(RequestAbstract $request, ResponseAbstract $response, array $data = []) : RenderableInterface
+    {
+        $view = new View($this->app->l11nManager, $request, $response);
+        $view->setTemplate('/Modules/Billing/Theme/Backend/shipping-view');
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1002901101, $request, $response);
+
+        $view->data['type'] = ShippingTermMapper::get()
+            ->with('l11n')
+            ->where('id', (int) $request->getData('id'))
+            ->where('l11n/language', $response->header->l11n->language)
+            ->execute();
+
+        $view->data['l11nView'] = new \Web\Backend\Views\L11nView($this->app->l11nManager, $request, $response);
+
+        /** @var \phpOMS\Localization\BaseStringL11n[] $l11nValues */
+        $l11nValues = ShippingTermL11nMapper::getAll()
+            ->where('ref', $view->data['type']->id)
+            ->execute();
+
+        $view->data['l11nValues'] = $l11nValues;
 
         return $view;
     }

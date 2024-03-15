@@ -37,10 +37,10 @@ final class BillTypeL11nMapper extends DataMapperFactory
      * @since 1.0.0
      */
     public const COLUMNS = [
-        'billing_type_l11n_id'        => ['name' => 'billing_type_l11n_id',       'type' => 'int',    'internal' => 'id'],
-        'billing_type_l11n_name'      => ['name' => 'billing_type_l11n_name',    'type' => 'string', 'internal' => 'content', 'autocomplete' => true],
-        'billing_type_l11n_type'      => ['name' => 'billing_type_l11n_type',      'type' => 'int',    'internal' => 'ref'],
-        'billing_type_l11n_language'  => ['name' => 'billing_type_l11n_language', 'type' => 'string', 'internal' => 'language'],
+        'billing_type_l11n_id'       => ['name' => 'billing_type_l11n_id',       'type' => 'int',    'internal' => 'id'],
+        'billing_type_l11n_name'     => ['name' => 'billing_type_l11n_name',    'type' => 'string', 'internal' => 'content', 'autocomplete' => true],
+        'billing_type_l11n_type'     => ['name' => 'billing_type_l11n_type',      'type' => 'int',    'internal' => 'ref'],
+        'billing_type_l11n_language' => ['name' => 'billing_type_l11n_language', 'type' => 'string', 'internal' => 'language'],
     ];
 
     /**
