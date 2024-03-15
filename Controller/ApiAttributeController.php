@@ -71,7 +71,7 @@ final class ApiAttributeController extends Controller
                 ->with('type')
                 ->where('type/id', $type->id)
                 ->where('ref', (int) $request->getData('ref'))
-                ->execute();
+                ->executeCount();
 
             if ($attr > 0) {
                 $response->header->status = RequestStatusCode::R_409;

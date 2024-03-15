@@ -13,13 +13,17 @@
 declare(strict_types=1);
 
 use Modules\Billing\Models\NullBill;
+use Modules\Media\Models\NullCollection;
 use phpOMS\Localization\ISO3166NameEnum;
 use phpOMS\Localization\Money;
 use phpOMS\Stdlib\Base\FloatInt;
 
 /** @var \phpOMS\Views\View $this */
 
-require_once $this->data['defaultTemplates']->findFile('.pdf.php')->getAbsolutePath();
+/** @var \Modules\Media\Models\Collection $collection */
+$collection = $this->data['defaultTemplates'] ?? new NullCollection();
+
+require_once $collection->findFile('.pdf.php')->getAbsolutePath();
 
 /** @var \Modules\Billing\Models\Bill $bill */
 $bill = $this->data['bill'] ?? new NullBill();
