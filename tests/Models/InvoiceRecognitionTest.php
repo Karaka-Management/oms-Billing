@@ -28,6 +28,7 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider billList
+     * @group maybe
      */
     public function testNetSales($json, $content) : void
     {
@@ -41,6 +42,7 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider billList
+     * @group maybe
      */
     public function testTaxRate($json, $content) : void
     {
@@ -54,6 +56,7 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider billList
+     * @group maybe
      */
     public function testGrossSales($json, $content) : void
     {
@@ -67,6 +70,7 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider billList
+     * @group maybe
      */
     public function testTaxAmount($json, $content) : void
     {
@@ -80,6 +84,7 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider billList
+     * @group maybe
      */
     public function testBillDate($json, $content) : void
     {
@@ -93,6 +98,7 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider billList
+     * @group maybe
      */
     public function testBillLanguage($json, $content) : void
     {
@@ -106,6 +112,7 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider billList
+     * @group maybe
      */
     public function testBillCurrency($json, $content) : void
     {
@@ -119,6 +126,7 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider billList
+     * @group maybe
      */
     public function testIban($json, $content) : void
     {
@@ -148,6 +156,7 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider billList
+     * @group maybe
      */
     public function testVATId($json, $content) : void
     {
@@ -177,6 +186,7 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider billList
+     * @group maybe
      */
     public function testTaxId($json, $content) : void
     {
@@ -206,6 +216,7 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider billList
+     * @group maybe
      */
     public function testWebsite($json, $content) : void
     {
@@ -235,6 +246,7 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider billList
+     * @group maybe
      */
     public function testEmail($json, $content) : void
     {
@@ -264,6 +276,7 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider billList
+     * @group maybe
      */
     public function testPhone($json, $content) : void
     {

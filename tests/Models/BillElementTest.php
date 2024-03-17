@@ -16,6 +16,8 @@ namespace Modules\Billing\tests\Models;
 
 use Modules\Billing\Models\BillElement;
 use Modules\Billing\Models\NullBill;
+use Modules\ItemManagement\Models\NullItem;
+use phpOMS\Stdlib\Base\FloatInt;
 
 /**
  * @internal
@@ -52,7 +54,7 @@ final class BillElementTest extends \PHPUnit\Framework\TestCase
     public function testItemInputOutput() : void
     {
         $this->element->setItem(123);
-        self::assertEquals(123, $this->element->item);
+        self::assertEquals(123, $this->element->item->id);
     }
 
     /**
@@ -62,7 +64,7 @@ final class BillElementTest extends \PHPUnit\Framework\TestCase
     public function testSerialize() : void
     {
         $this->element->order           = 2;
-        $this->element->item            = 3;
+        $this->element->item            = new NullItem(3);
         $this->element->itemNumber      = '123456';
         $this->element->itemName        = 'Test';
         $this->element->itemDescription = 'Description';
@@ -77,7 +79,7 @@ final class BillElementTest extends \PHPUnit\Framework\TestCase
                 'itemNumber'      => '123456',
                 'itemName'        => 'Test',
                 'itemDescription' => 'Description',
-                'quantity'        => 4,
+                'quantity'        => new FloatInt(4),
                 'bill'            => $this->element->bill,
             ],
             $this->element->jsonSerialize()

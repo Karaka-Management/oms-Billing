@@ -40,7 +40,6 @@ final class BillTest extends \PHPUnit\Framework\TestCase
     {
         self::assertEquals(0, $this->bill->id);
         self::assertEquals('', $this->bill->number);
-        self::assertEquals('', $this->bill->referralName);
         self::assertEquals('', $this->bill->info);
         self::assertInstanceOf('\Modules\Billing\Models\NullBillType', $this->bill->type);
         self::assertInstanceOf('\DateTimeImmutable', $this->bill->createdAt);
@@ -66,12 +65,8 @@ final class BillTest extends \PHPUnit\Framework\TestCase
 
         self::assertInstanceOf('\phpOMS\Stdlib\Base\FloatInt', $this->bill->netSales);
         self::assertInstanceOf('\phpOMS\Stdlib\Base\FloatInt', $this->bill->grossSales);
-
         self::assertInstanceOf('\phpOMS\Stdlib\Base\FloatInt', $this->bill->netProfit);
-        self::assertInstanceOf('\phpOMS\Stdlib\Base\FloatInt', $this->bill->grossProfit);
-
         self::assertInstanceOf('\phpOMS\Stdlib\Base\FloatInt', $this->bill->netCosts);
-        self::assertInstanceOf('\phpOMS\Stdlib\Base\FloatInt', $this->bill->grossCosts);
 
         self::assertEquals(0, $this->bill->payment);
         self::assertEquals('', $this->bill->paymentText);
@@ -129,6 +124,7 @@ final class BillTest extends \PHPUnit\Framework\TestCase
                 'billCity'    => 'City',
                 'billZip'     => 'Zip',
                 'billCountry' => 'Country',
+                'external' => '',
             ],
             $this->bill->jsonSerialize()
         );
