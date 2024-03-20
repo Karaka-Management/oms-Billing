@@ -101,8 +101,8 @@ trait ApiBillControllerTrait
 
     /**
      * @covers \Modules\Billing\Controller\ApiController
-     * @group module
      */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testBillCreateInvalidData() : void
     {
         $response = new HttpResponse();
@@ -117,8 +117,8 @@ trait ApiBillControllerTrait
 
     /**
      * @covers \Modules\Billing\Controller\ApiController
-     * @group module
      */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testBillElementCreateInvalidData() : void
     {
         $response = new HttpResponse();

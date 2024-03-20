@@ -22,6 +22,7 @@ use phpOMS\Stdlib\Base\FloatInt;
 /**
  * @internal
  */
+#[\PHPUnit\Framework\Attributes\CoversClass(\Modules\Billing\Models\BillElement::class)]
 final class BillElementTest extends \PHPUnit\Framework\TestCase
 {
     private BillElement $element;
@@ -34,10 +35,7 @@ final class BillElementTest extends \PHPUnit\Framework\TestCase
         $this->element = new BillElement();
     }
 
-    /**
-     * @covers \Modules\Billing\Models\BillElement
-     * @group module
-     */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testDefault() : void
     {
         self::assertEquals(0, $this->element->id);
@@ -47,20 +45,14 @@ final class BillElementTest extends \PHPUnit\Framework\TestCase
         self::assertInstanceOf('\phpOMS\Stdlib\Base\FloatInt', $this->element->totalPurchasePriceNet);
     }
 
-    /**
-     * @covers \Modules\Billing\Models\BillElement
-     * @group module
-     */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testItemInputOutput() : void
     {
         $this->element->setItem(123);
         self::assertEquals(123, $this->element->item->id);
     }
 
-    /**
-     * @covers \Modules\Billing\Models\BillElement
-     * @group module
-     */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testSerialize() : void
     {
         $this->element->order           = 2;

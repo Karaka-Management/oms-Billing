@@ -19,31 +19,23 @@ use Modules\Billing\Models\Tax\NullTaxCombination;
 /**
  * @internal
  */
+#[\PHPUnit\Framework\Attributes\CoversClass(\Modules\Billing\Models\Tax\NullTaxCombination::class)]
 final class NullTaxCombinationTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @covers \Modules\Billing\Models\Tax\NullTaxCombination
-     * @group module
-     */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testNull() : void
     {
         self::assertInstanceOf('\Modules\Billing\Models\Tax\TaxCombination', new NullTaxCombination());
     }
 
-    /**
-     * @covers \Modules\Billing\Models\Tax\NullTaxCombination
-     * @group module
-     */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testId() : void
     {
         $null = new NullTaxCombination(2);
         self::assertEquals(2, $null->id);
     }
 
-    /**
-     * @covers \Modules\Billing\Models\Tax\NullTaxCombination
-     * @group module
-     */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testJsonSerialize() : void
     {
         $null = new NullTaxCombination(2);

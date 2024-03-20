@@ -26,10 +26,8 @@ require_once __DIR__ . '/../Autoloader.php';
  */
 final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @dataProvider billList
-     * @group maybe
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('billList')]
+    #[\PHPUnit\Framework\Attributes\Group('maybe')]
     public function testNetSales($json, $content) : void
     {
         $billObj = new Bill();
@@ -40,10 +38,8 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
         self::assertEquals($test['netSales'], $billObj->netSales->value);
     }
 
-    /**
-     * @dataProvider billList
-     * @group maybe
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('billList')]
+    #[\PHPUnit\Framework\Attributes\Group('maybe')]
     public function testTaxRate($json, $content) : void
     {
         $billObj = new Bill();
@@ -54,10 +50,8 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
         self::assertEquals($test['tax_rate'], \reset($billObj->elements)->taxR->value);
     }
 
-    /**
-     * @dataProvider billList
-     * @group maybe
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('billList')]
+    #[\PHPUnit\Framework\Attributes\Group('maybe')]
     public function testGrossSales($json, $content) : void
     {
         $billObj = new Bill();
@@ -68,10 +62,8 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
         self::assertEquals($test['grossSales'], $billObj->grossSales->value);
     }
 
-    /**
-     * @dataProvider billList
-     * @group maybe
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('billList')]
+    #[\PHPUnit\Framework\Attributes\Group('maybe')]
     public function testTaxAmount($json, $content) : void
     {
         $billObj = new Bill();
@@ -82,10 +74,8 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
         self::assertEquals($test['tax_amount'], $billObj->taxP->value);
     }
 
-    /**
-     * @dataProvider billList
-     * @group maybe
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('billList')]
+    #[\PHPUnit\Framework\Attributes\Group('maybe')]
     public function testBillDate($json, $content) : void
     {
         $billObj = new Bill();
@@ -96,10 +86,8 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
         self::assertEquals($test['bill_date'], $billObj->billDate?->format('Y-m-d'));
     }
 
-    /**
-     * @dataProvider billList
-     * @group maybe
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('billList')]
+    #[\PHPUnit\Framework\Attributes\Group('maybe')]
     public function testBillLanguage($json, $content) : void
     {
         $billObj = new Bill();
@@ -110,10 +98,8 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
         self::assertEquals($test['language'], $billObj->language);
     }
 
-    /**
-     * @dataProvider billList
-     * @group maybe
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('billList')]
+    #[\PHPUnit\Framework\Attributes\Group('maybe')]
     public function testBillCurrency($json, $content) : void
     {
         $billObj = new Bill();
@@ -124,10 +110,8 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
         self::assertEquals($test['currency'], $billObj->currency);
     }
 
-    /**
-     * @dataProvider billList
-     * @group maybe
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('billList')]
+    #[\PHPUnit\Framework\Attributes\Group('maybe')]
     public function testIban($json, $content) : void
     {
         $identifierContent = \file_get_contents(__DIR__ . '/../../Models/bill_identifier.json');
@@ -154,10 +138,8 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    /**
-     * @dataProvider billList
-     * @group maybe
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('billList')]
+    #[\PHPUnit\Framework\Attributes\Group('maybe')]
     public function testVATId($json, $content) : void
     {
         $identifierContent = \file_get_contents(__DIR__ . '/../../Models/bill_identifier.json');
@@ -184,10 +166,8 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    /**
-     * @dataProvider billList
-     * @group maybe
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('billList')]
+    #[\PHPUnit\Framework\Attributes\Group('maybe')]
     public function testTaxId($json, $content) : void
     {
         $identifierContent = \file_get_contents(__DIR__ . '/../../Models/bill_identifier.json');
@@ -214,10 +194,8 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    /**
-     * @dataProvider billList
-     * @group maybe
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('billList')]
+    #[\PHPUnit\Framework\Attributes\Group('maybe')]
     public function testWebsite($json, $content) : void
     {
         $identifierContent = \file_get_contents(__DIR__ . '/../../Models/bill_identifier.json');
@@ -244,10 +222,8 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    /**
-     * @dataProvider billList
-     * @group maybe
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('billList')]
+    #[\PHPUnit\Framework\Attributes\Group('maybe')]
     public function testEmail($json, $content) : void
     {
         $identifierContent = \file_get_contents(__DIR__ . '/../../Models/bill_identifier.json');
@@ -274,10 +250,8 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    /**
-     * @dataProvider billList
-     * @group maybe
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('billList')]
+    #[\PHPUnit\Framework\Attributes\Group('maybe')]
     public function testPhone($json, $content) : void
     {
         $identifierContent = \file_get_contents(__DIR__ . '/../../Models/bill_identifier.json');
@@ -306,7 +280,7 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
 
     public static array $billList = [];
 
-    public function billList()
+    public static function billList()
     {
         /*
         if (\str_ends_with(__DIR__ . '/bills/12.png', 'pdf')) {

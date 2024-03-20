@@ -19,31 +19,23 @@ use Modules\Billing\Models\NullBill;
 /**
  * @internal
  */
+#[\PHPUnit\Framework\Attributes\CoversClass(\Modules\Billing\Models\NullBill::class)]
 final class NullBillTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @covers \Modules\Billing\Models\NullBill
-     * @group module
-     */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testNull() : void
     {
         self::assertInstanceOf('\Modules\Billing\Models\Bill', new NullBill());
     }
 
-    /**
-     * @covers \Modules\Billing\Models\NullBill
-     * @group module
-     */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testId() : void
     {
         $null = new NullBill(2);
         self::assertEquals(2, $null->id);
     }
 
-    /**
-     * @covers \Modules\Billing\Models\NullBill
-     * @group module
-     */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testJsonSerialize() : void
     {
         $null = new NullBill(2);
