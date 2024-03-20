@@ -20,6 +20,7 @@ use Modules\Billing\Models\NullBillType;
 /**
  * @internal
  */
+#[\PHPUnit\Framework\Attributes\CoversClass(\Modules\Billing\Models\Bill::class)]
 final class BillTest extends \PHPUnit\Framework\TestCase
 {
     private Bill $bill;
@@ -32,15 +33,11 @@ final class BillTest extends \PHPUnit\Framework\TestCase
         $this->bill = new Bill();
     }
 
-    /**
-     * @covers Modules\Billing\Models\Bill
-     * @group module
-     */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testDefault() : void
     {
         self::assertEquals(0, $this->bill->id);
         self::assertEquals('', $this->bill->number);
-        self::assertEquals('', $this->bill->referralName);
         self::assertEquals('', $this->bill->info);
         self::assertInstanceOf('\Modules\Billing\Models\NullBillType', $this->bill->type);
         self::assertInstanceOf('\DateTimeImmutable', $this->bill->createdAt);
@@ -66,12 +63,8 @@ final class BillTest extends \PHPUnit\Framework\TestCase
 
         self::assertInstanceOf('\phpOMS\Stdlib\Base\FloatInt', $this->bill->netSales);
         self::assertInstanceOf('\phpOMS\Stdlib\Base\FloatInt', $this->bill->grossSales);
-
         self::assertInstanceOf('\phpOMS\Stdlib\Base\FloatInt', $this->bill->netProfit);
-        self::assertInstanceOf('\phpOMS\Stdlib\Base\FloatInt', $this->bill->grossProfit);
-
         self::assertInstanceOf('\phpOMS\Stdlib\Base\FloatInt', $this->bill->netCosts);
-        self::assertInstanceOf('\phpOMS\Stdlib\Base\FloatInt', $this->bill->grossCosts);
 
         self::assertEquals(0, $this->bill->payment);
         self::assertEquals('', $this->bill->paymentText);
@@ -81,20 +74,14 @@ final class BillTest extends \PHPUnit\Framework\TestCase
         self::assertEquals('', $this->bill->shippingText);
     }
 
-    /**
-     * @covers Modules\Billing\Models\Bill
-     * @group module
-     */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testNumberRendering() : void
     {
         $this->bill->type->numberFormat = '{y}{m}{d}-{id}';
         self::assertEquals(\date('Y') . \date('m') . \date('d') . '-0', $this->bill->getNumber());
     }
 
-    /**
-     * @covers Modules\Billing\Models\Bill
-     * @group module
-     */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testSerialize() : void
     {
         $this->bill->number      = '123456';
@@ -129,6 +116,7 @@ final class BillTest extends \PHPUnit\Framework\TestCase
                 'billCity'    => 'City',
                 'billZip'     => 'Zip',
                 'billCountry' => 'Country',
+                'external' => '',
             ],
             $this->bill->jsonSerialize()
         );

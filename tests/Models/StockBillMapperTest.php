@@ -17,25 +17,19 @@ namespace Modules\Billing\tests\Models;
 use Modules\Billing\Models\StockBillMapper;
 
 /**
- * @testdox Modules\Billing\tests\Models\StockBillMapperTest: App database mapper
- *
  * @internal
  */
+#[\PHPUnit\Framework\Attributes\CoversClass(\Modules\Billing\Models\StockBillMapper::class)]
+#[\PHPUnit\Framework\Attributes\TestDox('Modules\Billing\tests\Models\StockBillMapperTest: App database mapper')]
 final class StockBillMapperTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @covers Modules\Billing\Models\StockBillMapper
-     * @group module
-     */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testGetStockBeforePivotInvalid() : void
     {
         self::assertEquals([], StockBillMapper::getStockBeforePivot(-1));
     }
 
-    /**
-     * @covers Modules\Billing\Models\StockBillMapper
-     * @group module
-     */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testGetStockAfterPivotInvalid() : void
     {
         self::assertEquals([], StockBillMapper::getStockAfterPivot(99999));

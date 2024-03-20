@@ -19,4 +19,6 @@ return ['Navigation' => [
     'InvoiceRecognition' => 'Rechnungserkennung',
     'Open'               => 'Offen',
     'Upload'             => 'Hochladen',
+    'PaymentTerms'       => 'Zahlungsbedingungen',
+    'ShippingTerms'      => 'Lieferbedingungen',
 ]];

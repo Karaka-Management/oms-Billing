@@ -19,31 +19,23 @@ use Modules\Billing\Models\NullSubscription;
 /**
  * @internal
  */
+#[\PHPUnit\Framework\Attributes\CoversClass(\Modules\Billing\Models\NullSubscription::class)]
 final class NullSubscriptionTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @covers Modules\Billing\Models\NullSubscription
-     * @group module
-     */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testNull() : void
     {
         self::assertInstanceOf('\Modules\Billing\Models\Subscription', new NullSubscription());
     }
 
-    /**
-     * @covers Modules\Billing\Models\NullSubscription
-     * @group module
-     */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testId() : void
     {
         $null = new NullSubscription(2);
         self::assertEquals(2, $null->id);
     }
 
-    /**
-     * @covers Modules\Billing\Models\NullSubscription
-     * @group module
-     */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testJsonSerialize() : void
     {
         $null = new NullSubscription(2);

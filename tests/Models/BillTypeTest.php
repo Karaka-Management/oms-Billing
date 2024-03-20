@@ -20,6 +20,7 @@ use phpOMS\Localization\BaseStringL11n;
 /**
  * @internal
  */
+#[\PHPUnit\Framework\Attributes\CoversClass(\Modules\Billing\Models\BillType::class)]
 final class BillTypeTest extends \PHPUnit\Framework\TestCase
 {
     private BillType $type;
@@ -32,20 +33,14 @@ final class BillTypeTest extends \PHPUnit\Framework\TestCase
         $this->type = new BillType();
     }
 
-    /**
-     * @covers Modules\Billing\Models\BillType
-     * @group module
-     */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testDefault() : void
     {
         self::assertEquals(0, $this->type->id);
         self::assertTrue($this->type->transferStock);
     }
 
-    /**
-     * @covers Modules\Billing\Models\BillType
-     * @group module
-     */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testL11nInputOutput() : void
     {
         $this->type->setL11n('Test1');

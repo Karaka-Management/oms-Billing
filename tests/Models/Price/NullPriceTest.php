@@ -19,31 +19,23 @@ use Modules\Billing\Models\Price\NullPrice;
 /**
  * @internal
  */
+#[\PHPUnit\Framework\Attributes\CoversClass(\Modules\Billing\Models\Price\NullPrice::class)]
 final class NullPriceTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @covers Modules\Billing\Models\Price\NullPrice
-     * @group module
-     */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testNull() : void
     {
         self::assertInstanceOf('\Modules\Billing\Models\Price\Price', new NullPrice());
     }
 
-    /**
-     * @covers Modules\Billing\Models\Price\NullPrice
-     * @group module
-     */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testId() : void
     {
         $null = new NullPrice(2);
         self::assertEquals(2, $null->id);
     }
 
-    /**
-     * @covers Modules\Billing\Models\Price\NullPrice
-     * @group module
-     */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testJsonSerialize() : void
     {
         $null = new NullPrice(2);
