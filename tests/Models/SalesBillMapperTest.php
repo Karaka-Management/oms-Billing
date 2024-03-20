@@ -24,7 +24,7 @@ use Modules\Billing\Models\SalesBillMapper;
 final class SalesBillMapperTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @covers Modules\Billing\Models\SalesBillMapper
+     * @covers \Modules\Billing\Models\SalesBillMapper
      * @group module
      */
     public function testGetSalesBeforePivotInvalid() : void
@@ -33,7 +33,7 @@ final class SalesBillMapperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\SalesBillMapper
+     * @covers \Modules\Billing\Models\SalesBillMapper
      * @group module
      */
     public function testGetSalesAfterPivotInvalid() : void
@@ -42,7 +42,7 @@ final class SalesBillMapperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\SalesBillMapper
+     * @covers \Modules\Billing\Models\SalesBillMapper
      * @group module
      */
     public function testGetSalesByItemIdInvalid() : void
@@ -51,7 +51,7 @@ final class SalesBillMapperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\SalesBillMapper
+     * @covers \Modules\Billing\Models\SalesBillMapper
      * @group module
      */
     public function testGetSalesByClientIdInvalid() : void
@@ -60,7 +60,7 @@ final class SalesBillMapperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\SalesBillMapper
+     * @covers \Modules\Billing\Models\SalesBillMapper
      * @group module
      */
     public function testGetLastOrderDateByItemIdInvalid() : void
@@ -69,7 +69,7 @@ final class SalesBillMapperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\SalesBillMapper
+     * @covers \Modules\Billing\Models\SalesBillMapper
      * @group module
      */
     public function testGetLastOrderDateByClientIdInvalid() : void
@@ -78,7 +78,7 @@ final class SalesBillMapperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\SalesBillMapper
+     * @covers \Modules\Billing\Models\SalesBillMapper
      * @group module
      */
     public function testGetNewestItemInvoicesInvalid() : void
@@ -87,7 +87,7 @@ final class SalesBillMapperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\SalesBillMapper
+     * @covers \Modules\Billing\Models\SalesBillMapper
      * @group module
      */
     public function testGetNewestClientInvoicesInvalid() : void
@@ -96,7 +96,7 @@ final class SalesBillMapperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\SalesBillMapper
+     * @covers \Modules\Billing\Models\SalesBillMapper
      * @group module
      */
     public function testGetItemTopClientsInvalid() : void
@@ -105,7 +105,7 @@ final class SalesBillMapperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\SalesBillMapper
+     * @covers \Modules\Billing\Models\SalesBillMapper
      * @group module
      */
     public function testGetItemBillsInvalid() : void
@@ -114,7 +114,7 @@ final class SalesBillMapperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\SalesBillMapper
+     * @covers \Modules\Billing\Models\SalesBillMapper
      * @group module
      */
     public function testGetClientItem() : void
@@ -123,7 +123,7 @@ final class SalesBillMapperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\SalesBillMapper
+     * @covers \Modules\Billing\Models\SalesBillMapper
      * @group module
      */
     public function testGetItemCountrySalesInvalid() : void
@@ -132,7 +132,7 @@ final class SalesBillMapperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\SalesBillMapper
+     * @covers \Modules\Billing\Models\SalesBillMapper
      * @group module
      */
     public function testGetItemMonthlySalesCostsInvalid() : void
@@ -141,7 +141,7 @@ final class SalesBillMapperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\SalesBillMapper
+     * @covers \Modules\Billing\Models\SalesBillMapper
      * @group module
      */
     public function testGetClientMonthlySalesCostsInvalid() : void

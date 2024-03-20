@@ -22,7 +22,7 @@ use Modules\Billing\Models\NullBillElement;
 final class NullBillElementTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @covers Modules\Billing\Models\NullBillElement
+     * @covers \Modules\Billing\Models\NullBillElement
      * @group module
      */
     public function testNull() : void
@@ -31,7 +31,7 @@ final class NullBillElementTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\NullBillElement
+     * @covers \Modules\Billing\Models\NullBillElement
      * @group module
      */
     public function testId() : void
@@ -41,7 +41,7 @@ final class NullBillElementTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\NullBillElement
+     * @covers \Modules\Billing\Models\NullBillElement
      * @group module
      */
     public function testJsonSerialize() : void

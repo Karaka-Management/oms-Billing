@@ -33,7 +33,7 @@ final class BillTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\Bill
+     * @covers \Modules\Billing\Models\Bill
      * @group module
      */
     public function testDefault() : void
@@ -77,7 +77,7 @@ final class BillTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\Bill
+     * @covers \Modules\Billing\Models\Bill
      * @group module
      */
     public function testNumberRendering() : void
@@ -87,7 +87,7 @@ final class BillTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\Bill
+     * @covers \Modules\Billing\Models\Bill
      * @group module
      */
     public function testSerialize() : void

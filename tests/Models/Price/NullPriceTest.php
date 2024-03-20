@@ -22,7 +22,7 @@ use Modules\Billing\Models\Price\NullPrice;
 final class NullPriceTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @covers Modules\Billing\Models\Price\NullPrice
+     * @covers \Modules\Billing\Models\Price\NullPrice
      * @group module
      */
     public function testNull() : void
@@ -31,7 +31,7 @@ final class NullPriceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\Price\NullPrice
+     * @covers \Modules\Billing\Models\Price\NullPrice
      * @group module
      */
     public function testId() : void
@@ -41,7 +41,7 @@ final class NullPriceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\Price\NullPrice
+     * @covers \Modules\Billing\Models\Price\NullPrice
      * @group module
      */
     public function testJsonSerialize() : void

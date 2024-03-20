@@ -22,7 +22,7 @@ use Modules\Billing\Models\NullSubscription;
 final class NullSubscriptionTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @covers Modules\Billing\Models\NullSubscription
+     * @covers \Modules\Billing\Models\NullSubscription
      * @group module
      */
     public function testNull() : void
@@ -31,7 +31,7 @@ final class NullSubscriptionTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\NullSubscription
+     * @covers \Modules\Billing\Models\NullSubscription
      * @group module
      */
     public function testId() : void
@@ -41,7 +41,7 @@ final class NullSubscriptionTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\NullSubscription
+     * @covers \Modules\Billing\Models\NullSubscription
      * @group module
      */
     public function testJsonSerialize() : void

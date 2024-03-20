@@ -24,7 +24,7 @@ use Modules\Billing\Models\PurchaseBillMapper;
 final class PurchaseBillMapperTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @covers Modules\Billing\Models\PurchaseBillMapper
+     * @covers \Modules\Billing\Models\PurchaseBillMapper
      * @group module
      */
     public function testGetPurchaseBeforePivotInvalid() : void
@@ -33,7 +33,7 @@ final class PurchaseBillMapperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\PurchaseBillMapper
+     * @covers \Modules\Billing\Models\PurchaseBillMapper
      * @group module
      */
     public function testGetPurchaseAfterPivotInvalid() : void
@@ -42,7 +42,7 @@ final class PurchaseBillMapperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\PurchaseBillMapper
+     * @covers \Modules\Billing\Models\PurchaseBillMapper
      * @group module
      */
     public function testGetPurchaseByItemIdInvalid() : void
@@ -51,7 +51,7 @@ final class PurchaseBillMapperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\PurchaseBillMapper
+     * @covers \Modules\Billing\Models\PurchaseBillMapper
      * @group module
      */
     public function testGetPurchaseBySupplierIdInvalid() : void
@@ -60,7 +60,7 @@ final class PurchaseBillMapperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\PurchaseBillMapper
+     * @covers \Modules\Billing\Models\PurchaseBillMapper
      * @group module
      */
     public function testGetAvgPurchasePriceByItemIdInvalid() : void
@@ -69,7 +69,7 @@ final class PurchaseBillMapperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\PurchaseBillMapper
+     * @covers \Modules\Billing\Models\PurchaseBillMapper
      * @group module
      */
     public function testGetLastOrderDateByItemIdInvalid() : void
@@ -78,7 +78,7 @@ final class PurchaseBillMapperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\PurchaseBillMapper
+     * @covers \Modules\Billing\Models\PurchaseBillMapper
      * @group module
      */
     public function testGetLastOrderDateBySupplierIdInvalid() : void
@@ -87,7 +87,7 @@ final class PurchaseBillMapperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\PurchaseBillMapper
+     * @covers \Modules\Billing\Models\PurchaseBillMapper
      * @group module
      */
     public function testGetNewestItemInvoicesInvalid() : void
@@ -96,7 +96,7 @@ final class PurchaseBillMapperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\PurchaseBillMapper
+     * @covers \Modules\Billing\Models\PurchaseBillMapper
      * @group module
      */
     public function testGetNewestSupplierInvoicesInvalid() : void
@@ -105,7 +105,7 @@ final class PurchaseBillMapperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\PurchaseBillMapper
+     * @covers \Modules\Billing\Models\PurchaseBillMapper
      * @group module
      */
     public function testGetItemTopSuppliersInvalid() : void
@@ -114,7 +114,7 @@ final class PurchaseBillMapperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\PurchaseBillMapper
+     * @covers \Modules\Billing\Models\PurchaseBillMapper
      * @group module
      */
     public function testGetItemCountryPurchaseInvalid() : void
@@ -123,7 +123,7 @@ final class PurchaseBillMapperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\PurchaseBillMapper
+     * @covers \Modules\Billing\Models\PurchaseBillMapper
      * @group module
      */
     public function testGetItemMonthlyPurchaseCostsInvalid() : void
@@ -132,7 +132,7 @@ final class PurchaseBillMapperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\PurchaseBillMapper
+     * @covers \Modules\Billing\Models\PurchaseBillMapper
      * @group module
      */
     public function testGetSupplierMonthlyPurchaseCostsInvalid() : void

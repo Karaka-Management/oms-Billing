@@ -33,7 +33,7 @@ final class BillTypeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\BillType
+     * @covers \Modules\Billing\Models\BillType
      * @group module
      */
     public function testDefault() : void
@@ -43,7 +43,7 @@ final class BillTypeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\BillType
+     * @covers \Modules\Billing\Models\BillType
      * @group module
      */
     public function testL11nInputOutput() : void

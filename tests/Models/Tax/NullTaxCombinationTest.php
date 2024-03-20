@@ -22,7 +22,7 @@ use Modules\Billing\Models\Tax\NullTaxCombination;
 final class NullTaxCombinationTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @covers Modules\Billing\Models\Tax\NullTaxCombination
+     * @covers \Modules\Billing\Models\Tax\NullTaxCombination
      * @group module
      */
     public function testNull() : void
@@ -31,7 +31,7 @@ final class NullTaxCombinationTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\Tax\NullTaxCombination
+     * @covers \Modules\Billing\Models\Tax\NullTaxCombination
      * @group module
      */
     public function testId() : void
@@ -41,7 +41,7 @@ final class NullTaxCombinationTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\Tax\NullTaxCombination
+     * @covers \Modules\Billing\Models\Tax\NullTaxCombination
      * @group module
      */
     public function testJsonSerialize() : void

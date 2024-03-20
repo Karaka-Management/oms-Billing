@@ -100,7 +100,7 @@ trait ApiBillControllerTrait
     }
 
     /**
-     * @covers Modules\Billing\Controller\ApiController
+     * @covers \Modules\Billing\Controller\ApiController
      * @group module
      */
     public function testBillCreateInvalidData() : void
@@ -116,7 +116,7 @@ trait ApiBillControllerTrait
     }
 
     /**
-     * @covers Modules\Billing\Controller\ApiController
+     * @covers \Modules\Billing\Controller\ApiController
      * @group module
      */
     public function testBillElementCreateInvalidData() : void

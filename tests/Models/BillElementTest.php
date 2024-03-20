@@ -35,7 +35,7 @@ final class BillElementTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\BillElement
+     * @covers \Modules\Billing\Models\BillElement
      * @group module
      */
     public function testDefault() : void
@@ -48,7 +48,7 @@ final class BillElementTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\BillElement
+     * @covers \Modules\Billing\Models\BillElement
      * @group module
      */
     public function testItemInputOutput() : void
@@ -58,7 +58,7 @@ final class BillElementTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\BillElement
+     * @covers \Modules\Billing\Models\BillElement
      * @group module
      */
     public function testSerialize() : void

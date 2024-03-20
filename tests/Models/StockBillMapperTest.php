@@ -24,7 +24,7 @@ use Modules\Billing\Models\StockBillMapper;
 final class StockBillMapperTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @covers Modules\Billing\Models\StockBillMapper
+     * @covers \Modules\Billing\Models\StockBillMapper
      * @group module
      */
     public function testGetStockBeforePivotInvalid() : void
@@ -33,7 +33,7 @@ final class StockBillMapperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\Billing\Models\StockBillMapper
+     * @covers \Modules\Billing\Models\StockBillMapper
      * @group module
      */
     public function testGetStockAfterPivotInvalid() : void
