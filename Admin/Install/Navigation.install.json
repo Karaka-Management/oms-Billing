@@ -337,5 +337,51 @@
                 ]
             }
         ]
+    },
+    {
+        "id": 1005103001,
+        "pid": "/",
+        "type": 2,
+        "subtype": 1,
+        "name": "TaxCombinations",
+        "uri": "{/base}/finance/tax/combination/list?{?}",
+        "target": "self",
+        "icon": null,
+        "order": 2,
+        "from": "Billing",
+        "permission": { "permission": 2, "category": null, "element": null },
+        "parent": 1008101001,
+        "children": [
+            {
+                "id": 1005103002,
+                "pid": "/finance/tax/combination",
+                "type": 3,
+                "subtype": 1,
+                "name": "List",
+                "uri": "{/base}/finance/tax/combination/list?{?}",
+                "target": "self",
+                "icon": null,
+                "order": 1,
+                "from": "Billing",
+                "permission": { "permission": 2, "category": null, "element": null },
+                "parent": 1005103001,
+                "children": []
+            },
+            {
+                "id": 1005103003,
+                "pid": "/finance/tax/combination",
+                "type": 3,
+                "subtype": 1,
+                "name": "Create",
+                "uri": "{/base}/finance/tax/combination/create?{?}",
+                "target": "self",
+                "icon": null,
+                "order": 5,
+                "from": "Billing",
+                "permission": { "permission": 2, "category": null, "element": null },
+                "parent": 1005103001,
+                "children": []
+            }
+        ]
     }
 ]

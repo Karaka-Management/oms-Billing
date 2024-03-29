@@ -22,7 +22,7 @@ echo $this->data['nav']->render(); ?>
 <div class="row">
     <div class="col-xs-12 col-md-6">
         <div class="portlet">
-            <form id="paymentForm" method="POST" action="<?= UriFactory::build('{/api}bill/payment'); ?>"
+            <form id="paymentForm" method="POST" action="<?= UriFactory::build('{/api}bill/payment?csrf={$CSRF}'); ?>"
                 data-ui-container="#paymentTable tbody"
                 data-add-form="paymentForm"
                 data-add-tpl="#paymentTable tbody .oms-add-tpl-payment">
@@ -30,7 +30,7 @@ echo $this->data['nav']->render(); ?>
                 <div class="portlet-body">
                     <div class="form-group">
                         <label for="iName"><?= $this->getHtml('Name'); ?></label>
-                        <input type="text" name="code" id="iName" placeholder="" value="<?= $this->printHtml($type->title); ?>">
+                        <input type="text" name="code" id="iName" value="<?= $this->printHtml($type->title); ?>">
                     </div>
                 </div>
 
@@ -47,7 +47,7 @@ echo $this->data['nav']->render(); ?>
     <?= $this->data['l11nView']->render(
         $this->data['l11nValues'],
         [],
-        '{/api}bill/payment/l11n'
+        '{/api}bill/payment/l11n?csrf={$CSRF}'
     );
     ?>
 </div>

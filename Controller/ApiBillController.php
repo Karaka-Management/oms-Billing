@@ -440,7 +440,7 @@ final class ApiBillController extends Controller
 
         // @todo use bill and shipping address instead of main address if available
         //      https://github.com/Karaka-Management/oms-Billing/issues/45
-        $bill->billTo      = $request->getDataString('billto') ?? $account->account->name1;
+        $bill->billTo      = $request->getDataString('billto') ?? $account->account->name1 . ' ' . $account->account->name2;
         $bill->billAddress = $request->getDataString('billaddress') ?? $account->mainAddress->address;
         $bill->billCity    = $request->getDataString('billtocity') ?? $account->mainAddress->city;
         $bill->billZip     = $request->getDataString('billtopostal') ?? $account->mainAddress->postal;
@@ -481,7 +481,7 @@ final class ApiBillController extends Controller
         $settings = $this->app->appSettings->get(null,
             SettingsEnum::VALID_BILL_LANGUAGES,
             unit: $this->app->unitId,
-            module: 'Admin'
+            module: self::NAME
         );
 
         if (empty($settings)) {
@@ -489,7 +489,7 @@ final class ApiBillController extends Controller
             $settings = $this->app->appSettings->get(null,
                 SettingsEnum::VALID_BILL_LANGUAGES,
                 unit: null,
-                module: 'Admin'
+                module: self::NAME
             );
         }
 

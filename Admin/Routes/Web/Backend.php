@@ -275,4 +275,27 @@ return [
             ],
         ],
     ],
+
+    '^.*/finance/tax/combination/list(\?.*$|$)' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewTaxCombinationList',
+            'verb'       => RouteVerb::GET,
+            'permission' => [
+                'module' => BackendController::NAME,
+                'type'   => PermissionType::CREATE,
+                'state'  => PermissionCategory::TAX,
+            ],
+        ],
+    ],
+    '^.*/finance/tax/combination/create(\?.*$|$)' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewTaxCombinationCreate',
+            'verb'       => RouteVerb::GET,
+            'permission' => [
+                'module' => BackendController::NAME,
+                'type'   => PermissionType::CREATE,
+                'state'  => PermissionCategory::TAX,
+            ],
+        ],
+    ],
 ];

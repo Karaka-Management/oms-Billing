@@ -29,6 +29,7 @@ use Modules\Billing\Models\SettingsEnum;
 use Modules\Billing\Models\ShippingTermL11nMapper;
 use Modules\Billing\Models\ShippingTermMapper;
 use Modules\Billing\Models\StockBillMapper;
+use Modules\Billing\Models\Tax\TaxCombinationMapper;
 use phpOMS\Account\PermissionType;
 use phpOMS\Contract\RenderableInterface;
 use phpOMS\DataStorage\Database\Query\OrderType;
@@ -722,6 +723,59 @@ final class BackendController extends Controller
             ->execute();
 
         $view->data['l11nValues'] = $l11nValues;
+
+        return $view;
+    }
+
+    /**
+     * Method which shows the sales dashboard
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param array            $data     Generic data
+     *
+     * @return RenderableInterface Response can be rendered
+     *
+     * @since 1.0.0
+     */
+    public function viewTaxCombinationList(RequestAbstract $request, ResponseAbstract $response, array $data = []) : RenderableInterface
+    {
+        $view = new View($this->app->l11nManager, $request, $response);
+        $view->setTemplate('/Modules/Billing/Theme/Backend/finance-taxcombination-list');
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005103001, $request, $response);
+
+        $view->data['taxcombination'] = TaxCombinationMapper::getAll()
+            ->with('clientCode')
+            ->with('supplierCode')
+            ->with('itemCode')
+            ->with('taxCode')
+            ->executeGetArray();
+
+        return $view;
+    }
+
+    /**
+     * Method which shows the sales dashboard
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param array            $data     Generic data
+     *
+     * @return RenderableInterface Response can be rendered
+     *
+     * @since 1.0.0
+     */
+    public function viewTaxCombinationView(RequestAbstract $request, ResponseAbstract $response, array $data = []) : RenderableInterface
+    {
+        $view = new View($this->app->l11nManager, $request, $response);
+        $view->setTemplate('/Modules/Billing/Theme/Backend/finance-taxcombination-view');
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005103001, $request, $response);
+
+        $view->data['taxcombination'] = TaxCombinationMapper::getAll()
+            ->with('clientCode')
+            ->with('supplierCode')
+            ->with('itemCode')
+            ->executeGetArray();
 
         return $view;
     }

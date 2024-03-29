@@ -16,7 +16,7 @@ namespace Modules\Billing\Models;
 
 use Modules\ClientManagement\Models\ClientMapper;
 use phpOMS\DataStorage\Database\Query\Builder;
-use phpOMS\Localization\Defaults\CountryMapper;
+use phpOMS\DataStorage\Database\Query\OrderType;
 use phpOMS\Stdlib\Base\FloatInt;
 
 /**
@@ -257,13 +257,16 @@ final class SalesBillMapper extends BillMapper
     {
         $query = new Builder(self::$db);
         $query->selectAs(ClientMapper::TABLE . '.clientmgmt_client_id', 'client')
-            ->selectAs('SUM(' . BillElementMapper::TABLE . '.billing_bill_element_total_netsalesprice)', 'net_sales')
+            ->selectAs('SUM(' . BillElementMapper::TABLE . '.billing_bill_element_total_netsalesprice * billing_type_transfer_sign)', 'net_sales')
             ->from(ClientMapper::TABLE)
             ->leftJoin(self::TABLE)
                 ->on(ClientMapper::TABLE . '.clientmgmt_client_id', '=', self::TABLE . '.billing_bill_client')
             ->leftJoin(BillElementMapper::TABLE)
                 ->on(self::TABLE . '.billing_bill_id', '=', BillElementMapper::TABLE . '.billing_bill_element_bill')
+            ->leftJoin(BillTypeMapper::TABLE)
+                ->on(self::TABLE . '.billing_bill_type', '=', BillTypeMapper::TABLE . '.billing_type_id')
             ->where(BillElementMapper::TABLE . '.billing_bill_element_item', '=', $id)
+            ->andWhere(BillTypeMapper::TABLE . '.billing_type_accounting', '=', true)
             ->andWhere(self::TABLE . '.billing_bill_performance_date', '>=', $start)
             ->andWhere(self::TABLE . '.billing_bill_performance_date', '<=', $end)
             ->orderBy('net_sales', 'DESC')
@@ -294,28 +297,27 @@ final class SalesBillMapper extends BillMapper
      * Placeholder
      * @todo Implement
      */
-    public static function getItemBills(int $id, \DateTime $start, \DateTime $end) : array
+    public static function getItemBills(int $id, \DateTime $start, \DateTime $end, int $limit = 10000) : array
     {
         $query = self::reader()
             ->with('type')
             ->with('type/l11n')
             ->where('type/l11n/language', 'en')
+            ->where('createdAt', $start, '>=')
+            ->where('createdAt', $end, '<=')
+            ->sort('id', OrderType::DESC)
+            ->limit($limit)
             ->getQuery();
 
         $query->leftJoin(BillElementMapper::TABLE, BillElementMapper::TABLE . '_d1')
                 ->on(self::TABLE . '_d1.billing_bill_id', '=', BillElementMapper::TABLE . '_d1.billing_bill_element_bill')
             ->where(BillElementMapper::TABLE . '_d1.billing_bill_element_item', '=', $id);
 
-        /** @phpstan-ignore-next-line */
-        if (!empty(self::CREATED_AT)) {
-            $query->orderBy(self::TABLE  . '_d1.' . self::COLUMNS[self::CREATED_AT]['name'], 'DESC');
-        } else {
-            $query->orderBy(self::TABLE  . '_d1.' . self::COLUMNS[self::PRIMARYFIELD]['name'], 'DESC');
-        }
-
         return self::getAll()
             ->with('type')
             ->with('type/l11n')
+            ->sort('id', OrderType::DESC)
+            ->limit($limit)
             ->execute($query);
     }
 
@@ -353,26 +355,43 @@ final class SalesBillMapper extends BillMapper
      * Placeholder
      * @todo Implement
      */
-    public static function getItemCountrySales(int $id, \DateTime $start, \DateTime $end, int $limit = 10) : array
+    public static function getItemCountrySales(int $item, \DateTime $start, \DateTime $end, int $limit = 10) : array
     {
-        $query  = new Builder(self::$db);
-        $result = $query->select(CountryMapper::TABLE . '.country_code2')
-            ->selectAs('SUM(billing_bill_element_total_netsalesprice)', 'net_sales')
-            ->from(self::TABLE)
-            ->leftJoin(BillElementMapper::TABLE)
-                ->on(self::TABLE . '.billing_bill_id', '=', BillElementMapper::TABLE . '.billing_bill_element_bill')
-            ->leftJoin(CountryMapper::TABLE)
-                ->on(self::TABLE . '.billing_bill_billCountry', '=', CountryMapper::TABLE . '.country_code2')
-            ->where(BillElementMapper::TABLE . '.billing_bill_element_item', '=', $id)
-            ->andWhere(self::TABLE . '.billing_bill_performance_date', '>=', $start)
-            ->andWhere(self::TABLE . '.billing_bill_performance_date', '<=', $end)
-            ->groupBy(CountryMapper::TABLE . '.country_code2')
-            ->orderBy('net_sales', 'DESC')
-            ->limit($limit)
-            ->execute()
-            ?->fetchAll(\PDO::FETCH_KEY_PAIR);
+        $sql = <<<SQL
+        SELECT
+            billing_bill_billCountry as country,
+            SUM(billing_bill_element_total_netlistprice * billing_type_transfer_sign) as net_sales
+        FROM billing_bill
+        LEFT JOIN billing_type
+            ON billing_bill_type = billing_type_id
+        LEFT JOIN billing_bill_element
+            ON billing_bill_id = billing_bill_element_bill
+        WHERE
+            billing_bill_element_item = {$item}
+            AND billing_type_accounting = 1
+            AND billing_bill_performance_date >= '{$start->format('Y-m-d H:i:s')}'
+            AND billing_bill_performance_date <= '{$end->format('Y-m-d H:i:s')}'
+        GROUP BY
+            billing_bill_billCountry
+        LIMIT {$limit};
+        SQL;
 
-        return $result ?? [];
+        $query  = new Builder(self::$db);
+        $results = $query->raw($sql)->execute()?->fetchAll(\PDO::FETCH_ASSOC) ?? [];
+
+        if ($results === false) {
+            return [];
+        }
+
+        $hasData = false;
+        foreach ($results as $result) {
+            if ($result !== "0" || $result > 0) {
+                $hasData = true;
+                break;
+            }
+        }
+
+        return $hasData ? $results : [];
     }
 
     /**
@@ -390,14 +409,16 @@ final class SalesBillMapper extends BillMapper
         $sql = <<<SQL
         SELECT
             billing_bill_element_item,
-            SUM(billing_bill_element_total_netsalesprice) as net_sales,
-            SUM(billing_bill_element_total_netpurchaseprice) as net_costs,
+            SUM(billing_bill_element_total_netsalesprice * billing_type_transfer_sign) as net_sales,
+            SUM(billing_bill_element_total_netpurchaseprice * billing_type_transfer_sign) as net_costs,
             YEAR(billing_bill_performance_date) as year,
             MONTH(billing_bill_performance_date) as month
         FROM billing_bill_element
         JOIN billing_bill ON billing_bill_element.billing_bill_element_bill = billing_bill.billing_bill_id
+        LEFT JOIN billing_type ON billing_bill_type = billing_type_id
         WHERE
             billing_bill_element_item IN ({$item})
+            AND billing_type_accounting = 1
             AND billing_bill_performance_date >= '{$start->format('Y-m-d H:i:s')}'
             AND billing_bill_performance_date <= '{$end->format('Y-m-d H:i:s')}'
         GROUP BY billing_bill_element_item, year, month
@@ -405,9 +426,23 @@ final class SalesBillMapper extends BillMapper
         SQL;
 
         $query  = new Builder(self::$db);
-        $result = $query->raw($sql)->execute()?->fetchAll(\PDO::FETCH_ASSOC) ?? [];
+        $results = $query->raw($sql)->execute()?->fetchAll(\PDO::FETCH_ASSOC) ?? [];
 
-        return $result ?? [];
+        if ($results === false) {
+            return [];
+        }
+
+        $hasData = false;
+        foreach ($results as $result) {
+            if ($result['net_sales'] !== "0" || $result['net_sales'] > 0
+                || $result['net_costs'] !== "0" || $result['net_costs'] > 0
+            ) {
+                $hasData = true;
+                break;
+            }
+        }
+
+        return $hasData ? $results : [];
     }
 
     /**
@@ -452,13 +487,15 @@ final class SalesBillMapper extends BillMapper
     {
         $sql = <<<SQL
         SELECT
-            SUM(billing_bill_netsales) as net_sales,
-            SUM(billing_bill_netcosts) as net_costs,
+            SUM(billing_bill_netsales * billing_type_transfer_sign) as net_sales,
+            SUM(billing_bill_netcosts * billing_type_transfer_sign) as net_costs,
             YEAR(billing_bill_performance_date) as year,
             MONTH(billing_bill_performance_date) as month
         FROM billing_bill
+        LEFT JOIN billing_type ON billing_bill_type = billing_type_id
         WHERE
             billing_bill_client = {$client}
+            AND billing_type_accounting = 1
             AND billing_bill_performance_date >= '{$start->format('Y-m-d H:i:s')}'
             AND billing_bill_performance_date <= '{$end->format('Y-m-d H:i:s')}'
         GROUP BY year, month
@@ -491,6 +528,55 @@ final class SalesBillMapper extends BillMapper
         $result = $query->raw($sql)->execute()?->fetchAll(\PDO::FETCH_ASSOC) ?? [];
 
         return new FloatInt((int) ($result[0]['net_sales'] ?? 0));
+    }
+
+    /**
+     * Placeholder
+     * @todo Implement
+     */
+    public static function getClientAttributeNetSales(
+        int $client,
+        string $attribute,
+        string $language,
+        \DateTime $start,
+        \DateTime $end
+    ) : array
+    {
+        $sql = <<<SQL
+        SELECT
+            itemmgmt_attr_value_l11n_title as title,
+            SUM(billing_bill_element_total_netlistprice * billing_type_transfer_sign) as net_sales
+        FROM billing_bill
+        LEFT JOIN billing_type
+            ON billing_bill_type = billing_type_id
+        LEFT JOIN billing_bill_element
+            ON billing_bill_id = billing_bill_element_bill
+        LEFT JOIN itemmgmt_item
+            ON itemmgmt_item_id = billing_bill_element_item
+        LEFT JOIN itemmgmt_item_attr
+            ON itemmgmt_item_id = itemmgmt_item_attr_item
+        LEFT JOIN itemmgmt_attr_type
+            ON itemmgmt_item_attr_type = itemmgmt_attr_type_id
+        LEFT JOIN itemmgmt_attr_type_l11n
+            ON itemmgmt_attr_type_id = itemmgmt_attr_type_l11n_type AND itemmgmt_attr_type_l11n_lang = '{$language}'
+        LEFT JOIN itemmgmt_attr_value
+            ON itemmgmt_item_attr_value = itemmgmt_attr_value_id
+        LEFT JOIN itemmgmt_attr_value_l11n
+            ON itemmgmt_attr_value_id = itemmgmt_attr_value_l11n_value AND itemmgmt_attr_value_l11n_lang = '{$language}'
+        WHERE
+            billing_bill_client = {$client}
+            AND billing_type_accounting = 1
+            AND billing_bill_performance_date >= '{$start->format('Y-m-d H:i:s')}'
+            AND billing_bill_performance_date <= '{$end->format('Y-m-d H:i:s')}'
+            AND itemmgmt_attr_type_name = '{$attribute}'
+        GROUP BY
+            itemmgmt_attr_value_l11n_title;
+        SQL;
+
+        $query  = new Builder(self::$db);
+        $result = $query->raw($sql)->execute()?->fetchAll(\PDO::FETCH_ASSOC) ?? [];
+
+        return $result;
     }
 
     /**

@@ -15,7 +15,6 @@ declare(strict_types=1);
 namespace Modules\Billing\Models;
 
 use Modules\Billing\Models\Tax\TaxCombination;
-use Modules\Finance\Models\TaxCode;
 use Modules\ItemManagement\Models\Container;
 use Modules\ItemManagement\Models\Item;
 use Modules\ItemManagement\Models\NullItem;

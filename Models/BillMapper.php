@@ -18,7 +18,6 @@ use Modules\Admin\Models\AccountMapper;
 use Modules\Billing\Models\Attribute\BillAttributeMapper;
 use Modules\ClientManagement\Models\ClientMapper;
 use Modules\Editor\Models\EditorDocMapper;
-use Modules\Media\Models\CollectionMapper;
 use Modules\Media\Models\MediaMapper;
 use Modules\SupplierManagement\Models\SupplierMapper;
 use phpOMS\DataStorage\Database\Mapper\DataMapperFactory;

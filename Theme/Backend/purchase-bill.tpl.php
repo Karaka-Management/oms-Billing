@@ -438,7 +438,7 @@ echo $this->data['nav']->render(); ?>
             <div>
                 <div class="col-xs-12 col-sm-3 box">
                     <form id="iInvoiceRecognition"
-                        action="<?= UriFactory::build('{/api}bill/parse?id=' . $bill->id . '&async=0'); ?>"
+                        action="<?= UriFactory::build('{/api}bill/parse?id=' . $bill->id . '&async=0&csrf={$CSRF}'); ?>"
                         method="post"
                         data-redirect="<?= UriFactory::build('{%}'); ?>">
                         <input type="submit" value="<?= $this->getHtml('Parse'); ?>">
@@ -453,7 +453,7 @@ echo $this->data['nav']->render(); ?>
                         <div class="portlet-body col-simple">
                             <iframe id="iBillArchive"
                                 class="col-simple"
-                                src="<?= UriFactory::build('{/api}media/export') . '?id=' . $archive->id; ?>"
+                                src="<?= UriFactory::build('{/api}media/export?csrf={$CSRF}') . '?id=' . $archive->id; ?>"
                                 loading="lazy" allowfullscreen></iframe>
                         </div>
                     </section>
