@@ -358,7 +358,7 @@ final class ApiTaxController extends Controller
                 ->with('itemCode')
                 ->where('clientCode/valueStr', $combination['account_code'] ?? '')
                 ->where('itemCode/valueStr', $combination['item_code'] ?? '')
-                ->execute();
+                ->executeGetArray();
 
             if (\count($old) !== 1) {
                 continue;

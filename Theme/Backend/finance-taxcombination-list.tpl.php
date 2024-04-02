@@ -20,8 +20,8 @@ use phpOMS\Uri\UriFactory;
  */
 $taxcombination = $this->data['taxcombination'];
 
-$previous = empty($taxcombination) ? '{/base}/finance/tax/combination/list' : '{/base}/finance/tax/combination/list?{?}&id=' . \reset($taxcombination)->id . '&ptype=p';
-$next     = empty($taxcombination) ? '{/base}/finance/tax/combination/list' : '{/base}/finance/tax/combination/list?{?}&id=' . \end($taxcombination)->id . '&ptype=n';
+$previous = empty($taxcombination) ? '{/base}/finance/tax/combination/list' : '{/base}/finance/tax/combination/list?{?}&offset=' . \reset($taxcombination)->id . '&ptype=p';
+$next     = empty($taxcombination) ? '{/base}/finance/tax/combination/list' : '{/base}/finance/tax/combination/list?{?}&offset=' . \end($taxcombination)->id . '&ptype=n';
 
 echo $this->data['nav']->render(); ?>
 <div class="row">

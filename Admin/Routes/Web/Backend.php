@@ -51,7 +51,7 @@ return [
             ],
         ],
     ],
-    '^/sales/bill(\?.*$|$)' => [
+    '^/sales/bill/view(\?.*$|$)' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingSalesInvoice',
             'verb'       => RouteVerb::GET,
@@ -113,7 +113,7 @@ return [
             'verb'       => RouteVerb::GET,
             'permission' => [
                 'module' => BackendController::NAME,
-                'type'   => PermissionType::READ,
+                'type'   => PermissionType::CREATE,
                 'state'  => PermissionCategory::SALES_INVOICE,
             ],
         ],
@@ -181,7 +181,7 @@ return [
             'verb'       => RouteVerb::GET,
             'permission' => [
                 'module' => BackendController::NAME,
-                'type'   => PermissionType::READ,
+                'type'   => PermissionType::CREATE,
                 'state'  => PermissionCategory::PRIVATE_BILL_UPLOAD,
             ],
         ],

@@ -66,4 +66,16 @@ return [
             ],
         ],
     ],
+    '^.*/purchase/recognition/upload(\?.*$|$)' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\ApiPurchaseController:apiPurchaseBillUpload',
+            'verb'       => RouteVerb::SET,
+            'csrf'       => true,
+            'permission' => [
+                'module' => BackendController::NAME,
+                'type'   => PermissionType::CREATE,
+                'state'  => PermissionCategory::PURCHASE_INVOICE,
+            ],
+        ],
+    ],
 ];

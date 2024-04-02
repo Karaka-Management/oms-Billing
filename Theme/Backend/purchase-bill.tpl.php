@@ -453,7 +453,7 @@ echo $this->data['nav']->render(); ?>
                         <div class="portlet-body col-simple">
                             <iframe id="iBillArchive"
                                 class="col-simple"
-                                src="<?= UriFactory::build('{/api}media/export?csrf={$CSRF}') . '?id=' . $archive->id; ?>"
+                                src="<?= UriFactory::build('{/api}media/export?csrf={$CSRF}') . '&id=' . $archive->id; ?>"
                                 loading="lazy" allowfullscreen></iframe>
                         </div>
                     </section>

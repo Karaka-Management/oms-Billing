@@ -116,7 +116,7 @@ final class BillTest extends \PHPUnit\Framework\TestCase
                 'billCity'    => 'City',
                 'billZip'     => 'Zip',
                 'billCountry' => 'Country',
-                'external' => '',
+                'external'    => '',
             ],
             $this->bill->jsonSerialize()
         );

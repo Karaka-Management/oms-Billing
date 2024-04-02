@@ -50,7 +50,7 @@ final class StockBillMapper extends BillMapper
             ->where('id', $pivot, '<')
             ->where('transferType', BillTransferType::SALES)
             ->limit($limit)
-            ->execute();
+            ->executeGetArray();
     }
 
     /**
@@ -69,6 +69,6 @@ final class StockBillMapper extends BillMapper
             ->where('id', $pivot, '>')
             ->where('transferType', BillTransferType::SALES)
             ->limit($limit)
-            ->execute();
+            ->executeGetArray();
     }
 }

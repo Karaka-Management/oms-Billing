@@ -141,7 +141,7 @@ class BillMapper extends DataMapperFactory
         'referral' => [
             'mapper'   => AccountMapper::class,
             'external' => 'billing_bill_referral',
-        ]
+        ],
     ];
 
     /**

@@ -54,7 +54,7 @@ final class SalesBillMapper extends BillMapper
             ->where('id', $pivot, '<')
             ->where('type/transferType', BillTransferType::SALES)
             ->limit($limit)
-            ->execute();
+            ->executeGetArray();
     }
 
     /**
@@ -74,7 +74,7 @@ final class SalesBillMapper extends BillMapper
             ->where('id', $pivot, '>')
             ->where('type/transferType', BillTransferType::SALES)
             ->limit($limit)
-            ->execute();
+            ->executeGetArray();
     }
 
     /**
@@ -287,7 +287,7 @@ final class SalesBillMapper extends BillMapper
                 ->with('account')
                 ->with('mainAddress')
                 ->where('id', $clientIds, 'IN')
-                ->execute();
+                ->executeGetArray();
         }
 
         return [$clients, $data];
@@ -334,7 +334,7 @@ final class SalesBillMapper extends BillMapper
             ->where('type/l11n/language', $language)
             ->where('billDate', $start, '>=')
             ->where('billDate', $end, '<=')
-            ->execute();
+            ->executeGetArray();
     }
 
     /**
@@ -348,7 +348,7 @@ final class SalesBillMapper extends BillMapper
             ->with('bill/type')
             ->where('bill/client', $client)
             ->where('bill/type/transferStock', true)
-            ->execute();
+            ->executeGetArray();
     }
 
     /**
@@ -376,7 +376,7 @@ final class SalesBillMapper extends BillMapper
         LIMIT {$limit};
         SQL;
 
-        $query  = new Builder(self::$db);
+        $query   = new Builder(self::$db);
         $results = $query->raw($sql)->execute()?->fetchAll(\PDO::FETCH_ASSOC) ?? [];
 
         if ($results === false) {
@@ -425,7 +425,7 @@ final class SalesBillMapper extends BillMapper
         ORDER BY billing_bill_element_item, year ASC, month ASC;
         SQL;
 
-        $query  = new Builder(self::$db);
+        $query   = new Builder(self::$db);
         $results = $query->raw($sql)->execute()?->fetchAll(\PDO::FETCH_ASSOC) ?? [];
 
         if ($results === false) {
@@ -637,8 +637,10 @@ final class SalesBillMapper extends BillMapper
     public static function getClientNetSales(int $client, \DateTime $start, \DateTime $end) : FloatInt
     {
         $sql = <<<SQL
-        SELECT SUM(billing_bill_netsales) as net_sales
+        SELECT SUM(billing_bill_netsales * billing_type_transfer_sign) as net_sales
         FROM billing_bill
+        LEFT JOIN billing_type
+            ON billing_bill_type = billing_type_id
         WHERE
             billing_bill_client = {$client}
             AND billing_bill_performance_date >= '{$start->format('Y-m-d H:i:s')}'
@@ -658,8 +660,10 @@ final class SalesBillMapper extends BillMapper
     public static function getCLVHistoric(int $client) : FloatInt
     {
         $sql = <<<SQL
-        SELECT SUM(billing_bill_netsales) as net_sales
+        SELECT SUM(billing_bill_netsales * billing_type_transfer_sign) as net_sales
         FROM billing_bill
+        LEFT JOIN billing_type
+            ON billing_bill_type = billing_type_id
         WHERE billing_bill_client = {$client};
         SQL;
 

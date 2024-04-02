@@ -506,8 +506,8 @@ final class ApiPriceController extends Controller
         $new->clientsection = $request->hasData('clientsection') ? new NullAttributeValue((int) $request->getData('clientsection')) : $new->clientsection;
         $new->clienttype    = $request->hasData('clienttype') ? new NullAttributeValue((int) $request->getData('clienttype')) : $new->clienttype;
 
-        $new->supplier           = $request->hasData('supplier') ? new NullSupplier((int) $request->getData('supplier')) : $new->supplier;
-        $new->unit               = $request->getDataInt('unit') ?? $new->unit;
+        $new->supplier = $request->hasData('supplier') ? new NullSupplier((int) $request->getData('supplier')) : $new->supplier;
+        $new->unit     = $request->getDataInt('unit') ?? $new->unit;
 
         $new->quantity           = new FloatInt($request->getDataString('quantity') ?? $new->quantity->value);
         $new->price              = new FloatInt($request->getDataString('price') ?? $new->price->value);
@@ -516,10 +516,10 @@ final class ApiPriceController extends Controller
         $new->discountPercentage = new FloatInt($request->getDataString('discountPercentage') ?? $new->discountPercentage->value);
         $new->bonus              = new FloatInt($request->getDataString('bonus') ?? $new->bonus->value);
 
-        $new->multiply           = $request->getDataBool('multiply') ?? $new->multiply;
-        $new->currency           = ISO4217CharEnum::tryFromValue($request->getDataString('currency')) ?? $new->currency;
-        $new->start              = $request->getDataDateTime('start') ?? $new->start;
-        $new->end                = $request->getDataDateTime('end') ?? $new->end;
+        $new->multiply = $request->getDataBool('multiply') ?? $new->multiply;
+        $new->currency = ISO4217CharEnum::tryFromValue($request->getDataString('currency')) ?? $new->currency;
+        $new->start    = $request->getDataDateTime('start') ?? $new->start;
+        $new->end      = $request->getDataDateTime('end') ?? $new->end;
 
         return $new;
     }
