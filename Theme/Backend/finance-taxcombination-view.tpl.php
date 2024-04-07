@@ -17,7 +17,7 @@ use Modules\Billing\Models\Tax\NullTaxCombination;
 use phpOMS\Uri\UriFactory;
 
 $taxcombination = $this->data['taxcombination'] ?? new NullTaxCombination();
-$isNew = $taxcombination->id === 0;
+$isNew          = $taxcombination->id === 0;
 
 $combinationType = BillTaxType::getConstants();
 
