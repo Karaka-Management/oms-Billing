@@ -27,6 +27,10 @@ use Modules\Billing\Models\SettingsEnum;
 use Modules\Billing\Models\ShippingTermL11nMapper;
 use Modules\Billing\Models\ShippingTermMapper;
 use Modules\Billing\Models\Tax\TaxCombinationMapper;
+use Modules\ClientManagement\Models\Attribute\ClientAttributeTypeMapper;
+use Modules\Finance\Models\TaxCodeMapper;
+use Modules\ItemManagement\Models\Attribute\ItemAttributeTypeMapper;
+use Modules\SupplierManagement\Models\Attribute\SupplierAttributeTypeMapper;
 use phpOMS\Account\PermissionType;
 use phpOMS\Contract\RenderableInterface;
 use phpOMS\DataStorage\Database\Query\OrderType;
@@ -808,17 +812,66 @@ final class BackendController extends Controller
      *
      * @since 1.0.0
      */
+    public function viewTaxCombinationCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : RenderableInterface
+    {
+        $view = new View($this->app->l11nManager, $request, $response);
+        $view->setTemplate('/Modules/Billing/Theme/Backend/finance-taxcombination-view');
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005103001, $request, $response);
+
+        $view->data['client_codes'] = ClientAttributeTypeMapper::get()
+            ->with('defaults')
+            ->where('name', 'sales_tax_code')
+            ->limit(1)
+            ->execute();
+
+        $view->data['supplier_codes'] = SupplierAttributeTypeMapper::get()
+            ->with('defaults')
+            ->where('name', 'purchase_tax_code')
+            ->limit(1)
+            ->execute();
+
+        $view->data['item_codes_sales'] = ItemAttributeTypeMapper::get()
+            ->with('defaults')
+            ->where('name', 'sales_tax_code')
+            ->limit(1)
+            ->execute();
+
+        $view->data['item_codes_purchase'] = ItemAttributeTypeMapper::get()
+            ->with('defaults')
+            ->where('name', 'purchase_tax_code')
+            ->limit(1)
+            ->execute();
+
+        $view->data['tax_codes'] = TaxCodeMapper::getAll()
+            ->executeGetArray();
+
+        return $view;
+    }
+
+    /**
+     * Method which shows the sales dashboard
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param array            $data     Generic data
+     *
+     * @return RenderableInterface Response can be rendered
+     *
+     * @since 1.0.0
+     */
     public function viewTaxCombinationView(RequestAbstract $request, ResponseAbstract $response, array $data = []) : RenderableInterface
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/finance-taxcombination-view');
         $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005103001, $request, $response);
 
-        $view->data['taxcombination'] = TaxCombinationMapper::getAll()
+        $view->data['taxcombination'] = TaxCombinationMapper::get()
             ->with('clientCode')
             ->with('supplierCode')
             ->with('itemCode')
-            ->executeGetArray();
+            ->with('taxCode')
+            ->where('id', (int) $request->getData('id'))
+            ->execute();
 
         return $view;
     }

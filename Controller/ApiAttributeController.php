@@ -40,7 +40,7 @@ final class ApiAttributeController extends Controller
     use \Modules\Attribute\Controller\ApiAttributeTraitController;
 
     /**
-     * Api method to create item attribute
+     * Api method to create Attribute
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
@@ -217,7 +217,7 @@ final class ApiAttributeController extends Controller
     }
 
     /**
-     * Api method to update BillAttribute
+     * Api method to update bill Attribute
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
@@ -268,7 +268,7 @@ final class ApiAttributeController extends Controller
     }
 
     /**
-     * Api method to delete BillAttribute
+     * Api method to delete bill Attribute
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
@@ -305,7 +305,7 @@ final class ApiAttributeController extends Controller
     }
 
     /**
-     * Api method to update BillAttributeTypeL11n
+     * Api method to update bill AttributeTypeL11n
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
@@ -363,7 +363,7 @@ final class ApiAttributeController extends Controller
     }
 
     /**
-     * Api method to update BillAttributeType
+     * Api method to update bill AttributeType
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
@@ -393,7 +393,7 @@ final class ApiAttributeController extends Controller
     }
 
     /**
-     * Api method to delete BillAttributeType
+     * Api method to delete bill AttributeType
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
@@ -423,7 +423,7 @@ final class ApiAttributeController extends Controller
     }
 
     /**
-     * Api method to update BillAttributeValue
+     * Api method to update bill AttributeValue
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
@@ -460,7 +460,7 @@ final class ApiAttributeController extends Controller
     }
 
     /**
-     * Api method to delete BillAttributeValue
+     * Api method to delete bill AttributeValue
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
@@ -491,7 +491,7 @@ final class ApiAttributeController extends Controller
     }
 
     /**
-     * Api method to update BillAttributeValueL11n
+     * Api method to update bill AttributeValueL11n
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
@@ -521,7 +521,7 @@ final class ApiAttributeController extends Controller
     }
 
     /**
-     * Api method to delete BillAttributeValueL11n
+     * Api method to delete bill AttributeValueL11n
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response

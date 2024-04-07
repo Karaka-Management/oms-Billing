@@ -23,7 +23,7 @@ use Modules\SupplierManagement\Models\SupplierMapper;
 use phpOMS\DataStorage\Database\Mapper\DataMapperFactory;
 
 /**
- * Mapper class.
+ * Bill mapper class.
  *
  * WARNING: This mapper may use a trigger to update the sequence number on insert.
  *

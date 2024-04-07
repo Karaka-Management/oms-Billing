@@ -23,6 +23,7 @@ return [
             'dest'       => '\Modules\Billing\Controller\ApiBillController:apiMediaRender',
             'verb'       => RouteVerb::GET,
             'csrf'       => true,
+            'active' => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::CREATE,
@@ -35,6 +36,7 @@ return [
             'dest'       => '\Modules\Billing\Controller\ApiBillController:apiPreviewRender',
             'verb'       => RouteVerb::GET,
             'csrf'       => true,
+            'active' => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::CREATE,
@@ -47,6 +49,7 @@ return [
             'dest'       => '\Modules\Billing\Controller\ApiPriceController:apiPriceCreate',
             'verb'       => RouteVerb::GET,
             'csrf'       => true,
+            'active' => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::CREATE,
@@ -59,6 +62,7 @@ return [
             'dest'       => '\Modules\Billing\Controller\ApiPurchaseController:apiInvoiceParse',
             'verb'       => RouteVerb::SET,
             'csrf'       => true,
+            'active' => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::MODIFY,
@@ -71,6 +75,7 @@ return [
             'dest'       => '\Modules\Billing\Controller\ApiPurchaseController:apiPurchaseBillUpload',
             'verb'       => RouteVerb::SET,
             'csrf'       => true,
+            'active' => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::CREATE,

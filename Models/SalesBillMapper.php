@@ -20,7 +20,7 @@ use phpOMS\DataStorage\Database\Query\OrderType;
 use phpOMS\Stdlib\Base\FloatInt;
 
 /**
- * Mapper class.
+ * SalesBill mapper class.
  *
  * @package Modules\Billing\Models
  * @license OMS License 2.0

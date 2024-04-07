@@ -17,7 +17,7 @@ namespace Modules\Billing\Models;
 use phpOMS\DataStorage\Database\Query\Builder;
 
 /**
- * Mapper class.
+ * StockBill mapper class.
  *
  * @package Modules\Billing\Models
  * @license OMS License 2.0

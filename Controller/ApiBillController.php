@@ -101,6 +101,8 @@ final class ApiBillController extends Controller
      *
      * @return void
      *
+     * @api
+     *
      * @since 1.0.0
      */
     public function apiBillEmail(RequestAbstract $request, array $data = []) : void
@@ -939,7 +941,7 @@ final class ApiBillController extends Controller
     }
 
     /**
-     * Method to validate bill creation from request
+     * Method to validate add Media to bill request
      *
      * @param RequestAbstract $request Request
      *
@@ -1539,7 +1541,7 @@ final class ApiBillController extends Controller
     }
 
     /**
-     * Api method to create bill files
+     * Api method to create Note
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response

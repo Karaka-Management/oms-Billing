@@ -64,7 +64,7 @@ final class ApiBillTypeController extends Controller
     }
 
     /**
-     * Method to create item attribute from request.
+     * Method to create BillType from request.
      *
      * @param RequestAbstract $request Request
      *
@@ -98,7 +98,7 @@ final class ApiBillTypeController extends Controller
     }
 
     /**
-     * Validate item attribute create request
+     * Validate BillType create request
      *
      * @param RequestAbstract $request Request
      *
@@ -119,7 +119,7 @@ final class ApiBillTypeController extends Controller
     }
 
     /**
-     * Api method to create item attribute l11n
+     * Api method to create BillType l11n
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
@@ -146,7 +146,7 @@ final class ApiBillTypeController extends Controller
     }
 
     /**
-     * Method to create item attribute l11n from request.
+     * Method to create BillType l11n from request.
      *
      * @param RequestAbstract $request Request
      *
@@ -165,7 +165,7 @@ final class ApiBillTypeController extends Controller
     }
 
     /**
-     * Validate item attribute l11n create request
+     * Validate BillType l11n create request
      *
      * @param RequestAbstract $request Request
      *

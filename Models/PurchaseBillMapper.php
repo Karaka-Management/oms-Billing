@@ -20,7 +20,7 @@ use phpOMS\Localization\Defaults\CountryMapper;
 use phpOMS\Stdlib\Base\FloatInt;
 
 /**
- * Mapper class.
+ * PurchaseBill mapper class.
  *
  * @package Modules\Billing\Models
  * @license OMS License 2.0

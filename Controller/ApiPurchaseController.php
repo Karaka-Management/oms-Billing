@@ -82,7 +82,7 @@ final class ApiPurchaseController extends Controller
     }
 
     /**
-     * Method to create item attribute from request.
+     * Method to upload supplier Bill from request.
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
@@ -203,7 +203,7 @@ final class ApiPurchaseController extends Controller
     }
 
     /**
-     * Validate item attribute create request
+     * Validate supplier Bill upload request
      *
      * @param RequestAbstract $request Request
      *
@@ -284,7 +284,7 @@ final class ApiPurchaseController extends Controller
     }
 
     /**
-     * Validate item attribute create request
+     * Validate Bill parse request
      *
      * @param RequestAbstract $request Request
      *

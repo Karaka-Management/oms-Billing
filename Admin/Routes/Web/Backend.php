@@ -22,6 +22,7 @@ return [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingSalesInvoiceCreate',
             'verb'       => RouteVerb::GET,
+            'active' => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::CREATE,
@@ -33,6 +34,7 @@ return [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingSalesList',
             'verb'       => RouteVerb::GET,
+            'active' => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
@@ -44,6 +46,7 @@ return [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingSalesArchive',
             'verb'       => RouteVerb::GET,
+            'active' => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
@@ -55,6 +58,7 @@ return [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingSalesInvoice',
             'verb'       => RouteVerb::GET,
+            'active' => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
@@ -67,6 +71,7 @@ return [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingPurchaseInvoiceCreate',
             'verb'       => RouteVerb::GET,
+            'active' => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::CREATE,
@@ -78,6 +83,7 @@ return [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingPurchaseList',
             'verb'       => RouteVerb::GET,
+            'active' => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
@@ -89,6 +95,7 @@ return [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingPurchaseArchive',
             'verb'       => RouteVerb::GET,
+            'active' => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
@@ -100,6 +107,7 @@ return [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingPurchaseInvoice',
             'verb'       => RouteVerb::GET,
+            'active' => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
@@ -111,6 +119,7 @@ return [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingPurchaseInvoiceUpload',
             'verb'       => RouteVerb::GET,
+            'active' => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::CREATE,
@@ -123,6 +132,7 @@ return [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingStockInvoiceCreate',
             'verb'       => RouteVerb::GET,
+            'active' => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::CREATE,
@@ -134,6 +144,7 @@ return [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingStockList',
             'verb'       => RouteVerb::GET,
+            'active' => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
@@ -145,6 +156,7 @@ return [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingStockArchive',
             'verb'       => RouteVerb::GET,
+            'active' => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
@@ -156,6 +168,7 @@ return [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingStockInvoice',
             'verb'       => RouteVerb::GET,
+            'active' => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
@@ -168,6 +181,7 @@ return [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewPrivatePurchaseBillDashboard',
             'verb'       => RouteVerb::GET,
+            'active' => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
@@ -179,6 +193,7 @@ return [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewPrivatePurchaseBillUpload',
             'verb'       => RouteVerb::GET,
+            'active' => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::CREATE,
@@ -190,6 +205,7 @@ return [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewPrivateBillingPurchaseInvoice',
             'verb'       => RouteVerb::GET,
+            'active' => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
@@ -201,6 +217,7 @@ return [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewPrivatePurchaseBillDashboard',
             'verb'       => RouteVerb::GET,
+            'active' => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
@@ -212,6 +229,7 @@ return [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewPrivatePurchaseBillUpload',
             'verb'       => RouteVerb::GET,
+            'active' => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
@@ -223,6 +241,7 @@ return [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewPrivateBillingPurchaseInvoice',
             'verb'       => RouteVerb::GET,
+            'active' => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
@@ -235,6 +254,7 @@ return [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewPaymentList',
             'verb'       => RouteVerb::GET,
+            'active' => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
@@ -246,6 +266,7 @@ return [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewPaymentView',
             'verb'       => RouteVerb::GET,
+            'active' => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
@@ -257,6 +278,7 @@ return [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewShippingList',
             'verb'       => RouteVerb::GET,
+            'active' => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
@@ -268,6 +290,7 @@ return [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewShippingView',
             'verb'       => RouteVerb::GET,
+            'active' => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
@@ -280,9 +303,22 @@ return [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewTaxCombinationList',
             'verb'       => RouteVerb::GET,
+            'active' => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::CREATE,
+                'state'  => PermissionCategory::TAX,
+            ],
+        ],
+    ],
+    '^/finance/tax/combination/view(\?.*$|$)' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewTaxCombinationView',
+            'verb'       => RouteVerb::GET,
+            'active' => true,
+            'permission' => [
+                'module' => BackendController::NAME,
+                'type'   => PermissionType::READ,
                 'state'  => PermissionCategory::TAX,
             ],
         ],
@@ -291,6 +327,7 @@ return [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewTaxCombinationCreate',
             'verb'       => RouteVerb::GET,
+            'active' => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::CREATE,

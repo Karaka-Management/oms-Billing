@@ -126,6 +126,8 @@ final class ApiTaxController extends Controller
      *
      * @return void
      *
+     * @api
+     *
      * @since 1.0.0
      */
     public function apiTaxCombinationCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
@@ -143,7 +145,7 @@ final class ApiTaxController extends Controller
     }
 
     /**
-     * Method to create item attribute from request.
+     * Method to create TaxCombination from request.
      *
      * @param RequestAbstract $request Request
      *
@@ -169,7 +171,7 @@ final class ApiTaxController extends Controller
     }
 
     /**
-     * Validate item attribute create request
+     * Validate TaxCombination create request
      *
      * @param RequestAbstract $request Request
      *

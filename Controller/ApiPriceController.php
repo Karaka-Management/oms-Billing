@@ -228,7 +228,7 @@ final class ApiPriceController extends Controller
         */
 
         /** @var \Modules\Billing\Models\Price\Price[] $prices */
-        $prices = $queryMapper->execute();
+        $prices = $queryMapper->executeGetArray();
 
         // Find base price
         $basePrice = null;
@@ -247,7 +247,7 @@ final class ApiPriceController extends Controller
                 && $price->clientsection->id === 0
                 && $price->clienttype->id === 0
                 && $price->promocode === ''
-                && $price->priceNew->value < ($basePrice?->priceNew->value ?? \PHP_INT_MAX)
+                && $price->priceNew->value < ($basePrice?->priceNew?->value ?? \PHP_INT_MAX)
             ) {
                 $basePrice = $price;
             }
@@ -362,7 +362,7 @@ final class ApiPriceController extends Controller
     }
 
     /**
-     * Method to create item attribute from request.
+     * Method to create Price from request.
      *
      * @param RequestAbstract $request Request
      *
@@ -407,14 +407,14 @@ final class ApiPriceController extends Controller
     }
 
     /**
-     * Validate item attribute create request
+     * Validate Price create request
      *
      * @param RequestAbstract $request Request
      *
      * @return array<string, bool>
      *
      * @todo consider to prevent name 'default'?
-     * Might not be possible because it is used internally as well (see apiItemCreate in ItemManagement)
+     *      Might not be possible because it is used internally as well (see apiItemCreate in ItemManagement)
      *
      * @since 1.0.0
      */
