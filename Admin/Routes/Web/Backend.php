@@ -103,7 +103,7 @@ return [
             ],
         ],
     ],
-    '^/purchase/bill(\?.*$|$)' => [
+    '^/purchase/bill/view(\?.*$|$)' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingPurchaseInvoice',
             'verb'       => RouteVerb::GET,
@@ -164,7 +164,7 @@ return [
             ],
         ],
     ],
-    '^/warehouse/bill(\?.*$|$)' => [
+    '^/warehouse/bill/view(\?.*$|$)' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingStockInvoice',
             'verb'       => RouteVerb::GET,
