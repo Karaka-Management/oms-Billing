@@ -352,7 +352,7 @@ echo $this->data['nav']->render(); ?>
                                         <button type="button" formaction="">
                                             <i class="g-icon">book</i>
                                         </button><input name="item_number" autocomplete="off" type="text" value="<?= $element->itemNumber; ?>"<?= $disabled; ?>></span>
-                                    <td><textarea name="item_description" autocomplete="off"<?= $disabled; ?>><?= $element->itemName; ?></textarea>
+                                    <td><textarea name="item_description" autocomplete="off"<?= $disabled; ?>><?= $this->printTextarea($element->itemName); ?></textarea>
                                     <td><input name="item_quantity" autocomplete="off" type="number" step="any" value="<?= $element->quantity->sub($element->discountQ)->getAmount($element->container->quantityDecimals); ?>"<?= $disabled; ?>>
                                     <td><input name="item_discountp" autocomplete="off" type="number" step="any" value="<?= $element->singleDiscountP->getAmount(); ?>"<?= $disabled; ?>>
                                     <td><input name="item_discountr" autocomplete="off" type="number" step="any" value="<?= $element->singleDiscountR->getAmount(); ?>"<?= $disabled; ?>>
@@ -573,7 +573,7 @@ echo $this->data['nav']->render(); ?>
         <div class="tab">
             <div class="row">
                 <div class="col-xs-12">
-                    <div class="portlet">
+                    <section class="portlet">
                         <div class="portlet-head"><?= $this->getHtml('Logs'); ?><i class="g-icon download btn end-xs">download</i></div>
                         <table class="default sticky">
                             <thead>
@@ -603,7 +603,7 @@ echo $this->data['nav']->render(); ?>
                                 <td><a href="<?= $url; ?>"><?= $audit->createdAt->format('Y-m-d H:i'); ?></a>
                             <?php endforeach; ?>
                         </table>
-                    </div>
+                    </section>
                 </div>
             </div>
         </div>

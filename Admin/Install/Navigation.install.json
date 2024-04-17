@@ -60,7 +60,7 @@
             },
             {
                 "id": 1005104401,
-                "pid": "/sales/bill",
+                "pid": "/bill/payment",
                 "type": 3,
                 "subtype": 1,
                 "name": "PaymentTerms",
@@ -75,7 +75,7 @@
             },
             {
                 "id": 1005104501,
-                "pid": "/sales/bill",
+                "pid": "/bill/shipping",
                 "type": 3,
                 "subtype": 1,
                 "name": "ShippingTerms",
@@ -258,7 +258,7 @@
         "children": [
             {
                 "id": 1005109101,
-                "pid": "/",
+                "pid": "/private/purchase/recognition",
                 "type": 3,
                 "subtype": 1,
                 "name": "List",
@@ -274,7 +274,7 @@
             },
             {
                 "id": 1005109201,
-                "pid": "/",
+                "pid": "/private/purchase/recognition",
                 "type": 3,
                 "subtype": 1,
                 "name": "Upload",
@@ -306,7 +306,7 @@
         "children": [
             {
                 "id": 1005110101,
-                "pid": "/",
+                "pid": "/purchase/recognition",
                 "type": 3,
                 "subtype": 1,
                 "name": "List",
@@ -322,7 +322,7 @@
             },
             {
                 "id": 1005110201,
-                "pid": "/",
+                "pid": "/purchase/recognition",
                 "type": 3,
                 "subtype": 1,
                 "name": "Upload",

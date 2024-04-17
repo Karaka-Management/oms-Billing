@@ -21,7 +21,7 @@ $type = $this->data['type'];
 echo $this->data['nav']->render(); ?>
 <div class="row">
     <div class="col-xs-12 col-md-6">
-        <div class="portlet">
+        <section class="portlet">
             <form id="shippingForm" method="POST" action="<?= UriFactory::build('{/api}bill/shipping?csrf={$CSRF}'); ?>"
                 data-ui-container="#shippingTable tbody"
                 data-add-form="shippingForm"
@@ -39,7 +39,7 @@ echo $this->data['nav']->render(); ?>
                     <input id="iSubmit" name="submit" type="submit" value="<?= $this->getHtml('Save', '0', '0'); ?>">
                 </div>
             </form>
-        </div>
+        </section>
     </div>
 </div>
 

@@ -20,7 +20,7 @@ echo $this->data['nav']->render(); ?>
 
 <div class="row">
     <div class="col-xs-12">
-        <div class="portlet">
+        <section class="portlet">
             <div class="portlet-head"><?= $this->getHtml('Bills'); ?><i class="g-icon download btn end-xs">download</i></div>
             <div class="slider">
             <table id="billList" class="default sticky">
@@ -191,6 +191,6 @@ echo $this->data['nav']->render(); ?>
                 <?php endif; ?>
             </table>
             </div>
-        </div>
+        </section>
     </div>
 </div>
