@@ -871,6 +871,33 @@ final class BackendController extends Controller
             ->where('id', (int) $request->getData('id'))
             ->execute();
 
+        $view->data['client_codes'] = ClientAttributeTypeMapper::get()
+            ->with('defaults')
+            ->where('name', 'sales_tax_code')
+            ->limit(1)
+            ->execute();
+
+        $view->data['supplier_codes'] = SupplierAttributeTypeMapper::get()
+            ->with('defaults')
+            ->where('name', 'purchase_tax_code')
+            ->limit(1)
+            ->execute();
+
+        $view->data['item_codes_sales'] = ItemAttributeTypeMapper::get()
+            ->with('defaults')
+            ->where('name', 'sales_tax_code')
+            ->limit(1)
+            ->execute();
+
+        $view->data['item_codes_purchase'] = ItemAttributeTypeMapper::get()
+            ->with('defaults')
+            ->where('name', 'purchase_tax_code')
+            ->limit(1)
+            ->execute();
+
+        $view->data['tax_codes'] = TaxCodeMapper::getAll()
+            ->executeGetArray();
+
         return $view;
     }
 }
