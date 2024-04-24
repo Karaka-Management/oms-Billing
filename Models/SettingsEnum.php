@@ -2,7 +2,7 @@
 /**
  * Jingga
  *
- * PHP Version 8.1
+ * PHP Version 8.2
  *
  * @package   Modules\Billing\Models
  * @copyright Dennis Eichhorn
@@ -37,4 +37,8 @@ abstract class SettingsEnum extends Enum
     public const BILLING_CUSTOMER_EMAIL_TEMPLATE = '1005100004'; // Email template for customer billing
 
     public const BILLING_SUPPLIER_EMAIL_TEMPLATE = '1005100005'; // Email template for supplier billing
+
+    public const BILLING_DOCUMENT_SPACER_COLOR = '1005100101';
+
+    public const BILLING_DOCUMENT_SPACER_TOLERANCE = '1005100102';
 }

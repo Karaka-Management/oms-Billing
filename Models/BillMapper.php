@@ -2,7 +2,7 @@
 /**
  * Jingga
  *
- * PHP Version 8.1
+ * PHP Version 8.2
  *
  * @package   Modules\Billing\Models
  * @copyright Dennis Eichhorn
@@ -18,13 +18,12 @@ use Modules\Admin\Models\AccountMapper;
 use Modules\Billing\Models\Attribute\BillAttributeMapper;
 use Modules\ClientManagement\Models\ClientMapper;
 use Modules\Editor\Models\EditorDocMapper;
-use Modules\Media\Models\CollectionMapper;
 use Modules\Media\Models\MediaMapper;
 use Modules\SupplierManagement\Models\SupplierMapper;
 use phpOMS\DataStorage\Database\Mapper\DataMapperFactory;
 
 /**
- * Mapper class.
+ * Bill mapper class.
  *
  * WARNING: This mapper may use a trigger to update the sequence number on insert.
  *
@@ -142,7 +141,7 @@ class BillMapper extends DataMapperFactory
         'referral' => [
             'mapper'   => AccountMapper::class,
             'external' => 'billing_bill_referral',
-        ]
+        ],
     ];
 
     /**

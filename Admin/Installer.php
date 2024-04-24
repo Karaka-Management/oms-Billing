@@ -2,7 +2,7 @@
 /**
  * Jingga
  *
- * PHP Version 8.1
+ * PHP Version 8.2
  *
  * @package   Modules\Billing\Admin
  * @copyright Dennis Eichhorn
@@ -285,6 +285,12 @@ final class Installer extends InstallerAbstract
             ->where('name', 'sales_tax_code')
             ->execute();
 
+        /** @var \Modules\Attribute\Models\AttributeType $itemAttributePurchase */
+        $itemAttributePurchase = ItemAttributeTypeMapper::get()
+            ->with('defaults')
+            ->where('name', 'purchase_tax_code')
+            ->execute();
+
         /** @var \Modules\Attribute\Models\AttributeType $clientAttributeSales */
         $clientAttributeSales = ClientAttributeTypeMapper::get()
             ->with('defaults')
@@ -298,7 +304,10 @@ final class Installer extends InstallerAbstract
             ->execute();
 
         foreach ($taxes as $tax) {
-            $itemValue    = $itemAttributeSales->getDefaultByValue($tax['item_code']);
+            $itemValue = $tax['type'] === 1
+                ? $itemAttributeSales->getDefaultByValue($tax['item_code'])
+                : $itemAttributePurchase->getDefaultByValue($tax['item_code']);
+
             $accountValue = $tax['type'] === 1
                 ? $clientAttributeSales->getDefaultByValue($tax['account_code'])
                 : $supplierAttributeSales->getDefaultByValue($tax['account_code']);

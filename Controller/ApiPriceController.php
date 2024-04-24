@@ -3,7 +3,7 @@
 /**
  * Jingga
  *
- * PHP Version 8.1
+ * PHP Version 8.2
  *
  * @package   Modules\Billing
  * @copyright Dennis Eichhorn
@@ -228,7 +228,7 @@ final class ApiPriceController extends Controller
         */
 
         /** @var \Modules\Billing\Models\Price\Price[] $prices */
-        $prices = $queryMapper->execute();
+        $prices = $queryMapper->executeGetArray();
 
         // Find base price
         $basePrice = null;
@@ -247,7 +247,7 @@ final class ApiPriceController extends Controller
                 && $price->clientsection->id === 0
                 && $price->clienttype->id === 0
                 && $price->promocode === ''
-                && $price->priceNew->value < ($basePrice?->priceNew->value ?? \PHP_INT_MAX)
+                && $price->priceNew->value < ($basePrice?->priceNew?->value ?? \PHP_INT_MAX)
             ) {
                 $basePrice = $price;
             }
@@ -362,7 +362,7 @@ final class ApiPriceController extends Controller
     }
 
     /**
-     * Method to create item attribute from request.
+     * Method to create Price from request.
      *
      * @param RequestAbstract $request Request
      *
@@ -407,14 +407,14 @@ final class ApiPriceController extends Controller
     }
 
     /**
-     * Validate item attribute create request
+     * Validate Price create request
      *
      * @param RequestAbstract $request Request
      *
      * @return array<string, bool>
      *
      * @todo consider to prevent name 'default'?
-     * Might not be possible because it is used internally as well (see apiItemCreate in ItemManagement)
+     *      Might not be possible because it is used internally as well (see apiItemCreate in ItemManagement)
      *
      * @since 1.0.0
      */
@@ -506,8 +506,8 @@ final class ApiPriceController extends Controller
         $new->clientsection = $request->hasData('clientsection') ? new NullAttributeValue((int) $request->getData('clientsection')) : $new->clientsection;
         $new->clienttype    = $request->hasData('clienttype') ? new NullAttributeValue((int) $request->getData('clienttype')) : $new->clienttype;
 
-        $new->supplier           = $request->hasData('supplier') ? new NullSupplier((int) $request->getData('supplier')) : $new->supplier;
-        $new->unit               = $request->getDataInt('unit') ?? $new->unit;
+        $new->supplier = $request->hasData('supplier') ? new NullSupplier((int) $request->getData('supplier')) : $new->supplier;
+        $new->unit     = $request->getDataInt('unit') ?? $new->unit;
 
         $new->quantity           = new FloatInt($request->getDataString('quantity') ?? $new->quantity->value);
         $new->price              = new FloatInt($request->getDataString('price') ?? $new->price->value);
@@ -516,10 +516,10 @@ final class ApiPriceController extends Controller
         $new->discountPercentage = new FloatInt($request->getDataString('discountPercentage') ?? $new->discountPercentage->value);
         $new->bonus              = new FloatInt($request->getDataString('bonus') ?? $new->bonus->value);
 
-        $new->multiply           = $request->getDataBool('multiply') ?? $new->multiply;
-        $new->currency           = ISO4217CharEnum::tryFromValue($request->getDataString('currency')) ?? $new->currency;
-        $new->start              = $request->getDataDateTime('start') ?? $new->start;
-        $new->end                = $request->getDataDateTime('end') ?? $new->end;
+        $new->multiply = $request->getDataBool('multiply') ?? $new->multiply;
+        $new->currency = ISO4217CharEnum::tryFromValue($request->getDataString('currency')) ?? $new->currency;
+        $new->start    = $request->getDataDateTime('start') ?? $new->start;
+        $new->end      = $request->getDataDateTime('end') ?? $new->end;
 
         return $new;
     }

@@ -2,7 +2,7 @@
 /**
  * Jingga
  *
- * PHP Version 8.1
+ * PHP Version 8.2
  *
  * @package   Modules\Billing\Models
  * @copyright Dennis Eichhorn
@@ -17,7 +17,7 @@ namespace Modules\Billing\Models;
 use phpOMS\DataStorage\Database\Query\Builder;
 
 /**
- * Mapper class.
+ * StockBill mapper class.
  *
  * @package Modules\Billing\Models
  * @license OMS License 2.0
@@ -50,7 +50,7 @@ final class StockBillMapper extends BillMapper
             ->where('id', $pivot, '<')
             ->where('transferType', BillTransferType::SALES)
             ->limit($limit)
-            ->execute();
+            ->executeGetArray();
     }
 
     /**
@@ -69,6 +69,6 @@ final class StockBillMapper extends BillMapper
             ->where('id', $pivot, '>')
             ->where('transferType', BillTransferType::SALES)
             ->limit($limit)
-            ->execute();
+            ->executeGetArray();
     }
 }

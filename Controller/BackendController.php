@@ -2,7 +2,7 @@
 /**
  * Jingga
  *
- * PHP Version 8.1
+ * PHP Version 8.2
  *
  * @package   Modules\Billing
  * @copyright Dennis Eichhorn
@@ -23,12 +23,14 @@ use Modules\Billing\Models\BillTypeMapper;
 use Modules\Billing\Models\PaymentTermL11nMapper;
 use Modules\Billing\Models\PaymentTermMapper;
 use Modules\Billing\Models\PermissionCategory;
-use Modules\Billing\Models\PurchaseBillMapper;
-use Modules\Billing\Models\SalesBillMapper;
 use Modules\Billing\Models\SettingsEnum;
 use Modules\Billing\Models\ShippingTermL11nMapper;
 use Modules\Billing\Models\ShippingTermMapper;
-use Modules\Billing\Models\StockBillMapper;
+use Modules\Billing\Models\Tax\TaxCombinationMapper;
+use Modules\ClientManagement\Models\Attribute\ClientAttributeTypeMapper;
+use Modules\Finance\Models\TaxCodeMapper;
+use Modules\ItemManagement\Models\Attribute\ItemAttributeTypeMapper;
+use Modules\SupplierManagement\Models\Attribute\SupplierAttributeTypeMapper;
 use phpOMS\Account\PermissionType;
 use phpOMS\Contract\RenderableInterface;
 use phpOMS\DataStorage\Database\Query\OrderType;
@@ -66,7 +68,7 @@ final class BackendController extends Controller
         $view->setTemplate('/Modules/Billing/Theme/Backend/sales-bill-list');
         $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response);
 
-        $mapperQuery = SalesBillMapper::getAll()
+        $view->data['bills'] = BillMapper::getAll()
             ->with('type')
             ->with('type/l11n')
             ->with('client')
@@ -75,22 +77,14 @@ final class BackendController extends Controller
             ->where('type/l11n/language', $response->header->l11n->language)
             ->sort('id', OrderType::DESC)
             ->where('unit', $this->app->unitId)
-            ->limit(25);
-
-        if ($request->getData('ptype') === 'p') {
-            $view->data['bills'] = $mapperQuery
-                    ->where('id', $request->getDataInt('id') ?? 0, '<')
-                    ->where('client', null, '!=')
-                    ->execute();
-        } elseif ($request->getData('ptype') === 'n') {
-            $view->data['bills'] = $mapperQuery->where('id', $request->getDataInt('id') ?? 0, '>')
-                    ->where('client', null, '!=')
-                    ->execute();
-        } else {
-            $view->data['bills'] = $mapperQuery->where('id', 0, '>')
-                    ->where('client', null, '!=')
-                    ->execute();
-        }
+            ->where('client', null, '!=')
+            ->limit(25)
+            ->paginate(
+                'id',
+                $request->getData('ptype'),
+                $request->getDataInt('offset')
+            )
+            ->execute();
 
         return $view;
     }
@@ -113,7 +107,7 @@ final class BackendController extends Controller
         $view->setTemplate('/Modules/Billing/Theme/Backend/sales-bill-list');
         $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response);
 
-        $mapperQuery = SalesBillMapper::getAll()
+        $view->data['bills'] = BillMapper::getAll()
             ->with('type')
             ->with('type/l11n')
             ->with('client')
@@ -122,22 +116,88 @@ final class BackendController extends Controller
             ->where('type/l11n/language', $response->header->l11n->language)
             ->sort('id', OrderType::DESC)
             ->where('unit', $this->app->unitId)
-            ->limit(25);
+            ->where('client', null, '!=')
+            ->limit(25)
+            ->paginate(
+                'id',
+                $request->getDataString('ptype') ?? '',
+                $request->getDataInt('offset')
+            )->executeGetArray();
 
-        if ($request->getData('ptype') === 'p') {
-            $view->data['bills'] = $mapperQuery
-                    ->where('id', $request->getDataInt('id') ?? 0, '<')
-                    ->where('client', null, '!=')
-                    ->execute();
-        } elseif ($request->getData('ptype') === 'n') {
-            $view->data['bills'] = $mapperQuery->where('id', $request->getDataInt('id') ?? 0, '>')
-                    ->where('client', null, '!=')
-                    ->execute();
-        } else {
-            $view->data['bills'] = $mapperQuery->where('id', 0, '>')
-                    ->where('client', null, '!=')
-                    ->execute();
-        }
+        return $view;
+    }
+
+    /**
+     * Routing end-point for application behavior.
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param array            $data     Generic data
+     *
+     * @return RenderableInterface
+     *
+     * @since 1.0.0
+     * @codeCoverageIgnore
+     */
+    public function viewBillingStockArchive(RequestAbstract $request, ResponseAbstract $response, array $data = []) : RenderableInterface
+    {
+        $view = new View($this->app->l11nManager, $request, $response);
+        $view->setTemplate('/Modules/Billing/Theme/Backend/sales-bill-list');
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005106001, $request, $response);
+
+        $view->data['bills'] = BillMapper::getAll()
+            ->with('type')
+            ->with('type/l11n')
+            ->with('client')
+            ->where('status', BillStatus::DRAFT, '!=')
+            ->where('type/transferType', BillTransferType::STOCK)
+            ->where('type/l11n/language', $response->header->l11n->language)
+            ->sort('id', OrderType::DESC)
+            ->where('unit', $this->app->unitId)
+            ->limit(25)
+            ->paginate(
+                'id',
+                $request->getDataString('ptype') ?? '',
+                $request->getDataInt('offset')
+            )->executeGetArray();
+
+        return $view;
+    }
+
+    /**
+     * Routing end-point for application behavior.
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param array            $data     Generic data
+     *
+     * @return RenderableInterface
+     *
+     * @since 1.0.0
+     * @codeCoverageIgnore
+     */
+    public function viewBillingPurchaseArchive(RequestAbstract $request, ResponseAbstract $response, array $data = []) : RenderableInterface
+    {
+        $view = new View($this->app->l11nManager, $request, $response);
+        $view->setTemplate('/Modules/Billing/Theme/Backend/purchase-bill-list');
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005105001, $request, $response);
+
+        $view->data['bills'] = BillMapper::getAll()
+            ->with('type')
+            ->with('type/l11n')
+            ->with('supplier')
+            ->where('status', BillStatus::DRAFT, '!=')
+            ->where('type/transferType', BillTransferType::PURCHASE)
+            ->where('type/l11n/language', $response->header->l11n->language)
+            ->sort('id', OrderType::DESC)
+            ->where('unit', $this->app->unitId)
+            ->where('supplier', null, '!=')
+            ->limit(25)
+            ->paginate(
+                'id',
+                $request->getDataString('ptype') ?? '',
+                $request->getDataInt('offset')
+            )->executeGetArray();
 
         return $view;
     }
@@ -161,7 +221,7 @@ final class BackendController extends Controller
         $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response);
 
         /** @var \Modules\Billing\Models\Bill $bill */
-        $bill = SalesBillMapper::get()
+        $bill = BillMapper::get()
             ->with('client')
             ->with('elements')
             ->with('elements/container')
@@ -178,7 +238,7 @@ final class BackendController extends Controller
             ->where('isTemplate', false)
             ->where('transferType', BillTransferType::SALES)
             ->where('l11n/language', $request->header->l11n->language)
-            ->execute();
+            ->executeGetArray();
 
         $view->data['billtypes'] = $billTypes;
 
@@ -197,7 +257,7 @@ final class BackendController extends Controller
                 ->where('module', 'Billing')
                 ->where('type', StringUtils::intHash(BillMapper::class))
                 ->where('ref', $bill->id)
-                ->execute();
+                ->executeGetArray();
 
             if (!empty($bill->elements)) {
                 /** @var \Modules\Auditor\Models\Audit[] $logsElements */
@@ -206,7 +266,7 @@ final class BackendController extends Controller
                     ->where('module', 'Billing')
                     ->where('type', StringUtils::intHash(BillElementMapper::class))
                     ->where('ref', \array_keys($bill->elements), 'IN')
-                    ->execute();
+                    ->executeGetArray();
 
                 $logs = \array_merge($logs, $logsElements);
             }
@@ -241,7 +301,7 @@ final class BackendController extends Controller
             ->where('isTemplate', false)
             ->where('transferType', BillTransferType::SALES)
             ->where('l11n/language', $request->header->l11n->language)
-            ->execute();
+            ->executeGetArray();
 
         $view->data['billtypes'] = $billTypes;
 
@@ -266,7 +326,9 @@ final class BackendController extends Controller
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/bill-create');
-        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response);
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005105001, $request, $response);
+
+        $view->data['media-upload'] = new \Modules\Media\Theme\Backend\Components\Upload\BaseView($this->app->l11nManager, $request, $response);
 
         return $view;
     }
@@ -287,7 +349,9 @@ final class BackendController extends Controller
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/bill-create');
-        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response);
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005106001, $request, $response);
+
+        $view->data['media-upload'] = new \Modules\Media\Theme\Backend\Components\Upload\BaseView($this->app->l11nManager, $request, $response);
 
         return $view;
     }
@@ -310,32 +374,21 @@ final class BackendController extends Controller
         $view->setTemplate('/Modules/Billing/Theme/Backend/purchase-bill-list');
         $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005105001, $request, $response);
 
-        $mapperQuery = PurchaseBillMapper::getAll()
+        $view->data['bills'] = BillMapper::getAll()
             ->with('type')
             ->with('type/l11n')
             ->with('supplier')
             ->where('type/transferType', BillTransferType::PURCHASE)
             ->sort('id', OrderType::DESC)
             ->where('unit', $this->app->unitId)
-            ->limit(25);
-
-        if ($request->getData('ptype') === 'p') {
-            $view->data['bills'] = $mapperQuery
-                    ->where('id', $request->getDataInt('id') ?? 0, '<')
-                    ->where('supplier', null, '!=')
-                    ->where('type/l11n/language', $response->header->l11n->language)
-                    ->execute();
-        } elseif ($request->getData('ptype') === 'n') {
-            $view->data['bills'] = $mapperQuery->where('id', $request->getDataInt('id') ?? 0, '>')
-                    ->where('supplier', null, '!=')
-                    ->where('type/l11n/language', $response->header->l11n->language)
-                    ->execute();
-        } else {
-            $view->data['bills'] = $mapperQuery->where('id', 0, '>')
-                    ->where('supplier', null, '!=')
-                    ->where('type/l11n/language', $response->header->l11n->language)
-                    ->execute();
-        }
+            ->where('supplier', null, '!=')
+            ->where('type/l11n/language', $response->header->l11n->language)
+            ->limit(25)
+            ->paginate(
+                'id',
+                $request->getDataString('ptype') ?? '',
+                $request->getDataInt('offset')
+            )->executeGetArray();
 
         return $view;
     }
@@ -358,7 +411,7 @@ final class BackendController extends Controller
         $view->setTemplate('/Modules/Billing/Theme/Backend/purchase-bill');
         $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005105001, $request, $response);
 
-        $view->data['bill'] = PurchaseBillMapper::get()
+        $view->data['bill'] = BillMapper::get()
             ->with('supplier')
             ->with('elements')
             ->with('elements/container')
@@ -373,7 +426,7 @@ final class BackendController extends Controller
             ->where('isTemplate', false)
             ->where('transferType', BillTransferType::PURCHASE)
             ->where('l11n/language', $request->header->l11n->language)
-            ->execute();
+            ->executeGetArray();
 
         $logs = [];
         if ($this->app->accountManager->get($request->header->account)->hasPermission(
@@ -390,7 +443,7 @@ final class BackendController extends Controller
                 ->where('module', 'Billing')
                 ->where('type', StringUtils::intHash(BillMapper::class))
                 ->where('ref', $view->data['bill']->id)
-                ->execute();
+                ->executeGetArray();
 
             if (!empty($view->data['bill']->elements)) {
                 /** @var \Modules\Auditor\Models\Audit[] $logsElements */
@@ -399,7 +452,7 @@ final class BackendController extends Controller
                     ->where('module', 'Billing')
                     ->where('type', StringUtils::intHash(BillElementMapper::class))
                     ->where('ref', \array_keys($view->data['bill']->elements), 'IN')
-                    ->execute();
+                    ->executeGetArray();
 
                 $logs = \array_merge($logs, $logsElements);
             }
@@ -427,15 +480,17 @@ final class BackendController extends Controller
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/purchase-bill-list');
-        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005106001, $request, $response);
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005105001, $request, $response);
 
-        if ($request->getData('ptype') === 'p') {
-            $view->data['bills'] = StockBillMapper::getAll()->where('id', $request->getDataInt('id') ?? 0, '<')->where('unit', $this->app->unitId)->limit(25)->execute();
-        } elseif ($request->getData('ptype') === 'n') {
-            $view->data['bills'] = StockBillMapper::getAll()->where('id', $request->getDataInt('id') ?? 0, '>')->where('unit', $this->app->unitId)->limit(25)->execute();
-        } else {
-            $view->data['bills'] = StockBillMapper::getAll()->where('id', 0, '>')->where('unit', $this->app->unitId)->limit(25)->execute();
-        }
+        $view->data['bills'] = BillMapper::getAll()
+            ->where('unit', $this->app->unitId)
+            ->limit(25)
+            ->paginate(
+                'id',
+                $request->getData('ptype'),
+                $request->getDataInt('offset')
+            )
+            ->executeGetArray();
 
         return $view;
     }
@@ -458,7 +513,7 @@ final class BackendController extends Controller
         $view->setTemplate('/Modules/Billing/Theme/Backend/purchase-bill');
         $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005106001, $request, $response);
 
-        $bill = StockBillMapper::get()->where('id', (int) $request->getData('id'))->execute();
+        $bill = BillMapper::get()->where('id', (int) $request->getData('id'))->execute();
 
         $view->data['bill']         = $bill;
         $view->data['media-upload'] = new \Modules\Media\Theme\Backend\Components\Upload\BaseView($this->app->l11nManager, $request, $response);
@@ -482,7 +537,7 @@ final class BackendController extends Controller
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/purchase-bill-upload');
-        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1002901101, $request, $response);
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005105001, $request, $response);
 
         return $view;
     }
@@ -502,7 +557,7 @@ final class BackendController extends Controller
     public function viewPrivatePurchaseBillUpload(RequestAbstract $request, ResponseAbstract $response, array $data = []) : RenderableInterface
     {
         $view = new View($this->app->l11nManager, $request, $response);
-        $view->setTemplate('/Modules/Billing/Theme/Backend/user-purchase-bill-upload');
+        $view->setTemplate('/Modules/Billing/Theme/Backend/purchase-bill-upload');
         $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005109001, $request, $response);
 
         return $view;
@@ -526,7 +581,7 @@ final class BackendController extends Controller
         $view->setTemplate('/Modules/Billing/Theme/Backend/purchase-bill-list');
         $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005109001, $request, $response);
 
-        $mapperQuery = PurchaseBillMapper::getAll()
+        $view->data['bills'] = BillMapper::getAll()
             ->with('type')
             ->with('type/l11n')
             ->with('supplier')
@@ -534,22 +589,13 @@ final class BackendController extends Controller
             ->where('status', BillStatus::UNPARSED)
             ->sort('id', OrderType::DESC)
             ->where('unit', $this->app->unitId)
-            ->limit(25);
-
-        if ($request->getData('ptype') === 'p') {
-            $view->data['bills'] = $mapperQuery
-                    ->where('id', $request->getDataInt('id') ?? 0, '<')
-                    ->where('type/l11n/language', $response->header->l11n->language)
-                    ->execute();
-        } elseif ($request->getData('ptype') === 'n') {
-            $view->data['bills'] = $mapperQuery->where('id', $request->getDataInt('id') ?? 0, '>')
-                    ->where('type/l11n/language', $response->header->l11n->language)
-                    ->execute();
-        } else {
-            $view->data['bills'] = $mapperQuery->where('id', 0, '>')
-                    ->where('type/l11n/language', $response->header->l11n->language)
-                    ->execute();
-        }
+            ->where('type/l11n/language', $response->header->l11n->language)
+            ->limit(25)
+            ->paginate(
+                'id',
+                $request->getDataString('ptype') ?? '',
+                $request->getDataInt('offset')
+            )->executeGetArray();
 
         return $view;
     }
@@ -572,7 +618,7 @@ final class BackendController extends Controller
         $view->setTemplate('/Modules/Billing/Theme/Backend/purchase-bill');
         $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005109001, $request, $response);
 
-        $bill = PurchaseBillMapper::get()
+        $bill = BillMapper::get()
             ->with('elements')
             ->with('files')
             ->with('files/types')
@@ -618,12 +664,12 @@ final class BackendController extends Controller
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/payment-type-list');
-        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1002901101, $request, $response);
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response);
 
         $view->data['types'] = PaymentTermMapper::getAll()
             ->with('l11n')
             ->where('l11n/language', $response->header->l11n->language)
-            ->execute();
+            ->executeGetArray();
 
         return $view;
     }
@@ -644,7 +690,7 @@ final class BackendController extends Controller
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/payment-view');
-        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1002901101, $request, $response);
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response);
 
         $view->data['type'] = PaymentTermMapper::get()
             ->with('l11n')
@@ -657,7 +703,7 @@ final class BackendController extends Controller
         /** @var \phpOMS\Localization\BaseStringL11n[] $l11nValues */
         $l11nValues = PaymentTermL11nMapper::getAll()
             ->where('ref', $view->data['type']->id)
-            ->execute();
+            ->executeGetArray();
 
         $view->data['l11nValues'] = $l11nValues;
 
@@ -680,12 +726,12 @@ final class BackendController extends Controller
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/shipping-type-list');
-        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1002901101, $request, $response);
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response);
 
         $view->data['types'] = ShippingTermMapper::getAll()
             ->with('l11n')
             ->where('l11n/language', $response->header->l11n->language)
-            ->execute();
+            ->executeGetArray();
 
         return $view;
     }
@@ -706,7 +752,7 @@ final class BackendController extends Controller
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Backend/shipping-view');
-        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1002901101, $request, $response);
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response);
 
         $view->data['type'] = ShippingTermMapper::get()
             ->with('l11n')
@@ -719,9 +765,138 @@ final class BackendController extends Controller
         /** @var \phpOMS\Localization\BaseStringL11n[] $l11nValues */
         $l11nValues = ShippingTermL11nMapper::getAll()
             ->where('ref', $view->data['type']->id)
-            ->execute();
+            ->executeGetArray();
 
         $view->data['l11nValues'] = $l11nValues;
+
+        return $view;
+    }
+
+    /**
+     * Method which shows the sales dashboard
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param array            $data     Generic data
+     *
+     * @return RenderableInterface Response can be rendered
+     *
+     * @since 1.0.0
+     */
+    public function viewTaxCombinationList(RequestAbstract $request, ResponseAbstract $response, array $data = []) : RenderableInterface
+    {
+        $view = new View($this->app->l11nManager, $request, $response);
+        $view->setTemplate('/Modules/Billing/Theme/Backend/finance-taxcombination-list');
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005103001, $request, $response);
+
+        $view->data['taxcombination'] = TaxCombinationMapper::getAll()
+            ->with('clientCode')
+            ->with('supplierCode')
+            ->with('itemCode')
+            ->with('taxCode')
+            ->executeGetArray();
+
+        return $view;
+    }
+
+    /**
+     * Method which shows the sales dashboard
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param array            $data     Generic data
+     *
+     * @return RenderableInterface Response can be rendered
+     *
+     * @since 1.0.0
+     */
+    public function viewTaxCombinationCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : RenderableInterface
+    {
+        $view = new View($this->app->l11nManager, $request, $response);
+        $view->setTemplate('/Modules/Billing/Theme/Backend/finance-taxcombination-view');
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005103001, $request, $response);
+
+        $view->data['client_codes'] = ClientAttributeTypeMapper::get()
+            ->with('defaults')
+            ->where('name', 'sales_tax_code')
+            ->limit(1)
+            ->execute();
+
+        $view->data['supplier_codes'] = SupplierAttributeTypeMapper::get()
+            ->with('defaults')
+            ->where('name', 'purchase_tax_code')
+            ->limit(1)
+            ->execute();
+
+        $view->data['item_codes_sales'] = ItemAttributeTypeMapper::get()
+            ->with('defaults')
+            ->where('name', 'sales_tax_code')
+            ->limit(1)
+            ->execute();
+
+        $view->data['item_codes_purchase'] = ItemAttributeTypeMapper::get()
+            ->with('defaults')
+            ->where('name', 'purchase_tax_code')
+            ->limit(1)
+            ->execute();
+
+        $view->data['tax_codes'] = TaxCodeMapper::getAll()
+            ->executeGetArray();
+
+        return $view;
+    }
+
+    /**
+     * Method which shows the sales dashboard
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param array            $data     Generic data
+     *
+     * @return RenderableInterface Response can be rendered
+     *
+     * @since 1.0.0
+     */
+    public function viewTaxCombinationView(RequestAbstract $request, ResponseAbstract $response, array $data = []) : RenderableInterface
+    {
+        $view = new View($this->app->l11nManager, $request, $response);
+        $view->setTemplate('/Modules/Billing/Theme/Backend/finance-taxcombination-view');
+        $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005103001, $request, $response);
+
+        $view->data['taxcombination'] = TaxCombinationMapper::get()
+            ->with('clientCode')
+            ->with('supplierCode')
+            ->with('itemCode')
+            ->with('taxCode')
+            ->where('id', (int) $request->getData('id'))
+            ->execute();
+
+        $view->data['client_codes'] = ClientAttributeTypeMapper::get()
+            ->with('defaults')
+            ->where('name', 'sales_tax_code')
+            ->limit(1)
+            ->execute();
+
+        $view->data['supplier_codes'] = SupplierAttributeTypeMapper::get()
+            ->with('defaults')
+            ->where('name', 'purchase_tax_code')
+            ->limit(1)
+            ->execute();
+
+        $view->data['item_codes_sales'] = ItemAttributeTypeMapper::get()
+            ->with('defaults')
+            ->where('name', 'sales_tax_code')
+            ->limit(1)
+            ->execute();
+
+        $view->data['item_codes_purchase'] = ItemAttributeTypeMapper::get()
+            ->with('defaults')
+            ->where('name', 'purchase_tax_code')
+            ->limit(1)
+            ->execute();
+
+        $view->data['tax_codes'] = TaxCodeMapper::getAll()
+            ->executeGetArray();
 
         return $view;
     }

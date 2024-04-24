@@ -2,6 +2,13 @@
     {
         "type": 1,
         "item_code": "GENERAL",
+        "account_code": "EU_S",
+        "tax_code": "EU_S0",
+        "account": "8400"
+    },
+    {
+        "type": 1,
+        "item_code": "GENERAL",
         "account_code": "EU",
         "tax_code": "EU_S0",
         "account": "8400"
@@ -83,14 +90,14 @@
     {
         "type": 1,
         "item_code": "GENERAL",
-        "account_code": "DE_0",
+        "account_code": "DE_S",
         "tax_code": "SBIZ_0",
         "account": "8195"
     },
     {
         "type": 2,
         "item_code": "GENERAL",
-        "account_code": "DE_0",
+        "account_code": "DE_S",
         "tax_code": "SBIZ_0",
         "account": "3349"
     },
@@ -205,6 +212,12 @@
     {
         "type": 1,
         "item_code": "SOFTWARE",
+        "account_code": "EU_S",
+        "tax_code": "EU_S0"
+    },
+    {
+        "type": 1,
+        "item_code": "SOFTWARE",
         "account_code": "EU",
         "tax_code": "EU_S0"
     },
@@ -285,14 +298,14 @@
     {
         "type": 1,
         "item_code": "SOFTWARE",
-        "account_code": "DE_0",
+        "account_code": "DE_S",
         "tax_code": "SBIZ_0",
         "account": "8195"
     },
     {
         "type": 2,
         "item_code": "SOFTWARE",
-        "account_code": "DE_0",
+        "account_code": "DE_S",
         "tax_code": "SBIZ_0",
         "account": "3349"
     },
@@ -407,6 +420,12 @@
     {
         "type": 1,
         "item_code": "SERVICE",
+        "account_code": "EU_S",
+        "tax_code": "EU_S0"
+    },
+    {
+        "type": 1,
+        "item_code": "SERVICE",
         "account_code": "EU",
         "tax_code": "EU_S0"
     },
@@ -487,14 +506,14 @@
     {
         "type": 1,
         "item_code": "SERVICE",
-        "account_code": "DE_0",
+        "account_code": "DE_S",
         "tax_code": "SBIZ_0",
         "account": "8195"
     },
     {
         "type": 2,
         "item_code": "SERVICE",
-        "account_code": "DE_0",
+        "account_code": "DE_S",
         "tax_code": "SBIZ_0",
         "account": "3349"
     },

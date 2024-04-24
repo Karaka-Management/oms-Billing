@@ -2,7 +2,7 @@
 /**
  * Jingga
  *
- * PHP Version 8.1
+ * PHP Version 8.2
  *
  * @package   Modules
  * @copyright Dennis Eichhorn
@@ -22,6 +22,8 @@ return [
         [
             'dest'       => '\Modules\Billing\Controller\ApiBillController:apiMediaRender',
             'verb'       => RouteVerb::GET,
+            'csrf'       => true,
+            'active'     => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::CREATE,
@@ -33,6 +35,8 @@ return [
         [
             'dest'       => '\Modules\Billing\Controller\ApiBillController:apiPreviewRender',
             'verb'       => RouteVerb::GET,
+            'csrf'       => true,
+            'active'     => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::CREATE,
@@ -44,6 +48,8 @@ return [
         [
             'dest'       => '\Modules\Billing\Controller\ApiPriceController:apiPriceCreate',
             'verb'       => RouteVerb::GET,
+            'csrf'       => true,
+            'active'     => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::CREATE,
@@ -55,9 +61,24 @@ return [
         [
             'dest'       => '\Modules\Billing\Controller\ApiPurchaseController:apiInvoiceParse',
             'verb'       => RouteVerb::SET,
+            'csrf'       => true,
+            'active'     => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::MODIFY,
+                'state'  => PermissionCategory::PURCHASE_INVOICE,
+            ],
+        ],
+    ],
+    '^.*/purchase/recognition/upload(\?.*$|$)' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\ApiPurchaseController:apiPurchaseBillUpload',
+            'verb'       => RouteVerb::SET,
+            'csrf'       => true,
+            'active'     => true,
+            'permission' => [
+                'module' => BackendController::NAME,
+                'type'   => PermissionType::CREATE,
                 'state'  => PermissionCategory::PURCHASE_INVOICE,
             ],
         ],

@@ -2,7 +2,7 @@
 /**
  * Jingga
  *
- * PHP Version 8.1
+ * PHP Version 8.2
  *
  * @package   Modules\Billing\Models
  * @copyright Dennis Eichhorn
@@ -17,7 +17,7 @@ namespace Modules\Billing\Models;
 use phpOMS\DataStorage\Database\Mapper\DataMapperFactory;
 
 /**
- * Mapper class.
+ * Subscription mapper class.
  *
  * @package Modules\Billing\Models
  * @license OMS License 2.0

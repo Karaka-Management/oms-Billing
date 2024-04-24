@@ -2,7 +2,7 @@
 /**
  * Jingga
  *
- * PHP Version 8.1
+ * PHP Version 8.2
  *
  * @package   Modules\Billing\Admin
  * @copyright Dennis Eichhorn
@@ -21,6 +21,20 @@ return [
         'name'    => SettingsEnum::VALID_BILL_LANGUAGES,
         'content' => '["en","de"]',
         'pattern' => '',
+        'module'  => ApiController::NAME,
+    ],
+    [
+        'type'    => 'setting',
+        'name'    => SettingsEnum::BILLING_DOCUMENT_SPACER_COLOR,
+        'content' => '15613766',
+        'pattern' => '\d',
+        'module'  => ApiController::NAME,
+    ],
+    [
+        'type'    => 'setting',
+        'name'    => SettingsEnum::BILLING_DOCUMENT_SPACER_TOLERANCE,
+        'content' => '175',
+        'pattern' => '\d',
         'module'  => ApiController::NAME,
     ],
 ];

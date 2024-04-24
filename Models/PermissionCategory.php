@@ -2,7 +2,7 @@
 /**
  * Jingga
  *
- * PHP Version 8.1
+ * PHP Version 8.2
  *
  * @package   Modules\Billing\Models
  * @copyright Dennis Eichhorn
@@ -45,4 +45,6 @@ abstract class PermissionCategory extends Enum
     public const SHIPPING_TERM = 10;
 
     public const BILL_LOG = 101;
+
+    public const TAX = 201;
 }

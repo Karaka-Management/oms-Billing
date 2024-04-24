@@ -2,7 +2,7 @@
 /**
  * Jingga
  *
- * PHP Version 8.1
+ * PHP Version 8.2
  *
  * @package   Modules
  * @copyright Dennis Eichhorn
@@ -18,10 +18,11 @@ use phpOMS\Account\PermissionType;
 use phpOMS\Router\RouteVerb;
 
 return [
-    '^.*/sales/bill/create(\?.*$|$)' => [
+    '^/sales/bill/create(\?.*$|$)' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingSalesInvoiceCreate',
             'verb'       => RouteVerb::GET,
+            'active'     => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::CREATE,
@@ -29,10 +30,11 @@ return [
             ],
         ],
     ],
-    '^.*/sales/bill/list(\?.*$|$)' => [
+    '^/sales/bill/list(\?.*$|$)' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingSalesList',
             'verb'       => RouteVerb::GET,
+            'active'     => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
@@ -40,10 +42,11 @@ return [
             ],
         ],
     ],
-    '^.*/sales/bill/archive(\?.*$|$)' => [
+    '^/sales/bill/archive(\?.*$|$)' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingSalesArchive',
             'verb'       => RouteVerb::GET,
+            'active'     => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
@@ -51,10 +54,11 @@ return [
             ],
         ],
     ],
-    '^.*/sales/bill(\?.*$|$)' => [
+    '^/sales/bill/view(\?.*$|$)' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingSalesInvoice',
             'verb'       => RouteVerb::GET,
+            'active'     => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
@@ -63,10 +67,11 @@ return [
         ],
     ],
 
-    '^.*/purchase/bill/create(\?.*$|$)' => [
+    '^/purchase/bill/create(\?.*$|$)' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingPurchaseInvoiceCreate',
             'verb'       => RouteVerb::GET,
+            'active'     => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::CREATE,
@@ -74,10 +79,11 @@ return [
             ],
         ],
     ],
-    '^.*/purchase/bill/list(\?.*$|$)' => [
+    '^/purchase/bill/list(\?.*$|$)' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingPurchaseList',
             'verb'       => RouteVerb::GET,
+            'active'     => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
@@ -85,10 +91,11 @@ return [
             ],
         ],
     ],
-    '^.*/purchase/bill/archive(\?.*$|$)' => [
+    '^/purchase/bill/archive(\?.*$|$)' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingPurchaseArchive',
             'verb'       => RouteVerb::GET,
+            'active'     => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
@@ -96,10 +103,11 @@ return [
             ],
         ],
     ],
-    '^.*/purchase/bill(\?.*$|$)' => [
+    '^/purchase/bill/view(\?.*$|$)' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingPurchaseInvoice',
             'verb'       => RouteVerb::GET,
+            'active'     => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
@@ -107,22 +115,24 @@ return [
             ],
         ],
     ],
-    '^.*/purchase/bill/upload(\?.*$|$)' => [
+    '^/purchase/bill/upload(\?.*$|$)' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingPurchaseInvoiceUpload',
             'verb'       => RouteVerb::GET,
+            'active'     => true,
             'permission' => [
                 'module' => BackendController::NAME,
-                'type'   => PermissionType::READ,
+                'type'   => PermissionType::CREATE,
                 'state'  => PermissionCategory::SALES_INVOICE,
             ],
         ],
     ],
 
-    '^.*/warehouse/bill/create(\?.*$|$)' => [
+    '^/warehouse/bill/create(\?.*$|$)' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingStockInvoiceCreate',
             'verb'       => RouteVerb::GET,
+            'active'     => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::CREATE,
@@ -130,10 +140,11 @@ return [
             ],
         ],
     ],
-    '^.*/warehouse/bill/list(\?.*$|$)' => [
+    '^/warehouse/bill/list(\?.*$|$)' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingStockList',
             'verb'       => RouteVerb::GET,
+            'active'     => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
@@ -141,10 +152,11 @@ return [
             ],
         ],
     ],
-    '^.*/warehouse/bill/archive(\?.*$|$)' => [
+    '^/warehouse/bill/archive(\?.*$|$)' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingStockArchive',
             'verb'       => RouteVerb::GET,
+            'active'     => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
@@ -152,10 +164,11 @@ return [
             ],
         ],
     ],
-    '^.*/warehouse/bill(\?.*$|$)' => [
+    '^/warehouse/bill/view(\?.*$|$)' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewBillingStockInvoice',
             'verb'       => RouteVerb::GET,
+            'active'     => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
@@ -164,10 +177,11 @@ return [
         ],
     ],
 
-    '^.*/private/purchase/recognition/dashboard(\?.*$|$)' => [
+    '^/private/purchase/recognition/dashboard(\?.*$|$)' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewPrivatePurchaseBillDashboard',
             'verb'       => RouteVerb::GET,
+            'active'     => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
@@ -175,10 +189,47 @@ return [
             ],
         ],
     ],
-    '^.*/private/purchase/recognition/upload(\?.*$|$)' => [
+    '^/private/purchase/recognition/upload(\?.*$|$)' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewPrivatePurchaseBillUpload',
             'verb'       => RouteVerb::GET,
+            'active'     => true,
+            'permission' => [
+                'module' => BackendController::NAME,
+                'type'   => PermissionType::CREATE,
+                'state'  => PermissionCategory::PRIVATE_BILL_UPLOAD,
+            ],
+        ],
+    ],
+    '^/private/purchase/recognition/bill(\?.*$|$)' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewPrivateBillingPurchaseInvoice',
+            'verb'       => RouteVerb::GET,
+            'active'     => true,
+            'permission' => [
+                'module' => BackendController::NAME,
+                'type'   => PermissionType::READ,
+                'state'  => PermissionCategory::PRIVATE_DASHBOARD,
+            ],
+        ],
+    ],
+    '^/purchase/recognition/dashboard(\?.*$|$)' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewPrivatePurchaseBillDashboard',
+            'verb'       => RouteVerb::GET,
+            'active'     => true,
+            'permission' => [
+                'module' => BackendController::NAME,
+                'type'   => PermissionType::READ,
+                'state'  => PermissionCategory::PRIVATE_DASHBOARD,
+            ],
+        ],
+    ],
+    '^/purchase/recognition/upload(\?.*$|$)' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewPrivatePurchaseBillUpload',
+            'verb'       => RouteVerb::GET,
+            'active'     => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
@@ -186,43 +237,11 @@ return [
             ],
         ],
     ],
-    '^.*/private/purchase/recognition/bill(\?.*$|$)' => [
+    '^/purchase/recognition/bill(\?.*$|$)' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewPrivateBillingPurchaseInvoice',
             'verb'       => RouteVerb::GET,
-            'permission' => [
-                'module' => BackendController::NAME,
-                'type'   => PermissionType::READ,
-                'state'  => PermissionCategory::PRIVATE_DASHBOARD,
-            ],
-        ],
-    ],
-    '^.*/purchase/recognition/dashboard(\?.*$|$)' => [
-        [
-            'dest'       => '\Modules\Billing\Controller\BackendController:viewPrivatePurchaseBillDashboard',
-            'verb'       => RouteVerb::GET,
-            'permission' => [
-                'module' => BackendController::NAME,
-                'type'   => PermissionType::READ,
-                'state'  => PermissionCategory::PRIVATE_DASHBOARD,
-            ],
-        ],
-    ],
-    '^.*/purchase/recognition/upload(\?.*$|$)' => [
-        [
-            'dest'       => '\Modules\Billing\Controller\BackendController:viewPrivatePurchaseBillUpload',
-            'verb'       => RouteVerb::GET,
-            'permission' => [
-                'module' => BackendController::NAME,
-                'type'   => PermissionType::READ,
-                'state'  => PermissionCategory::PRIVATE_BILL_UPLOAD,
-            ],
-        ],
-    ],
-    '^.*/purchase/recognition/bill(\?.*$|$)' => [
-        [
-            'dest'       => '\Modules\Billing\Controller\BackendController:viewPrivateBillingPurchaseInvoice',
-            'verb'       => RouteVerb::GET,
+            'active'     => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
@@ -231,10 +250,11 @@ return [
         ],
     ],
 
-    '^.*/bill/payment/list(\?.*$|$)' => [
+    '^/bill/payment/list(\?.*$|$)' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewPaymentList',
             'verb'       => RouteVerb::GET,
+            'active'     => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
@@ -242,10 +262,11 @@ return [
             ],
         ],
     ],
-    '^.*/bill/payment/view(\?.*$|$)' => [
+    '^/bill/payment/view(\?.*$|$)' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewPaymentView',
             'verb'       => RouteVerb::GET,
+            'active'     => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
@@ -253,10 +274,11 @@ return [
             ],
         ],
     ],
-    '^.*/bill/shipping/list(\?.*$|$)' => [
+    '^/bill/shipping/list(\?.*$|$)' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewShippingList',
             'verb'       => RouteVerb::GET,
+            'active'     => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
@@ -264,14 +286,52 @@ return [
             ],
         ],
     ],
-    '^.*/bill/shipping/view(\?.*$|$)' => [
+    '^/bill/shipping/view(\?.*$|$)' => [
         [
             'dest'       => '\Modules\Billing\Controller\BackendController:viewShippingView',
             'verb'       => RouteVerb::GET,
+            'active'     => true,
             'permission' => [
                 'module' => BackendController::NAME,
                 'type'   => PermissionType::READ,
                 'state'  => PermissionCategory::SHIPPING_TERM,
+            ],
+        ],
+    ],
+
+    '^/finance/tax/combination/list(\?.*$|$)' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewTaxCombinationList',
+            'verb'       => RouteVerb::GET,
+            'active'     => true,
+            'permission' => [
+                'module' => BackendController::NAME,
+                'type'   => PermissionType::CREATE,
+                'state'  => PermissionCategory::TAX,
+            ],
+        ],
+    ],
+    '^/finance/tax/combination/view(\?.*$|$)' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewTaxCombinationView',
+            'verb'       => RouteVerb::GET,
+            'active'     => true,
+            'permission' => [
+                'module' => BackendController::NAME,
+                'type'   => PermissionType::READ,
+                'state'  => PermissionCategory::TAX,
+            ],
+        ],
+    ],
+    '^/finance/tax/combination/create(\?.*$|$)' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\BackendController:viewTaxCombinationCreate',
+            'verb'       => RouteVerb::GET,
+            'active'     => true,
+            'permission' => [
+                'module' => BackendController::NAME,
+                'type'   => PermissionType::CREATE,
+                'state'  => PermissionCategory::TAX,
             ],
         ],
     ],

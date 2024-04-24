@@ -2,7 +2,7 @@
 /**
  * Jingga
  *
- * PHP Version 8.1
+ * PHP Version 8.2
  *
  * @package   Modules\Billing\Models
  * @copyright Dennis Eichhorn
@@ -20,7 +20,7 @@ use phpOMS\Localization\Defaults\CountryMapper;
 use phpOMS\Stdlib\Base\FloatInt;
 
 /**
- * Mapper class.
+ * PurchaseBill mapper class.
  *
  * @package Modules\Billing\Models
  * @license OMS License 2.0
@@ -53,7 +53,7 @@ final class PurchaseBillMapper extends BillMapper
             ->where('id', $pivot, '<')
             ->where('transferType', BillTransferType::PURCHASE)
             ->limit($limit)
-            ->execute();
+            ->executeGetArray();
     }
 
     /**
@@ -72,7 +72,7 @@ final class PurchaseBillMapper extends BillMapper
             ->where('id', $pivot, '>')
             ->where('transferType', BillTransferType::PURCHASE)
             ->limit($limit)
-            ->execute();
+            ->executeGetArray();
     }
 
     /**
@@ -253,7 +253,7 @@ final class PurchaseBillMapper extends BillMapper
             ->groupBy(SupplierMapper::TABLE . '_d1.suppliermgmt_supplier_id');
 
         $suppliers = SupplierMapper::getAll()->execute($query);
-        $data      = SupplierMapper::getRaw()->execute();
+        $data      = SupplierMapper::getRaw()->executeGetArray();
 
         return [$suppliers, $data];
     }
@@ -325,5 +325,162 @@ final class PurchaseBillMapper extends BillMapper
             ?->fetchAll();
 
         return $result ?? [];
+    }
+
+    /**
+     * Placeholder
+     * @todo Implement
+     */
+    public static function getSupplierNetSales(int $supplier, \DateTime $start, \DateTime $end) : FloatInt
+    {
+        $sql = <<<SQL
+        SELECT SUM(billing_bill_netsales * billing_type_transfer_sign) as net_sales
+        FROM billing_bill
+        LEFT JOIN billing_type
+            ON billing_bill_type = billing_type_id
+        WHERE
+            billing_bill_supplier = {$supplier}
+            AND billing_bill_performance_date >= '{$start->format('Y-m-d H:i:s')}'
+            AND billing_bill_performance_date <= '{$end->format('Y-m-d H:i:s')}';
+        SQL;
+
+        $query  = new Builder(self::$db);
+        $result = $query->raw($sql)->execute()?->fetchAll(\PDO::FETCH_ASSOC) ?? [];
+
+        return new FloatInt(-((int) ($result[0]['net_sales'] ?? 0)));
+    }
+
+    /**
+     * Placeholder
+     * @todo Implement
+     */
+    public static function getSupplierLastOrder(int $supplier) : ?\DateTime
+    {
+        $sql = <<<SQL
+        SELECT billing_bill_created_at
+        FROM billing_bill
+        WHERE billing_bill_supplier = {$supplier}
+        ORDER BY billing_bill_created_at DESC
+        LIMIT 1;
+        SQL;
+
+        $query  = new Builder(self::$db);
+        $result = $query->raw($sql)->execute()?->fetchAll(\PDO::FETCH_ASSOC) ?? [];
+
+        return isset($result[0]['billing_bill_created_at'])
+            ? new \DateTime(($result[0]['billing_bill_created_at']))
+            : null;
+    }
+
+    /**
+     * Placeholder
+     * @todo Implement
+     */
+    public static function getSLVHistoric(int $supplier) : FloatInt
+    {
+        $sql = <<<SQL
+        SELECT SUM(billing_bill_netsales * billing_type_transfer_sign) as net_sales
+        FROM billing_bill
+        LEFT JOIN billing_type
+            ON billing_bill_type = billing_type_id
+        WHERE billing_bill_supplier = {$supplier};
+        SQL;
+
+        $query  = new Builder(self::$db);
+        $result = $query->raw($sql)->execute()?->fetchAll(\PDO::FETCH_ASSOC) ?? [];
+
+        return new FloatInt(-((int) ($result[0]['net_sales'] ?? 0)));
+    }
+
+    /**
+     * Placeholder
+     * @todo Implement
+     */
+    public static function getSupplierMonthlySalesCosts(int $supplier, \DateTime $start, \DateTime $end) : array
+    {
+        $sql = <<<SQL
+        SELECT
+            SUM(billing_bill_netsales * billing_type_transfer_sign * -1) as net_sales,
+            SUM(billing_bill_netcosts * billing_type_transfer_sign * -1) as net_costs,
+            YEAR(billing_bill_performance_date) as year,
+            MONTH(billing_bill_performance_date) as month
+        FROM billing_bill
+        LEFT JOIN billing_type ON billing_bill_type = billing_type_id
+        WHERE
+            billing_bill_supplier = {$supplier}
+            AND billing_type_accounting = 1
+            AND billing_bill_performance_date >= '{$start->format('Y-m-d H:i:s')}'
+            AND billing_bill_performance_date <= '{$end->format('Y-m-d H:i:s')}'
+        GROUP BY year, month
+        ORDER BY year ASC, month ASC;
+        SQL;
+
+        $query  = new Builder(self::$db);
+        $result = $query->raw($sql)->execute()?->fetchAll(\PDO::FETCH_ASSOC) ?? [];
+
+        return $result ?? [];
+    }
+
+    /**
+     * Placeholder
+     * @todo Implement
+     */
+    public static function getSupplierAttributeNetSales(
+        int $supplier,
+        string $attribute,
+        string $language,
+        \DateTime $start,
+        \DateTime $end
+    ) : array
+    {
+        $sql = <<<SQL
+        SELECT
+            itemmgmt_attr_value_l11n_title as title,
+            SUM(billing_bill_element_total_netlistprice * billing_type_transfer_sign * -1) as net_sales
+        FROM billing_bill
+        LEFT JOIN billing_type
+            ON billing_bill_type = billing_type_id
+        LEFT JOIN billing_bill_element
+            ON billing_bill_id = billing_bill_element_bill
+        LEFT JOIN itemmgmt_item
+            ON itemmgmt_item_id = billing_bill_element_item
+        LEFT JOIN itemmgmt_item_attr
+            ON itemmgmt_item_id = itemmgmt_item_attr_item
+        LEFT JOIN itemmgmt_attr_type
+            ON itemmgmt_item_attr_type = itemmgmt_attr_type_id
+        LEFT JOIN itemmgmt_attr_type_l11n
+            ON itemmgmt_attr_type_id = itemmgmt_attr_type_l11n_type AND itemmgmt_attr_type_l11n_lang = '{$language}'
+        LEFT JOIN itemmgmt_attr_value
+            ON itemmgmt_item_attr_value = itemmgmt_attr_value_id
+        LEFT JOIN itemmgmt_attr_value_l11n
+            ON itemmgmt_attr_value_id = itemmgmt_attr_value_l11n_value AND itemmgmt_attr_value_l11n_lang = '{$language}'
+        WHERE
+            billing_bill_supplier = {$supplier}
+            AND billing_type_accounting = 1
+            AND billing_bill_performance_date >= '{$start->format('Y-m-d H:i:s')}'
+            AND billing_bill_performance_date <= '{$end->format('Y-m-d H:i:s')}'
+            AND itemmgmt_attr_type_name = '{$attribute}'
+        GROUP BY
+            itemmgmt_attr_value_l11n_title;
+        SQL;
+
+        $query  = new Builder(self::$db);
+        $result = $query->raw($sql)->execute()?->fetchAll(\PDO::FETCH_ASSOC) ?? [];
+
+        return $result;
+    }
+
+    /**
+     * Placeholder
+     * @todo Implement
+     */
+    public static function getSupplierItem(int $supplier, \DateTime $start, \DateTime $end) : array
+    {
+        return BillElementMapper::getAll()
+            ->with('bill')
+            ->with('bill/type')
+            ->where('bill/supplier', $supplier)
+            ->where('bill/type/transferStock', true)
+            ->executeGetArray();
     }
 }

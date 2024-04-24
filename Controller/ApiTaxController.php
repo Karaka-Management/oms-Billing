@@ -2,7 +2,7 @@
 /**
  * Jingga
  *
- * PHP Version 8.1
+ * PHP Version 8.2
  *
  * @package   Modules\Billing
  * @copyright Dennis Eichhorn
@@ -126,6 +126,8 @@ final class ApiTaxController extends Controller
      *
      * @return void
      *
+     * @api
+     *
      * @since 1.0.0
      */
     public function apiTaxCombinationCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
@@ -143,7 +145,7 @@ final class ApiTaxController extends Controller
     }
 
     /**
-     * Method to create item attribute from request.
+     * Method to create TaxCombination from request.
      *
      * @param RequestAbstract $request Request
      *
@@ -169,7 +171,7 @@ final class ApiTaxController extends Controller
     }
 
     /**
-     * Validate item attribute create request
+     * Validate TaxCombination create request
      *
      * @param RequestAbstract $request Request
      *
@@ -358,7 +360,7 @@ final class ApiTaxController extends Controller
                 ->with('itemCode')
                 ->where('clientCode/valueStr', $combination['account_code'] ?? '')
                 ->where('itemCode/valueStr', $combination['item_code'] ?? '')
-                ->execute();
+                ->executeGetArray();
 
             if (\count($old) !== 1) {
                 continue;

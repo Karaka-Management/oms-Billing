@@ -2,7 +2,7 @@
 /**
  * Jingga
  *
- * PHP Version 8.1
+ * PHP Version 8.2
  *
  * @package   Modules\Billing
  * @copyright Dennis Eichhorn
@@ -122,7 +122,7 @@ final class CliController extends Controller
             ->with('mainAddress')
             ->with('attributes/type')
             ->where('attributes/type/name', ['bill_match_pattern', 'bill_date_format'], 'IN')
-            ->execute();
+            ->executeGetArray();
 
         $supplierId     = $this->matchSupplier($content, $suppliers);
         $bill->supplier = new NullSupplier($supplierId);

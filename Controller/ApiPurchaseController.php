@@ -2,7 +2,7 @@
 /**
  * Jingga
  *
- * PHP Version 8.1
+ * PHP Version 8.2
  *
  * @package   Modules\Billing
  * @copyright Dennis Eichhorn
@@ -82,7 +82,7 @@ final class ApiPurchaseController extends Controller
     }
 
     /**
-     * Method to create item attribute from request.
+     * Method to upload supplier Bill from request.
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
@@ -111,7 +111,39 @@ final class ApiPurchaseController extends Controller
         $bills = [];
 
         $files = \array_merge($request->files, $request->getDataJson('media'));
+
+        /** @var \Model\Setting[] $settings */
+        $settings = $this->app->appSettings->get(null,
+            [SettingsEnum::BILLING_DOCUMENT_SPACER_COLOR, SettingsEnum::BILLING_DOCUMENT_SPACER_TOLERANCE],
+            unit: $this->app->unitId,
+            module: self::NAME
+        );
+
+        if (empty($settings)) {
+            /** @var \Model\Setting[] $settings */
+            $settings = $this->app->appSettings->get(null,
+                [SettingsEnum::BILLING_DOCUMENT_SPACER_COLOR, SettingsEnum::BILLING_DOCUMENT_SPACER_TOLERANCE],
+                unit: null,
+                module: self::NAME
+            );
+        }
+
         foreach ($files as $file) {
+            // 1. convert to image pdftoppm
+            // 2. search for color pages by using averageColorRandom (tolerance < 175 = color match)
+            // 3. split pdf document if necessary
+            //      sudo apt-get --yes install pdftk
+            //      pdftk foo-bar.pdf cat 1-12 output foo.pdf
+            //      pdftk foo-bar.pdf cat 13-end output bar.pdf
+            //      alternatively, pdfseparate -f 1 -l 5 input.pdf output-page%d.pdf
+            //      alternatively, pdfjam <input-file> <page-ranges> -o <output-file>
+            //      alternatively, pdfly cat in.pdf 2:4 -o out.pdf
+            // 4. add to documents array
+        }
+
+        $documents = $files;
+
+        foreach ($documents as $file) {
             // Create default bill
             $billRequest                  = new HttpRequest();
             $billRequest->header->account = $request->header->account;
@@ -171,7 +203,7 @@ final class ApiPurchaseController extends Controller
     }
 
     /**
-     * Validate item attribute create request
+     * Validate supplier Bill upload request
      *
      * @param RequestAbstract $request Request
      *
@@ -252,7 +284,7 @@ final class ApiPurchaseController extends Controller
     }
 
     /**
-     * Validate item attribute create request
+     * Validate Bill parse request
      *
      * @param RequestAbstract $request Request
      *

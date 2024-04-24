@@ -2,7 +2,7 @@
 /**
  * Jingga
  *
- * PHP Version 8.1
+ * PHP Version 8.2
  *
  * @package   Modules\Billing
  * @copyright Dennis Eichhorn
@@ -20,7 +20,7 @@ echo $this->data['nav']->render(); ?>
 
 <div class="row">
     <div class="col-xs-12">
-        <div class="portlet">
+        <section class="portlet">
             <div class="portlet-head"><?= $this->getHtml('Bills'); ?><i class="g-icon download btn end-xs">download</i></div>
             <div class="slider">
             <table id="billList" class="default sticky">
@@ -165,7 +165,7 @@ echo $this->data['nav']->render(); ?>
                 <tbody>
                 <?php $count = 0; foreach ($bills as $key => $value) :
                     ++$count;
-                    $url = UriFactory::build('{/base}/sales/bill?{?}&id=' . $value->id);
+                    $url = UriFactory::build('{/base}/sales/bill/view?{?}&id=' . $value->id);
                 ?>
                     <tr data-href="<?= $url; ?>">
                         <td><label class="checkbox" for="iBillSelect-<?= $key; ?>">
@@ -190,6 +190,6 @@ echo $this->data['nav']->render(); ?>
                 <?php endif; ?>
             </table>
             </div>
-        </div>
+        </section>
     </div>
 </div>

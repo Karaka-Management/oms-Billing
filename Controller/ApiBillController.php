@@ -2,7 +2,7 @@
 /**
  * Jingga
  *
- * PHP Version 8.1
+ * PHP Version 8.2
  *
  * @package   Modules\Billing
  * @copyright Dennis Eichhorn
@@ -100,6 +100,8 @@ final class ApiBillController extends Controller
      * @param array           $data    Data
      *
      * @return void
+     *
+     * @api
      *
      * @since 1.0.0
      */
@@ -440,7 +442,7 @@ final class ApiBillController extends Controller
 
         // @todo use bill and shipping address instead of main address if available
         //      https://github.com/Karaka-Management/oms-Billing/issues/45
-        $bill->billTo      = $request->getDataString('billto') ?? $account->account->name1;
+        $bill->billTo      = $request->getDataString('billto') ?? $account->account->name1 . ' ' . $account->account->name2;
         $bill->billAddress = $request->getDataString('billaddress') ?? $account->mainAddress->address;
         $bill->billCity    = $request->getDataString('billtocity') ?? $account->mainAddress->city;
         $bill->billZip     = $request->getDataString('billtopostal') ?? $account->mainAddress->postal;
@@ -481,7 +483,7 @@ final class ApiBillController extends Controller
         $settings = $this->app->appSettings->get(null,
             SettingsEnum::VALID_BILL_LANGUAGES,
             unit: $this->app->unitId,
-            module: 'Admin'
+            module: self::NAME
         );
 
         if (empty($settings)) {
@@ -489,7 +491,7 @@ final class ApiBillController extends Controller
             $settings = $this->app->appSettings->get(null,
                 SettingsEnum::VALID_BILL_LANGUAGES,
                 unit: null,
-                module: 'Admin'
+                module: self::NAME
             );
         }
 
@@ -732,88 +734,40 @@ final class ApiBillController extends Controller
         $bill = BillMapper::get()->where('id', (int) $request->getData('bill'))->execute();
         $path = $this->createBillDir($bill);
 
-        $uploaded = [];
-        if (!empty($uploadedFiles = $request->files)) {
+        $uploaded = new NullCollection();
+        if (!empty($request->files)) {
             $uploaded = $this->app->moduleManager->get('Media', 'Api')->uploadFiles(
                 names: [],
                 fileNames: [],
-                files: $uploadedFiles,
+                files: $request->files,
                 account: $request->header->account,
                 basePath: __DIR__ . '/../../../Modules/Media/Files' . $path,
                 virtualPath: $path,
                 pathSettings: PathSettings::FILE_PATH,
                 hasAccountRelation: false,
-                readContent: $request->getDataBool('parse_content') ?? false
+                readContent: $request->getDataBool('parse_content') ?? false,
+                type: $request->getDataInt('type'),
+                rel: $bill->id,
+                mapper: BillMapper::class,
+                field: 'files'
             );
-
-            $collection = null;
-            foreach ($uploaded as $media) {
-                $this->createModelRelation(
-                    $request->header->account,
-                    $bill->id,
-                    $media->id,
-                    BillMapper::class,
-                    'files',
-                    '',
-                    $request->getOrigin()
-                );
-
-                if ($request->hasData('type')) {
-                    $this->createModelRelation(
-                        $request->header->account,
-                        $media->id,
-                        $request->getDataInt('type'),
-                        MediaMapper::class,
-                        'types',
-                        '',
-                        $request->getOrigin()
-                    );
-                }
-
-                if ($collection === null) {
-                    /** @var \Modules\Media\Models\Collection $collection */
-                    $collection = MediaMapper::getParentCollection($path)
-                        ->limit(1)
-                        ->execute();
-
-                    if ($collection->id === 0) {
-                        $collection = $this->app->moduleManager->get('Media')->createRecursiveMediaCollection(
-                            $path,
-                            $request->header->account,
-                            __DIR__ . '/../../../Modules/Media/Files' . $path,
-                        );
-                    }
-                }
-
-                $this->createModelRelation(
-                    $request->header->account,
-                    $collection->id,
-                    $media->id,
-                    CollectionMapper::class,
-                    'sources',
-                    '',
-                    $request->getOrigin()
-                );
-            }
         }
 
-        $mediaFiles = $request->getDataJson('media');
-        foreach ($mediaFiles as $media) {
-            $this->createModelRelation(
+        if (!empty($media = $request->getDataJson('media'))) {
+            $this->app->moduleManager->get('Media', 'Api')->addMediaToCollectionAndModel(
                 $request->header->account,
+                $media,
                 $bill->id,
-                (int) $media,
                 BillMapper::class,
                 'files',
-                '',
-                $request->getOrigin()
+                $path
             );
         }
 
         // @todo media should be an array of NullMedia elements
-        $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Media', 'Media added to bill.', [
-            'upload' => $uploaded,
-            'media'  => $mediaFiles,
+        $this->fillJsonResponse($request, $response, NotificationLevel::OK, '', $this->app->l11nManager->getText($response->header->l11n->language, '0', '0', 'SuccessfulAdd'), [
+            'upload' => $uploaded->sources,
+            'media'  => $media,
         ]);
     }
 
@@ -939,7 +893,7 @@ final class ApiBillController extends Controller
     }
 
     /**
-     * Method to validate bill creation from request
+     * Method to validate add Media to bill request
      *
      * @param RequestAbstract $request Request
      *
@@ -1539,7 +1493,7 @@ final class ApiBillController extends Controller
     }
 
     /**
-     * Api method to create bill files
+     * Api method to create Note
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
