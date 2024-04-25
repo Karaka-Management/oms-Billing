@@ -926,7 +926,7 @@ final class ApiBillController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiBillElementCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
+    public function apiBillElementCreate(HttpRequest $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validateBillElementCreate($request))) {
             $response->header->status = RequestStatusCode::R_400;
@@ -959,7 +959,7 @@ final class ApiBillController extends Controller
     /**
      * Method to create a bill element from request.
      *
-     * @param RequestAbstract  $request  Request
+     * @param HttpRequest      $request  Request
      * @param ResponseAbstract $response Response
      * @param Bill             $bill     Bill to create element for
      * @param array            $data     Generic data
@@ -968,7 +968,7 @@ final class ApiBillController extends Controller
      *
      * @since 1.0.0
      */
-    private function createBillElementFromRequest(RequestAbstract $request, ResponseAbstract $response, Bill $bill, $data = null) : BillElement
+    private function createBillElementFromRequest(HttpRequest $request, ResponseAbstract $response, Bill $bill, $data = null) : BillElement
     {
         // @todo handle text element
 
