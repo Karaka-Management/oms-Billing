@@ -83,6 +83,7 @@ trait ApiBillControllerTrait
         self::assertGreaterThan(0, $response->getDataArray('')['response']->id);
     }
 
+    #[\PHPUnit\Framework\Attributes\Depends('testBillCreate')]
     public function testBillNoteCreate() : void
     {
         $response = new HttpResponse();

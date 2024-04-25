@@ -1518,7 +1518,7 @@ final class ApiBillController extends Controller
         $bill = BillMapper::get()->where('id', (int) $request->getData('id'))->execute();
 
         $request->setData('virtualpath', $this->createBillDir($bill), true);
-        $this->app->moduleManager->get('Editor')->apiEditorCreate($request, $response, $data);
+        $this->app->moduleManager->get('Editor', 'Api')->apiEditorCreate($request, $response, $data);
 
         if ($response->header->status !== RequestStatusCode::R_200) {
             return;
