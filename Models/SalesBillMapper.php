@@ -473,10 +473,9 @@ final class SalesBillMapper extends BillMapper
         ORDER BY item, year ASC, month ASC;
         SQL;
 
-        $query  = new Builder(self::$db);
-        $result = $query->raw($sql)->execute()?->fetchAll(\PDO::FETCH_ASSOC) ?? [];
+        $query = new Builder(self::$db);
 
-        return $result ?? [];
+        return $query->raw($sql)->execute()?->fetchAll(\PDO::FETCH_ASSOC) ?? [];
     }
 
     /**
@@ -502,10 +501,9 @@ final class SalesBillMapper extends BillMapper
         ORDER BY year ASC, month ASC;
         SQL;
 
-        $query  = new Builder(self::$db);
-        $result = $query->raw($sql)->execute()?->fetchAll(\PDO::FETCH_ASSOC) ?? [];
+        $query = new Builder(self::$db);
 
-        return $result ?? [];
+        return $query->raw($sql)->execute()?->fetchAll(\PDO::FETCH_ASSOC) ?? [];
     }
 
     /**
