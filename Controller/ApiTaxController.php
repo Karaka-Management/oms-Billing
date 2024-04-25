@@ -106,9 +106,9 @@ final class ApiTaxController extends Controller
             $account->mainAddress->setCountry($defaultCountry);
         }
 
-        $taxCodeAttribute = $client !== null
-            ? $this->getClientTaxCode($account,  $unit->mainAddress)
-            : $this->getSupplierTaxCode($account,  $unit->mainAddress);
+        $taxCodeAttribute = $client !== null /* @phpstan-ignore-line */
+            ? $this->getClientTaxCode($account,  $unit->mainAddress) /* @phpstan-ignore-line */
+            : $this->getSupplierTaxCode($account,  $unit->mainAddress); /* @phpstan-ignore-line */
 
         return TaxCombinationMapper::get()
             ->with('taxCode')

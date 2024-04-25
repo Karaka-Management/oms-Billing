@@ -916,7 +916,7 @@ final class ApiBillController extends Controller
     /**
      * Api method to create a bill element
      *
-     * @param RequestAbstract  $request  Request
+     * @param HttpRequest      $request  Request
      * @param ResponseAbstract $response Response
      * @param array            $data     Generic data
      *
