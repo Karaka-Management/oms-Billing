@@ -128,6 +128,7 @@ final class ApiPurchaseController extends Controller
             );
         }
 
+        /*
         foreach ($files as $file) {
             // 1. convert to image pdftoppm
             // 2. search for color pages by using averageColorRandom (tolerance < 175 = color match)
@@ -140,6 +141,7 @@ final class ApiPurchaseController extends Controller
             //      alternatively, pdfly cat in.pdf 2:4 -o out.pdf
             // 4. add to documents array
         }
+        */
 
         $documents = $files;
 
