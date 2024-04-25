@@ -464,10 +464,9 @@ final class PurchaseBillMapper extends BillMapper
             itemmgmt_attr_value_l11n_title;
         SQL;
 
-        $query  = new Builder(self::$db);
-        $result = $query->raw($sql)->execute()?->fetchAll(\PDO::FETCH_ASSOC) ?? [];
+        $query = new Builder(self::$db);
 
-        return $result;
+        return $query->raw($sql)->execute()?->fetchAll(\PDO::FETCH_ASSOC) ?? [];
     }
 
     /**
