@@ -535,15 +535,15 @@ final class ApiBillController extends Controller
      *      'sales_tax_code', 'purchase_tax_code', 'costcenter', 'costobject',
      *      'default_purchase_container', 'default_sales_container',
      *
-     * @param Item            $item    The item object for which the bill element is being created
-     * @param Bill            $bill    The bill object for which the bill element is being created
-     * @param RequestAbstract $request The request object that contains the header account
+     * @param Item        $item    The item object for which the bill element is being created
+     * @param Bill        $bill    The bill object for which the bill element is being created
+     * @param HttpRequest $request The request object that contains the header account
      *
      * @return BillElement
      *
      * @since 1.0.0
      */
-    public function createBaseBillElement(Item $item, Bill $bill, RequestAbstract $request) : BillElement
+    public function createBaseBillElement(Item $item, Bill $bill, HttpRequest $request) : BillElement
     {
         // Handle person tax code for finding tax combination below
         $attr           = new NullAttribute();

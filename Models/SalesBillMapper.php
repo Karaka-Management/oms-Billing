@@ -385,7 +385,7 @@ final class SalesBillMapper extends BillMapper
 
         $hasData = false;
         foreach ($results as $result) {
-            if ($result !== "0" || $result > 0) {
+            if ($result !== '0' || ((int) $result) > 0) {
                 $hasData = true;
                 break;
             }
@@ -434,8 +434,8 @@ final class SalesBillMapper extends BillMapper
 
         $hasData = false;
         foreach ($results as $result) {
-            if ($result['net_sales'] !== "0" || $result['net_sales'] > 0
-                || $result['net_costs'] !== "0" || $result['net_costs'] > 0
+            if ($result['net_sales'] !== '0' || ((int) $result['net_sales']) > 0
+                || $result['net_costs'] !== '0' || ((int) $result['net_costs']) > 0
             ) {
                 $hasData = true;
                 break;
