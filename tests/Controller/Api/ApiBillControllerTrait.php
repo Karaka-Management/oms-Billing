@@ -97,6 +97,7 @@ trait ApiBillControllerTrait
 
         $this->module->apiNoteCreate($request, $response);
         self::assertEquals('ok', $response->getDataArray('')['status']);
+        var_dump($response->getDataArray('')['response']);
         self::assertGreaterThan(0, $response->getDataArray('')['response']->id);
     }
 
