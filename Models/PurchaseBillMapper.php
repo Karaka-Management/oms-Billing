@@ -334,7 +334,7 @@ final class PurchaseBillMapper extends BillMapper
     public static function getSupplierNetSales(int $supplier, \DateTime $start, \DateTime $end) : FloatInt
     {
         $sql = <<<SQL
-        SELECT SUM(billing_bill_netsales * billing_type_transfer_sign) as net_sales
+        SELECT SUM(billing_bill_netsales * billing_type_sign) as net_sales
         FROM billing_bill
         LEFT JOIN billing_type
             ON billing_bill_type = billing_type_id
@@ -379,7 +379,7 @@ final class PurchaseBillMapper extends BillMapper
     public static function getSLVHistoric(int $supplier) : FloatInt
     {
         $sql = <<<SQL
-        SELECT SUM(billing_bill_netsales * billing_type_transfer_sign) as net_sales
+        SELECT SUM(billing_bill_netsales * billing_type_sign) as net_sales
         FROM billing_bill
         LEFT JOIN billing_type
             ON billing_bill_type = billing_type_id
@@ -400,8 +400,8 @@ final class PurchaseBillMapper extends BillMapper
     {
         $sql = <<<SQL
         SELECT
-            SUM(billing_bill_netsales * billing_type_transfer_sign * -1) as net_sales,
-            SUM(billing_bill_netcosts * billing_type_transfer_sign * -1) as net_costs,
+            SUM(billing_bill_netsales * billing_type_sign * -1) as net_sales,
+            SUM(billing_bill_netcosts * billing_type_sign * -1) as net_costs,
             YEAR(billing_bill_performance_date) as year,
             MONTH(billing_bill_performance_date) as month
         FROM billing_bill
@@ -435,7 +435,7 @@ final class PurchaseBillMapper extends BillMapper
         $sql = <<<SQL
         SELECT
             itemmgmt_attr_value_l11n_title as title,
-            SUM(billing_bill_element_total_netlistprice * billing_type_transfer_sign * -1) as net_sales
+            SUM(billing_bill_element_total_netlistprice * billing_type_sign * -1) as net_sales
         FROM billing_bill
         LEFT JOIN billing_type
             ON billing_bill_type = billing_type_id
@@ -478,7 +478,7 @@ final class PurchaseBillMapper extends BillMapper
             ->with('bill')
             ->with('bill/type')
             ->where('bill/supplier', $supplier)
-            ->where('bill/type/transferStock', true)
+            ->where('bill/type/isAccounting', true)
             ->executeGetArray();
     }
 }

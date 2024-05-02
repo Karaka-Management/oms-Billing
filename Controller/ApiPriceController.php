@@ -43,6 +43,12 @@ use phpOMS\Stdlib\Base\FloatInt;
  * @license OMS License 2.0
  * @link    https://jingga.app
  * @since   1.0.0
+ *
+ * @feature Import client prices from csv/excel sheet
+ *      https://github.com/Karaka-Management/oms-ClientManagement/issues/17
+ *
+ * @feature Perform inflation increase on all client prices
+ *      https://github.com/Karaka-Management/oms-ClientManagement/issues/18
  */
 final class ApiPriceController extends Controller
 {
@@ -255,10 +261,16 @@ final class ApiPriceController extends Controller
 
         $basePrice ??= new NullPrice();
 
-        // @todo implement prices which cannot be improved even if there are better prices available
+        // @todo Implement prices which cannot be improved even if there are better prices available
         //      (i.e. some customer groups may not get better prices, Dentagen Beispiel)
         //      alternatively set prices as 'improvable' => which whitelists a price as can be improved
         //      or 'always_improves' which always overwrites other prices
+        //      https://github.com/Karaka-Management/oms-Billing/issues/71
+
+        // @todo Quantity discounts are currently always 100%.
+        //      There should be a way to define:
+        //      "buy 2, get an additional one for 50% less"? Note sure if that is really necessary but think about it.
+        //      https://github.com/Karaka-Management/oms-Billing/issues/69
 
         // Find best price
         $bestPrice      = $basePrice;

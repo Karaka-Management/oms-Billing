@@ -70,6 +70,28 @@ use phpOMS\Views\View;
  * @license OMS License 2.0
  * @link    https://jingga.app
  * @since   1.0.0
+ *
+ * @feature Automatically create recurring bills (invoices, delivery notes, etc.)
+ *      if a customer wants to receive items automatically
+ *      https://github.com/Karaka-Management/oms-Billing/issues/7
+ *
+ * @feature Define approval workflow
+ *      https://github.com/Karaka-Management/oms-Billing/issues/15
+ *
+ * @feature Allow to define re/usable templates (e.g. recurring invoices)
+ *      https://github.com/Karaka-Management/oms-Billing/issues/30
+ *
+ * @feature Allow to define re/usable texts
+ *      One idea could be to define a text item which has multiple l11n elements that can
+ *      be used for this (e.g. item_invoice_desc_1, ..., item_invoice_desc_n).
+ *      https://github.com/Karaka-Management/oms-Billing/issues/29
+ *
+ * @feature Batch print/export invoices based on filter
+ *      https://github.com/Karaka-Management/oms-Billing/issues/27
+ *
+ * @feature Add BillTypeCategory which can be selected by the person creating a bill.
+ *      This is just for internal use (e.g. posting invoice to a different client account)
+ *      https://github.com/Karaka-Management/oms-Billing/issues/64
  */
 final class ApiBillController extends Controller
 {
@@ -193,6 +215,13 @@ final class ApiBillController extends Controller
      * @return void
      *
      * @api
+     *
+     * @todo The bill archive should store the customer/supplier localized version since this is the official document
+     *      https://github.com/Karaka-Management/oms-Billing/issues/5
+     *
+     * @feature Validate the client VAT before creating a invoice? This would also require a
+     *      last_checked field to avoid multiple checks per day.
+     *      https://github.com/Karaka-Management/oms-Billing/issues/44
      *
      * @since 1.0.0
      */
@@ -428,6 +457,10 @@ final class ApiBillController extends Controller
         //      Example: payment plan or discounted and none-discounted date
         //      https://github.com/Karaka-Management/oms-Billing/issues/53
 
+        // @todo Make tax calculation based on invoice address, shipping from and shipping address... VERY complicated.
+        //      Reason for this is Dreiecksgeschaeft
+        //      https://github.com/Karaka-Management/oms-Billing/issues/66
+
         if ($account instanceof Client) {
             $bill->client     = $account;
             $bill->accTaxCode = empty($temp = $bill->client->getAttribute('sales_tax_code')->value->id) ? null : $temp;
@@ -435,6 +468,7 @@ final class ApiBillController extends Controller
             $bill->accSection = empty($temp = $bill->client->getAttribute('section')->value->id) ? null : $temp;
             $bill->accGroup   = empty($temp = $bill->client->getAttribute('client_group')->value->id) ? null : $temp;
             $bill->accType    = empty($temp = $bill->client->getAttribute('client_type')->value->id) ? null : $temp;
+            $bill->rep        = $request->getDataInt('rep') ?? $account->rep;
         } else {
             $bill->supplier   = $account;
             $bill->accTaxCode = empty($temp = $bill->supplier->getAttribute('purchase_tax_code')->value->id) ? null : $temp;
@@ -643,6 +677,24 @@ final class ApiBillController extends Controller
      *
      * @return Bill
      *
+     * @todo Use bill and shipping address instead of main address if available
+     *      https://github.com/Karaka-Management/oms-Billing/issues/45
+     *
+     * @feature Support multiple due dates for bills (e.g. payment plan, cash back)
+     *      in invoice printing, backend and payment terms.
+     *      https://github.com/Karaka-Management/oms-Billing/issues/53
+     *
+     * @feature Define default stock/stockType per unit per bill type
+     *      https://github.com/Karaka-Management/oms-Billing/issues/62
+     *
+     * @question Always create delivery note (at least internally)?
+     *      The reason is this way it would be easier to track when stock got moved (SD is horribly complex)
+     *      Alternatively, check if line item references delivery note
+     *      https://github.com/Karaka-Management/oms-Billing/issues/63
+     *
+     * @feature Add custom tax id for bill to manually overwrite the client_sales_tax_code.
+     *      https://github.com/Karaka-Management/oms-Billing/issues/65
+     *
      * @since 1.0.0
      */
     public function createBillFromRequest(RequestAbstract $request, ResponseAbstract $response, $data = null) : Bill
@@ -781,6 +833,10 @@ final class ApiBillController extends Controller
      * @return void
      *
      * @api
+     *
+     * @bug Only allow to remove media from bill if it is NOT system generated
+     *      (invoices should not be possible to get removed from a bill)
+     *      https://github.com/Karaka-Management/oms-Billing/issues/48
      *
      * @since 1.0.0
      */

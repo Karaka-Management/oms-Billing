@@ -19,6 +19,7 @@ use Modules\Billing\Models\Attribute\BillAttributeMapper;
 use Modules\ClientManagement\Models\ClientMapper;
 use Modules\Editor\Models\EditorDocMapper;
 use Modules\Media\Models\MediaMapper;
+use Modules\Sales\Models\SalesRepMapper;
 use Modules\SupplierManagement\Models\SupplierMapper;
 use phpOMS\DataStorage\Database\Mapper\DataMapperFactory;
 
@@ -75,6 +76,7 @@ class BillMapper extends DataMapperFactory
         'billing_bill_netdiscount'       => ['name' => 'billing_bill_netdiscount',      'type' => 'Serializable',    'internal' => 'netDiscount'],
         'billing_bill_taxp'              => ['name' => 'billing_bill_taxp',      'type' => 'Serializable',    'internal' => 'taxP'],
         'billing_bill_fiaccount'         => ['name' => 'billing_bill_fiaccount',      'type' => 'string',    'internal' => 'fiAccount'],
+        'billing_bill_rep'         => ['name' => 'billing_bill_rep',      'type' => 'int',    'internal' => 'rep'],
         'billing_bill_currency'          => ['name' => 'billing_bill_currency',      'type' => 'string',    'internal' => 'currency'],
         'billing_bill_language'          => ['name' => 'billing_bill_language',      'type' => 'string',    'internal' => 'language'],
         'billing_bill_referral'          => ['name' => 'billing_bill_referral',      'type' => 'int',    'internal' => 'referral'],
@@ -141,6 +143,10 @@ class BillMapper extends DataMapperFactory
         'referral' => [
             'mapper'   => AccountMapper::class,
             'external' => 'billing_bill_referral',
+        ],
+        'rep' => [
+            'mapper'   => SalesRepMapper::class,
+            'external' => 'billing_bill_rep',
         ],
     ];
 

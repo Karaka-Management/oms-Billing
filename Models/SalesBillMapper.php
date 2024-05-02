@@ -257,7 +257,7 @@ final class SalesBillMapper extends BillMapper
     {
         $query = new Builder(self::$db);
         $query->selectAs(ClientMapper::TABLE . '.clientmgmt_client_id', 'client')
-            ->selectAs('SUM(' . BillElementMapper::TABLE . '.billing_bill_element_total_netsalesprice * billing_type_transfer_sign)', 'net_sales')
+            ->selectAs('SUM(' . BillElementMapper::TABLE . '.billing_bill_element_total_netsalesprice * billing_type_sign)', 'net_sales')
             ->from(ClientMapper::TABLE)
             ->leftJoin(self::TABLE)
                 ->on(ClientMapper::TABLE . '.clientmgmt_client_id', '=', self::TABLE . '.billing_bill_client')
@@ -347,7 +347,7 @@ final class SalesBillMapper extends BillMapper
             ->with('bill')
             ->with('bill/type')
             ->where('bill/client', $client)
-            ->where('bill/type/transferStock', true)
+            ->where('bill/type/isAccounting', true)
             ->executeGetArray();
     }
 
@@ -360,7 +360,7 @@ final class SalesBillMapper extends BillMapper
         $sql = <<<SQL
         SELECT
             billing_bill_billCountry as country,
-            SUM(billing_bill_element_total_netlistprice * billing_type_transfer_sign) as net_sales
+            SUM(billing_bill_element_total_netlistprice * billing_type_sign) as net_sales
         FROM billing_bill
         LEFT JOIN billing_type
             ON billing_bill_type = billing_type_id
@@ -409,8 +409,8 @@ final class SalesBillMapper extends BillMapper
         $sql = <<<SQL
         SELECT
             billing_bill_element_item,
-            SUM(billing_bill_element_total_netsalesprice * billing_type_transfer_sign) as net_sales,
-            SUM(billing_bill_element_total_netpurchaseprice * billing_type_transfer_sign) as net_costs,
+            SUM(billing_bill_element_total_netsalesprice * billing_type_sign) as net_sales,
+            SUM(billing_bill_element_total_netpurchaseprice * billing_type_sign) as net_costs,
             YEAR(billing_bill_performance_date) as year,
             MONTH(billing_bill_performance_date) as month
         FROM billing_bill_element
@@ -484,8 +484,8 @@ final class SalesBillMapper extends BillMapper
     {
         $sql = <<<SQL
         SELECT
-            SUM(billing_bill_netsales * billing_type_transfer_sign) as net_sales,
-            SUM(billing_bill_netcosts * billing_type_transfer_sign) as net_costs,
+            SUM(billing_bill_netsales * billing_type_sign) as net_sales,
+            SUM(billing_bill_netcosts * billing_type_sign) as net_costs,
             YEAR(billing_bill_performance_date) as year,
             MONTH(billing_bill_performance_date) as month
         FROM billing_bill
@@ -541,7 +541,7 @@ final class SalesBillMapper extends BillMapper
         $sql = <<<SQL
         SELECT
             itemmgmt_attr_value_l11n_title as title,
-            SUM(billing_bill_element_total_netlistprice * billing_type_transfer_sign) as net_sales
+            SUM(billing_bill_element_total_netlistprice * billing_type_sign) as net_sales
         FROM billing_bill
         LEFT JOIN billing_type
             ON billing_bill_type = billing_type_id
@@ -632,7 +632,7 @@ final class SalesBillMapper extends BillMapper
     public static function getClientNetSales(int $client, \DateTime $start, \DateTime $end) : FloatInt
     {
         $sql = <<<SQL
-        SELECT SUM(billing_bill_netsales * billing_type_transfer_sign) as net_sales
+        SELECT SUM(billing_bill_netsales * billing_type_sign) as net_sales
         FROM billing_bill
         LEFT JOIN billing_type
             ON billing_bill_type = billing_type_id
@@ -655,7 +655,7 @@ final class SalesBillMapper extends BillMapper
     public static function getCLVHistoric(int $client) : FloatInt
     {
         $sql = <<<SQL
-        SELECT SUM(billing_bill_netsales * billing_type_transfer_sign) as net_sales
+        SELECT SUM(billing_bill_netsales * billing_type_sign) as net_sales
         FROM billing_bill
         LEFT JOIN billing_type
             ON billing_bill_type = billing_type_id

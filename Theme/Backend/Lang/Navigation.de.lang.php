@@ -21,4 +21,5 @@ return ['Navigation' => [
     'Upload'             => 'Hochladen',
     'PaymentTerms'       => 'Zahlungsbedingungen',
     'ShippingTerms'      => 'Lieferbedingungen',
+    'TaxCombinations'      => 'Tax Combinations',
 ]];

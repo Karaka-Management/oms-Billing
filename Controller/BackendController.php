@@ -211,6 +211,25 @@ final class BackendController extends Controller
      *
      * @return RenderableInterface
      *
+     * @todo Show invoice PDF in preview on change
+     *      We don't want to create a preview every time but only, when preview tab is open and if a change was made
+     *      https://github.com/Karaka-Management/oms-Billing/issues/20
+     *
+     * @todo Show bill relations (on tab which shows all related bills)
+     *      https://github.com/Karaka-Management/oms-Billing/issues/37
+     *
+     * @todo Create send as email button inside the bill. this opens the send email
+     *      view where the email is pre-written with the attached PDF
+     *      https://github.com/Karaka-Management/oms-Billing/issues/36
+     *
+     * @security Check if user is allowed to see invoice
+     *      This is mostly relevant for customers seeing their own invoices since for employees this is automatically handled
+     *      Customers are not generally allowed to see invoices (maybe even employees are ano allowed to see all?)
+     *      https://github.com/Karaka-Management/oms-Billing/issues/49
+     *
+     * @todo Add specification for delivery terms (e.g. name of the port etc.). By default same as delivery address city
+     *      https://github.com/Karaka-Management/oms-Billing/issues/70
+     *
      * @since 1.0.0
      * @codeCoverageIgnore
      */

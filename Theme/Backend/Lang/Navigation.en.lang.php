@@ -21,4 +21,5 @@ return ['Navigation' => [
     'Upload'             => 'Upload',
     'PaymentTerms'       => 'Payment Terms',
     'ShippingTerms'      => 'Shipping Terms',
+    'TaxCombinations'      => 'Tax Combinations',
 ]];

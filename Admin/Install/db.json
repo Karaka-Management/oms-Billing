@@ -469,9 +469,9 @@
                 "type": "TINYINT(1)",
                 "null": false
             },
-            "billing_type_transfer_sign": {
+            "billing_type_sign": {
                 "description": "1 = from->to direction, -1 = to->from direction = credit note",
-                "name": "billing_type_transfer_sign",
+                "name": "billing_type_sign",
                 "type": "TINYINT(1)",
                 "null": false
             },
@@ -803,6 +803,14 @@
                 "name": "billing_bill_fiaccount",
                 "type": "VARCHAR(10)",
                 "null": false
+            },
+            "billing_bill_rep": {
+                "name": "billing_bill_rep",
+                "type": "INT",
+                "null": true,
+                "default": null,
+                "foreignTable": "sales_rep",
+                "foreignKey": "sales_rep_id"
             },
             "billing_bill_referral": {
                 "name": "billing_bill_referral",

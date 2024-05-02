@@ -443,7 +443,10 @@ class InvoiceRecognition
             foreach ($lines as $row => $line) {
                 if (\preg_match($match, $line, $found) === 1) {
                     if ($row < $bestPos) {
-                        // @todo don't many invoices have the due date at the bottom? bestPos doesn't make sense?!
+                        // @todo When parsing invoices the best due date match is ranked by position.
+                        //      This makes little sense as due dates are defined sometimes at the top
+                        //      and sometimes at the bottom of an invoice
+                        //      https://github.com/Karaka-Management/oms-Billing/issues/54
                         $bestPos   = $row;
                         $bestMatch = $found['bill_due'];
                     }

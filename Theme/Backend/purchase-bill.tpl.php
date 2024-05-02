@@ -409,7 +409,7 @@ echo $this->data['nav']->render(); ?>
             <div>
                 <div class="col-xs-12 col-sm-3 box">
                     <select id="iBillPreviewType" name="bill_preview_type"
-                    data-action='[{"listener": "change", "action": [{"key": 1, "type": "dom.reload", "src": "iPreviewBill"}]}]'>
+                    data-action='[{"listener": "change", "action": [{"key": 1, "type": "redirect", "uri": "{%}", "src": "iPreviewBill"}]}]'>
                         <?php foreach ($billTypes as $type) : ?>
                         <option value="<?= $type->id; ?>"<?= $type->id === $bill->type->id ? ' selected' : ''; ?>><?= $this->printHtml($type->getL11n()); ?>
                         <?php endforeach; ?>
@@ -597,7 +597,7 @@ echo $this->data['nav']->render(); ?>
                                     <?php endif; ?>
                                 <td><a href="<?= $url; ?>"><?= $audit->trigger; ?></a>
                                 <td><a class="content"
-                                    href="<?= UriFactory::build('{/base}/admin/account/settings?id=' . $audit->createdBy->id); ?>"><?= $this->printHtml(
+                                    href="<?= UriFactory::build('{/base}/admin/account/view?id=' . $audit->createdBy->id); ?>"><?= $this->printHtml(
                                     $this->renderUserName('%3$s %2$s %1$s', [$audit->createdBy->name1, $audit->createdBy->name2, $audit->createdBy->name3, $audit->createdBy->login])
                                 ); ?></a>
                                 <td><a href="<?= $url; ?>"><?= $audit->createdAt->format('Y-m-d H:i'); ?></a>

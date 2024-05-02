@@ -35,6 +35,9 @@ use phpOMS\System\SystemUtils;
  * @license OMS License 2.0
  * @link    https://jingga.app
  * @since   1.0.0
+ *
+ * @feature Define approval workflow
+ *      https://github.com/Karaka-Management/oms-Billing/issues/15
  */
 final class ApiPurchaseController extends Controller
 {
@@ -235,6 +238,9 @@ final class ApiPurchaseController extends Controller
      * @api
      *
      * @throws \Exception
+     *
+     * @todo OCR line parsing
+     *      https://github.com/Karaka-Management/oms-Billing/issues/17
      *
      * @since 1.0.0
      */

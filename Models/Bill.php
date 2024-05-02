@@ -17,6 +17,7 @@ namespace Modules\Billing\Models;
 use Modules\Admin\Models\Account;
 use Modules\Admin\Models\NullAccount;
 use Modules\ClientManagement\Models\Client;
+use Modules\Sales\Models\SalesRep;
 use Modules\SupplierManagement\Models\Supplier;
 use phpOMS\Localization\ISO4217CharEnum;
 use phpOMS\Localization\ISO639x1Enum;
@@ -143,6 +144,8 @@ class Bill implements \JsonSerializable
 
     public string $accountNumber = '';
 
+    public ?SalesRep $rep = null;
+
     /**
      * Receiver.
      *
@@ -243,6 +246,8 @@ class Bill implements \JsonSerializable
 
     /**
      * Person referring for this order.
+     *
+     * Usually the sales rep
      *
      * @var Account
      * @since 1.0.0
