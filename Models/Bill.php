@@ -719,4 +719,5 @@ class Bill implements \JsonSerializable
     use \Modules\Attribute\Models\AttributeHolderTrait;
     use \Modules\Editor\Models\EditorDocListTrait;
     use \Modules\Media\Models\MediaListTrait;
+    use \Modules\Tag\Models\TagListTrait;
 }

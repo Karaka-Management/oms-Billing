@@ -603,6 +603,14 @@
                 "foreignTable": "billing_type",
                 "foreignKey": "billing_type_id"
             },
+            "billing_bill_tag": {
+                "name": "billing_bill_tag",
+                "type": "INT",
+                "null": true,
+                "default": null,
+                "foreignTable": "tag",
+                "foreignKey": "tag_id"
+            },
             "billing_bill_template": {
                 "name": "billing_bill_template",
                 "type": "TINYINT(1)",

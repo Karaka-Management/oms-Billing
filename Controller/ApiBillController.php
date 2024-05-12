@@ -47,6 +47,7 @@ use Modules\Messages\Models\EmailMapper;
 use Modules\SupplierManagement\Models\NullSupplier;
 use Modules\SupplierManagement\Models\Supplier;
 use Modules\SupplierManagement\Models\SupplierMapper;
+use Modules\Tag\Models\TagMapper;
 use phpOMS\Account\PermissionType;
 use phpOMS\Application\ApplicationAbstract;
 use phpOMS\Autoloader;
@@ -132,11 +133,11 @@ final class ApiBillController extends Controller
         $bill = $data['bill'] ?? BillMapper::get()
             ->with('type')
             ->with('files')
-            ->with('files/types')
+            ->with('files/tags')
             ->where('id', $request->getDataInt('bill') ?? 0)
             ->execute();
 
-        $media = $data['media'] ?? $bill->getFileByTypeName('internal');
+        $media = $data['media'] ?? $bill->getFileByTagName('internal_bill');
 
         if ($bill->status === BillStatus::ARCHIVED
             && $bill->type->email
@@ -798,7 +799,7 @@ final class ApiBillController extends Controller
                 pathSettings: PathSettings::FILE_PATH,
                 hasAccountRelation: false,
                 readContent: $request->getDataBool('parse_content') ?? false,
-                type: $request->getDataInt('type'),
+                tag: $request->getDataInt('tag'),
                 rel: $bill->id,
                 mapper: BillMapper::class,
                 field: 'files'
@@ -1320,7 +1321,7 @@ final class ApiBillController extends Controller
         /** @var \Modules\Billing\Models\Bill $bill */
         $bill = BillMapper::get()
             ->with('files')
-            ->with('files/types')
+            ->with('files/tags')
             ->with('elements')
             ->with('elements/container')
             ->with('type')
@@ -1415,14 +1416,12 @@ final class ApiBillController extends Controller
             // @codeCoverageIgnoreEnd
         }
 
-        /** @var \Model\Setting $internalType */
-        $internalType = $this->app->appSettings->get(
-            names: SettingsEnum::INTERNAL_MEDIA_TYPE,
-            module: self::NAME
-        );
+        $tag = TagMapper::get()
+            ->where('name', 'internal_bill')
+            ->execute();
 
         // @todo Check if old file exists -> update media
-        $oldFile = $bill->getFileByType((int) $internalType->content);
+        $oldFile = $bill->getFileByTag($tag->id);
 
         $billFileName = ($bill->billDate?->format('Y-m-d') ?? '0') . '_' . $bill->number . '.pdf';
 
@@ -1466,9 +1465,9 @@ final class ApiBillController extends Controller
             $this->createModelRelation(
                 $request->header->account,
                 $media->id,
-                (int) $internalType->content,
+                $tag->id,
                 MediaMapper::class,
-                'types',
+                'tags',
                 '',
                 $request->getOrigin()
             );

@@ -29,6 +29,7 @@
         "Admin": "*",
         "Navigation": "*",
         "Media": "*",
+        "Tag": "*",
         "Workflow": "*",
         "Messages": "*"
     },

@@ -25,6 +25,7 @@ use Modules\Payment\Models\PaymentType;
 use Modules\SupplierManagement\Models\NullSupplier;
 use Modules\SupplierManagement\Models\Supplier;
 use Modules\SupplierManagement\Models\SupplierMapper;
+use Modules\Tag\Models\TagMapper;
 use phpOMS\Contract\RenderableInterface;
 use phpOMS\Localization\ISO4217CharEnum;
 use phpOMS\Localization\ISO4217DecimalEnum;
@@ -63,22 +64,23 @@ final class CliController extends Controller
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/Billing/Theme/Cli/bill-parsed');
 
-        /** @var \Model\Setting $setting */
-        $setting = $this->app->appSettings->get(
-            names: SettingsEnum::EXTERNAL_MEDIA_TYPE,
-            module: self::NAME
-        );
+        $tag = null;
+        if (!$request->hasData('-t')) {
+            $tag = TagMapper::get()
+                ->where('name', 'external_bill')
+                ->execute();
+        }
 
-        $externalType = $request->getDataInt('-t') ?? (int) $setting->content;
+        $externalType = $request->getDataInt('-t') ?? (int) ($tag?->id);
 
         /** @var \Modules\Billing\Models\Bill $bill */
         $bill = BillMapper::get()
             ->with('elements')
             ->with('files')
-            ->with('files/types')
+            ->with('files/tags')
             ->with('files/content')
             ->where('id', (int) $request->getData('-i'))
-            ->where('files/types', $externalType)
+            ->where('files/tags', $externalType)
             ->execute();
 
         if ($bill->id === 0) {
@@ -87,7 +89,7 @@ final class CliController extends Controller
 
         $old = clone $bill;
 
-        $content = \strtolower($bill->getFileByType($externalType)->content->content ?? '');
+        $content = \strtolower($bill->getFileByTag($externalType)->content->content ?? '');
         $lines   = \explode("\n", $content);
         foreach ($lines as $line => $value) {
             if (empty(\trim($value))) {

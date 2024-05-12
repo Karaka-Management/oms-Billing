@@ -19,6 +19,7 @@ use Modules\Billing\Models\BillStatus;
 use Modules\Billing\Models\BillTransferType;
 use Modules\Billing\Models\BillTypeMapper;
 use Modules\Billing\Models\SettingsEnum;
+use Modules\Tag\Models\TagMapper;
 use phpOMS\Message\Http\HttpRequest;
 use phpOMS\Message\Http\HttpResponse;
 use phpOMS\Message\Http\RequestStatusCode;
@@ -97,13 +98,9 @@ final class ApiPurchaseController extends Controller
      */
     private function createSupplierBillUploadFromRequest(RequestAbstract $request, ResponseAbstract $response, $data) : array
     {
-        /** @var \Model\Setting $setting */
-        $setting = $this->app->appSettings->get(
-            names: SettingsEnum::EXTERNAL_MEDIA_TYPE,
-            module: self::NAME
-        );
-
-        $internalType = $request->getDataInt('type') ?? ((int) $setting->content);
+        $tag = TagMapper::get()
+            ->where('name', 'external_bill')
+            ->execute();
 
         /** @var \Modules\Billing\Models\BillType $purchaseTransferType */
         $purchaseTransferType = BillTypeMapper::get()
@@ -181,7 +178,7 @@ final class ApiPurchaseController extends Controller
             }
 
             $mediaRequest->setData('bill', $billId);
-            $mediaRequest->setData('type', $internalType);
+            $mediaRequest->setData('tag', $tag->id);
             $mediaRequest->setData('parse_content', true, true);
             $this->app->moduleManager->get('Billing', 'ApiBill')->apiMediaAddToBill($mediaRequest, $mediaResponse, $data);
 

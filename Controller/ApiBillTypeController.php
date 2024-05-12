@@ -37,7 +37,7 @@ use phpOMS\Message\ResponseAbstract;
 final class ApiBillTypeController extends Controller
 {
     /**
-     * Api method to create item bill type
+     * Api method to create bill type
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response

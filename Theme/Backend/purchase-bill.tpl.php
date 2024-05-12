@@ -34,7 +34,7 @@ $elements = $bill->elements;
 
 $billTypes = $this->data['billtypes'] ?? [];
 
-$archive = $bill->getFileByTypeName('external');
+$archive = $bill->getFileByTagName('external_bill');
 
 /** @var \Modules\Auditor\Models\Audit */
 $logs = $this->data['logs'] ?? [];
@@ -214,7 +214,7 @@ echo $this->data['nav']->render(); ?>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="iZipBill"><?= $this->getHtml('Zip'); ?></label>
+                                    <label for="iZipBill"><?= $this->getHtml('Postal'); ?></label>
                                     <input type="text" id="iZipBill" name="bill_address_bill" value="<?= $this->printHtml($bill->billZip); ?>"<?= $disabled; ?>>
                                 </div>
 
@@ -264,7 +264,7 @@ echo $this->data['nav']->render(); ?>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="iZipDelivery"><?= $this->getHtml('Zip'); ?></label>
+                                    <label for="iZipDelivery"><?= $this->getHtml('Postal'); ?></label>
                                     <input type="text" id="iZipDelivery" name="bill_zip_delivery" value="<?= $this->printHtml($bill->shipZip); ?>"<?= $disabled; ?>>
                                 </div>
 

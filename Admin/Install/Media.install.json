@@ -19,47 +19,5 @@
         "name": "Bills",
         "virtualPath": "/Modules/Billing",
         "user": 1
-    },
-    {
-        "type": "type",
-        "name": "preview",
-        "l11n": [
-            {
-                "title": "Preview",
-                "lang": "en"
-            },
-            {
-                "title": "Vorschau",
-                "lang": "de"
-            }
-        ]
-    },
-    {
-        "type": "type",
-        "name": "internal",
-        "l11n": [
-            {
-                "title": "Internal",
-                "lang": "en"
-            },
-            {
-                "title": "Intern",
-                "lang": "de"
-            }
-        ]
-    },
-    {
-        "type": "type",
-        "name": "external",
-        "l11n": [
-            {
-                "title": "External",
-                "lang": "en"
-            },
-            {
-                "title": "Extern",
-                "lang": "de"
-            }
-        ]
     }
 ]

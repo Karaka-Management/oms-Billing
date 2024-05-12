@@ -14,18 +14,17 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Admin\Install;
 
-use Modules\Billing\Models\SettingsEnum;
 use phpOMS\Application\ApplicationAbstract;
 
 /**
- * Media class.
+ * Tag class.
  *
  * @package Modules\Billing\Admin\Install
  * @license OMS License 2.0
  * @link    https://jingga.app
  * @since   1.0.0
  */
-class Media
+class Tag
 {
     /**
      * Install media providing
@@ -39,6 +38,6 @@ class Media
      */
     public static function install(ApplicationAbstract $app, string $path) : void
     {
-        $media = \Modules\Media\Admin\Installer::installExternal($app, ['path' => __DIR__ . '/Media.install.json']);
+        \Modules\Tag\Admin\Installer::installExternal($app, ['path' => __DIR__ . '/Tag.install.json']);
     }
 }

@@ -45,7 +45,7 @@ final class BillTest extends \PHPUnit\Framework\TestCase
         self::assertNull($this->bill->send);
         self::assertNull($this->bill->client);
         self::assertNull($this->bill->supplier);
-        self::assertInstanceOf('\Modules\Media\Models\NullMedia', $this->bill->getFileByType(0));
+        self::assertInstanceOf('\Modules\Media\Models\NullMedia', $this->bill->getFileByTag(0));
 
         self::assertEquals('', $this->bill->shipTo);
         self::assertEquals('', $this->bill->shipFAO);
@@ -90,13 +90,13 @@ final class BillTest extends \PHPUnit\Framework\TestCase
         $this->bill->shipFAO     = 'FAO';
         $this->bill->shipAddress = 'Address';
         $this->bill->shipCity    = 'City';
-        $this->bill->shipZip     = 'Zip';
+        $this->bill->shipZip     = 'Postal';
         $this->bill->shipCountry = 'Country';
         $this->bill->billTo      = 'To';
         $this->bill->billFAO     = 'FAO';
         $this->bill->billAddress = 'Address';
         $this->bill->billCity    = 'City';
-        $this->bill->billZip     = 'Zip';
+        $this->bill->billZip     = 'Postal';
         $this->bill->billCountry = 'Country';
 
         self::assertEquals(
@@ -108,13 +108,13 @@ final class BillTest extends \PHPUnit\Framework\TestCase
                 'shipFAO'     => 'FAO',
                 'shipAddress' => 'Address',
                 'shipCity'    => 'City',
-                'shipZip'     => 'Zip',
+                'shipZip'     => 'Postal',
                 'shipCountry' => 'Country',
                 'billTo'      => 'To',
                 'billFAO'     => 'FAO',
                 'billAddress' => 'Address',
                 'billCity'    => 'City',
-                'billZip'     => 'Zip',
+                'billZip'     => 'Postal',
                 'billCountry' => 'Country',
                 'external'    => '',
             ],

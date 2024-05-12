@@ -23,7 +23,6 @@ use Modules\Billing\Models\BillTypeMapper;
 use Modules\Billing\Models\PaymentTermL11nMapper;
 use Modules\Billing\Models\PaymentTermMapper;
 use Modules\Billing\Models\PermissionCategory;
-use Modules\Billing\Models\SettingsEnum;
 use Modules\Billing\Models\ShippingTermL11nMapper;
 use Modules\Billing\Models\ShippingTermMapper;
 use Modules\Billing\Models\Tax\TaxCombinationMapper;
@@ -31,6 +30,7 @@ use Modules\ClientManagement\Models\Attribute\ClientAttributeTypeMapper;
 use Modules\Finance\Models\TaxCodeMapper;
 use Modules\ItemManagement\Models\Attribute\ItemAttributeTypeMapper;
 use Modules\SupplierManagement\Models\Attribute\SupplierAttributeTypeMapper;
+use Modules\Tag\Models\TagMapper;
 use phpOMS\Account\PermissionType;
 use phpOMS\Contract\RenderableInterface;
 use phpOMS\DataStorage\Database\Query\OrderType;
@@ -239,27 +239,22 @@ final class BackendController extends Controller
         $view->setTemplate('/Modules/Billing/Theme/Backend/bill-create');
         $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005104001, $request, $response);
 
-        /** @var \Modules\Billing\Models\Bill $bill */
-        $bill = BillMapper::get()
+        $view->data['bill'] = BillMapper::get()
             ->with('client')
             ->with('elements')
             ->with('elements/container')
             ->with('files')
-            ->with('files/types')
+            ->with('files/tags')
             ->with('notes')
             ->where('id', (int) $request->getData('id'))
             ->execute();
 
-        $view->data['bill'] = $bill;
-
-        $billTypes = BillTypeMapper::getAll()
+        $view->data['billtypes'] = BillTypeMapper::getAll()
             ->with('l11n')
             ->where('isTemplate', false)
             ->where('transferType', BillTransferType::SALES)
             ->where('l11n/language', $request->header->l11n->language)
             ->executeGetArray();
-
-        $view->data['billtypes'] = $billTypes;
 
         $logs = [];
         if ($this->app->accountManager->get($request->header->account)->hasPermission(
@@ -275,16 +270,16 @@ final class BackendController extends Controller
                 ->with('createdBy')
                 ->where('module', 'Billing')
                 ->where('type', StringUtils::intHash(BillMapper::class))
-                ->where('ref', $bill->id)
+                ->where('ref', $view->data['bill']->id)
                 ->executeGetArray();
 
-            if (!empty($bill->elements)) {
+            if (!empty($view->data['bill']->elements)) {
                 /** @var \Modules\Auditor\Models\Audit[] $logsElements */
                 $logsElements = AuditMapper::getAll()
                     ->with('createdBy')
                     ->where('module', 'Billing')
                     ->where('type', StringUtils::intHash(BillElementMapper::class))
-                    ->where('ref', \array_keys($bill->elements), 'IN')
+                    ->where('ref', \array_keys($view->data['bill']->elements), 'IN')
                     ->executeGetArray();
 
                 $logs = \array_merge($logs, $logsElements);
@@ -435,7 +430,7 @@ final class BackendController extends Controller
             ->with('elements')
             ->with('elements/container')
             ->with('files')
-            ->with('files/types')
+            ->with('files/tags')
             ->with('notes')
             ->where('id', (int) $request->getData('id'))
             ->execute();
@@ -637,31 +632,26 @@ final class BackendController extends Controller
         $view->setTemplate('/Modules/Billing/Theme/Backend/purchase-bill');
         $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005109001, $request, $response);
 
-        $bill = BillMapper::get()
+        $view->data['bill'] = BillMapper::get()
             ->with('elements')
             ->with('files')
-            ->with('files/types')
+            ->with('files/tags')
             ->with('notes')
             ->where('id', (int) $request->getData('id'))
             ->execute();
 
-        $view->data['bill'] = $bill;
+        $tags = TagMapper::getAll()
+            ->where('name', ['bill_preview', 'external_bill'])
+            ->executeGetArray();
 
-        /** @var \Model\Setting $previewType */
-        $previewType = $this->app->appSettings->get(
-            names: SettingsEnum::PREVIEW_MEDIA_TYPE,
-            module: self::NAME
-        );
+        foreach ($tags as $tag) {
+            if ($tag->name === 'bill_preview') {
+                $view->data['previewType'] = $tag;
+            } else {
+                $view->data['externalType'] = $tag;
+            }
+        }
 
-        $view->data['previewType'] = (int) $previewType->content;
-
-        /** @var \Model\Setting $externalType */
-        $externalType = $this->app->appSettings->get(
-            names: SettingsEnum::EXTERNAL_MEDIA_TYPE,
-            module: self::NAME
-        );
-
-        $view->data['externalType'] = (int) $externalType->content;
         $view->data['media-upload'] = new \Modules\Media\Theme\Backend\Components\Upload\BaseView($this->app->l11nManager, $request, $response);
 
         return $view;

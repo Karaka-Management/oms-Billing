@@ -74,6 +74,21 @@ final class ApiPriceController extends Controller
         $client   ??= new NullClient();
         $supplier ??= new NullSupplier();
 
+        if ($item->id !== 0 && ($client->id !== 0 || $supplier->id !== 0)) {
+            $json = $this->app->cachePool->get()->get(
+                'price:' . $item->id . ':' . $client->id . ':' . $supplier->id . ':' . ($request->getDataInt('price_quantity') ?? '')
+            );
+
+            if (!empty($json)) {
+                $json['bestActualPrice'] = FloatInt::fromJson($json['bestActualPrice']);
+                $json['discountPercent'] = FloatInt::fromJson($json['discountPercent']);
+                $json['discountAmount'] = FloatInt::fromJson($json['discountAmount']);
+                $json['bonus'] = FloatInt::fromJson($json['bonus']);
+
+                return $json;
+            }
+        }
+
         // Get item
         if ($item->id === 0 && $request->hasData('price_item')) {
             /** @var \Modules\ItemManagement\Models\Item $item */
@@ -334,7 +349,7 @@ final class ApiPriceController extends Controller
         $bestActualPriceValue -= $discountAmount;
         $bestActualPriceValue = (int) \round(((FloatInt::DIVISOR * 100) - $discountPercentage) / (FloatInt::DIVISOR * 100) * $bestActualPriceValue, 0);
 
-        return [
+        $response = [
             'basePrice'       => $basePrice->priceNew,
             'bestPrice'       => $bestPrice->priceNew,
             'supplier'        => $bestPrice->supplier->id,
@@ -344,6 +359,14 @@ final class ApiPriceController extends Controller
             'discountAmount'  => new FloatInt($discountAmount),
             'bonus'           => new FloatInt($bonus),
         ];
+
+        $this->app->cachePool->get()->set(
+            'price:' . $item->id . ':' . $client->id . ':' . $supplier->id . ':' . ($request->getDataInt('price_quantity') ?? ''),
+            $response,
+            36000
+        );
+
+        return $response;
     }
 
     /**
@@ -465,6 +488,10 @@ final class ApiPriceController extends Controller
         /** @var \Modules\Billing\Models\Price\Price $old */
         $old = PriceMapper::get()->where('id', (int) $request->getData('id'))->execute();
         $new = $this->updatePriceFromRequest($request, clone $old);
+
+        $this->app->cachePool->get()->delete(
+            'price:' . $new->item->id . ':' . $new->client->id . ':' . $new->supplier->id . ':' . ($request->getDataInt('quantity') ?? '')
+        );
 
         if ($new->name === 'default'
             && $old->priceNew->value !== $new->priceNew->value

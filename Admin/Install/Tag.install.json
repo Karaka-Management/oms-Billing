@@ -1,0 +1,23 @@
+[
+    {
+        "name": "bill_preview",
+        "l11n": {
+            "en": "Bill Preview",
+            "de": "Belegvorschau"
+        }
+    },
+    {
+        "name": "internal_bill",
+        "l11n": {
+            "en": "Internal Bill",
+            "de": "Interner Beleg"
+        }
+    },
+    {
+        "name": "external_bill",
+        "l11n": {
+            "en": "External Bill",
+            "de": "Externer Beleg"
+        }
+    }
+]
