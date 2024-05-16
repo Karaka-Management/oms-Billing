@@ -256,6 +256,16 @@ final class BackendController extends Controller
             ->where('l11n/language', $request->header->l11n->language)
             ->executeGetArray();
 
+        $view->data['paymentterms'] = PaymentTermMapper::getAll()
+            ->with('l11n')
+            ->where('l11n/language', $request->header->l11n->language)
+            ->executeGetArray();
+
+        $view->data['shippingterms'] = ShippingTermMapper::getAll()
+            ->with('l11n')
+            ->where('l11n/language', $request->header->l11n->language)
+            ->executeGetArray();
+
         $logs = [];
         if ($this->app->accountManager->get($request->header->account)->hasPermission(
                 PermissionType::READ,

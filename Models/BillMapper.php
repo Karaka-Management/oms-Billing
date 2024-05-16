@@ -76,7 +76,7 @@ class BillMapper extends DataMapperFactory
         'billing_bill_netdiscount'       => ['name' => 'billing_bill_netdiscount',      'type' => 'Serializable',    'internal' => 'netDiscount'],
         'billing_bill_taxp'              => ['name' => 'billing_bill_taxp',      'type' => 'Serializable',    'internal' => 'taxP'],
         'billing_bill_fiaccount'         => ['name' => 'billing_bill_fiaccount',      'type' => 'string',    'internal' => 'fiAccount'],
-        'billing_bill_rep'         => ['name' => 'billing_bill_rep',      'type' => 'int',    'internal' => 'rep'],
+        'billing_bill_rep'               => ['name' => 'billing_bill_rep',      'type' => 'int',    'internal' => 'rep'],
         'billing_bill_currency'          => ['name' => 'billing_bill_currency',      'type' => 'string',    'internal' => 'currency'],
         'billing_bill_language'          => ['name' => 'billing_bill_language',      'type' => 'string',    'internal' => 'language'],
         'billing_bill_referral'          => ['name' => 'billing_bill_referral',      'type' => 'int',    'internal' => 'referral'],
@@ -127,6 +127,12 @@ class BillMapper extends DataMapperFactory
             'external' => 'billing_bill_note_doc',
             'self'     => 'billing_bill_note_bill',
         ],
+        'attributes' => [
+            'mapper'      => BillAttributeMapper::class,
+            'table'       => 'billing_bill_attr',
+            'self'        => 'billing_bill_attr_bill',
+            'external'    => null,
+        ],
     ];
 
     /**
@@ -148,6 +154,14 @@ class BillMapper extends DataMapperFactory
             'mapper'   => SalesRepMapper::class,
             'external' => 'billing_bill_rep',
         ],
+        'paymentTerms' => [
+            'mapper'   => PaymentTermMapper::class,
+            'external' => 'billing_bill_paymentterms',
+        ],
+        'shippingTerms' => [
+            'mapper'   => ShippingTermMapper::class,
+            'external' => 'shippingTerms',
+        ],
     ];
 
     /**
@@ -168,14 +182,7 @@ class BillMapper extends DataMapperFactory
         'supplier' => [
             'mapper'   => SupplierMapper::class,
             'external' => 'billing_bill_supplier',
-        ],
-        'attributes' => [
-            'mapper'      => BillAttributeMapper::class,
-            'table'       => 'billing_bill_attr',
-            'self'        => 'billing_bill_attr_bill',
-            'conditional' => true,
-            'external'    => null,
-        ],
+        ]
     ];
 
     /**

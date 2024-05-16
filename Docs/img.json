@@ -1,0 +1,38 @@
+[
+    [
+        "/finance/tax/combination/list",
+        "//*[@id=\"content\"]/div[2]/div/section/table/tbody/tr[1]",
+        "/Billing/Docs/Help/img/taxes/taxes_combinations.png"
+    ],
+    [
+        "/finance/tax/combination/view?id=1",
+        "//*[@id=\"content\"]/div[2]/div/section",
+        "/Billing/Docs/Help/img/taxes/taxes_combination.png"
+    ],
+
+    [
+        "/sales/bill/view?id=1",
+        "//*[@id=\"content\"]/div[2]/div[2]/div[1]/div/div[1]/section",
+        "/Billing/Docs/Help/img/bill/bill_invoice_general.png"
+    ],
+    [
+        "/sales/bill/view?id=1",
+        "//*[@id=\"content\"]//div[2]/div[2]/div[1]/div/div[1]/section[2]",
+        "/Billing/Docs/Help/img/bill/bill_invoice_terms.png"
+    ],
+    [
+        "/sales/bill/view?id=1",
+        "//*[@id=\"content\"]/div[2]/div[2]/div[1]/div/div[2]/section",
+        "/Billing/Docs/Help/img/bill/bill_invoice_billing_address.png"
+    ],
+    [
+        "/sales/bill/view?id=1",
+        "//*[@id=\"content\"]/div[2]/div[2]/div[1]/div/div[3]/section",
+        "/Billing/Docs/Help/img/bill/bill_invoice_delivery_address.png"
+    ],
+    [
+        "/sales/bill/view?id=1#c-tab-2",
+        "//*[@id=\"content\"]/div[2]/div[2]/div[2]/div/div/section",
+        "/Billing/Docs/Help/img/bill/bill_element_list.png"
+    ]
+]

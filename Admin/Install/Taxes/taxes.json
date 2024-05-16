@@ -81,6 +81,13 @@
         "account": "8400"
     },
     {
+        "type": 1,
+        "item_code": "REDUCED",
+        "account_code": "DE",
+        "tax_code": "DE_M7",
+        "account": "8300"
+    },
+    {
         "type": 2,
         "item_code": "GENERAL",
         "account_code": "DE",
@@ -90,6 +97,20 @@
     {
         "type": 1,
         "item_code": "GENERAL",
+        "account_code": "DE_S",
+        "tax_code": "SBIZ_0",
+        "account": "8195"
+    },
+    {
+        "type": 2,
+        "item_code": "REDUCED",
+        "account_code": "DE",
+        "tax_code": "DE_V7",
+        "account": "3060"
+    },
+    {
+        "type": 1,
+        "item_code": "REDUCED",
         "account_code": "DE_S",
         "tax_code": "SBIZ_0",
         "account": "8195"

@@ -44,6 +44,7 @@ use Modules\Media\Models\NullCollection;
 use Modules\Media\Models\PathSettings;
 use Modules\Media\Models\UploadStatus;
 use Modules\Messages\Models\EmailMapper;
+use Modules\Sales\Models\NullSalesRep;
 use Modules\SupplierManagement\Models\NullSupplier;
 use Modules\SupplierManagement\Models\Supplier;
 use Modules\SupplierManagement\Models\SupplierMapper;
@@ -263,7 +264,14 @@ final class ApiBillController extends Controller
 
         // Create final pdf
         $this->apiBillPdfArchiveCreate($request, $response, $data);
-        $media = $response->getDataArray($request->uri->__toString())['response'];
+        $media = $response->getDataArray($request->uri->__toString())['response'] ?? null;
+
+        if ($media === null) {
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidUpdateResponse($request, $response, $media);
+
+            return;
+        }
 
         $this->app->eventManager->triggerSimilar('PRE:Module:' . self::NAME . '-bill-finalize', '', [
             $request->header->account,
@@ -469,7 +477,7 @@ final class ApiBillController extends Controller
             $bill->accSection = empty($temp = $bill->client->getAttribute('section')->value->id) ? null : $temp;
             $bill->accGroup   = empty($temp = $bill->client->getAttribute('client_group')->value->id) ? null : $temp;
             $bill->accType    = empty($temp = $bill->client->getAttribute('client_type')->value->id) ? null : $temp;
-            $bill->rep        = $request->getDataInt('rep') ?? $account->rep;
+            $bill->rep        = $request->hasData('rep') ? new NullSalesRep((int) $request->getData('rep')) : $account->rep;
         } else {
             $bill->supplier   = $account;
             $bill->accTaxCode = empty($temp = $bill->supplier->getAttribute('purchase_tax_code')->value->id) ? null : $temp;
@@ -1576,11 +1584,21 @@ final class ApiBillController extends Controller
         $this->app->moduleManager->get('Editor', 'Api')->apiEditorCreate($request, $response, $data);
 
         if ($response->header->status !== RequestStatusCode::R_200) {
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidUpdateResponse($request, $response, null);
+
             return;
         }
 
         /** @var \Modules\Editor\Models\EditorDoc $model */
-        $model = $response->getDataArray($request->uri->__toString())['response'];
+        $model = $response->getDataArray($request->uri->__toString())['response'] ?? null;
+        if ($model === null) {
+            $response->header->status = RequestStatusCode::R_400;
+            $this->createInvalidUpdateResponse($request, $response, $model);
+
+            return;
+        }
+
         $this->createModelRelation($request->header->account, $request->getDataInt('id'), $model->id, BillMapper::class, 'notes', '', $request->getOrigin());
     }
 

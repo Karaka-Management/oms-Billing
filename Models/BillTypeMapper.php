@@ -45,7 +45,7 @@ final class BillTypeMapper extends DataMapperFactory
         'billing_type_default_template' => ['name' => 'billing_type_default_template',  'type' => 'int',    'internal' => 'defaultTemplate'],
         'billing_type_transfer_stock'   => ['name' => 'billing_type_transfer_stock', 'type' => 'bool',   'internal' => 'transferStock'],
         'billing_type_accounting'       => ['name' => 'billing_type_accounting', 'type' => 'bool',   'internal' => 'isAccounting'],
-        'billing_type_sign'    => ['name' => 'billing_type_sign', 'type' => 'int',   'internal' => 'sign'],
+        'billing_type_sign'             => ['name' => 'billing_type_sign', 'type' => 'int',   'internal' => 'sign'],
         'billing_type_email'            => ['name' => 'billing_type_email', 'type' => 'bool',   'internal' => 'email'],
         'billing_type_is_template'      => ['name' => 'billing_type_is_template', 'type' => 'bool',   'internal' => 'isTemplate'],
     ];

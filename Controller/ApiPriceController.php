@@ -79,11 +79,11 @@ final class ApiPriceController extends Controller
                 'price:' . $item->id . ':' . $client->id . ':' . $supplier->id . ':' . ($request->getDataInt('price_quantity') ?? '')
             );
 
-            if (!empty($json)) {
+            if (!empty($json) && \is_array($json)) {
                 $json['bestActualPrice'] = FloatInt::fromJson($json['bestActualPrice']);
                 $json['discountPercent'] = FloatInt::fromJson($json['discountPercent']);
-                $json['discountAmount'] = FloatInt::fromJson($json['discountAmount']);
-                $json['bonus'] = FloatInt::fromJson($json['bonus']);
+                $json['discountAmount']  = FloatInt::fromJson($json['discountAmount']);
+                $json['bonus']           = FloatInt::fromJson($json['bonus']);
 
                 return $json;
             }

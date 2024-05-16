@@ -34,7 +34,9 @@ $media = $this->data['media'] ?? [];
 $bill     = $this->getData('bill') ?? new NullBill();
 $elements = $bill->elements;
 
-$billTypes = $this->data['billtypes'] ?? [];
+$billTypes     = $this->data['billtypes'] ?? [];
+$paymentTerms  = $this->data['paymentterms'] ?? [];
+$shippingTerms = $this->data['shippingterms'] ?? [];
 
 $archive = $bill->getFileByTagName('internal_bill');
 
@@ -75,10 +77,10 @@ echo $this->data['nav']->render(); ?>
 </div>
 <?php endif; ?>
 
-<div class="tabview tab-2 col-simple">
+<div id="iBillTab" class="tabview tab-2 col-simple url-rewrite">
     <div class="box">
         <ul class="tab-links">
-            <li><label for="c-tab-1"><?= $this->getHtml('Invoice'); ?></label>
+            <li><label for="c-tab-1"><?= $this->getHtml('General'); ?></label>
             <li><label for="c-tab-2"><?= $this->getHtml('Items'); ?></label>
             <li><label for="c-tab-3"><?= $this->getHtml('Preview'); ?></label>
             <?php if (!$isNew) : ?><li><label for="c-tab-4"><?= $this->getHtml('Archive'); ?></label><?php endif; ?>
@@ -110,7 +112,7 @@ echo $this->data['nav']->render(); ?>
                                     <select id="iCurrency" name="bill_currency"<?= $disabled; ?>>
                                         <?php foreach ($currencies as $code => $currency) : $code = \substr($code, 1); ?>
                                         <option value="<?= $this->printHtml($code); ?>"<?= $code === $bill->currency ? ' selected' : ''; ?>><?= $this->printHtml($currency); ?>
-                                            <?php endforeach; ?>
+                                        <?php endforeach; ?>
                                     </select>
                                 </div>
 
@@ -163,26 +165,6 @@ echo $this->data['nav']->render(); ?>
                                     <input type="datetime-local" id="iDeliveryDate" name="bill_delivery_date"
                                         value="<?= $bill->createdAt->format('Y-m-d\TH:i'); ?>"<?= $disabled; ?>>
                                 </div>
-
-                                <div class="form-group">
-                                    <label for="iDueDate"><?= $this->getHtml('Due'); ?></label>
-                                    <input type="datetime-local" id="iDueDate" name="bill_due"
-                                        value="<?= (new \DateTime('now'))->format('Y-m-d\TH:i'); ?>"<?= $disabled; ?>>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="iShipment"><?= $this->getHtml('Shipment'); ?></label>
-                                    <select id="iShipment" name="bill_shipment_type"<?= $disabled; ?>>
-                                        <option>
-                                    </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="iTermsOfDelivery"><?= $this->getHtml('TermsOfDelivery'); ?></label>
-                                    <select id="iTermsOfDelivery" name="bill_termsofdelivery"<?= $disabled; ?>>
-                                        <option>
-                                    </select>
-                                </div>
                             </div>
                             <?php if ($editable) : ?>
                             <div class="portlet-foot">
@@ -190,6 +172,42 @@ echo $this->data['nav']->render(); ?>
                             </div>
                             <?php endif; ?>
                         </form>
+                    </section>
+
+                    <section class="portlet">
+                        <div class="portlet-head"><?= $this->getHtml('Terms'); ?></div>
+                        <div class="portlet-body">
+                            <div class="form-group">
+                                <label for="iPaymentTerm"><?= $this->getHtml('Payment'); ?></label>
+                                <select id="iPaymentTerm" name="bill_payment_term"<?= $disabled; ?>>
+                                    <?php foreach ($paymentTerms as $payment) : ?>
+                                    <option value="<?= $payment->id; ?>"<?= $payment->id === $bill->paymentTerms ? ' selected' : ''; ?>><?= $this->printHtml($payment->getL11n()); ?>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="iDueDate"><?= $this->getHtml('Due'); ?></label>
+                                <input type="datetime-local" id="iDueDate" name="bill_due"
+                                    value="<?= (new \DateTime('now'))->format('Y-m-d\TH:i'); ?>"<?= $disabled; ?>>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="iShippingTerm"><?= $this->getHtml('Shipping'); ?></label>
+                                <select id="iShippingTerm" name="bill_payment_term"<?= $disabled; ?>>
+                                    <?php foreach ($shippingTerms as $shipping) : ?>
+                                    <option value="<?= $shipping->id; ?>"<?= $shipping->id === $bill->shippingTerms ? ' selected' : ''; ?>><?= $this->printHtml($shipping->getL11n()); ?>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="iTermsOfDelivery"><?= $this->getHtml('TermsOfDelivery'); ?></label>
+                                <select id="iTermsOfDelivery" name="bill_termsofdelivery"<?= $disabled; ?>>
+                                    <option>
+                                </select>
+                            </div>
+                        </div>
                     </section>
                 </div>
 

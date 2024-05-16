@@ -208,6 +208,10 @@ final class Installer extends InstallerAbstract
         $module = $app->moduleManager->get('Billing', 'ApiAttribute');
 
         foreach ($attributes as $attribute) {
+            if (!isset($attribute['values'])) {
+                continue;
+            }
+
             $billAttrValue[$attribute['name']] = [];
 
             /** @var array $value */

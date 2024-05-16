@@ -19,6 +19,7 @@ use Modules\Admin\Models\NullAccount;
 use Modules\ClientManagement\Models\Client;
 use Modules\Sales\Models\SalesRep;
 use Modules\SupplierManagement\Models\Supplier;
+use phpOMS\Localization\BaseStringL11nType;
 use phpOMS\Localization\ISO4217CharEnum;
 use phpOMS\Localization\ISO639x1Enum;
 use phpOMS\Stdlib\Base\FloatInt;
@@ -354,9 +355,9 @@ class Bill implements \JsonSerializable
      */
     public int $terms = 0;
 
-    public ?int $paymentTerms = null;
+    public ?BaseStringL11nType $paymentTerms = null;
 
-    public ?int $shippingTerms = null;
+    public ?BaseStringL11nType $shippingTerms = null;
 
     /**
      * Terms text.

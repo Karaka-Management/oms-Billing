@@ -20,7 +20,7 @@ use Modules\Billing\Models\BillMapper;
 use Modules\Billing\Models\BillTypeMapper;
 use Modules\Billing\Models\InvoiceRecognition;
 use Modules\Billing\Models\NullBillType;
-use Modules\Billing\Models\SettingsEnum;
+use Modules\ItemManagement\Models\NullItem;
 use Modules\Payment\Models\PaymentType;
 use Modules\SupplierManagement\Models\NullSupplier;
 use Modules\SupplierManagement\Models\Supplier;
@@ -325,7 +325,7 @@ final class CliController extends Controller
                 $internalResponse->header->l11n->language = $bill->language;
 
                 $this->app->moduleManager->get('ItemManagement', 'Api')->apiItemFind($internalRequest, $internalResponse);
-                $item = $internalResponse->getDataArray('')[0];
+                $item = $internalResponse->getDataArray('')[0] ?? new NullItem();
 
                 $billElement->itemName = $key;
 

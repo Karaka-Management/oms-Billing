@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Admin\Install;
 
-use Modules\Billing\Models\SettingsEnum;
 use phpOMS\Application\ApplicationAbstract;
 
 /**

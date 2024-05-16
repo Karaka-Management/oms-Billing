@@ -10,14 +10,14 @@
                 "autoincrement": true
             },
             "billing_payment_term_code": {
-                "description": "In days",
+                "comment": "In days",
                 "name": "billing_payment_term_code",
                 "type": "VARCHAR(100)",
                 "null": false,
                 "unique": true
             },
             "billing_payment_term_due": {
-                "description": "In days",
+                "comment": "In days",
                 "name": "billing_payment_term_due",
                 "type": "INT",
                 "null": false
@@ -67,7 +67,7 @@
                 "autoincrement": true
             },
             "billing_shipping_term_code": {
-                "description": "In days",
+                "comment": "In days",
                 "name": "billing_shipping_term_code",
                 "type": "VARCHAR(100)",
                 "null": false,
@@ -338,13 +338,13 @@
                 "foreignKey": "itemmgmt_attr_value_id"
             },
             "billing_tax_code": {
-                "description": "tax abbr. code",
+                "comment": "tax abbr. code",
                 "name": "billing_tax_code",
                 "type": "VARCHAR(10)",
                 "null": false
             },
             "billing_tax_type": {
-                "description": "sales/purchase",
+                "comment": "sales/purchase",
                 "name": "billing_tax_type",
                 "type": "TINYINT",
                 "null": false
@@ -444,7 +444,7 @@
                 "null": false
             },
             "billing_type_transfer_type": {
-                "description": "What kind of bill is it?",
+                "comment": "What kind of bill is it?",
                 "name": "billing_type_transfer_type",
                 "type": "TINYINT",
                 "null": false
@@ -458,25 +458,25 @@
                 "foreignKey": "media_id"
             },
             "billing_type_transfer_stock": {
-                "description": "Does this bill type move stock?",
+                "comment": "Does this bill type move stock?",
                 "name": "billing_type_transfer_stock",
                 "type": "TINYINT(1)",
                 "null": false
             },
             "billing_type_accounting": {
-                "description": "Is this bill relevant for accounting",
+                "comment": "Is this bill relevant for accounting",
                 "name": "billing_type_accounting",
                 "type": "TINYINT(1)",
                 "null": false
             },
             "billing_type_sign": {
-                "description": "1 = from->to direction, -1 = to->from direction = credit note",
+                "comment": "1 = from->to direction, -1 = to->from direction = credit note",
                 "name": "billing_type_sign",
                 "type": "TINYINT(1)",
                 "null": false
             },
             "billing_type_email": {
-                "description": "send email on archive",
+                "comment": "send email on archive",
                 "name": "billing_type_email",
                 "type": "TINYINT(1)",
                 "null": false
@@ -487,7 +487,7 @@
                 "null": false
             },
             "billing_type_is_template": {
-                "description": "What kind of bill is it?",
+                "comment": "What kind of bill is it?",
                 "name": "billing_type_is_template",
                 "type": "TINYINT(1)",
                 "null": false
@@ -834,35 +834,35 @@
                 "null": false
             },
             "billing_bill_accsegment": {
-                "description": "attribute values",
+                "comment": "attribute values",
                 "name": "billing_bill_accsegment",
                 "type": "INT",
                 "null": true,
                 "default": null
             },
             "billing_bill_accsection": {
-                "description": "attribute values",
+                "comment": "attribute values",
                 "name": "billing_bill_accsection",
                 "type": "INT",
                 "null": true,
                 "default": null
             },
             "billing_bill_accgroup": {
-                "description": "attribute values",
+                "comment": "attribute values",
                 "name": "billing_bill_accgroup",
                 "type": "INT",
                 "null": true,
                 "default": null
             },
             "billing_bill_acctype": {
-                "description": "attribute values",
+                "comment": "attribute values",
                 "name": "billing_bill_acctype",
                 "type": "INT",
                 "null": true,
                 "default": null
             },
             "billing_bill_payment": {
-                "description": "should this handle the dues?",
+                "comment": "should this handle the dues?",
                 "name": "billing_bill_payment",
                 "type": "INT",
                 "null": false
@@ -911,7 +911,7 @@
         }
     },
     "billing_subscription": {
-        "description": "https://learn.microsoft.com/en-us/graph/outlook-schedule-recurring-events",
+        "comment": "https://learn.microsoft.com/en-us/graph/outlook-schedule-recurring-events",
         "name": "billing_subscription",
         "fields": {
             "billing_subscription_id": {
@@ -1201,7 +1201,7 @@
                 "default": null
             },
             "billing_bill_element_segment": {
-                "description": "attribute values",
+                "comment": "attribute values",
                 "name": "billing_bill_element_segment",
                 "type": "INT",
                 "null": true,
@@ -1210,7 +1210,7 @@
                 "foreignKey": "itemmgmt_attr_value_id"
             },
             "billing_bill_element_section": {
-                "description": "attribute values",
+                "comment": "attribute values",
                 "name": "billing_bill_element_section",
                 "type": "INT",
                 "null": true,
@@ -1219,7 +1219,7 @@
                 "foreignKey": "itemmgmt_attr_value_id"
             },
             "billing_bill_element_salesgroup": {
-                "description": "attribute values",
+                "comment": "attribute values",
                 "name": "billing_bill_element_salesgroup",
                 "type": "INT",
                 "null": true,
@@ -1228,7 +1228,7 @@
                 "foreignKey": "itemmgmt_attr_value_id"
             },
             "billing_bill_element_productgroup": {
-                "description": "attribute values",
+                "comment": "attribute values",
                 "name": "billing_bill_element_productgroup",
                 "type": "INT",
                 "null": true,
@@ -1237,7 +1237,7 @@
                 "foreignKey": "itemmgmt_attr_value_id"
             },
             "billing_bill_element_itemtype": {
-                "description": "attribute values",
+                "comment": "attribute values",
                 "name": "billing_bill_element_itemtype",
                 "type": "INT",
                 "null": true,
@@ -1323,13 +1323,13 @@
                 "null": false
             },
             "billing_attr_type_required": {
-                "description": "Every item must have this attribute type if set to true.",
+                "comment": "Every item must have this attribute type if set to true.",
                 "name": "billing_attr_type_required",
                 "type": "TINYINT(1)",
                 "null": false
             },
             "billing_attr_type_pattern": {
-                "description": "This is a regex validation pattern.",
+                "comment": "This is a regex validation pattern.",
                 "name": "billing_attr_type_pattern",
                 "type": "VARCHAR(255)",
                 "null": false

@@ -26,6 +26,9 @@ use phpOMS\Stdlib\Base\FloatInt;
  * @license OMS License 2.0
  * @link    https://jingga.app
  * @since   1.0.0
+ *
+ * @template T of Bill
+ * @extends BillMapper<T>
  */
 final class SalesBillMapper extends BillMapper
 {
@@ -226,7 +229,7 @@ final class SalesBillMapper extends BillMapper
             $query->orderBy(self::TABLE  . '_d1.' . self::COLUMNS[self::PRIMARYFIELD]['name'], 'DESC');
         }
 
-        return self::getAll()->execute($query);
+        return self::getAll()->executeGetArray($query);
     }
 
     /**
@@ -246,7 +249,7 @@ final class SalesBillMapper extends BillMapper
             $query->orderBy(self::TABLE  . '_d1.' . self::COLUMNS[self::PRIMARYFIELD]['name'], 'DESC');
         }
 
-        return self::getAll()->execute($query);
+        return self::getAll()->executeGetArray($query);
     }
 
     /**
@@ -318,7 +321,7 @@ final class SalesBillMapper extends BillMapper
             ->with('type/l11n')
             ->sort('id', OrderType::DESC)
             ->limit($limit)
-            ->execute($query);
+            ->executeGetArray($query);
     }
 
     /**

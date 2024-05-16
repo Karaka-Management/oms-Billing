@@ -159,8 +159,12 @@ final class ApiPurchaseController extends Controller
 
             $this->app->moduleManager->get('Billing', 'ApiBill')->apiBillCreate($billRequest, $billResponse, $data);
 
-            $billId  = $billResponse->getDataArray('')['response']->id;
-            $bills[] = $billId;
+            $bill = $billResponse->getDataArray('')['response'] ?? null;
+            if ($bill === null) {
+                continue;
+            }
+
+            $bills[] = $bill->id;
 
             // Upload and assign document to bill
             $mediaResponse = new HttpResponse();
@@ -177,14 +181,14 @@ final class ApiPurchaseController extends Controller
                 $mediaRequest->setData('media', \json_encode($file));
             }
 
-            $mediaRequest->setData('bill', $billId);
+            $mediaRequest->setData('bill', $bill->id);
             $mediaRequest->setData('tag', $tag->id);
             $mediaRequest->setData('parse_content', true, true);
             $this->app->moduleManager->get('Billing', 'ApiBill')->apiMediaAddToBill($mediaRequest, $mediaResponse, $data);
 
             if (\is_array($file)) {
                 /** @var \Modules\Media\Models\Media[] $uploaded */
-                $uploaded = $mediaResponse->getDataArray('')['response']['upload'];
+                $uploaded = $mediaResponse->getDataArray('')['response']['upload'] ?? [];
                 if (empty($uploaded)) {
                     return [];
                 }
@@ -195,8 +199,8 @@ final class ApiPurchaseController extends Controller
                 }
             }
 
-            $request->setData('id', $billId, true);
-            $request->setData('bill', $billId, true);
+            $request->setData('id', $bill->id, true);
+            $request->setData('bill', $bill->id, true);
 
             $this->apiInvoiceParse($request, $response, $data);
         }
