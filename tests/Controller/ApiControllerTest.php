@@ -22,6 +22,7 @@ use phpOMS\Account\Account;
 use phpOMS\Account\AccountManager;
 use phpOMS\Account\PermissionType;
 use phpOMS\Application\ApplicationAbstract;
+use phpOMS\DataStorage\Cache\CachePool;
 use phpOMS\Dispatcher\Dispatcher;
 use phpOMS\Event\EventManager;
 use phpOMS\Localization\L11nManager;
@@ -66,6 +67,7 @@ final class ApiControllerTest extends \PHPUnit\Framework\TestCase
         $this->app->dispatcher     = new Dispatcher($this->app);
         $this->app->eventManager   = new EventManager($this->app->dispatcher);
         $this->app->l11nManager    = new L11nManager();
+        $this->app->cachePool    = new CachePool();
         $this->app->eventManager->importFromFile(__DIR__ . '/../../../../Web/Api/Hooks.php');
 
         $account = new Account();
