@@ -27,7 +27,7 @@ require_once __DIR__ . '/../Autoloader.php';
 final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
 {
     #[\PHPUnit\Framework\Attributes\DataProvider('billList')]
-    #[\PHPUnit\Framework\Attributes\Group('maybe')]
+    #[\PHPUnit\Framework\Attributes\Group('optional')]
     public function testNetSales($json, $content) : void
     {
         $billObj = new Bill();
@@ -39,7 +39,7 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
     }
 
     #[\PHPUnit\Framework\Attributes\DataProvider('billList')]
-    #[\PHPUnit\Framework\Attributes\Group('maybe')]
+    #[\PHPUnit\Framework\Attributes\Group('optional')]
     public function testTaxRate($json, $content) : void
     {
         $billObj = new Bill();
@@ -51,7 +51,7 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
     }
 
     #[\PHPUnit\Framework\Attributes\DataProvider('billList')]
-    #[\PHPUnit\Framework\Attributes\Group('maybe')]
+    #[\PHPUnit\Framework\Attributes\Group('optional')]
     public function testGrossSales($json, $content) : void
     {
         $billObj = new Bill();
@@ -63,7 +63,7 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
     }
 
     #[\PHPUnit\Framework\Attributes\DataProvider('billList')]
-    #[\PHPUnit\Framework\Attributes\Group('maybe')]
+    #[\PHPUnit\Framework\Attributes\Group('optional')]
     public function testTaxAmount($json, $content) : void
     {
         $billObj = new Bill();
@@ -75,7 +75,7 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
     }
 
     #[\PHPUnit\Framework\Attributes\DataProvider('billList')]
-    #[\PHPUnit\Framework\Attributes\Group('maybe')]
+    #[\PHPUnit\Framework\Attributes\Group('optional')]
     public function testBillDate($json, $content) : void
     {
         $billObj = new Bill();
@@ -87,7 +87,7 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
     }
 
     #[\PHPUnit\Framework\Attributes\DataProvider('billList')]
-    #[\PHPUnit\Framework\Attributes\Group('maybe')]
+    #[\PHPUnit\Framework\Attributes\Group('optional')]
     public function testBillLanguage($json, $content) : void
     {
         $billObj = new Bill();
@@ -99,7 +99,7 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
     }
 
     #[\PHPUnit\Framework\Attributes\DataProvider('billList')]
-    #[\PHPUnit\Framework\Attributes\Group('maybe')]
+    #[\PHPUnit\Framework\Attributes\Group('optional')]
     public function testBillCurrency($json, $content) : void
     {
         $billObj = new Bill();
@@ -111,7 +111,7 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
     }
 
     #[\PHPUnit\Framework\Attributes\DataProvider('billList')]
-    #[\PHPUnit\Framework\Attributes\Group('maybe')]
+    #[\PHPUnit\Framework\Attributes\Group('optional')]
     public function testIban($json, $content) : void
     {
         $identifierContent = \file_get_contents(__DIR__ . '/../../Models/bill_identifier.json');
@@ -139,7 +139,7 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
     }
 
     #[\PHPUnit\Framework\Attributes\DataProvider('billList')]
-    #[\PHPUnit\Framework\Attributes\Group('maybe')]
+    #[\PHPUnit\Framework\Attributes\Group('optional')]
     public function testVATId($json, $content) : void
     {
         $identifierContent = \file_get_contents(__DIR__ . '/../../Models/bill_identifier.json');
@@ -167,7 +167,7 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
     }
 
     #[\PHPUnit\Framework\Attributes\DataProvider('billList')]
-    #[\PHPUnit\Framework\Attributes\Group('maybe')]
+    #[\PHPUnit\Framework\Attributes\Group('optional')]
     public function testTaxId($json, $content) : void
     {
         $identifierContent = \file_get_contents(__DIR__ . '/../../Models/bill_identifier.json');
@@ -195,7 +195,7 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
     }
 
     #[\PHPUnit\Framework\Attributes\DataProvider('billList')]
-    #[\PHPUnit\Framework\Attributes\Group('maybe')]
+    #[\PHPUnit\Framework\Attributes\Group('optional')]
     public function testWebsite($json, $content) : void
     {
         $identifierContent = \file_get_contents(__DIR__ . '/../../Models/bill_identifier.json');
@@ -223,7 +223,7 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
     }
 
     #[\PHPUnit\Framework\Attributes\DataProvider('billList')]
-    #[\PHPUnit\Framework\Attributes\Group('maybe')]
+    #[\PHPUnit\Framework\Attributes\Group('optional')]
     public function testEmail($json, $content) : void
     {
         $identifierContent = \file_get_contents(__DIR__ . '/../../Models/bill_identifier.json');
@@ -251,7 +251,7 @@ final class InvoiceRecognitionTest extends \PHPUnit\Framework\TestCase
     }
 
     #[\PHPUnit\Framework\Attributes\DataProvider('billList')]
-    #[\PHPUnit\Framework\Attributes\Group('maybe')]
+    #[\PHPUnit\Framework\Attributes\Group('optional')]
     public function testPhone($json, $content) : void
     {
         $identifierContent = \file_get_contents(__DIR__ . '/../../Models/bill_identifier.json');
