@@ -8,7 +8,11 @@ The target group for this module is the sales and purchase department.
 
 # Setup
 
-This module doesn't have any additional setup requirements.
+If you want to use parts of the automatic invoice recognition for supplier invoices, the following tools must be installed on the server:
+
+* [pdftotext](https://www.xpdfreader.com/pdftotext-man.html) (extract text from PDFs)
+* [pdftoppm](https://www.xpdfreader.com/pdftoppm-man.html) (turn pdf to image if text cannot be read from PDF)
+* [tesseract-ocr](https://tesseract-ocr.github.io/tessdoc/Downloads.html) (text recognition from images)
 
 # Features
 

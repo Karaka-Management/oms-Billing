@@ -6,7 +6,7 @@
  *
  * @package   Modules\Billing
  * @copyright Dennis Eichhorn
- * @license   OMS License 2.0
+ * @license   OMS License 2.2
  * @version   1.0.0
  * @link      https://jingga.app
  */
@@ -41,7 +41,7 @@ use phpOMS\Views\View;
  * Billing controller class.
  *
  * @package Modules\Billing
- * @license OMS License 2.0
+ * @license OMS License 2.2
  * @link    https://jingga.app
  * @since   1.0.0
  */
@@ -126,16 +126,14 @@ final class CliController extends Controller
             ->where('attributes/type/name', ['bill_match_pattern', 'bill_date_format'], 'IN')
             ->executeGetArray();
 
-        $supplierId     = $this->matchSupplier($content, $suppliers);
-        $bill->supplier = new NullSupplier($supplierId);
-        $supplier       = $suppliers[$supplierId] ?? new NullSupplier();
+        $bill->supplier = this->matchSupplier($content, $suppliers);
 
-        if ($supplier->id !== 0) {
-            $bill->billTo      = $supplier->account->name1;
-            $bill->billAddress = $supplier->mainAddress->address;
-            $bill->billCity    = $supplier->mainAddress->city;
-            $bill->billZip     = $supplier->mainAddress->postal;
-            $bill->billCountry = $supplier->mainAddress->country;
+        if ($bill->supplier->id !== 0) {
+            $bill->billTo      = $bill->supplier->account->name1;
+            $bill->billAddress = $bill->supplier->mainAddress->address;
+            $bill->billCity    = $bill->supplier->mainAddress->city;
+            $bill->billZip     = $bill->supplier->mainAddress->postal;
+            $bill->billCountry = $bill->supplier->mainAddress->country;
         } else {
             $bill->billCountry = InvoiceRecognition::findCountry($lines, $identifiers, $language);
         }
@@ -176,13 +174,13 @@ final class CliController extends Controller
 
         /* Date */
         $billDateTemp = InvoiceRecognition::findBillDate($lines, $identifiers['bill_date'][$language]);
-        $billDate     = InvoiceRecognition::parseDate($billDateTemp, $identifiers['date_format'], $supplier->getAttribute('bill_date_format')->value->valueStr ?? '');
+        $billDate     = InvoiceRecognition::parseDate($billDateTemp, $identifiers['date_format'], $bill->supplier->getAttribute('bill_date_format')->value->valueStr ?? '');
 
         $bill->billDate = $billDate;
 
         /* Due */
         $billDueTemp = InvoiceRecognition::findBillDue($lines, $identifiers['bill_due'][$language]);
-        $billDue     = InvoiceRecognition::parseDate($billDueTemp, $identifiers['date_format'], $supplier->getAttribute('bill_date_format')->value->valueStr ?? '');
+        $billDue     = InvoiceRecognition::parseDate($billDueTemp, $identifiers['date_format'], $bill->supplier->getAttribute('bill_date_format')->value->valueStr ?? '');
         // @todo implement multiple due dates for bills
 
         /* Total */
@@ -232,7 +230,6 @@ final class CliController extends Controller
         /* Item lines */
         $itemLines = InvoiceRecognition::findBillItemLines($lines, $identifiers['item_table'][$language]);
 
-        // @todo Try to find item from item database
         // @todo Some of the element value setting is unnecessary as it happens also in the recalculatePrices()
         //      Same goes for the bill element creations further down below
         if (empty($bill->elements)) {
@@ -246,7 +243,25 @@ final class CliController extends Controller
                 $billElement->taxR->value = $taxRates;
 
                 if (isset($itemLine['description'])) {
-                    $billElement->itemName = \trim($itemLine['description']);
+                    $description = \trim($itemLine['description']);
+                    $item        = new NullItem();
+
+                    if ($bill->supplier->id !== 0) {
+                        $possibleItems = PriceMapper::getAll()
+                            ->with('item')
+                            ->with('item/l11n')
+                            ->where('supplier', $bill->supplier->id)
+
+                        $item = $this->matchItem($content, $items);
+                    }
+
+                    if ($item->id !== 0) {
+                        $billElement->item       = $item;
+                        $billElement->itemNumber = $item->number;
+                        $billElement->itemName   = $item->getL11n('name1')->content;
+                    } else {
+                        $billElement->itemName = \trim($itemLine['description']);
+                    }
                 }
 
                 if (isset($itemLine['quantity'])) {
@@ -455,19 +470,19 @@ final class CliController extends Controller
      * @param string     $content   Content to analyze
      * @param Supplier[] $suppliers Suppliers
      *
-     * @return int
+     * @return Supplier
      *
      * @since 1.0.0
      */
-    private function matchSupplier(string $content, array $suppliers) : int
+    private function matchSupplier(string $content, array $suppliers) : Supplier
     {
         // bill_match_pattern
         foreach ($suppliers as $supplier) {
-            // @todo consider to support regex?
+            // @question consider to support regex?
             if ((!empty($supplier->getAttribute('bill_match_pattern')->value->valueStr)
                     && \stripos($content, $supplier->getAttribute('bill_match_pattern')->value->valueStr) !== false)
             ) {
-                return $supplier->id;
+                return $supplier;
             }
         }
 
@@ -477,7 +492,7 @@ final class CliController extends Controller
                 $ibans = $supplier->getPaymentsByType(PaymentType::SWIFT);
                 foreach ($ibans as $iban) {
                     if (\stripos($content, $iban->content2) !== false) {
-                        return $supplier->id;
+                        return $supplier;
                     }
                 }
             }
@@ -492,10 +507,48 @@ final class CliController extends Controller
                         && \stripos($content, $supplier->mainAddress->address) !== false)
                 )
              ) {
-                return $supplier->id;
+                return $supplier;
             }
         }
 
-        return 0;
+        return new NullSupplier();
+    }
+
+    /**
+     * Find possible item id
+     *
+     * Priorities:
+     *  1. bill_match_pattern
+     *  2. name1 + name2
+     *
+     * @param string $content Content to analyze
+     * @param Item[] $items   Items
+     *
+     * @return Item
+     *
+     * @since 1.0.0
+     */
+    private function matchItem(string $content, array $items) : Item
+    {
+        // bill_match_pattern
+        foreach ($items as $item) {
+            // @question consider to support regex?
+            if ((!empty($item->getAttribute('bill_match_pattern')->value->valueStr)
+                    && \stripos($content, $item->getAttribute('bill_match_pattern')->value->valueStr) !== false)
+            ) {
+                return $item;
+            }
+        }
+
+        // name1 + name2
+        foreach ($items as $item) {
+            if (\stripos($content, $item->getL11n('name1')->content) !== false 
+                && \stripos($content, $item->getL11n('name2')->content) !== false
+            ) {
+                return $item;
+            }
+        }
+
+        return new NullItem();
     }
 }
