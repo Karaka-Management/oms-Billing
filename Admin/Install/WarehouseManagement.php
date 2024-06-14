@@ -57,12 +57,13 @@ class WarehouseManagement
             throw new \Exception('Couldn\'t parse mapper');
         }
 
-        $mapper = \str_replace([
-            '// @Module WarehouseManagement ',
-            '/* @Module WarehouseManagement ',
-            ' @Module WarehouseManagement */',
-            ], '', $mapper);
-        \file_put_contents(__DIR__ . '/../../Models/BillMapper.php', $mapper);
+        // @todo removed until modular mapper extension is implemented
+        // $mapper = \str_replace([
+        //     '// @Module WarehouseManagement ',
+        //     '/* @Module WarehouseManagement ',
+        //     ' @Module WarehouseManagement */',
+        //     ], '', $mapper);
+        // \file_put_contents(__DIR__ . '/../../Models/BillMapper.php', $mapper);
 
         Autoloader::invalidate(__DIR__ . '/../../Models/BillMapper.php');
     }

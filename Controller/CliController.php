@@ -20,6 +20,8 @@ use Modules\Billing\Models\BillMapper;
 use Modules\Billing\Models\BillTypeMapper;
 use Modules\Billing\Models\InvoiceRecognition;
 use Modules\Billing\Models\NullBillType;
+use Modules\Billing\Models\Price\PriceMapper;
+use Modules\ItemManagement\Models\Item;
 use Modules\ItemManagement\Models\NullItem;
 use Modules\Payment\Models\PaymentType;
 use Modules\SupplierManagement\Models\NullSupplier;
@@ -126,7 +128,7 @@ final class CliController extends Controller
             ->where('attributes/type/name', ['bill_match_pattern', 'bill_date_format'], 'IN')
             ->executeGetArray();
 
-        $bill->supplier = this->matchSupplier($content, $suppliers);
+        $bill->supplier = $this->matchSupplier($content, $suppliers);
 
         if ($bill->supplier->id !== 0) {
             $bill->billTo      = $bill->supplier->account->name1;
@@ -251,8 +253,9 @@ final class CliController extends Controller
                             ->with('item')
                             ->with('item/l11n')
                             ->where('supplier', $bill->supplier->id)
+                            ->executeGetArray();
 
-                        $item = $this->matchItem($content, $items);
+                        $item = $this->matchItem($content, $possibleItems);
                     }
 
                     if ($item->id !== 0) {
@@ -542,7 +545,7 @@ final class CliController extends Controller
 
         // name1 + name2
         foreach ($items as $item) {
-            if (\stripos($content, $item->getL11n('name1')->content) !== false 
+            if (\stripos($content, $item->getL11n('name1')->content) !== false
                 && \stripos($content, $item->getL11n('name2')->content) !== false
             ) {
                 return $item;
