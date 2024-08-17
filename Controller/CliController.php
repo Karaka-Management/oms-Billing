@@ -20,6 +20,7 @@ use Modules\Billing\Models\BillMapper;
 use Modules\Billing\Models\BillTypeMapper;
 use Modules\Billing\Models\InvoiceRecognition;
 use Modules\Billing\Models\NullBillType;
+use Modules\Billing\Models\Price\Price;
 use Modules\Billing\Models\Price\PriceMapper;
 use Modules\ItemManagement\Models\Item;
 use Modules\ItemManagement\Models\NullItem;
@@ -249,11 +250,23 @@ final class CliController extends Controller
                     $item        = new NullItem();
 
                     if ($bill->supplier->id !== 0) {
-                        $possibleItems = PriceMapper::getAll()
+                        $prices = PriceMapper::getAll()
                             ->with('item')
                             ->with('item/l11n')
+                            ->with('item/l11n/type')
+                            ->with('item/attributes')
+                            ->with('item/attributes/type')
                             ->where('supplier', $bill->supplier->id)
+                            ->where('item/l11n/type/title', ['name1', 'name2', 'internal_matchcodes', 'description_short'])
+                            ->where('item/attributes/type/name', ['bill_match_pattern'])
                             ->executeGetArray();
+
+                        $possibleItems = \array_map(
+                            function (Price $price) {
+                                return $price->item;
+                            },
+                            $prices
+                        );
 
                         $item = $this->matchItem($content, $possibleItems);
                     }
@@ -262,8 +275,18 @@ final class CliController extends Controller
                         $billElement->item       = $item;
                         $billElement->itemNumber = $item->number;
                         $billElement->itemName   = $item->getL11n('name1')->content;
+
+                        if (!empty($item->getL11n('description_short')->content)) {
+                            $billElement->itemDescription = $item->getL11n('description_short')->content;
+                        } elseif (!empty($description)) {
+                            $billElement->itemDescription = $description;
+                        }
                     } else {
                         $billElement->itemName = \trim($itemLine['description']);
+
+                        if (!empty($description)) {
+                            $billElement->itemDescription = $description;
+                        }
                     }
                 }
 

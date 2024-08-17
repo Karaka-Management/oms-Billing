@@ -165,7 +165,8 @@ final class ApiController extends Controller
     {
         $paymentL11n           = new BaseStringL11n();
         $paymentL11n->ref      = $request->getDataInt('type') ?? 0;
-        $paymentL11n->language = ISO639x1Enum::tryFromValue($request->getDataString('language')) ?? $request->header->l11n->language;
+        $paymentL11n->language = ISO639x1Enum::tryFromValue($request->getDataString('language'))
+            ?? $request->header->l11n->language;
         $paymentL11n->content  = $request->getDataString('title') ?? '';
 
         return $paymentL11n;
@@ -300,7 +301,8 @@ final class ApiController extends Controller
     {
         $shippingL11n           = new BaseStringL11n();
         $shippingL11n->ref      = $request->getDataInt('type') ?? 0;
-        $shippingL11n->language = ISO639x1Enum::tryFromValue($request->getDataString('language')) ?? $request->header->l11n->language;
+        $shippingL11n->language = ISO639x1Enum::tryFromValue($request->getDataString('language'))
+            ?? $request->header->l11n->language;
         $shippingL11n->content  = $request->getDataString('title') ?? '';
 
         return $shippingL11n;
