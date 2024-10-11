@@ -565,7 +565,7 @@ echo $this->data['nav']->render(); ?>
 
         <input type="radio" id="c-tab-6" name="tabular-2">
         <div class="tab col-simple">
-            <?= $this->data['media-upload']->render('bill-file', 'files', '', $media); ?>
+            <?= $this->data['media-upload']->render('bill-file', 'files', '', $media, '{/api}bill/file?csrf={$CSRF}', (string) $bill->id); ?>
         </div>
 
         <?php if (!$isNew && !empty($bill)) : ?>

@@ -91,7 +91,7 @@ trait ApiBillControllerTrait
 
         $request->header->account = \mt_rand(2, 5);
 
-        $request->setData('id', 1);
+        $request->setData('ref', 1);
         $request->setData('title', 'Test note title');
         $request->setData('plain', 'Test content text');
 

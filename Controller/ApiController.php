@@ -75,7 +75,7 @@ final class ApiController extends Controller
     private function validatePaymentTermCreate(RequestAbstract $request) : array
     {
         $val = [];
-        if (($val['title'] = !$request->hasData('title'))
+        if (($val['content'] = !$request->hasData('content'))
             || ($val['name'] = !$request->hasData('name'))
         ) {
             return $val;
@@ -97,7 +97,7 @@ final class ApiController extends Controller
     {
         $paymentTerm = new BaseStringL11nType($request->getDataString('name') ?? '');
         $paymentTerm->setL11n(
-            $request->getDataString('title') ?? '',
+            $request->getDataString('content') ?? '',
             ISO639x1Enum::tryFromValue($request->getDataString('language')) ?? ISO639x1Enum::_EN
         );
 
@@ -143,8 +143,8 @@ final class ApiController extends Controller
     private function validatePaymentTermL11nCreate(RequestAbstract $request) : array
     {
         $val = [];
-        if (($val['title'] = !$request->hasData('title'))
-            || ($val['type'] = !$request->hasData('type'))
+        if (($val['content'] = !$request->hasData('content'))
+            || ($val['ref'] = !$request->hasData('ref'))
         ) {
             return $val;
         }
@@ -164,10 +164,10 @@ final class ApiController extends Controller
     private function createPaymentTermL11nFromRequest(RequestAbstract $request) : BaseStringL11n
     {
         $paymentL11n           = new BaseStringL11n();
-        $paymentL11n->ref      = $request->getDataInt('type') ?? 0;
+        $paymentL11n->ref      = $request->getDataInt('ref') ?? 0;
         $paymentL11n->language = ISO639x1Enum::tryFromValue($request->getDataString('language'))
             ?? $request->header->l11n->language;
-        $paymentL11n->content  = $request->getDataString('title') ?? '';
+        $paymentL11n->content  = $request->getDataString('content') ?? '';
 
         return $paymentL11n;
     }
@@ -211,7 +211,7 @@ final class ApiController extends Controller
     private function validateShippingTermCreate(RequestAbstract $request) : array
     {
         $val = [];
-        if (($val['title'] = !$request->hasData('title'))
+        if (($val['content'] = !$request->hasData('content'))
             || ($val['name'] = !$request->hasData('name'))
         ) {
             return $val;
@@ -233,7 +233,7 @@ final class ApiController extends Controller
     {
         $shippingTerm = new BaseStringL11nType($request->getDataString('name') ?? '');
         $shippingTerm->setL11n(
-            $request->getDataString('title') ?? '',
+            $request->getDataString('content') ?? '',
             ISO639x1Enum::tryFromValue($request->getDataString('language')) ?? ISO639x1Enum::_EN
         );
 
@@ -279,8 +279,8 @@ final class ApiController extends Controller
     private function validateShippingTermL11nCreate(RequestAbstract $request) : array
     {
         $val = [];
-        if (($val['title'] = !$request->hasData('title'))
-            || ($val['type'] = !$request->hasData('type'))
+        if (($val['content'] = !$request->hasData('content'))
+            || ($val['ref'] = !$request->hasData('ref'))
         ) {
             return $val;
         }
@@ -300,10 +300,10 @@ final class ApiController extends Controller
     private function createShippingTermL11nFromRequest(RequestAbstract $request) : BaseStringL11n
     {
         $shippingL11n           = new BaseStringL11n();
-        $shippingL11n->ref      = $request->getDataInt('type') ?? 0;
+        $shippingL11n->ref      = $request->getDataInt('ref') ?? 0;
         $shippingL11n->language = ISO639x1Enum::tryFromValue($request->getDataString('language'))
             ?? $request->header->l11n->language;
-        $shippingL11n->content  = $request->getDataString('title') ?? '';
+        $shippingL11n->content  = $request->getDataString('content') ?? '';
 
         return $shippingL11n;
     }

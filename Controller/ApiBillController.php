@@ -244,7 +244,12 @@ final class ApiBillController extends Controller
                 PermissionCategory::PURCHASE_INVOICE
             )
         ) {
-            $this->fillJsonResponse($request, $response, NotificationLevel::HIDDEN, '', '', []);
+            $this->fillJsonResponse(
+                $request, $response,
+                NotificationLevel::ERROR, '',
+                $this->app->l11nManager->getText($response->header->l11n->language, '0', '0', 'InvalidPermission'),
+                []
+            );
             $response->header->status = RequestStatusCode::R_403;
 
             return;
@@ -792,7 +797,7 @@ final class ApiBillController extends Controller
         }
 
         /** @var \Modules\Billing\Models\Bill $bill */
-        $bill = BillMapper::get()->where('id', (int) $request->getData('bill'))->execute();
+        $bill = BillMapper::get()->where('id', (int) $request->getData('ref'))->execute();
         $path = $this->createBillDir($bill);
 
         $uploaded = new NullCollection();
@@ -970,7 +975,7 @@ final class ApiBillController extends Controller
     {
         $val = [];
         if (($val['media'] = (!$request->hasData('media') && empty($request->files)))
-            || ($val['bill'] = !$request->hasData('bill'))
+            || ($val['ref'] = !$request->hasData('ref'))
         ) {
             return $val;
         }
@@ -1152,7 +1157,12 @@ final class ApiBillController extends Controller
                 PermissionCategory::PURCHASE_INVOICE
             )
         ) {
-            $this->fillJsonResponse($request, $response, NotificationLevel::HIDDEN, '', '', []);
+            $this->fillJsonResponse(
+                $request, $response,
+                NotificationLevel::ERROR, '',
+                $this->app->l11nManager->getText($response->header->l11n->language, '0', '0', 'InvalidPermission'),
+                []
+            );
             $response->header->status = RequestStatusCode::R_403;
 
             return;
@@ -1318,7 +1328,12 @@ final class ApiBillController extends Controller
                 PermissionCategory::PURCHASE_INVOICE
             )
         ) {
-            $this->fillJsonResponse($request, $response, NotificationLevel::HIDDEN, '', '', []);
+            $this->fillJsonResponse(
+                $request, $response,
+                NotificationLevel::ERROR, '',
+                $this->app->l11nManager->getText($response->header->l11n->language, '0', '0', 'InvalidPermission'),
+                []
+            );
             $response->header->status = RequestStatusCode::R_403;
 
             return;
@@ -1578,7 +1593,7 @@ final class ApiBillController extends Controller
         }
 
         /** @var \Modules\Billing\Models\Bill $bill */
-        $bill = BillMapper::get()->where('id', (int) $request->getData('id'))->execute();
+        $bill = BillMapper::get()->where('id', (int) $request->getData('ref'))->execute();
 
         $request->setData('virtualpath', $this->createBillDir($bill), true);
         $this->app->moduleManager->get('Editor', 'Api')->apiEditorCreate($request, $response, $data);
@@ -1599,7 +1614,7 @@ final class ApiBillController extends Controller
             return;
         }
 
-        $this->createModelRelation($request->header->account, $request->getDataInt('id'), $model->id, BillMapper::class, 'notes', '', $request->getOrigin());
+        $this->createModelRelation($request->header->account, $request->getDataInt('ref'), $model->id, BillMapper::class, 'notes', '', $request->getOrigin());
     }
 
     /**
@@ -1614,7 +1629,7 @@ final class ApiBillController extends Controller
     private function validateNoteCreate(RequestAbstract $request) : array
     {
         $val = [];
-        if (($val['id'] = !$request->hasData('id'))) {
+        if (($val['ref'] = !$request->hasData('ref'))) {
             return $val;
         }
 
@@ -1841,7 +1856,12 @@ final class ApiBillController extends Controller
         if (!$this->app->accountManager->get($accountId)->hasPermission(
             PermissionType::MODIFY, $this->app->unitId, $this->app->appId, self::NAME, PermissionCategory::BILL_NOTE, $request->getDataInt('id'))
         ) {
-            $this->fillJsonResponse($request, $response, NotificationLevel::HIDDEN, '', '', []);
+            $this->fillJsonResponse(
+                $request, $response,
+                NotificationLevel::ERROR, '',
+                $this->app->l11nManager->getText($response->header->l11n->language, '0', '0', 'InvalidPermission'),
+                []
+            );
             $response->header->status = RequestStatusCode::R_403;
 
             return;
@@ -1869,7 +1889,12 @@ final class ApiBillController extends Controller
         if (!$this->app->accountManager->get($accountId)->hasPermission(
             PermissionType::DELETE, $this->app->unitId, $this->app->appId, self::NAME, PermissionCategory::BILL_NOTE, $request->getDataInt('id'))
         ) {
-            $this->fillJsonResponse($request, $response, NotificationLevel::HIDDEN, '', '', []);
+            $this->fillJsonResponse(
+                $request, $response,
+                NotificationLevel::ERROR, '',
+                $this->app->l11nManager->getText($response->header->l11n->language, '0', '0', 'InvalidPermission'),
+                []
+            );
             $response->header->status = RequestStatusCode::R_403;
 
             return;

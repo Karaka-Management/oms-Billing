@@ -18,6 +18,19 @@ use phpOMS\Account\PermissionType;
 use phpOMS\Router\RouteVerb;
 
 return [
+    '^.*/bill/file(\?.*|$)$' => [
+        [
+            'dest'       => '\Modules\Billing\Controller\ApiController:apiFileCreate',
+            'verb'       => RouteVerb::PUT,
+            'csrf'       => true,
+            'active'     => true,
+            'permission' => [
+                'module' => BackendController::NAME,
+                'type'   => PermissionType::CREATE,
+                'state'  => PermissionCategory::SALES_INVOICE,
+            ],
+        ],
+    ],
     '^.*/bill/render(\?.*$|$)' => [
         [
             'dest'       => '\Modules\Billing\Controller\ApiBillController:apiMediaRender',
