@@ -181,7 +181,7 @@ final class ApiPurchaseController extends Controller
                 $mediaRequest->setData('media', \json_encode($file));
             }
 
-            $mediaRequest->setData('bill', $bill->id);
+            $mediaRequest->setData('ref', $bill->id);
             $mediaRequest->setData('tag', $tag->id);
             $mediaRequest->setData('parse_content', true, true);
             $this->app->moduleManager->get('Billing', 'ApiBill')->apiMediaAddToBill($mediaRequest, $mediaResponse, $data);
