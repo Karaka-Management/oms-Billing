@@ -246,7 +246,7 @@ final class BackendController extends Controller
             ->with('files')
             ->with('files/tags')
             ->with('notes')
-            ->where('id', (int) $request->getData('id'))
+            ->where('id', $request->getDataInt('id') ?? 0)
             ->execute();
 
         $view->data['billtypes'] = BillTypeMapper::getAll()
@@ -442,7 +442,7 @@ final class BackendController extends Controller
             ->with('files')
             ->with('files/tags')
             ->with('notes')
-            ->where('id', (int) $request->getData('id'))
+            ->where('id', $request->getDataInt('id') ?? 0)
             ->execute();
 
         $view->data['billtypes'] = BillTypeMapper::getAll()
@@ -537,7 +537,7 @@ final class BackendController extends Controller
         $view->setTemplate('/Modules/Billing/Theme/Backend/purchase-bill');
         $view->data['nav'] = $this->app->moduleManager->get('Navigation')->createNavigationMid(1005106001, $request, $response);
 
-        $bill = BillMapper::get()->where('id', (int) $request->getData('id'))->execute();
+        $bill = BillMapper::get()->where('id', $request->getDataInt('id') ?? 0)->execute();
 
         $view->data['bill']         = $bill;
         $view->data['media-upload'] = new \Modules\Media\Theme\Backend\Components\Upload\BaseView($this->app->l11nManager, $request, $response);
@@ -647,7 +647,7 @@ final class BackendController extends Controller
             ->with('files')
             ->with('files/tags')
             ->with('notes')
-            ->where('id', (int) $request->getData('id'))
+            ->where('id', $request->getDataInt('id') ?? 0)
             ->execute();
 
         $tags = TagMapper::getAll()
@@ -713,7 +713,7 @@ final class BackendController extends Controller
 
         $view->data['type'] = PaymentTermMapper::get()
             ->with('l11n')
-            ->where('id', (int) $request->getData('id'))
+            ->where('id', $request->getDataInt('id') ?? 0)
             ->where('l11n/language', $response->header->l11n->language)
             ->execute();
 
@@ -775,7 +775,7 @@ final class BackendController extends Controller
 
         $view->data['type'] = ShippingTermMapper::get()
             ->with('l11n')
-            ->where('id', (int) $request->getData('id'))
+            ->where('id', $request->getDataInt('id') ?? 0)
             ->where('l11n/language', $response->header->l11n->language)
             ->execute();
 
@@ -887,7 +887,7 @@ final class BackendController extends Controller
             ->with('supplierCode')
             ->with('itemCode')
             ->with('taxCode')
-            ->where('id', (int) $request->getData('id'))
+            ->where('id', $request->getDataInt('id') ?? 0)
             ->execute();
 
         $view->data['client_codes'] = ClientAttributeTypeMapper::get()

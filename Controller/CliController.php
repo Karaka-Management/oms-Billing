@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Modules\Billing\Controller;
 
+use Modules\Admin\Models\AccountMapper;
 use Modules\Billing\Models\BillElement;
 use Modules\Billing\Models\BillElementMapper;
 use Modules\Billing\Models\BillMapper;
@@ -29,6 +30,7 @@ use Modules\SupplierManagement\Models\NullSupplier;
 use Modules\SupplierManagement\Models\Supplier;
 use Modules\SupplierManagement\Models\SupplierMapper;
 use Modules\Tag\Models\TagMapper;
+use phpOMS\Account\AccountStatus;
 use phpOMS\Contract\RenderableInterface;
 use phpOMS\Localization\ISO4217CharEnum;
 use phpOMS\Localization\ISO4217DecimalEnum;
@@ -121,12 +123,22 @@ final class CliController extends Controller
         $identifiers = \json_decode($identifierContent, true);
 
         /* Supplier */
+        // @performance Do we really want to select all the attributes below or only after we have found a suitable supplier
+        //      We don't need these attributes initially, only once we found a matching supplier
+
+        // @performance We can't select all suppliers in one go, we probably need to iterate in chunks
+
+        // @bug We are missing the payment information here used in the matchSupplier() function
+
+        // @performance Could it be better to first perform some parsing of the bill to get the payment information and find the supplier based on that first?
+        //      If we find a supplier this would be much faster, if it doesn't we can still do the brute force below
+
         /** @var \Modules\SupplierManagement\Models\Supplier[] $suppliers */
         $suppliers = SupplierMapper::getAll()
             ->with('account')
             ->with('mainAddress')
             ->with('attributes/type')
-            ->where('attributes/type/name', ['bill_match_pattern', 'bill_date_format'], 'IN')
+            ->where('attributes/type/name', ['bill_match_pattern', 'bill_date_format', 'bill_approval'], 'IN')
             ->executeGetArray();
 
         $bill->supplier = $this->matchSupplier($content, $suppliers);
@@ -481,6 +493,18 @@ final class CliController extends Controller
         $request->setData('bill', $bill->id, true);
         $billResponse = new HttpResponse();
         $this->app->moduleManager->get('Billing', 'ApiBill')->apiBillPdfArchiveCreate($request, $billResponse);
+
+        if ($bill->supplier->id !== 0) {
+            // @question Do we want to also create a notification for the people in the default group
+
+            /*
+            $approvalAccounts = AccountMapper::getAll()
+                ->with('groups')
+                ->where('status', AccountStatus::ACTIVE)
+                ->where('groups/name', $bill->supplier->getAttribute('bill_approval')->value->valueStr)
+                ->executeGetArray();
+            */
+        }
 
         return $view;
     }

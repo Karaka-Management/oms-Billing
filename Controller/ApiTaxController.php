@@ -304,7 +304,7 @@ final class ApiTaxController extends Controller
         }
 
         /** @var \Modules\Billing\Models\Tax\TaxCombination $old */
-        $old = TaxCombinationMapper::get()->where('id', (int) $request->getData('id'))->execute();
+        $old = TaxCombinationMapper::get()->where('id', $request->getDataInt('id') ?? 0)->execute();
         $new = $this->updateTaxCombinationFromRequest($request, clone $old);
 
         $this->updateModel($request->header->account, $old, $new, TaxCombinationMapper::class, 'tax_combination', $request->getOrigin());
@@ -463,7 +463,7 @@ final class ApiTaxController extends Controller
         }
 
         /** @var \Modules\Billing\Models\Tax\TaxCombination $taxCombination */
-        $taxCombination = TaxCombinationMapper::get()->where('id', (int) $request->getData('id'))->execute();
+        $taxCombination = TaxCombinationMapper::get()->where('id', $request->getDataInt('id') ?? 0)->execute();
         $this->deleteModel($request->header->account, $taxCombination, TaxCombinationMapper::class, 'tax_combination', $request->getOrigin());
         $this->createStandardDeleteResponse($request, $response, $taxCombination);
     }

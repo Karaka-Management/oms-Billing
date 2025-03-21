@@ -31,7 +31,7 @@ $currencies   = ISO4217Enum::getConstants();
 $media = $this->data['media'] ?? [];
 
 /** @var \Modules\Billing\Models\Bill $bill */
-$bill     = $this->getData('bill') ?? new NullBill();
+$bill     = $this->data['bill'] ?? new NullBill();
 $elements = $bill->elements;
 
 $billTypes     = $this->data['billtypes'] ?? [];

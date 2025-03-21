@@ -17,6 +17,7 @@ namespace Modules\Billing\Models;
 use Modules\Billing\Models\Tax\TaxCombinationMapper;
 use Modules\ItemManagement\Models\ContainerMapper;
 use Modules\ItemManagement\Models\ItemMapper;
+use Modules\Workflow\Models\WorkflowStepMapper;
 use phpOMS\DataStorage\Database\Mapper\DataMapperFactory;
 
 /**
@@ -80,6 +81,8 @@ final class BillElementMapper extends DataMapperFactory
         'billing_bill_element_fiaccount'  => ['name' => 'billing_bill_element_fiaccount',      'type' => 'string',    'internal' => 'fiAccount'],
         'billing_bill_element_costcenter' => ['name' => 'billing_bill_element_costcenter',      'type' => 'string',    'internal' => 'costcenter'],
         'billing_bill_element_costobject' => ['name' => 'billing_bill_element_costobject',      'type' => 'string',    'internal' => 'costobject'],
+
+        'billing_bill_element_approval'     => ['name' => 'billing_bill_element_approval',      'type' => 'int',    'internal' => 'approval'],
     ];
 
     /**
@@ -117,6 +120,10 @@ final class BillElementMapper extends DataMapperFactory
         'taxCombination' => [
             'mapper'   => TaxCombinationMapper::class,
             'external' => 'billing_bill_element_tax_combination',
+        ],
+        'approval' => [
+            'mapper'   => WorkflowStepMapper::class,
+            'external' => 'billing_bill_element_approval',
         ],
     ];
 

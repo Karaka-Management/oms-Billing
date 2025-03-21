@@ -23,7 +23,8 @@
         "Calendar": "1.0.0",
         "ItemManagement": "1.0.0",
         "ClientManagement": "1.0.0",
-        "SupplierManagement": "1.0.0"
+        "SupplierManagement": "1.0.0",
+        "Workflow": "1.0.0"
     },
     "providing": {
         "Admin": "*",

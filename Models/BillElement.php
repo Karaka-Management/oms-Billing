@@ -18,6 +18,8 @@ use Modules\Billing\Models\Tax\TaxCombination;
 use Modules\ItemManagement\Models\Container;
 use Modules\ItemManagement\Models\Item;
 use Modules\ItemManagement\Models\NullItem;
+use Modules\Workflow\Models\NullWorkflowStep;
+use Modules\Workflow\Models\WorkflowStep;
 use phpOMS\Localization\ISO4217DecimalEnum;
 use phpOMS\Stdlib\Base\FloatInt;
 use phpOMS\Stdlib\Base\SmartDateTime;
@@ -41,6 +43,8 @@ class BillElement implements \JsonSerializable
     public int $id = 0;
 
     public int $order = 0;
+
+    public WorkflowStep $approval;
 
     public ?Item $item = null;
 
@@ -201,6 +205,8 @@ class BillElement implements \JsonSerializable
 
         $this->taxP = new FloatInt();
         $this->taxR = new FloatInt();
+
+        $this->approval = new NullWorkflowStep();
     }
 
     /**

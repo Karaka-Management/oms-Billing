@@ -19,6 +19,8 @@ use Modules\Admin\Models\NullAccount;
 use Modules\ClientManagement\Models\Client;
 use Modules\Sales\Models\SalesRep;
 use Modules\SupplierManagement\Models\Supplier;
+use Modules\Workflow\Models\NullWorkflowStep;
+use Modules\Workflow\Models\WorkflowStep;
 use phpOMS\Localization\BaseStringL11nType;
 use phpOMS\Localization\ISO4217CharEnum;
 use phpOMS\Localization\ISO639x1Enum;
@@ -56,6 +58,8 @@ class Bill implements \JsonSerializable
     public int $sequence = 0;
 
     public int $unit = 0;
+
+    public WorkflowStep $approval;
 
     public int $source = 0;
 
@@ -418,6 +422,7 @@ class Bill implements \JsonSerializable
     public ?string $fiAccount = null;
 
     // @todo Implement reason for bill (especially useful for credit notes, warehouse bookings)
+    // @todo Implement internal notes for bill
 
     /**
      * Constructor.
@@ -438,6 +443,8 @@ class Bill implements \JsonSerializable
         $this->createdBy = new NullAccount();
         $this->referral  = new NullAccount();
         $this->type      = new NullBillType();
+
+        $this->approval = new NullWorkflowStep();
     }
 
     /**

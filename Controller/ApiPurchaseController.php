@@ -143,6 +143,9 @@ final class ApiPurchaseController extends Controller
         }
         */
 
+        // @question How do we allow to manually assign a bill to a person/group for approval?
+        //      Possible solution: create general module called Approval for all kinds of approvals
+
         $documents = $files;
 
         foreach ($documents as $file) {
@@ -255,7 +258,7 @@ final class ApiPurchaseController extends Controller
         }
 
         $bill = BillMapper::get()
-            ->where('id', (int) $request->getData('id'))
+            ->where('id', $request->getDataInt('id') ?? 0)
             ->execute();
 
         // After a bill is "closed" its values shouldn't change

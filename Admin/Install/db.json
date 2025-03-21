@@ -907,6 +907,11 @@
                 "null": false,
                 "foreignTable": "unit",
                 "foreignKey": "unit_id"
+            },
+            "billing_bill_approval": {
+                "name": "billing_bill_approval",
+                "type": "INT",
+                "null": false
             }
         }
     },
@@ -1278,6 +1283,11 @@
                 "type": "INT",
                 "default": null,
                 "null": true
+            },
+            "billing_bill_element_approval": {
+                "name": "billing_bill_element_approval",
+                "type": "INT",
+                "null": false
             }
         }
     },

@@ -21,6 +21,7 @@ use Modules\Editor\Models\EditorDocMapper;
 use Modules\Media\Models\MediaMapper;
 use Modules\Sales\Models\SalesRepMapper;
 use Modules\SupplierManagement\Models\SupplierMapper;
+use Modules\Workflow\Models\WorkflowStepMapper;
 use phpOMS\DataStorage\Database\Mapper\DataMapperFactory;
 
 /**
@@ -100,6 +101,7 @@ class BillMapper extends DataMapperFactory
         'billing_bill_performance_date'  => ['name' => 'billing_bill_performance_date', 'type' => 'DateTime', 'internal' => 'performanceDate', 'readonly' => true],
         'billing_bill_created_at'        => ['name' => 'billing_bill_created_at', 'type' => 'DateTimeImmutable', 'internal' => 'createdAt', 'readonly' => true],
         'billing_bill_unit'              => ['name' => 'billing_bill_unit', 'type' => 'int', 'internal' => 'unit'],
+        'billing_bill_approval'              => ['name' => 'billing_bill_approval', 'type' => 'int', 'internal' => 'approval'],
     ];
 
     /**
@@ -161,6 +163,10 @@ class BillMapper extends DataMapperFactory
         'shippingTerms' => [
             'mapper'   => ShippingTermMapper::class,
             'external' => 'shippingTerms',
+        ],
+        'approval' => [
+            'mapper'   => WorkflowStepMapper::class,
+            'external' => 'approval',
         ],
     ];
 

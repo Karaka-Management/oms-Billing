@@ -486,7 +486,7 @@ final class ApiPriceController extends Controller
         }
 
         /** @var \Modules\Billing\Models\Price\Price $old */
-        $old = PriceMapper::get()->where('id', (int) $request->getData('id'))->execute();
+        $old = PriceMapper::get()->where('id', $request->getDataInt('id') ?? 0)->execute();
         $new = $this->updatePriceFromRequest($request, clone $old);
 
         $this->app->cachePool->get()->delete(
@@ -605,7 +605,7 @@ final class ApiPriceController extends Controller
         }
 
         /** @var \Modules\Billing\Models\Price\Price $price */
-        $price = PriceMapper::get()->where('id', (int) $request->getData('id'))->execute();
+        $price = PriceMapper::get()->where('id', $request->getDataInt('id') ?? 0)->execute();
 
         if ($price->name === 'default') {
             // default price cannot be deleted

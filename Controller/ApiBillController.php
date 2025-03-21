@@ -64,6 +64,10 @@ use phpOMS\Model\Message\FormValidation;
 use phpOMS\Stdlib\Base\FloatInt;
 use phpOMS\System\MimeType;
 use phpOMS\Views\View;
+use Modules\Billing\Models\WorkflowType;
+use Modules\Workflow\Models\WorkflowTemplateMapper;
+use Modules\Workflow\Models\WorkflowTemplateStatus;
+use phpOMS\Message\Http\HttpResponse;
 
 /**
  * Billing class.
@@ -278,7 +282,7 @@ final class ApiBillController extends Controller
             return;
         }
 
-        $this->app->eventManager->triggerSimilar('PRE:Module:' . self::NAME . '-bill-finalize', '', [
+        $this->app->eventManager->triggerSimilar('PRE:' . self::NAME . '-bill-finalize', '', [
             $request->header->account,
             null, $new,
             null, self::NAME . '-bill-finalize',
@@ -317,7 +321,7 @@ final class ApiBillController extends Controller
         }
 
         /** @var \Modules\Billing\Models\Bill $old */
-        $old = BillMapper::get()->where('id', (int) $request->getData('bill'))->execute();
+        $old = BillMapper::get()->where('id', $request->getDataInt('bill') ?? 0)->execute();
 
         // @feature Allow to update internal statistical fields
         //      Example: Referral account
@@ -482,7 +486,7 @@ final class ApiBillController extends Controller
             $bill->accSection = empty($temp = $bill->client->getAttribute('section')->value->id) ? null : $temp;
             $bill->accGroup   = empty($temp = $bill->client->getAttribute('client_group')->value->id) ? null : $temp;
             $bill->accType    = empty($temp = $bill->client->getAttribute('client_type')->value->id) ? null : $temp;
-            $bill->rep        = $request->hasData('rep') ? new NullSalesRep((int) $request->getData('rep')) : $account->rep;
+            $bill->rep        = $request->hasData('rep') ? new NullSalesRep($request->getDataInt('re ?? 0p')) : $account->rep;
         } else {
             $bill->supplier   = $account;
             $bill->accTaxCode = empty($temp = $bill->supplier->getAttribute('purchase_tax_code')->value->id) ? null : $temp;
@@ -602,7 +606,7 @@ final class ApiBillController extends Controller
         $attr->value    = $attrValue;
 
         $container = $request->hasData('container')
-            ? new NullContainer((int) $request->getData('container'))
+            ? new NullContainer($request->getDataInt('co ?? 0ntainer'))
             : null;
 
         $attr = new NullAttribute();
@@ -723,7 +727,7 @@ final class ApiBillController extends Controller
                 ->with('attributes')
                 ->with('attributes/type')
                 ->with('attributes/value')
-                ->where('id', (int) $request->getData('client'))
+                ->where('id', $request->getDataInt('client') ?? 0)
                 ->where('attributes/type/name', [
                     'segment', 'section', 'client_group', 'client_type',
                     'sales_tax_code',
@@ -740,7 +744,7 @@ final class ApiBillController extends Controller
                 ->with('attributes')
                 ->with('attributes/type')
                 ->with('attributes/value')
-                ->where('id', (int) $request->getData('supplier'))
+                ->where('id', $request->getDataInt('supplier') ?? 0)
                 ->where('attributes/type/name', [
                     'purchase_tax_code',
                 ], 'IN')
@@ -797,7 +801,7 @@ final class ApiBillController extends Controller
         }
 
         /** @var \Modules\Billing\Models\Bill $bill */
-        $bill = BillMapper::get()->where('id', (int) $request->getData('ref'))->execute();
+        $bill = BillMapper::get()->where('id', $request->getDataInt('ref') ?? 0)->execute();
         $path = $this->createBillDir($bill);
 
         $uploaded = new NullCollection();
@@ -864,10 +868,10 @@ final class ApiBillController extends Controller
         }
 
         /** @var \Modules\Media\Models\Media $media */
-        $media = MediaMapper::get()->where('id', (int) $request->getData('media'))->execute();
+        $media = MediaMapper::get()->where('id', $request->getDataInt('media') ?? 0)->execute();
 
         /** @var \Modules\Billing\Models\Bill $bill */
-        $bill = BillMapper::get()->where('id', (int) $request->getData('bill'))->execute();
+        $bill = BillMapper::get()->where('id', $request->getDataInt('bill') ?? 0)->execute();
 
         // Cannot delete system generated bill
         if (\stripos($media->name, $bill->number) !== false) {
@@ -1593,7 +1597,7 @@ final class ApiBillController extends Controller
         }
 
         /** @var \Modules\Billing\Models\Bill $bill */
-        $bill = BillMapper::get()->where('id', (int) $request->getData('ref'))->execute();
+        $bill = BillMapper::get()->where('id', $request->getDataInt('ref') ?? 0)->execute();
 
         $request->setData('virtualpath', $this->createBillDir($bill), true);
         $this->app->moduleManager->get('Editor', 'Api')->apiEditorCreate($request, $response, $data);
@@ -1659,7 +1663,7 @@ final class ApiBillController extends Controller
         }
 
         /** @var \Modules\Billing\Models\Bill $old */
-        $old = BillMapper::get()->where('id', (int) $request->getData('id'))->execute();
+        $old = BillMapper::get()->where('id', $request->getDataInt('id') ?? 0)->execute();
 
         // @todo check if bill can be deleted
         // @todo adjust stock transfer
@@ -1730,7 +1734,7 @@ final class ApiBillController extends Controller
         /** @var BillElement $old */
         $old = BillElementMapper::get()
             ->with('bill')
-            ->where('id', (int) $request->getData('id'))
+            ->where('id', $request->getDataInt('id') ?? 0)
             ->execute();
 
         if ($old->bill->status === BillStatus::ARCHIVED) {
@@ -1813,7 +1817,7 @@ final class ApiBillController extends Controller
         // @todo handle transactions and bill update
 
         /** @var \Modules\Billing\Models\BillElement $billElement */
-        $billElement = BillElementMapper::get()->where('id', (int) $request->getData('id'))->execute();
+        $billElement = BillElementMapper::get()->where('id', $request->getDataInt('id') ?? 0)->execute();
         $this->deleteModel($request->header->account, $billElement, BillElementMapper::class, 'bill_element', $request->getOrigin());
         $this->createStandardDeleteResponse($request, $response, $billElement);
     }

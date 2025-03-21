@@ -1,32 +1,38 @@
 {
+    "templates": [
+        {
+            "name": "Billing workflow",
+            "path": "/Modules/Billing/Admin/Install/Workflow/bill"
+        }
+    ],
     "triggers": [
-        "PRE:Module:Billing:bill-create",
-        "POST:Module:Billing:bill-create",
-        "PRE:Module:Billing:bill-update",
-        "POST:Module:Billing:bill-update",
-        "PRE:Module:Billing:bill-delete",
-        "POST:Module:Billing:bill-delete",
+        "PRE:Billing:bill-create",
+        "POST:Billing:bill-create",
+        "PRE:Billing:bill-update",
+        "POST:Billing:bill-update",
+        "PRE:Billing:bill-delete",
+        "POST:Billing:bill-delete",
 
-        "PRE:Module:Billing:bill_element-create",
-        "POST:Module:Billing:bill_element-create",
-        "PRE:Module:Billing:bill_element-update",
-        "POST:Module:Billing:bill_element-update",
-        "PRE:Module:Billing:bill_element-delete",
-        "POST:Module:Billing:bill_element-delete",
+        "PRE:Billing:bill_element-create",
+        "POST:Billing:bill_element-create",
+        "PRE:Billing:bill_element-update",
+        "POST:Billing:bill_element-update",
+        "PRE:Billing:bill_element-delete",
+        "POST:Billing:bill_element-delete",
 
-        "PRE:Module:Billing:bill_media-create",
-        "POST:Module:Billing:bill_media-create",
-        "PRE:Module:Billing:bill_media-update",
-        "POST:Module:Billing:bill_media-update",
-        "PRE:Module:Billing:bill_media-delete",
-        "POST:Module:Billing:bill_media-delete",
+        "PRE:Billing:bill_media-create",
+        "POST:Billing:bill_media-create",
+        "PRE:Billing:bill_media-update",
+        "POST:Billing:bill_media-update",
+        "PRE:Billing:bill_media-delete",
+        "POST:Billing:bill_media-delete",
 
-        "PRE:Module:Billing:bill_note-create",
-        "POST:Module:Billing:bill_note-create",
-        "PRE:Module:Billing:bill_note-update",
-        "POST:Module:Billing:bill_note-update",
-        "PRE:Module:Billing:bill_note-delete",
-        "POST:Module:Billing:bill_note-delete"
+        "PRE:Billing:bill_note-create",
+        "POST:Billing:bill_note-create",
+        "PRE:Billing:bill_note-update",
+        "POST:Billing:bill_note-update",
+        "PRE:Billing:bill_note-delete",
+        "POST:Billing:bill_note-delete"
     ],
     "actions": {
         "1005100001": {

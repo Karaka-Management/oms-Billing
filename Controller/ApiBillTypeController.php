@@ -208,7 +208,7 @@ final class ApiBillTypeController extends Controller
         }
 
         /** @var BillType $old */
-        $old = BillTypeMapper::get()->where('id', (int) $request->getData('id'));
+        $old = BillTypeMapper::get()->where('id', $request->getDataInt('id') ?? 0);
         $new = $this->updateBillTypeFromRequest($request, clone $old);
 
         $this->updateModel($request->header->account, $old, $new, BillTypeMapper::class, 'bill_type', $request->getOrigin());
@@ -285,7 +285,7 @@ final class ApiBillTypeController extends Controller
         }
 
         /** @var \Modules\Billing\Models\BillType $billType */
-        $billType = BillTypeMapper::get()->where('id', (int) $request->getData('id'))->execute();
+        $billType = BillTypeMapper::get()->where('id', $request->getDataInt('id') ?? 0)->execute();
         $this->deleteModel($request->header->account, $billType, BillTypeMapper::class, 'bill_type', $request->getOrigin());
         $this->createStandardDeleteResponse($request, $response, $billType);
     }
@@ -332,7 +332,7 @@ final class ApiBillTypeController extends Controller
         }
 
         /** @var BaseStringL11n $old */
-        $old = BillTypeL11nMapper::get()->where('id', (int) $request->getData('id'));
+        $old = BillTypeL11nMapper::get()->where('id', $request->getDataInt('id') ?? 0);
         $new = $this->updateBillTypeL11nFromRequest($request, clone $old);
 
         $this->updateModel($request->header->account, $old, $new, BillTypeL11nMapper::class, 'bill_type_l11n', $request->getOrigin());
@@ -400,7 +400,7 @@ final class ApiBillTypeController extends Controller
         }
 
         /** @var BaseStringL11n $billTypeL11n */
-        $billTypeL11n = BillTypeL11nMapper::get()->where('id', (int) $request->getData('id'))->execute();
+        $billTypeL11n = BillTypeL11nMapper::get()->where('id', $request->getDataInt('id') ?? 0)->execute();
         $this->deleteModel($request->header->account, $billTypeL11n, BillTypeL11nMapper::class, 'bill_type_l11n', $request->getOrigin());
         $this->createStandardDeleteResponse($request, $response, $billTypeL11n);
     }

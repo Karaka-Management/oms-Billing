@@ -1,0 +1,12 @@
+[
+    {
+        "name": "IS_APPROVED",
+        "title": "Is approved?",
+        "hooks": [
+        ],
+        "if": {
+            "isApproved": true,
+            "action": "print"
+        }
+    }
+]
